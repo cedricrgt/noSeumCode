@@ -15,11 +15,14 @@
 }
 
 .header__logo {
+  display: flex;
+  align-items: center;
   flex: 1;
+  margin: 0;
 }
 
 .logo__img {
-  height: 50px;
+  height: 100px;
   width: auto;
 }
 
