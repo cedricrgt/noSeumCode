@@ -74,12 +74,4 @@ npx serve
 - **Poppins** - Texte principal
 - **Bangers** - Titres et boutons
 
-## 📝 Notes
-
-- Les images de placeholder proviennent d'Unsplash
-- Remplacez-les par vos propres images dans le dossier `images/`
-- Les logos de technologies sont générés ou proviennent de CDN
-
-## 🌟 Crédits
-
 Développé avec ❤️ pour NoSeumCode
