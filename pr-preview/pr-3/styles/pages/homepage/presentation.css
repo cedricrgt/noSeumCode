@@ -1,0 +1,16 @@
+/* ========================================
+   PRESENTATION SECTION
+   ======================================== */
+/* This section primarily uses utility classes: 
+   .section, .section-tag, .section-title, .card-grid */
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .presentation__title {
+    font-size: 2rem;
+  }
+
+  .presentation__cards {
+    grid-template-columns: 1fr;
+  }
+}
