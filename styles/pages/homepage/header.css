@@ -1,0 +1,165 @@
+/* ========================================
+   HEADER
+   ======================================== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-xl);
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: var(--transition-normal);
+}
+
+.header__logo {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.logo__img {
+  height: 115px;
+}
+
+.header__navbar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xl);
+}
+
+.navbar__links {
+  display: flex;
+  list-style: none;
+  gap: var(--spacing-lg);
+}
+
+.navbar__link {
+  cursor: pointer;
+  color: var(--text-dark);
+  transition: var(--transition-fast);
+  position: relative;
+}
+
+.navbar__link:hover {
+  color: var(--primary-green);
+}
+
+.navbar__link.active {
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.navbar__link.active::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--primary-green);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* ========================================
+   RESPONSIVE DESIGN & DESKTOP HOVER EFFECTS
+   ======================================== */
+@media (min-width: 1024px) {
+  .navbar__links {
+    position: relative;
+    /* Reset gap to use padding for better pill target area */
+    gap: 0;
+  }
+
+  .navbar__link {
+    padding: 0.5rem 1.5rem;
+    margin: 0 0.25rem;
+    border-radius: var(--radius-sm);
+    z-index: 1;
+    position: relative;
+  }
+
+  /* Disable standard underline on desktop since we use the pill */
+  .navbar__link::after,
+  .navbar__link.active::after {
+    display: none;
+  }
+
+  /* --- LAVA LAMP PILL EFFECT (CSS Anchor Positioning) --- */
+  @supports (anchor-name: --nav-target) {
+    /* The floating pill element */
+    .navbar__links::before {
+      content: "";
+      position: absolute;
+      position-anchor: --nav-target;
+      background: var(--primary-green);
+      border-radius: 99px; /* Fully rounded pill */
+      z-index: -1;
+      
+      /* Animation physics (Spring-like) */
+      transition: 
+        top 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
+        bottom 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
+        left 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
+        right 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
+        opacity 0.2s ease;
+
+      /* DEFAULT STATE (Active Item): Thin line at bottom (Underline look) */
+      left: anchor(left);
+      right: anchor(right);
+      bottom: anchor(bottom);
+      top: calc(anchor(bottom) - 4px);
+      opacity: 0; /* Hidden if no anchor found */
+    }
+
+    /* Assign Anchor Name logic */
+    /* 1. If NOT hovering the list, the ACTIVE link is the anchor */
+    .navbar__links:not(:has(:hover)) .navbar__link.active {
+      anchor-name: --nav-target;
+    }
+
+    /* 2. If hovering a link, THAT link becomes the anchor */
+    .navbar__link:hover {
+      anchor-name: --nav-target;
+    }
+
+    /* Show pill when we have a valid target */
+    .navbar__links:has(.navbar__link.active)::before,
+    .navbar__links:has(.navbar__link:hover)::before {
+      opacity: 1;
+    }
+
+    /* HOVER STATE: Expand line to full Pill */
+    .navbar__links:has(.navbar__link:hover)::before {
+      top: anchor(top); /* Expands upwards to cover item */
+    }
+
+    /* Text Contrast: Dark navy on green pill */
+    .navbar__link:hover {
+      color: var(--dark-navy);
+      transition: color 0.3s ease;
+    }
+  }
+}
+
+/* Tablet adjustments */
+@media (max-width: 768px) {
+  .header {
+    padding: var(--spacing-md);
+  }
+
+  .navbar__links {
+    display: none;
+  }
+}
