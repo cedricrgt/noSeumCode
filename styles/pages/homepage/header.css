@@ -75,91 +75,88 @@
 /* ========================================
    RESPONSIVE DESIGN & DESKTOP HOVER EFFECTS
    ======================================== */
-@media (min-width: 1024px) {
-  .navbar__links {
-    position: relative;
-    /* Reset gap to use padding for better pill target area */
-    gap: 0;
+/* Sophisticated Hover Effects (Universal with wrapping support) */
+.navbar__links {
+  position: relative;
+  /* Reset gap to use padding for better pill target area */
+  gap: 0;
+  flex-wrap: wrap;
+}
+
+.navbar__link {
+  padding: 0.5rem 1.5rem;
+  margin: 0.25rem;
+  border-radius: var(--radius-sm);
+  z-index: 1;
+  position: relative;
+}
+
+/* Disable standard underline since we use the pill */
+.navbar__link::after,
+.navbar__link.active::after {
+  display: none;
+}
+
+/* --- LAVA LAMP PILL EFFECT (CSS Anchor Positioning) --- */
+@supports (anchor-name: --nav-target) {
+  /* The floating pill element */
+  .navbar__links::before {
+    content: "";
+    position: absolute;
+    position-anchor: --nav-target;
+    background: var(--primary-green);
+    border-radius: 99px; /* Fully rounded pill */
+    z-index: -1;
+    
+    /* Animation physics (Spring-like) */
+    transition: 
+      top 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
+      bottom 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
+      left 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
+      right 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
+      opacity 0.2s ease;
+
+    /* DEFAULT STATE (Active Item): Thin line at bottom (Underline look) */
+    left: anchor(left);
+    right: anchor(right);
+    bottom: anchor(bottom);
+    top: calc(anchor(bottom) - 4px);
+    opacity: 0; /* Hidden if no anchor found */
   }
 
-  .navbar__link {
-    padding: 0.5rem 1.5rem;
-    margin: 0 0.25rem;
-    border-radius: var(--radius-sm);
-    z-index: 1;
-    position: relative;
+  /* Assign Anchor Name logic */
+  /* 1. If NOT hovering the list, the ACTIVE link is the anchor */
+  .navbar__links:not(:has(:hover)) .navbar__link.active {
+    anchor-name: --nav-target;
   }
 
-  /* Disable standard underline on desktop since we use the pill */
-  .navbar__link::after,
-  .navbar__link.active::after {
-    display: none;
+  /* 2. If hovering a link, THAT link becomes the anchor */
+  .navbar__link:hover {
+    anchor-name: --nav-target;
   }
 
-  /* --- LAVA LAMP PILL EFFECT (CSS Anchor Positioning) --- */
-  @supports (anchor-name: --nav-target) {
-    /* The floating pill element */
-    .navbar__links::before {
-      content: "";
-      position: absolute;
-      position-anchor: --nav-target;
-      background: var(--primary-green);
-      border-radius: 99px; /* Fully rounded pill */
-      z-index: -1;
-      
-      /* Animation physics (Spring-like) */
-      transition: 
-        top 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
-        bottom 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
-        left 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
-        right 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
-        opacity 0.2s ease;
+  /* Show pill when we have a valid target */
+  .navbar__links:has(.navbar__link.active)::before,
+  .navbar__links:has(.navbar__link:hover)::before {
+    opacity: 1;
+  }
 
-      /* DEFAULT STATE (Active Item): Thin line at bottom (Underline look) */
-      left: anchor(left);
-      right: anchor(right);
-      bottom: anchor(bottom);
-      top: calc(anchor(bottom) - 4px);
-      opacity: 0; /* Hidden if no anchor found */
-    }
+  /* HOVER STATE: Expand line to full Pill */
+  .navbar__links:has(.navbar__link:hover)::before {
+    top: anchor(top); /* Expands upwards to cover item */
+  }
 
-    /* Assign Anchor Name logic */
-    /* 1. If NOT hovering the list, the ACTIVE link is the anchor */
-    .navbar__links:not(:has(:hover)) .navbar__link.active {
-      anchor-name: --nav-target;
-    }
-
-    /* 2. If hovering a link, THAT link becomes the anchor */
-    .navbar__link:hover {
-      anchor-name: --nav-target;
-    }
-
-    /* Show pill when we have a valid target */
-    .navbar__links:has(.navbar__link.active)::before,
-    .navbar__links:has(.navbar__link:hover)::before {
-      opacity: 1;
-    }
-
-    /* HOVER STATE: Expand line to full Pill */
-    .navbar__links:has(.navbar__link:hover)::before {
-      top: anchor(top); /* Expands upwards to cover item */
-    }
-
-    /* Text Contrast: Dark navy on green pill */
-    .navbar__link:hover {
-      color: var(--dark-navy);
-      transition: color 0.3s ease;
-    }
+  /* Text Contrast: Dark navy on green pill */
+  .navbar__link:hover {
+    color: var(--dark-navy);
+    transition: color 0.3s ease;
   }
 }
 
 /* Tablet adjustments */
-@media (max-width: 768px) {
-  .header {
-    padding: var(--spacing-md);
-  }
-
-  .navbar__links {
-    display: none;
-  }
+/* Tablet/Mobile adjustments - Allow wrapping instead of hiding */
+.navbar__links {
+  flex-wrap: wrap;
+  justify-content: center;
 }
+

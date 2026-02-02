@@ -5,8 +5,8 @@
    .section--dark, .section-title--light, .card-grid */
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
-  .blogCards__cards {
-    grid-template-columns: 1fr;
-  }
+.blogCards__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-xl);
 }
