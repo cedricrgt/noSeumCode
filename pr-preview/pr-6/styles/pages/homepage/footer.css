@@ -1,0 +1,19 @@
+/* ========================================
+   FOOTER
+   ======================================== */
+/* Footer Main Grid */
+.footer {
+  background: var(--dark-navy);
+  color: var(--white);
+  padding: var(--spacing-3xl) var(--spacing-xl) var(--spacing-xl);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-2xl);
+}
+
+/* Footer Nav Grid */
+.footer__nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--spacing-xl);
+}
