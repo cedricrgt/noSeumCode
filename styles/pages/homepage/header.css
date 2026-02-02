@@ -154,9 +154,85 @@
 }
 
 /* Tablet adjustments */
-/* Tablet/Mobile adjustments - Allow wrapping instead of hiding */
-.navbar__links {
-  flex-wrap: wrap;
-  justify-content: center;
+/* ========================================
+   BURGER MENU LOGIC (CHECKBOX HACK)
+   ======================================== */
+
+/* 1. HIDE CHECKBOX ALWAYS */
+.burger-toggle {
+  display: none;
+}
+
+/* 2. DEFAULT STATE (DESKTOP) - HIDE BURGER ICON */
+.burger-button {
+  display: none;
+  cursor: pointer;
+}
+
+/* 3. MOBILE STYLES (< 768px) */
+@media (max-width: 768px) {
+  /* Show Burger Icon */
+  .burger-button {
+    display: block;
+    color: var(--dark-navy);
+  }
+
+  /* Reset Header Padding for better spacing */
+  .header {
+    justify-content: flex-start;
+    gap: var(--spacing-md);
+  }
+
+  /* Reposition Logo to not be squished if needed, or keeping flow */
+  .header__logo {
+    flex: 1;
+    justify-content: center; /* Center logo on mobile */
+  }
+  
+  .logo__img {
+    height: 60px; /* Resize logo for mobile */
+  }
+
+  /* HIDE NAVBAR BY DEFAULT (OFF-SCREEN DRAWER) */
+  .header__navbar {
+    position: fixed;
+    top: 75px; /* Height of header approx */
+    left: -100%;
+    width: 100%;
+    height: calc(100vh - 75px);
+    background: var(--white);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: left 0.3s ease-in-out;
+    border-top: 1px solid var(--light-gray);
+    z-index: 999;
+  }
+
+  /* RESET NAV LINKS LAYOUT FOR DRAWER */
+  .navbar__links {
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    width: 100%;
+    text-align: center;
+  }
+
+  .navbar__link {
+    font-size: 1.5rem;
+    padding: var(--spacing-md);
+    width: 100%;
+    display: block;
+  }
+
+  /* HIDE BUTTON OR STYLE IT FOR DRAWER */
+  .header__navbar .button {
+    margin-top: var(--spacing-xl);
+    width: 80%;
+  }
+
+  /* 4. OPEN STATE (WHEN CHECKED) */
+  .burger-toggle:checked ~ .header__navbar {
+    left: 0;
+  }
 }
 
