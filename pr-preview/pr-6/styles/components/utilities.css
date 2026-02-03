@@ -47,6 +47,8 @@
   
   display: grid;
   gap: var(--gap);
+  /* Center items to prevent right-align look on single column */
+  justify-content: center;
   grid-template-columns: repeat(auto-fit, minmax(var(--min-column-size), 1fr));
 }
 
