@@ -42,9 +42,14 @@
 
 /* Card Grid */
 .card-grid {
+  --min-column-size: 320px;
+  --gap: var(--spacing-xl);
+  
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: var(--spacing-xl);
+  gap: var(--gap);
+  /* Center items to prevent right-align look on single column */
+  justify-content: center;
+  grid-template-columns: repeat(auto-fit, minmax(var(--min-column-size), 1fr));
 }
 
 /* Section Container */
@@ -92,4 +97,18 @@ html {
 ::selection {
   background: var(--primary-green);
   color: var(--dark-navy);
+}
+
+/* Responsive Grid Utility */
+.columns {
+  --min-column-size: 200px;
+  --column-count: 4;
+  --gap: 2rem;
+
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(var(--min-column-size), 1fr)
+  );
 }

@@ -5,12 +5,8 @@
    .section, .section-tag, .section-title, .card-grid */
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
-  .presentation__title {
-    font-size: 2rem;
-  }
-
-  .presentation__cards {
-    grid-template-columns: 1fr;
-  }
+.presentation__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-xl);
 }
