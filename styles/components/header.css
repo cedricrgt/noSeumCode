@@ -39,6 +39,10 @@
   position: relative;
 }
 
+.navbar__link a {
+  color: inherit;
+}
+
 .navbar__link:hover {
   color: var(--primary-green);
 }

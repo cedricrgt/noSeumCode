@@ -60,6 +60,7 @@
   justify-content: center;
 }
 
+
 .hero__blob-svg {
   width: 100%;
   max-width: 500px;
@@ -186,3 +187,4 @@
   opacity: 1;
   transform: scale(1.1);
 }
+
