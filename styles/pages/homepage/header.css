@@ -1,6 +1,3 @@
-/* ========================================
-   HEADER
-   ======================================== */
 .header {
   display: flex;
   justify-content: space-between;
@@ -8,7 +5,7 @@
   padding: var(--spacing-md) var(--spacing-xl);
   background: var(--white);
   box-shadow: var(--shadow-sm);
-  position: relative; /* Change from sticky to relative to control children absolute positioning */
+  position: relative;
   z-index: 1000;
   transition: var(--transition-normal);
 }
@@ -71,13 +68,8 @@
   }
 }
 
-/* ========================================
-   RESPONSIVE DESIGN & DESKTOP HOVER EFFECTS
-   ======================================== */
-/* Sophisticated Hover Effects (Universal with wrapping support) */
 .navbar__links {
   position: relative;
-  /* Reset gap to use padding for better pill target area */
   gap: 0;
   flex-wrap: wrap;
 }
@@ -90,24 +82,20 @@
   position: relative;
 }
 
-/* Disable standard underline since we use the pill */
 .navbar__link::after,
 .navbar__link.active::after {
   display: none;
 }
 
-/* --- LAVA LAMP PILL EFFECT (CSS Anchor Positioning) --- */
 @supports (anchor-name: --nav-target) {
-  /* The floating pill element */
   .navbar__links::before {
     content: "";
     position: absolute;
     position-anchor: --nav-target;
     background: var(--primary-green);
-    border-radius: 99px; /* Fully rounded pill */
+    border-radius: 99px;
     z-index: -1;
     
-    /* Animation physics (Spring-like) */
     transition: 
       top 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
       bottom 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
@@ -115,80 +103,62 @@
       right 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
       opacity 0.2s ease;
 
-    /* DEFAULT STATE (Active Item): Thin line at bottom (Underline look) */
     left: anchor(left);
     right: anchor(right);
     bottom: anchor(bottom);
     top: calc(anchor(bottom) - 4px);
-    opacity: 0; /* Hidden if no anchor found */
+    opacity: 0;
   }
 
-  /* Assign Anchor Name logic */
-  /* 1. If NOT hovering the list, the ACTIVE link is the anchor */
   .navbar__links:not(:has(:hover)) .navbar__link.active {
     anchor-name: --nav-target;
   }
 
-  /* 2. If hovering a link, THAT link becomes the anchor */
   .navbar__link:hover {
     anchor-name: --nav-target;
   }
 
-  /* Show pill when we have a valid target */
   .navbar__links:has(.navbar__link.active)::before,
   .navbar__links:has(.navbar__link:hover)::before {
     opacity: 1;
   }
 
-  /* HOVER STATE: Expand line to full Pill */
   .navbar__links:has(.navbar__link:hover)::before {
-    top: anchor(top); /* Expands upwards to cover item */
+    top: anchor(top);
   }
 
-  /* Text Contrast: Dark navy on green pill */
   .navbar__link:hover {
     color: var(--dark-navy);
     transition: color 0.3s ease;
   }
 }
 
-/* Tablet adjustments */
-/* ========================================
-   BURGER MENU LOGIC (CHECKBOX HACK)
-   ======================================== */
-
-/* 1. HIDE CHECKBOX ALWAYS */
 .burger-toggle {
   display: none;
 }
 
-/* 2. DEFAULT STATE (DESKTOP) - HIDE BURGER ICON */
 .burger-button {
   display: none;
   cursor: pointer;
 }
 
-/* 3. MOBILE STYLES (< 768px) */
 @media (max-width: 768px) {
-  /* Show Burger Icon */
   .burger-button {
     display: block;
     color: var(--dark-navy);
-    /* Position absolutely to the left */
     position: absolute;
     left: var(--spacing-xl);
     top: 50%;
     transform: translateY(-50%);
     z-index: 20;
+    padding-top: 7.5px;
   }
 
-  /* Reset Header Padding for better spacing */
   .header {
-    justify-content: center; /* Center content */
-    padding: var(--spacing-md) var(--spacing-xl);
+    justify-content: center;
+    padding: var(--spacing-xl) var(--spacing-xl);
   }
 
-  /* Reposition Logo to be perfectly centered */
   .header__logo {
     flex: 0 0 auto;
     position: absolute;
@@ -197,17 +167,16 @@
   }
   
   .logo__img {
-    height: 60px; /* Resize logo for mobile */
+    height: 60px;
   }
 
-  /* HIDE NAVBAR BY DEFAULT (OFF-SCREEN DRAWER) */
   .header__navbar {
-    position: absolute; /* Absolute relative to header */
-    top: 100%; /* Push exactly below header */
+    position: absolute; 
+    top: 100%;
     left: 0;
     width: 100%;
-    height: 0; /* Star closed */
-    overflow: hidden; /* Hide content */
+    height: 0;
+    overflow: hidden;
     background: var(--white);
     flex-direction: column;
     align-items: center;
@@ -217,7 +186,6 @@
     z-index: 10;
   }
 
-  /* RESET NAV LINKS LAYOUT FOR DRAWER */
   .navbar__links {
     flex-direction: column;
     gap: var(--spacing-xl);
@@ -234,7 +202,6 @@
     display: block;
   }
 
-  /* HIDE BUTTON OR STYLE IT FOR DRAWER */
   .header__navbar .button {
     margin-top: var(--spacing-xl);
     width: 80%;
@@ -242,9 +209,8 @@
     transition: opacity 0.2s ease;
   }
 
-  /* 4. OPEN STATE (WHEN CHECKED) */
   .burger-toggle:checked ~ .header__navbar {
-    height: 100vh; /* Full screen height below header */
+    height: 100vh;
     border-top: 1px solid var(--light-gray);
   }
 
@@ -254,4 +220,3 @@
     transition-delay: 0.2s;
   }
 }
-
