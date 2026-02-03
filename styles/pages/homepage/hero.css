@@ -1,9 +1,6 @@
-/* ========================================
-   HERO SECTION
-   ======================================== */
 .hero {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 450px), 1fr));
   gap: var(--spacing-3xl);
   align-items: center;
   padding: var(--spacing-3xl) var(--spacing-xl);
@@ -22,7 +19,7 @@
 }
 
 .hero__title {
-  font-size: 3.5rem;
+  font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 700;
   line-height: 1.2;
   color: var(--white);
@@ -63,7 +60,6 @@
   justify-content: center;
 }
 
-/* SVG Blob Animation Styles */
 .hero__blob-svg {
   width: 100%;
   max-width: 500px;
@@ -78,7 +74,6 @@
   transform: scale(1.02);
 }
 
-/* Clip path with smooth transition on hover */
 .hero__blob-svg #heroBlobClip {
   transform-origin: center;
   transition: transform 0.4s ease-out;
@@ -88,7 +83,6 @@
   transform: scale(1.08) translate(0%, 0%);
 }
 
-/* Animated text styling */
 .hero__blob-text {
   font-family: "Bangers", cursive;
   font-size: 9px;
@@ -104,7 +98,6 @@
   mix-blend-mode: overlay;
 }
 
-/* Decorative circles */
 .circles-container {
   display: flex;
   gap: 4px;
@@ -149,9 +142,6 @@
   }
 }
 
-/* ========================================
-   SLIDER
-   ======================================== */
 .hero__bottom {
   grid-column: 1 / -1;
   margin-top: var(--spacing-xl);
@@ -195,28 +185,4 @@
 .slider__item:hover {
   opacity: 1;
   transform: scale(1.1);
-}
-
-/* ========================================
-   RESPONSIVE DESIGN (HERO)
-   ======================================== */
-@media (max-width: 1024px) {
-  .hero {
-    grid-template-columns: 1fr;
-    padding: var(--spacing-2xl) var(--spacing-md);
-  }
-
-  .hero__title {
-    font-size: 2.5rem;
-  }
-
-  .hero__right {
-    margin-top: var(--spacing-xl);
-  }
-}
-
-@media (max-width: 768px) {
-  .hero__title {
-    font-size: 2rem;
-  }
 }

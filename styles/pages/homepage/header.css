@@ -1,6 +1,3 @@
-/* ========================================
-   HEADER
-   ======================================== */
 .header {
   display: flex;
   justify-content: space-between;
@@ -8,8 +5,7 @@
   padding: var(--spacing-md) var(--spacing-xl);
   background: var(--white);
   box-shadow: var(--shadow-sm);
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 1000;
   transition: var(--transition-normal);
 }
@@ -27,7 +23,7 @@
 .header__navbar {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-xs);
 }
 
 .navbar__links {
@@ -72,94 +68,155 @@
   }
 }
 
-/* ========================================
-   RESPONSIVE DESIGN & DESKTOP HOVER EFFECTS
-   ======================================== */
-@media (min-width: 1024px) {
-  .navbar__links {
-    position: relative;
-    /* Reset gap to use padding for better pill target area */
-    gap: 0;
+.navbar__links {
+  position: relative;
+  gap: 0;
+  flex-wrap: wrap;
+}
+
+.navbar__link {
+  padding: 0.5rem 1.5rem;
+  margin: 0.25rem;
+  border-radius: var(--radius-sm);
+  z-index: 1;
+  position: relative;
+}
+
+.navbar__link::after,
+.navbar__link.active::after {
+  display: none;
+}
+
+@supports (anchor-name: --nav-target) {
+  .navbar__links::before {
+    content: "";
+    position: absolute;
+    position-anchor: --nav-target;
+    background: var(--primary-green);
+    border-radius: 99px;
+    z-index: -1;
+    
+    transition: 
+      top 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
+      bottom 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
+      left 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
+      right 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
+      opacity 0.2s ease;
+
+    left: anchor(left);
+    right: anchor(right);
+    bottom: anchor(bottom);
+    top: calc(anchor(bottom) - 4px);
+    opacity: 0;
   }
 
-  .navbar__link {
-    padding: 0.5rem 1.5rem;
-    margin: 0 0.25rem;
-    border-radius: var(--radius-sm);
-    z-index: 1;
-    position: relative;
+  .navbar__links:not(:has(:hover)) .navbar__link.active {
+    anchor-name: --nav-target;
   }
 
-  /* Disable standard underline on desktop since we use the pill */
-  .navbar__link::after,
-  .navbar__link.active::after {
-    display: none;
+  .navbar__link:hover {
+    anchor-name: --nav-target;
   }
 
-  /* --- LAVA LAMP PILL EFFECT (CSS Anchor Positioning) --- */
-  @supports (anchor-name: --nav-target) {
-    /* The floating pill element */
-    .navbar__links::before {
-      content: "";
-      position: absolute;
-      position-anchor: --nav-target;
-      background: var(--primary-green);
-      border-radius: 99px; /* Fully rounded pill */
-      z-index: -1;
-      
-      /* Animation physics (Spring-like) */
-      transition: 
-        top 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
-        bottom 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
-        left 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
-        right 0.4s cubic-bezier(0.5, 2.5, 0.7, 0.7),
-        opacity 0.2s ease;
+  .navbar__links:has(.navbar__link.active)::before,
+  .navbar__links:has(.navbar__link:hover)::before {
+    opacity: 1;
+  }
 
-      /* DEFAULT STATE (Active Item): Thin line at bottom (Underline look) */
-      left: anchor(left);
-      right: anchor(right);
-      bottom: anchor(bottom);
-      top: calc(anchor(bottom) - 4px);
-      opacity: 0; /* Hidden if no anchor found */
-    }
+  .navbar__links:has(.navbar__link:hover)::before {
+    top: anchor(top);
+  }
 
-    /* Assign Anchor Name logic */
-    /* 1. If NOT hovering the list, the ACTIVE link is the anchor */
-    .navbar__links:not(:has(:hover)) .navbar__link.active {
-      anchor-name: --nav-target;
-    }
-
-    /* 2. If hovering a link, THAT link becomes the anchor */
-    .navbar__link:hover {
-      anchor-name: --nav-target;
-    }
-
-    /* Show pill when we have a valid target */
-    .navbar__links:has(.navbar__link.active)::before,
-    .navbar__links:has(.navbar__link:hover)::before {
-      opacity: 1;
-    }
-
-    /* HOVER STATE: Expand line to full Pill */
-    .navbar__links:has(.navbar__link:hover)::before {
-      top: anchor(top); /* Expands upwards to cover item */
-    }
-
-    /* Text Contrast: Dark navy on green pill */
-    .navbar__link:hover {
-      color: var(--dark-navy);
-      transition: color 0.3s ease;
-    }
+  .navbar__link:hover {
+    color: var(--dark-navy);
+    transition: color 0.3s ease;
   }
 }
 
-/* Tablet adjustments */
+.burger-toggle {
+  display: none;
+}
+
+.burger-button {
+  display: none;
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
+  .burger-button {
+    display: block;
+    color: var(--dark-navy);
+    position: absolute;
+    left: var(--spacing-xl);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    padding-top: 7.5px;
+  }
+
   .header {
-    padding: var(--spacing-md);
+    justify-content: center;
+    padding: var(--spacing-xl) var(--spacing-xl);
+  }
+
+  .header__logo {
+    flex: 0 0 auto;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .logo__img {
+    height: 60px;
+  }
+
+  .header__navbar {
+    position: absolute; 
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 0;
+    overflow: hidden;
+    background: var(--white);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 10;
   }
 
   .navbar__links {
-    display: none;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    width: 100%;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .navbar__link {
+    font-size: 1.5rem;
+    padding: var(--spacing-md);
+    width: 100%;
+    display: block;
+  }
+
+  .header__navbar .button {
+    margin-top: var(--spacing-xl);
+    width: 80%;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .burger-toggle:checked ~ .header__navbar {
+    height: 100vh;
+    border-top: 1px solid var(--light-gray);
+  }
+
+  .burger-toggle:checked ~ .header__navbar .navbar__links,
+  .burger-toggle:checked ~ .header__navbar .button {
+    opacity: 1;
+    transition-delay: 0.2s;
   }
 }

@@ -1,6 +1,3 @@
-/* ========================================
-   TYPOGRAPHY
-   ======================================== */
 
 .poppins-regular {
   font-family: "Poppins", sans-serif;
@@ -12,7 +9,6 @@
   letter-spacing: 1px;
 }
 
-/* Gradient text effect */
 .gradient-text {
   background: linear-gradient(
     135deg,

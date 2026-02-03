@@ -1,8 +1,4 @@
-/* ========================================
-   UTILITY CLASSES
-   ======================================== */
 
-/* Section Headers */
 .section-tag {
   font-size: 1.5rem;
   color: #00a85a;
@@ -26,7 +22,6 @@
   font-weight: 600;
 }
 
-/* Light variants for dark backgrounds */
 .section-title--light {
   color: var(--white);
 }
@@ -40,14 +35,16 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
-/* Card Grid */
 .card-grid {
+  --min-column-size: 320px;
+  --gap: var(--spacing-xl);
+  
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: var(--spacing-xl);
+  gap: var(--gap);
+  justify-content: center;
+  grid-template-columns: repeat(auto-fit, minmax(var(--min-column-size), 1fr));
 }
 
-/* Section Container */
 .section {
   padding: var(--spacing-3xl) var(--spacing-xl);
   text-align: center;
@@ -65,9 +62,6 @@
   background: var(--light-gray);
 }
 
-/* ========================================
-   ANIMATIONS & UTILITIES
-   ======================================== */
 .fade-in {
   animation: fadeIn 0.6s ease-in;
 }
@@ -83,13 +77,24 @@
   }
 }
 
-/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Selection color */
 ::selection {
   background: var(--primary-green);
   color: var(--dark-navy);
+}
+
+.columns {
+  --min-column-size: 200px;
+  --column-count: 4;
+  --gap: 2rem;
+
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(var(--min-column-size), 1fr)
+  );
 }

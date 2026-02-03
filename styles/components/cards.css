@@ -1,6 +1,3 @@
-/* ========================================
-   CARDS COMPONENT
-   ======================================== */
 .card {
   border-radius: var(--radius-xl);
   overflow: hidden;
