@@ -1,7 +1,3 @@
-/* ========================================
-   FOOTER
-   ======================================== */
-/* Footer Main Grid */
 .footer {
   background: var(--dark-navy);
   color: var(--white);
@@ -11,7 +7,6 @@
   gap: var(--spacing-2xl);
 }
 
-/* Footer Nav Grid */
 .footer__nav {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
