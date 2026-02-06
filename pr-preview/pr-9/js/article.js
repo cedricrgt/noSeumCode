@@ -39,13 +39,13 @@ async function loadArticle() {
 
     // 3. Render content
     contentArea.innerHTML = `
-      <header class="article-hero">
+      <section class="article-hero">
         <img src="${article.image}" alt="${article.title}" class="article-hero__image">
         <div class="article-hero__content">
           <h1 class="article-hero__title bangers-regular">${article.title}</h1>
           <p class="article-hero__subtitle poppins-regular">${article.subtitle}</p>
         </div>
-      </header>
+      </section>
       <div class="article-container">
         <article>
           <a href="index.html" class="back-link bangers-regular">
