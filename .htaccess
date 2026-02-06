@@ -1,0 +1,43 @@
+# ----------------------------------------------------------------------
+# LiteSpeed Cache Optimization
+# ----------------------------------------------------------------------
+
+<IfModule LiteSpeed>
+    # Enable public cache for 1 hour
+    CacheLookup on
+    CacheEnable public /
+    
+    # Force caching for static files
+    RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} ^GET|HEAD$
+    RewriteRule .* - [E=Cache-Control:max-age=3600]
+</IfModule>
+
+# ----------------------------------------------------------------------
+# Browser Caching (Standard)
+# ----------------------------------------------------------------------
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 month"
+    
+    # HTML
+    ExpiresByType text/html "access plus 0 seconds"
+    
+    # CSS/JS
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    
+    # Images
+    ExpiresByType image/x-icon "access plus 1 year"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+</IfModule>
+
+# ----------------------------------------------------------------------
+# Security & Clean URLs
+# ----------------------------------------------------------------------
+
+Options -Indexes
+DirectoryIndex index.html
