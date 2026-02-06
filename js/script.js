@@ -209,6 +209,31 @@ scrollToTopBtn.addEventListener("mouseleave", () => {
 });
 
 // ========================================
+// PROMO POPUP AUTO-OPEN
+// ========================================
+function initPromoPopup() {
+  const promoPopup = document.getElementById("promo-popup");
+  if (!promoPopup) return;
+
+  // Auto-open on every reload (better for testing/visibility)
+  setTimeout(() => {
+    // Check if the popover is NOT already open before showing
+    if (typeof promoPopup.showPopover === "function" && !promoPopup.matches(":popover-open")) {
+      promoPopup.showPopover();
+    }
+  }, 2000); // 2 seconds delay
+
+    // Add listener to close on backdrop click (robustness)
+    promoPopup.addEventListener("click", (e) => {
+      if (e.target === promoPopup) {
+        promoPopup.hidePopover();
+      }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", initPromoPopup);
+
+// ========================================
 // CONSOLE MESSAGE
 // ========================================
 console.log(
