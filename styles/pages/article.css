@@ -4,6 +4,9 @@
   min-height: 100vh;
 }
 
+#article-content{
+  padding-top: 6rem;
+}
 .article-hero {
   position: relative;
   height: 400px;
