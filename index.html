@@ -61,7 +61,7 @@
               <li class="navbar__link"><a href="#faq">FAQ</a></li>
             </ul>
           </nav>
-          <button class="button button__primary bangers-regular">
+          <button class="button button__primary bangers-regular" popovertarget="hubspot-popover">
             Télécharger le programme
           </button>
         </div>
@@ -204,12 +204,12 @@
                     <svg
                       class="card__icon"
                       viewBox="0 0 24 24"
-                      fill="none"
+                      fill="#00ff87"
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
                         d="M15 10L20 5V19L15 14M4 6H14C15.1046 6 16 6.89543 16 8V16C16 17.1046 15.1046 18 14 18H4C2.89543 18 2 17.1046 2 16V8C2 6.89543 2.89543 6 4 6Z"
-                        stroke="currentColor"
+                        stroke="#1a2332"
                         stroke-width="2"
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -982,6 +982,24 @@
       </footer>
     </div>
 
-    <script src="script.js"></script>
+    <script src="js/script.js"></script>
+    <div id="hubspot-popover" popover>
+      <button class="popover__close" popovertarget="hubspot-popover" popovertargetaction="hide">×</button>
+      <header class="popover__header">
+        <h3 class="popover__title">Télécharger le programme</h3>
+        <p class="popover__tagline">Laisse-nous tes infos pour recevoir le banger programme !</p>
+      </header>
+      <div class="popover__content">
+        <script charset="utf-8" type="text/javascript" src="//js-eu1.hsforms.net/forms/embed/v2.js"></script>
+        <script>
+          hbspt.forms.create({
+            portalId: "147700205",
+            formId: "1a00f0a3-c33c-47e3-9614-b56fdc4a8586",
+            region: "eu1",
+            redirectUrl: "thanks.html"
+          });
+        </script>
+      </div>
+    </div>
   </body>
 </html>

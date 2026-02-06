@@ -13,8 +13,26 @@
   position: fixed;
   inset: 0;
   margin: auto;
-  overflow: auto;
 }
+
+[popover]:popover-open {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  max-height: 90dvh;
+}
+
+/* Fallback for browsers not supporting popover API or to ensure hidden by default */
+[popover]:not(:popover-open) {
+  display: none;
+}
+
+[popover] .popover__content {
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 0.5rem; /* Space for scrollbar */
+}
+
 
 [popover]::backdrop {
   background: rgba(0, 0, 0, 0.5);
@@ -109,3 +127,9 @@
 .popover__close:hover {
   color: #333;
 }
+#hubspot-popover {
+  max-width: 600px;
+}
+
+
+
