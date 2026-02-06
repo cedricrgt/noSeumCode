@@ -25,6 +25,17 @@
     <main class="home">
       <!-- Header -->
       <header class="header">
+        <!-- Scrolling Banner -->
+        <div class="promo-banner">
+          <div class="promo-banner__track">
+            <span class="promo-banner__item">❄️ WORKSHOPS D'HIVER GRATUITS : HTML/CSS, JS, GIT & GITHUB ! <button popovertarget="promo-popup" class="promo-banner__cta bangers-regular">VOIR LE PLANNING</button></span>
+            <span class="promo-banner__item">🚀 SAVE THE DATE : 16/02, 17/02, 18/02 ET 02/03, 03/03, 04/03 <button popovertarget="promo-popup" class="promo-banner__cta bangers-regular">S'INSCRIRE</button></span>
+            <!-- Duplicated for infinite effect -->
+            <span class="promo-banner__item">❄️ WORKSHOPS D'HIVER GRATUITS : HTML/CSS, JS, GIT & GITHUB ! <button popovertarget="promo-popup" class="promo-banner__cta bangers-regular">VOIR LE PLANNING</button></span>
+            <span class="promo-banner__item">🚀 SAVE THE DATE : 16/02, 17/02, 18/02 ET 02/03, 03/03, 04/03 <button popovertarget="promo-popup" class="promo-banner__cta bangers-regular">S'INSCRIRE</button></span>
+          </div>
+        </div>
+        
         <!-- Burger Menu Checkbox Hack -->
         <input type="checkbox" id="burger-toggle" class="burger-toggle" />
         <label for="burger-toggle" class="burger-button">
@@ -45,25 +56,29 @@
           </svg>
         </label>
 
-        <div class="header__logo">
-          <img
-            alt="Logo de NoSeumCode"
-            class="logo__img"
-            src="images/header/logo.png"
-          />
-        </div>
-        <div class="header__navbar">
-          <nav class="navbar">
-            <ul class="navbar__links poppins-regular">
-              <li class="navbar__link active"><a href="index.html">Accueil</a></li>
-              <li class="navbar__link"><a href="#courses">Formations</a></li>
-              <li class="navbar__link"><a href="#services">Nos services</a></li>
-              <li class="navbar__link"><a href="#faq">FAQ</a></li>
-            </ul>
-          </nav>
-          <button class="button button__primary bangers-regular" popovertarget="hubspot-popover">
-            Télécharger le programme
-          </button>
+        <div class="header__container">
+          <div class="header__logo">
+            <a href="index.html">
+              <img
+                alt="Logo de NoSeumCode"
+                class="logo__img"
+                src="images/header/logo.png"
+              />
+            </a>
+          </div>
+          <div class="header__navbar">
+            <nav class="navbar">
+              <ul class="navbar__links poppins-regular">
+                <li class="navbar__link active"><a href="index.html">Accueil</a></li>
+                <li class="navbar__link"><a href="#courses">Formations</a></li>
+                <li class="navbar__link"><a href="#services">Nos services</a></li>
+                <li class="navbar__link"><a href="#faq">FAQ</a></li>
+              </ul>
+            </nav>
+            <button class="button button__primary bangers-regular" popovertarget="hubspot-popover">
+              Télécharger le programme
+            </button>
+          </div>
         </div>
       </header>
       
@@ -983,6 +998,28 @@
     </div>
 
     <script src="js/script.js"></script>
+
+    <!-- Promotional Popup -->
+    <div id="promo-popup" popover>
+      <button class="promo-popup__close" popovertarget="promo-popup" popovertargetaction="hide">×</button>
+      <h2 class="promo-popup__title bangers-regular">Winter Workshops ❄️</h2>
+      <p class="promo-popup__subtitle poppins-regular">Boost tes skills gratuitement durant 2 heures avec nos experts !</p>
+      
+      <table class="promo-schedule poppins-regular">
+        <tr><td>Lun 16/02 (10h-12h)</td><td>HTML & CSS</td></tr>
+        <tr><td>Mar 17/02 (14h-16h)</td><td>JavaScript</td></tr>
+        <tr><td>Mer 18/02 (10h-12h)</td><td>Git & GitHub</td></tr>
+        <tr><td>- - - - -</td><td>- - - - -</td></tr>
+        <tr><td>Lun 02/03 (14h-16h)</td><td>HTML & CSS</td></tr>
+        <tr><td>Mar 03/03 (14h-16h)</td><td>JavaScript</td></tr>
+        <tr><td>Mer 04/03 (10h-12h)</td><td>Git & GitHub</td></tr>
+      </table>
+
+      <button class="button button__primary promo-popup__cta bangers-regular" popovertarget="hubspot-popover">
+        Réserver ma place gratuite
+      </button>
+    </div>
+
     <div id="hubspot-popover" popover>
       <button class="popover__close" popovertarget="hubspot-popover" popovertargetaction="hide">×</button>
       <header class="popover__header">
