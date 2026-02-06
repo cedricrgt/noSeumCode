@@ -61,7 +61,7 @@
               <li class="navbar__link"><a href="#faq">FAQ</a></li>
             </ul>
           </nav>
-          <button class="button button__primary bangers-regular">
+          <button class="button button__primary bangers-regular" popovertarget="hubspot-popover">
             Télécharger le programme
           </button>
         </div>
@@ -982,6 +982,23 @@
       </footer>
     </div>
 
-    <script src="script.js"></script>
+    <script src="js/script.js"></script>
+    <div id="hubspot-popover" popover>
+      <button class="popover__close" popovertarget="hubspot-popover" popovertargetaction="hide">×</button>
+      <header class="popover__header">
+        <h3 class="popover__title">Télécharger le programme</h3>
+        <p class="popover__tagline">Laisse-nous tes infos pour recevoir le banger programme !</p>
+      </header>
+      <div class="popover__content">
+        <script charset="utf-8" type="text/javascript" src="//js-eu1.hsforms.net/forms/embed/v2.js"></script>
+        <script>
+          hbspt.forms.create({
+            portalId: "147700205",
+            formId: "1a00f0a3-c33c-47e3-9614-b56fdc4a8586",
+            region: "eu1"
+          });
+        </script>
+      </div>
+    </div>
   </body>
 </html>

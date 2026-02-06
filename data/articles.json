@@ -52,7 +52,7 @@
     "subtitle": "Maîtrisez le versioning et la collaboration cloud pour vos projets de code",
     "description": "Apprenez Git et GitHub pour sauvegarder votre code et collaborer efficacement. Guide essentiel pour tout étudiant ou futur développeur professionnel.",
     "image": "https://images.unsplash.com/photo-1618401471353-b98aadebc25b?w=1200&h=600&fit=crop",
-    "tags": ["Collaboration", "Git Workflow", "Carrière'],
+    "tags": ["Collaboration", "Git Workflow", "Carrière"],
     "intro": "Avez-vous déjà perdu des heures de travail parce que votre ordinateur a planté ? Ou essayé de fusionner les modifications de code avec un ami via Discord ou email ? Git est la solution à tous ces problèmes. C'est l'outil de gestion de version n°1 utilisé par Ubisoft, Google ou Airbnb pour gérer des millions de lignes de code sans jamais rien perdre.",
     "sections": [
       {
