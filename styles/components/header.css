@@ -1,11 +1,12 @@
 .header {
+  position: fixed;
+  width: 100vw;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: var(--spacing-md) var(--spacing-xl);
   background: var(--white);
   box-shadow: var(--shadow-sm);
-  position: relative;
   z-index: 1000;
   transition: var(--transition-normal);
 }
@@ -37,6 +38,10 @@
   color: var(--text-dark);
   transition: var(--transition-fast);
   position: relative;
+}
+
+.navbar__link a {
+  color: inherit;
 }
 
 .navbar__link:hover {
