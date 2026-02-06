@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Article - NoSeumCode</title>
+    <meta name="description" id="meta-description" content="Apprenez à coder avec NoSeumCode.">
+    <!-- Open Graph -->
+    <meta property="og:title" id="og-title" content="NoSeumCode - Article">
+    <meta property="og:description" id="og-description" content="Découvrez nos articles sur le développement web.">
+    <meta property="og:image" id="og-image" content="">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="stylesheet" href="styles/pages/article.css" />
+  </head>
+  <body class="article-page poppins-regular">
+    <header class="header">
+      <!-- Burger Menu Checkbox Hack -->
+      <input type="checkbox" id="burger-toggle" class="burger-toggle" />
+      <label for="burger-toggle" class="burger-button">
+        <svg
+          class="burger-icon"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </label>
+
+      <div class="header__logo">
+        <img
+          alt="Logo de NoSeumCode"
+          class="logo__img"
+          src="images/header/logo.png"
+        />
+      </div>
+      <div class="header__navbar">
+        <nav class="navbar">
+          <ul class="navbar__links poppins-regular">
+            <li class="navbar__link"><a href="index.html">Accueil</a></li>
+            <li class="navbar__link"><a href="index.html#courses">Formations</a></li>
+            <li class="navbar__link"><a href="index.html#services">Nos services</a></li>
+            <li class="navbar__link"><a href="index.html#faq">FAQ</a></li>
+          </ul>
+        </nav>
+        <button class="button button__primary bangers-regular">
+          S'inscrire
+        </button>
+      </div>
+    </header>
+
+    <main id="article-content">
+      <div class="article-container">
+        <a href="index.html" class="back-link bangers-regular">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Retour à l'accueil
+        </a>
+        <p>Chargement de l'article...</p>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer__content">
+        <p class="bangers-regular">NoSeumCode © 2026 - Apprends à coder en mode banger !</p>
+      </div>
+    </footer>
+
+    <script src="js/article.js"></script>
+  </body>
+</html>
