@@ -3,7 +3,7 @@
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 450px), 1fr));
   gap: var(--spacing-3xl);
   align-items: center;
-  padding: var(--spacing-3xl) var(--spacing-xl);
+  padding: var(--spacing-4xl) var(--spacing-xl);
   min-height: 90vh;
   background: linear-gradient(135deg, #0a1628 0%, #1a2332 100%);
   position: relative;
@@ -59,6 +59,7 @@
   align-items: center;
   justify-content: center;
 }
+
 
 .hero__blob-svg {
   width: 100%;
@@ -132,6 +133,12 @@
   animation-delay: 0.5s;
 }
 
+@media (max-width: 768px) {
+  .hero {
+    padding: var(--spacing-3xl) var(--spacing-xl);
+  }
+}
+
 @keyframes bounce {
   0%,
   100% {
@@ -186,3 +193,4 @@
   opacity: 1;
   transform: scale(1.1);
 }
+

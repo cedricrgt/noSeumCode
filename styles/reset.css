@@ -2,6 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  text-decoration: none;
 }
 
 :root {
@@ -22,6 +23,7 @@
   --spacing-xl: 3rem;
   --spacing-2xl: 4rem;
   --spacing-3xl: 6rem;
+  --spacing-4xl: 12rem;
 
   --radius-sm: 8px;
   --radius-md: 12px;

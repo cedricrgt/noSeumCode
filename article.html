@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Article - NoSeumCode</title>
+    <meta name="description" id="meta-description" content="Apprenez à coder avec NoSeumCode.">
+    <!-- Open Graph -->
+    <meta property="og:title" id="og-title" content="NoSeumCode - Article">
+    <meta property="og:description" id="og-description" content="Découvrez nos articles sur le développement web.">
+    <meta property="og:image" id="og-image" content="">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="stylesheet" href="styles/pages/article.css" />
+  </head>
+  <body class="article-page poppins-regular">
+    <header class="header">
+      <!-- Burger Menu Checkbox Hack -->
+      <input type="checkbox" id="burger-toggle" class="burger-toggle" />
+      <label for="burger-toggle" class="burger-button">
+        <svg
+          class="burger-icon"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </label>
+
+      <div class="header__logo">
+        <img
+          alt="Logo de NoSeumCode"
+          class="logo__img"
+          src="images/header/logo.png"
+        />
+      </div>
+      <div class="header__navbar">
+        <nav class="navbar">
+          <ul class="navbar__links poppins-regular">
+            <li class="navbar__link"><a href="index.html">Accueil</a></li>
+            <li class="navbar__link"><a href="index.html#courses">Formations</a></li>
+            <li class="navbar__link"><a href="index.html#services">Nos services</a></li>
+            <li class="navbar__link"><a href="index.html#faq">FAQ</a></li>
+          </ul>
+        </nav>
+        <button class="button button__primary bangers-regular">
+          S'inscrire
+        </button>
+      </div>
+    </header>
+
+    <main id="article-content">
+      <div class="article-container">
+        <a href="index.html" class="back-link bangers-regular">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Retour à l'accueil
+        </a>
+        <p>Chargement de l'article...</p>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer__content">
+        <p class="bangers-regular">NoSeumCode © 2026 - Apprends à coder en mode banger !</p>
+      </div>
+    </footer>
+
+    <script src="data/articles.js"></script>
+    <script>
+      function loadArticle() {
+        const params = new URLSearchParams(window.location.search);
+        const articleId = params.get('id');
+        const contentArea = document.getElementById('article-content');
+
+        if (!articleId) {
+          contentArea.innerHTML = '<div class="article-container"><h1>Article non trouvé</h1><a href="index.html">Retour</a></div>';
+          return;
+        }
+
+        try {
+          const article = ARTICLES_DATA[articleId];
+
+          if (!article) {
+            contentArea.innerHTML = '<div class="article-container"><h1>Article non trouvé</h1><a href="index.html">Retour</a></div>';
+            return;
+          }
+
+          // Update SEO Meta Tags
+          document.title = `${article.title} - NoSeumCode`;
+          document.getElementById('meta-description').setAttribute('content', article.description);
+          document.getElementById('og-title').setAttribute('content', article.title);
+          document.getElementById('og-description').setAttribute('content', article.description);
+          document.getElementById('og-image').setAttribute('content', article.image);
+
+          contentArea.innerHTML = `
+            <header class="article-hero">
+              <img src="${article.image}" alt="${article.title}" class="article-hero__image">
+              <div class="article-hero__content">
+                <h1 class="article-hero__title bangers-regular">${article.title}</h1>
+                <p class="article-hero__subtitle poppins-regular">${article.subtitle}</p>
+              </div>
+            </header>
+            <div class="article-container">
+              <article>
+                <a href="index.html" class="back-link bangers-regular">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                  Retour à l'accueil
+                </a>
+                
+                <div class="article-tags">
+                  ${article.tags.map(tag => `<span class="article-tag">${tag}</span>`).join('')}
+                </div>
+
+                <p class="article-intro">${article.intro}</p>
+
+                ${article.sections.map(section => `
+                  <section class="article-section">
+                    <h2 class="bangers-regular">${section.heading}</h2>
+                    <p>${section.text}</p>
+                  </section>
+                `).join('')}
+
+                <div class="article-conclusion">
+                  <p class="poppins-regular">${article.conclusion}</p>
+                  <a href="${article.cta_link}" class="button button__primary bangers-regular">Rejoindre NoSeumCode</a>
+                </div>
+              </article>
+            </div>
+          `;
+        } catch (error) {
+          console.error('Error loading article:', error);
+          contentArea.innerHTML = '<div class="article-container"><h1>Erreur lors du chargement</h1><a href="index.html">Retour</a></div>';
+        }
+      }
+
+      window.addEventListener('DOMContentLoaded', loadArticle);
+    </script>
+  </body>
+</html>
