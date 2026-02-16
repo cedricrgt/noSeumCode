@@ -27,34 +27,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ========================================
-// NAVBAR SCROLL EFFECT
+// NAVBAR SCROLL EFFECT - handled by header.js
+// ACTIVE NAVIGATION LINK - handled by header.js
 // ========================================
-let lastScroll = 0;
-const header = document.querySelector(".header");
-
-window.addEventListener("scroll", () => {
-  const currentScroll = window.pageYOffset;
-
-  if (currentScroll > 100) {
-    header.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.1)";
-  } else {
-    header.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.08)";
-  }
-
-  lastScroll = currentScroll;
-});
-
-// ========================================
-// ACTIVE NAVIGATION LINK
-// ========================================
-const navLinks = document.querySelectorAll(".navbar__link");
-
-navLinks.forEach((link) => {
-  link.addEventListener("click", () => {
-    navLinks.forEach((l) => l.classList.remove("active"));
-    link.classList.add("active");
-  });
-});
 
 // ========================================
 // BUTTON RIPPLE EFFECT
@@ -209,29 +184,8 @@ scrollToTopBtn.addEventListener("mouseleave", () => {
 });
 
 // ========================================
-// PROMO POPUP AUTO-OPEN
+// PROMO POPUP AUTO-OPEN - handled by header.js
 // ========================================
-function initPromoPopup() {
-  const promoPopup = document.getElementById("promo-popup");
-  if (!promoPopup) return;
-
-  // Auto-open on every reload (better for testing/visibility)
-  setTimeout(() => {
-    // Check if the popover is NOT already open before showing
-    if (typeof promoPopup.showPopover === "function" && !promoPopup.matches(":popover-open")) {
-      promoPopup.showPopover();
-    }
-  }, 2000); // 2 seconds delay
-
-    // Add listener to close on backdrop click (robustness)
-    promoPopup.addEventListener("click", (e) => {
-      if (e.target === promoPopup) {
-        promoPopup.hidePopover();
-      }
-  });
-}
-
-document.addEventListener("DOMContentLoaded", initPromoPopup);
 
 // ========================================
 // CONSOLE MESSAGE
