@@ -1,0 +1,128 @@
+.article-page {
+  background-color: #0d0d0d;
+  color: #fff;
+  min-height: 100vh;
+}
+
+#article-content {
+  padding-top: calc(var(--header-height) + var(--spacing-lg));
+}
+.article-hero {
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.article-hero__image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.4;
+  z-index: 1;
+}
+
+.article-hero__content {
+  position: relative;
+  z-index: 2;
+  padding: 0 1.5rem;
+}
+
+.article-hero__title {
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  margin-bottom: 1rem;
+}
+
+.article-hero__subtitle {
+  font-size: 1.25rem;
+  color: #c9ff00;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.article-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1.5rem 5rem;
+}
+
+.article-tags {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.article-tag {
+  background: rgba(201, 255, 0, 0.1);
+  color: #c9ff00;
+  padding: 0.25rem 1rem;
+  border-radius: 50px;
+  border: 1px solid rgba(201, 255, 0, 0.3);
+  font-size: 0.875rem;
+}
+
+.article-intro {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  margin-bottom: 3rem;
+  padding-left: 1.5rem;
+  border-left: 4px solid #c9ff00;
+}
+
+.article-section {
+  margin-bottom: 3rem;
+}
+
+.article-section h2 {
+  font-size: 2rem;
+  margin-bottom: 1.25rem;
+  color: #fff;
+}
+
+.article-section p {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: #ccc;
+}
+
+.article-conclusion {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 4rem;
+  text-align: center;
+}
+
+.article-conclusion p {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #c9ff00;
+  text-decoration: none;
+  margin-bottom: 2rem;
+  transition: transform 0.2s;
+}
+
+.back-link:hover {
+  transform: translateX(-5px);
+}
+
+@media (max-width: 768px) {
+  .article-hero {
+    height: 300px;
+  }
+}
