@@ -4,8 +4,8 @@
   min-height: 100vh;
 }
 
-#article-content{
-  padding-top: 6rem;
+#article-content {
+  padding-top: calc(var(--header-height) + var(--spacing-lg));
 }
 .article-hero {
   position: relative;

@@ -38,6 +38,15 @@
   --transition-fast: 0.2s ease;
   --transition-normal: 0.3s ease;
   --transition-slow: 0.5s ease;
+
+  --banner-height: 38px;
+  --header-height: calc(115px + var(--banner-height));
+}
+
+@media (max-width: 768px) {
+  :root {
+    --header-height: calc(80px + var(--banner-height));
+  }
 }
 
 body {

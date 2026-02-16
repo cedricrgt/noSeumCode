@@ -16,6 +16,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
 
 .header__logo {
@@ -158,24 +159,37 @@
   .burger-button {
     display: block;
     color: var(--dark-navy);
-    position: absolute;
-    left: var(--spacing-xl);
-    top: 50%;
-    transform: translateY(-50%);
+    position: relative; /* Changed from absolute to relative */
     z-index: 20;
-    padding-top: 7.5px;
+    cursor: pointer;
   }
 
   .header {
-    justify-content: center;
-    padding: var(--spacing-xl) var(--spacing-xl);
+    padding: 0;
+  }
+
+  .header__container {
+    padding: var(--spacing-sm) var(--spacing-xl);
+    min-height: 80px;
+    display: flex; /* Ensure it stays flex */
+    justify-content: space-between;
+    align-items: center;
   }
 
   .header__logo {
-    flex: 0 0 auto;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    flex: 1;
+    display: flex;
+    justify-content: center; /* Center the logo horizontally */
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+  }
+
+  /* Counterbalance for centered logo */
+  .header__navbar::after {
+    content: "";
+    width: 24px; /* Same as burger-button width */
   }
   
   .logo__img {
@@ -221,6 +235,7 @@
     transition: opacity 0.2s ease;
   }
 
+  /* Updated selectors for nested burger controls */
   .burger-toggle:checked ~ .header__container .header__navbar {
     height: 100vh;
     border-top: 1px solid var(--light-gray);
