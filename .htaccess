@@ -10,7 +10,7 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 # ----------------------------------------------------------------------
 RewriteCond %{REQUEST_URI} ^/$ [OR]
 RewriteCond %{REQUEST_URI} ^/index\.html$
-RewriteRule ^ /coming-soon.html [L,R=302]
+RewriteRule ^ /en-construction.html [L,R=302]
 
 # ----------------------------------------------------------------------
 # Browser Caching (Standard)
