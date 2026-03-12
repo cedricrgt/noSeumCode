@@ -6,19 +6,11 @@ RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # ----------------------------------------------------------------------
-# LiteSpeed Cache Optimization
+# Redirection "En construction" (supprimer ce bloc quand le site est prêt)
 # ----------------------------------------------------------------------
-
-<IfModule LiteSpeed>
-    # Enable public cache for 1 hour
-    CacheLookup on
-    CacheEnable public /
-    
-    # Force caching for static files
-    RewriteEngine On
-    RewriteCond %{REQUEST_METHOD} ^GET|HEAD$
-    RewriteRule .* - [E=Cache-Control:max-age=3600]
-</IfModule>
+RewriteCond %{REQUEST_URI} ^/$ [OR]
+RewriteCond %{REQUEST_URI} ^/index\.html$
+RewriteRule ^ /coming-soon.html [L,R=302]
 
 # ----------------------------------------------------------------------
 # Browser Caching (Standard)
@@ -32,8 +24,8 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
     ExpiresByType text/html "access plus 0 seconds"
     
     # CSS/JS
-    ExpiresByType text/css "access plus 1 year"
-    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType text/css "access plus 1 hour"
+    ExpiresByType application/javascript "access plus 1 hour"
     
     # Images
     ExpiresByType image/x-icon "access plus 1 year"
