@@ -18,7 +18,8 @@
     />
     <!-- Stylesheet -->
     <link rel="stylesheet" href="styles/main.css" />
-    <link rel="stylesheet" href="styles/pages/coming-soon.css" />
+    <link rel="stylesheet" href="styles/pages/en-construction.css" />
+    <link rel="stylesheet" href="styles/pages/homepage/footer.css" />
   </head>
   <body>
     <div class="coming-soon">
@@ -44,7 +45,7 @@
 
         <!-- Heading -->
         <h1 class="coming-soon__title bangers-regular">
-          On code un truc de <span class="gradient-text">banger</span> pour toi !
+          On code un <span class="gradient-text">banger</span> pour toi !
         </h1>
 
         <p class="coming-soon__subtitle poppins-regular">
@@ -101,13 +102,12 @@
           </a>
         </div>
       </main>
-
-      <!-- Footer -->
-      <footer class="coming-soon__footer poppins-regular">
-        <p>© 2026 NoSeumCode — Tous droits réservés</p>
-      </footer>
     </div>
 
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <div id="popovers-placeholder"></div>
     <!-- HubSpot Form Script -->
     <script charset="utf-8" type="text/javascript" src="//js-eu1.hsforms.net/forms/embed/v2.js"></script>
     <script>
@@ -118,6 +118,9 @@
         target: "#hubspot-form",
       });
     </script>
+
+    <!-- Dynamic Header/Footer Loader -->
+    <script src="js/header.js"></script>
 
     <!-- Particle animation -->
     <script>
