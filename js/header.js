@@ -34,6 +34,20 @@ async function loadHeader() {
   }
 }
 
+async function loadFooter() {
+  const footerPlaceholder = document.getElementById("footer-placeholder");
+  if (!footerPlaceholder) return;
+
+  try {
+    const response = await fetch("partials/footer.html");
+    if (!response.ok) throw new Error("Failed to load footer");
+    const footerHTML = await response.text();
+    footerPlaceholder.innerHTML = footerHTML;
+  } catch (error) {
+    console.error("Error loading footer:", error);
+  }
+}
+
 // ========================================
 // ACTIVE NAV LINK DETECTION
 // ========================================
@@ -114,5 +128,6 @@ function initScrollEffect() {
 // ========================================
 document.addEventListener("DOMContentLoaded", async () => {
   await loadHeader();
+  await loadFooter();
   initScrollEffect();
 });
