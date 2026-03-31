@@ -1,8 +1,7 @@
-// ========================================
-// SMOOTH SCROLL & ANIMATIONS
-// ========================================
 
-// Intersection Observer for fade-in animations
+
+
+
 const observerOptions = {
   threshold: 0.1,
   rootMargin: "0px 0px -50px 0px",
@@ -17,7 +16,6 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, observerOptions);
 
-// Observe all cards and sections
 document.addEventListener("DOMContentLoaded", () => {
   const cards = document.querySelectorAll(".card");
   const sections = document.querySelectorAll("section");
@@ -26,14 +24,12 @@ document.addEventListener("DOMContentLoaded", () => {
   sections.forEach((section) => observer.observe(section));
 });
 
-// ========================================
-// NAVBAR SCROLL EFFECT - handled by header.js
-// ACTIVE NAVIGATION LINK - handled by header.js
-// ========================================
 
-// ========================================
-// BUTTON RIPPLE EFFECT
-// ========================================
+
+
+
+
+
 const buttons = document.querySelectorAll(".button");
 
 buttons.forEach((button) => {
@@ -55,7 +51,6 @@ buttons.forEach((button) => {
   });
 });
 
-// Add ripple CSS dynamically
 const style = document.createElement("style");
 style.textContent = `
     .button {
@@ -81,9 +76,8 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// ========================================
-// SLIDER PAUSE ON HOVER
-// ========================================
+
+
 const sliderTrack = document.querySelector(".slider__track");
 
 if (sliderTrack) {
@@ -96,9 +90,8 @@ if (sliderTrack) {
   });
 }
 
-// ========================================
-// CARD TILT EFFECT (3D)
-// ========================================
+
+
 const tiltCards = document.querySelectorAll(".card");
 
 tiltCards.forEach((card) => {
@@ -122,18 +115,16 @@ tiltCards.forEach((card) => {
   });
 });
 
-// ========================================
-// GRADIENT TEXT ANIMATION
-// ========================================
+
+
 const gradientTexts = document.querySelectorAll(".gradient-text");
 
 gradientTexts.forEach((text) => {
   text.style.backgroundSize = "200% 200%";
 });
 
-// ========================================
-// SCROLL TO TOP BUTTON
-// ========================================
+
+
 const scrollToTopBtn = document.createElement("button");
 scrollToTopBtn.innerHTML = "↑";
 scrollToTopBtn.className = "scroll-to-top";
@@ -183,13 +174,11 @@ scrollToTopBtn.addEventListener("mouseleave", () => {
   scrollToTopBtn.style.transform = "scale(1)";
 });
 
-// ========================================
-// PROMO POPUP AUTO-OPEN - handled by header.js
-// ========================================
 
-// ========================================
-// CONSOLE MESSAGE
-// ========================================
+
+
+
+
 console.log(
   "%c🚀 NoSeumCode - Code ton avenir!",
   "color: #00FF87; font-size: 20px; font-weight: bold;",

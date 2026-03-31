@@ -8,9 +8,9 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 # ----------------------------------------------------------------------
 # Redirection "En construction" (supprimer ce bloc quand le site est prêt)
 # ----------------------------------------------------------------------
-RewriteCond %{REQUEST_URI} ^/$ [OR]
-RewriteCond %{REQUEST_URI} ^/index\.html$
-RewriteRule ^ /coming-soon.html [L,R=302]
+# RewriteCond %{REQUEST_URI} ^/$ [OR]
+# RewriteCond %{REQUEST_URI} ^/index\.html$
+# RewriteRule ^ /en-construction.html [L,R=302]
 
 # ----------------------------------------------------------------------
 # Browser Caching (Standard)

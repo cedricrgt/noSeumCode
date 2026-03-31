@@ -159,7 +159,7 @@
   .burger-button {
     display: block;
     color: var(--dark-navy);
-    position: relative; /* Changed from absolute to relative */
+    position: relative; 
     z-index: 20;
     cursor: pointer;
   }
@@ -171,7 +171,7 @@
   .header__container {
     padding: var(--spacing-sm) var(--spacing-xl);
     min-height: 80px;
-    display: flex; /* Ensure it stays flex */
+    display: flex; 
     justify-content: space-between;
     align-items: center;
   }
@@ -179,17 +179,17 @@
   .header__logo {
     flex: 1;
     display: flex;
-    justify-content: center; /* Center the logo horizontally */
+    justify-content: center; 
     position: relative;
     left: auto;
     top: auto;
     transform: none;
   }
 
-  /* Counterbalance for centered logo */
+  
   .header__navbar::after {
     content: "";
-    width: 24px; /* Same as burger-button width */
+    width: 24px; 
   }
   
   .logo__img {
@@ -235,7 +235,7 @@
     transition: opacity 0.2s ease;
   }
 
-  /* Updated selectors for nested burger controls */
+  
   .burger-toggle:checked ~ .header__container .header__navbar {
     height: 100vh;
     border-top: 1px solid var(--light-gray);
