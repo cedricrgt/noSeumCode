@@ -1,4 +1,4 @@
-/* Popover Styles */
+
 [popover] {
   border: none;
   border-radius: 20px;
@@ -9,7 +9,7 @@
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   font-family: 'Poppins', sans-serif;
   color: #333;
-  /* Centering logic */
+  
   position: fixed;
   inset: 0;
   margin: auto;
@@ -22,7 +22,7 @@
   max-height: 90dvh;
 }
 
-/* Fallback for browsers not supporting popover API or to ensure hidden by default */
+
 [popover]:not(:popover-open) {
   display: none;
 }
@@ -30,7 +30,7 @@
 [popover] .popover__content {
   overflow-y: auto;
   flex: 1;
-  padding-right: 0.5rem; /* Space for scrollbar */
+  padding-right: 0.5rem; 
 }
 
 
@@ -111,7 +111,7 @@
   text-decoration: none;
 }
 
-/* Close button style (optional but good UI) */
+
 .popover__close {
   position: absolute;
   top: 1rem;

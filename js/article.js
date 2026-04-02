@@ -10,7 +10,7 @@ async function loadArticle() {
   }
 
   try {
-    // 1. Fetch data from the JSON file
+
     const response = await fetch("data/articles.json");
     if (!response.ok) throw new Error("Erreur lors du chargement des données");
     
@@ -23,7 +23,6 @@ async function loadArticle() {
       return;
     }
 
-    // 2. Update SEO Meta Tags
     document.title = `${article.title} - NoSeumCode`;
     const metaDesc = document.getElementById("meta-description");
     if (metaDesc) metaDesc.setAttribute("content", article.description);
@@ -37,7 +36,6 @@ async function loadArticle() {
     const ogImg = document.getElementById("og-image");
     if (ogImg) ogImg.setAttribute("content", article.image);
 
-    // 3. Render content
     contentArea.innerHTML = `
       <section class="article-hero">
         <img src="${article.image}" alt="${article.title}" class="article-hero__image">
