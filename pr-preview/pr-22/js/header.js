@@ -116,14 +116,11 @@ async function updatePromoBanner() {
     const emoji = data.emoji || "✨";
 
     const item1HTML = `${emoji} ${titleText} : ${topics} ! <button popovertarget="promo-popup" class="promo-banner__cta bangers-regular">VOIR LE PLANNING</button>`;
-    const item2HTML = `🚀 SAVE THE DATE : ${datesStr} <button popovertarget="promo-popup" class="promo-banner__cta bangers-regular">S'INSCRIRE</button>`;
 
     track.innerHTML = `
       <span class="promo-banner__item">${item1HTML}</span>
-      <span class="promo-banner__item">${item2HTML}</span>
       <!-- Duplicated for infinite effect -->
       <span class="promo-banner__item">${item1HTML}</span>
-      <span class="promo-banner__item">${item2HTML}</span>
     `;
   } catch (error) {
     console.error("Error updating banner:", error);
