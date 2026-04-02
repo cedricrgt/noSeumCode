@@ -1,6 +1,4 @@
-/* ============================================
-   COMING SOON / UNDER CONSTRUCTION PAGE
-   ============================================ */
+
 
 .coming-soon {
   min-height: 100vh;
@@ -14,7 +12,7 @@
   padding: var(--spacing-lg);
 }
 
-/* ---- Particles Background ---- */
+
 .coming-soon__particles {
   position: absolute;
   inset: 0;
@@ -41,7 +39,7 @@
   }
 }
 
-/* ---- Main Content ---- */
+
 .coming-soon__content {
   position: relative;
   z-index: 1;
@@ -62,7 +60,7 @@
   }
 }
 
-/* ---- Logo ---- */
+
 .coming-soon__logo {
   margin-bottom: var(--spacing-lg);
 }
@@ -83,7 +81,7 @@
   }
 }
 
-/* ---- Badge ---- */
+
 .coming-soon__badge {
   display: inline-flex;
   align-items: center;
@@ -113,7 +111,7 @@
   50% { opacity: 0.3; }
 }
 
-/* ---- Title ---- */
+
 .coming-soon__title {
   font-size: clamp(2rem, 5vw, 3.5rem);
   color: var(--white);
@@ -121,7 +119,7 @@
   margin-bottom: var(--spacing-md);
 }
 
-/* ---- Subtitle ---- */
+
 .coming-soon__subtitle {
   font-size: clamp(0.95rem, 2vw, 1.15rem);
   color: rgba(255, 255, 255, 0.7);
@@ -129,7 +127,7 @@
   margin-bottom: var(--spacing-xl);
 }
 
-/* ---- Features Preview ---- */
+
 .coming-soon__features {
   display: flex;
   justify-content: center;
@@ -165,7 +163,7 @@
   font-weight: 500;
 }
 
-/* ---- Form Container ---- */
+
 .coming-soon__form-container {
   background: var(--primary-green);
   backdrop-filter: blur(10px);
@@ -183,7 +181,7 @@
   margin-bottom: var(--spacing-md);
 }
 
-/* ---- HubSpot Form Overrides ---- */
+
 .coming-soon__hubspot-form .hs-form {
   max-width: 100%;
 }
@@ -256,7 +254,7 @@
   padding: var(--spacing-md) !important;
 }
 
-/* ---- Social Links ---- */
+
 .coming-soon__socials {
   display: flex;
   justify-content: center;
@@ -289,7 +287,7 @@
   transform: translateY(-3px);
 }
 
-/* ---- Footer ---- */
+
 .coming-soon__footer {
   position: relative;
   z-index: 1;
@@ -299,7 +297,7 @@
   font-size: 0.8rem;
 }
 
-/* ---- Responsive ---- */
+
 @media (max-width: 600px) {
   .coming-soon {
     padding: var(--spacing-md);
