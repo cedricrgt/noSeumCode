@@ -1,6 +1,16 @@
 
 
-
+function getBasePath() {
+  const scripts = document.querySelectorAll('script[src]');
+  for (const script of scripts) {
+    const src = script.getAttribute('src');
+    if (src && src.includes('header.js')) {
+      const url = new URL(src, window.location.href);
+      return url.href.replace(/js\/header\.js.*$/, '');
+    }
+  }
+  return '/';
+}
 
 async function loadHeader() {
   const headerPlaceholder = document.getElementById("header-placeholder");
@@ -8,7 +18,7 @@ async function loadHeader() {
 
   try {
 
-    const headerResponse = await fetch("partials/header.html");
+    const headerResponse = await fetch(getBasePath() + "partials/header.html");
     if (!headerResponse.ok) throw new Error("Failed to load header");
     const headerHTML = await headerResponse.text();
     headerPlaceholder.innerHTML = headerHTML;
@@ -17,7 +27,7 @@ async function loadHeader() {
 
     const popoversPlaceholder = document.getElementById("popovers-placeholder");
     if (popoversPlaceholder) {
-      const popoversResponse = await fetch("partials/popovers-shared.html");
+      const popoversResponse = await fetch(getBasePath() + "partials/popovers-shared.html");
       if (popoversResponse.ok) {
         const popoversHTML = await popoversResponse.text();
         popoversPlaceholder.innerHTML = popoversHTML;
@@ -40,7 +50,7 @@ async function loadFooter() {
   if (!footerPlaceholder) return;
 
   try {
-    const response = await fetch("partials/footer.html");
+    const response = await fetch(getBasePath() + "partials/footer.html");
     if (!response.ok) throw new Error("Failed to load footer");
     const footerHTML = await response.text();
     footerPlaceholder.innerHTML = footerHTML;
@@ -54,7 +64,7 @@ async function loadSchedule() {
   if (!tbody) return;
 
   try {
-    const response = await fetch("data/schedule.json");
+    const response = await fetch(getBasePath() + "data/schedule.json");
     if (!response.ok) throw new Error("Failed to load schedule");
     const data = await response.json();
 
@@ -94,7 +104,7 @@ async function updatePromoBanner() {
   if (!track) return;
 
   try {
-    const response = await fetch("data/schedule.json");
+    const response = await fetch(getBasePath() + "data/schedule.json");
     if (!response.ok) return;
     const data = await response.json();
 
