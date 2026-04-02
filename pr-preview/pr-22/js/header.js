@@ -49,9 +49,89 @@ async function loadFooter() {
   }
 }
 
-// ========================================
-// ACTIVE NAV LINK DETECTION
-// ========================================
+async function loadSchedule() {
+  const tbody = document.getElementById("promo-schedule-body");
+  if (!tbody) return;
+
+  try {
+    const response = await fetch("data/schedule.json");
+    if (!response.ok) throw new Error("Failed to load schedule");
+    const data = await response.json();
+
+    const popoverTitle = document.querySelector(".promo-popup__title");
+    if (popoverTitle && data.title) {
+      popoverTitle.textContent = `${data.title} ${data.emoji || ""}`;
+    }
+
+    const popoverSubtitle = document.querySelector(".promo-popup__subtitle");
+    if (popoverSubtitle && data.subtitle) {
+      popoverSubtitle.textContent = data.subtitle;
+    }
+    
+    tbody.innerHTML = "";
+    
+    if (data.sessions && Array.isArray(data.sessions)) {
+      data.sessions.forEach(item => {
+      const tr = document.createElement("tr");
+      const td1 = document.createElement("td");
+      const td2 = document.createElement("td");
+      
+      td1.textContent = item.date;
+      td2.textContent = item.topic;
+      
+      tr.appendChild(td1);
+      tr.appendChild(td2);
+        tbody.appendChild(tr);
+      });
+    }
+  } catch (error) {
+    console.error("Error loading schedule:", error);
+  }
+}
+
+async function updatePromoBanner() {
+  const track = document.querySelector(".promo-banner__track");
+  if (!track) return;
+
+  try {
+    const response = await fetch("data/schedule.json");
+    if (!response.ok) return;
+    const data = await response.json();
+
+    if (!data.sessions || !Array.isArray(data.sessions)) return;
+
+    const topics = data.sessions.map(item => item.topic.toUpperCase()).join(", ");
+    const datesArr = data.sessions.map(item => {
+      const match = item.date.match(/\d{2}\/\d{2}/);
+      return match ? match[0] : item.date;
+    });
+
+    let datesStr = datesArr.join(", ");
+    if (datesArr.length > 1) {
+      const last = datesArr.pop();
+      datesStr = datesArr.join(", ") + " ET " + last;
+    }
+
+    const titleText = data.title || "WORKSHOPS GRATUITS";
+    const emoji = data.emoji || "✨";
+
+    const item1HTML = `${emoji} ${titleText} : ${topics} ! <button popovertarget="promo-popup" class="promo-banner__cta bangers-regular">VOIR LE PLANNING</button>`;
+    const item2HTML = `🚀 SAVE THE DATE : ${datesStr} <button popovertarget="promo-popup" class="promo-banner__cta bangers-regular">S'INSCRIRE</button>`;
+
+    track.innerHTML = `
+      <span class="promo-banner__item">${item1HTML}</span>
+      <span class="promo-banner__item">${item2HTML}</span>
+      <!-- Duplicated for infinite effect -->
+      <span class="promo-banner__item">${item1HTML}</span>
+      <span class="promo-banner__item">${item2HTML}</span>
+    `;
+  } catch (error) {
+    console.error("Error updating banner:", error);
+  }
+}
+
+
+
 function setActiveNavLink() {
   const navLinks = document.querySelectorAll(".navbar__link");
   const currentPath = window.location.pathname;
