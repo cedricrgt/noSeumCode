@@ -19,6 +19,7 @@ node_modules/
 
 # Build artifacts
 styles/bundle.css
+styles/dist/
 
 # Logs
 *.log
