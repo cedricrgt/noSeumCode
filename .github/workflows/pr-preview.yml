@@ -19,6 +19,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Build CSS bundles
+        run: bash build.sh
+
       - name: Deploy Preview
         uses: rossjrw/pr-preview-action@v1
         with:

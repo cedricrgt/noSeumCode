@@ -13,13 +13,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      rel="preload"
+      as="style"
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Bangers&display=swap"
-      rel="stylesheet"
+      onload="this.onload=null;this.rel='stylesheet'"
     />
-    
-    <link rel="stylesheet" href="styles/main.css" />
-    <link rel="stylesheet" href="styles/pages/en-construction.css" />
-    <link rel="stylesheet" href="styles/pages/homepage/footer.css" />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Bangers&display=swap"
+      />
+    </noscript>
+    <link rel="stylesheet" href="styles/dist/en-construction.min.css" />
   </head>
   <body>
     <div class="coming-soon">
