@@ -19,6 +19,7 @@ jobs:
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
       - name: Test vulnerabilities
+        working-directory: frontend
         run: snyk test
 
   web-deploy:
