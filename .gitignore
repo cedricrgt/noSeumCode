@@ -1,0 +1,67 @@
+# --- GLOBAL ---
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Environment variables
+.env
+.env.*
+*.local
+
+# Logs
+logs/
+*.log
+*.log.*
+log/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Build outputs
+dist/
+build/
+out/
+
+# --- BACKEND (NestJS) ---
+backend/node_modules/
+backend/dist/
+backend/.env
+backend/.env.*
+backend/logs/
+backend/*.log
+
+# --- PRISMA ---
+# Prisma schema (keep schema.prisma, ignore generated files)
+backend/prisma/migrations/
+backend/prisma/dev.db
+backend/prisma/dev.db-journal
+backend/prisma/*.db
+
+# Prisma client (generated)
+backend/node_modules/.prisma/
+backend/prisma/generated/
+
+# --- FRONTEND (JS / Vite / React / etc.) ---
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.env
+frontend/.env.*
+frontend/*.log
+
+# --- CONCEPTION (à ignorer totalement) ---
+conception/
+out/

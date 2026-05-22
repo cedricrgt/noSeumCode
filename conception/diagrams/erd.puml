@@ -5,18 +5,24 @@ skinparam linetype ortho
 entity "User" as user {
   * id : UUID <<PK>>
   --
-  email : VARCHAR
-  password_hash : VARCHAR
+  UserName : String
+  first_name: String
+  last_name: String
+  email : STRING
+  password_hash : STRING
   role : ENUM('user','student','admin')
   created_at : TIMESTAMP
   updated_at : TIMESTAMP
+  is_deleted: Boolean
   deleted_at : TIMESTAMP NULL
+  is_blocked: Boolean
+  blocked_date: TIMESTAMP NULL
 }
 
 entity "Course" as course {
   * id : UUID <<PK>>
   --
-  title : VARCHAR
+  title : STRING
   description : TEXT
   created_at : TIMESTAMP
   updated_at : TIMESTAMP
@@ -39,7 +45,7 @@ entity "Chapter" as chapter {
   --
   course_id : UUID <<FK>>
   parent_id : UUID <<FK, NULL>>
-  title : VARCHAR
+  title : STRING
   position : INTEGER
   created_at : TIMESTAMP
   updated_at : TIMESTAMP
@@ -52,7 +58,7 @@ entity "Content" as content {
   chapter_id : UUID <<FK>>
   content_type : ENUM('heading','paragraph','video','image','file','list','code','quiz')
   body : TEXT / JSON NULL
-  media_url : VARCHAR NULL
+  media_url : STRING NULL
   position : INTEGER
   created_at : TIMESTAMP
   updated_at : TIMESTAMP
@@ -62,7 +68,7 @@ entity "Content" as content {
 entity "Workshop" as workshop {
   * id : UUID <<PK>>
   --
-  title : VARCHAR
+  title : STRING
   description : TEXT
   start_date : TIMESTAMP
   end_date : TIMESTAMP
