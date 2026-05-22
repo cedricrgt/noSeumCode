@@ -1,0 +1,51 @@
+@startuml usecase
+left to right direction
+
+'
+skinparam shadowing true
+skinparam roundCorner 15
+skinparam defaultFontName "Roboto, sans-serif"
+
+skinparam usecase {
+    BackgroundColor #00ff87
+    BorderColor #1a2332
+    ArrowColor #0a1628
+    FontColor #0e060c
+}
+'
+actor User
+actor Student
+actor Admin
+actor Teacher
+
+Student --|> User
+Admin --|> Teacher
+Teacher --|> User
+
+rectangle NoSeumCode {
+
+  usecase "Register" as UC1
+  usecase "Login" as UC2
+  usecase "Browse Workshops" as UC3
+  usecase "Browse Courses" as UC4
+  usecase "Enroll in Course" as UC5
+  usecase "Access personal account" as UC6
+  usecase "Access Content" as UC7
+  usecase "Manage Courses" as UC8
+  usecase "Manage Users" as UC9
+}
+
+User --> UC1
+User --> UC2
+User --> UC3
+User --> UC4
+User --> UC5
+User -->UC6
+
+Student --> UC7
+
+Admin --> UC9
+
+Teacher --> UC8
+
+@enduml
