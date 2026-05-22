@@ -29,6 +29,9 @@ jobs:
       - name: Get latest code
         uses: actions/checkout@v4
 
+      - name: Build CSS bundles
+        run: bash ./frontend/build.sh
+
       - name:  Sync files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:

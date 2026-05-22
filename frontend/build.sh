@@ -2,7 +2,10 @@
 
 set -e
 
-STYLES="frontend/styles"
+# Determine directory where script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+STYLES="$SCRIPT_DIR/styles"
 DIST="$STYLES/dist"
 
 mkdir -p "$DIST"
@@ -85,8 +88,8 @@ ls -lh "$DIST/"*.min.css
 
 # ─── Image optimization ─────────────────────────────────────────────────────
 
-IMG_SRC="images"
-IMG_DIST="images/dist"
+IMG_SRC="$SCRIPT_DIR/images"
+IMG_DIST="$SCRIPT_DIR/images/dist"
 
 if command -v convert &>/dev/null; then
   echo ""
