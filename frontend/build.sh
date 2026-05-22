@@ -2,7 +2,7 @@
 
 set -e
 
-STYLES="styles"
+STYLES="frontend/styles"
 DIST="$STYLES/dist"
 
 mkdir -p "$DIST"

@@ -17,10 +17,6 @@ Thumbs.db
 .ftp-deploy-sync-state.json
 node_modules/
 
-# Build artifacts
-styles/bundle.css
-styles/dist/
-
 # Logs
 *.log
 npm-debug.log*
