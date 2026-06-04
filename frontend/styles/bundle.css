@@ -818,7 +818,8 @@ html {
 }
 
 .promo-banner__cta:hover {
-  background: var(--white);
+  background: var(--primary-green);
+  border-color: var(--dark-navy);
   color: var(--dark-navy);
 }
 
