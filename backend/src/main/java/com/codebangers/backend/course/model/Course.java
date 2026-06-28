@@ -1,5 +1,6 @@
 package com.codebangers.backend.course.model;
 
+import com.codebangers.backend.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -25,8 +26,8 @@ public class Course {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "updated_by_id")
-    private Course createdBy;
+    @JoinColumn(name = "created_by_id")
+    private User createdBy;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
@@ -35,7 +36,7 @@ public class Course {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "updated_by_id")
-    private Course updatedBy;
+    private User updatedBy;
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
@@ -46,11 +47,14 @@ public class Course {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "deleted_by_id")
-    private Course deletedBy;
+    private User deletedBy;
 
     // =========================
     // Constructors
     // =========================
+
+    public Course() {
+    }
 
     public Course(String courseTitle) {
         this.courseTitle = courseTitle;
@@ -72,7 +76,7 @@ public class Course {
         return courseTitle;
     }
 
-    public void setcourseTitle(String courseTitle) {
+    public void setCourseTitle(String courseTitle) {
         this.courseTitle = courseTitle;
     }
 
@@ -80,11 +84,11 @@ public class Course {
         return createdAt;
     }
 
-    public Course getCreatedBy() {
+    public User getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Course createdBy) {
+    public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
     }
 
@@ -92,11 +96,11 @@ public class Course {
         return updatedAt;
     }
 
-    public Course getUpdatedBy() {
+    public User getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(Course updatedBy) {
+    public void setUpdatedBy(User updatedBy) {
         this.updatedBy = updatedBy;
     }
 
@@ -116,11 +120,11 @@ public class Course {
         this.deletedAt = deletedAt;
     }
 
-    public Course getDeletedBy() {
+    public User getDeletedBy() {
         return deletedBy;
     }
 
-    public void setDeletedBy(Course deletedBy) {
+    public void setDeletedBy(User deletedBy) {
         this.deletedBy = deletedBy;
     }
 }
