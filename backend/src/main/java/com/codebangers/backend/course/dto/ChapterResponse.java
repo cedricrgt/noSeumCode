@@ -3,29 +3,29 @@ package com.codebangers.backend.course.dto;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class CourseResponse {
+public class ChapterResponse {
 
     private UUID id;
+    private UUID courseId;
+    private UUID parentId;
     private String title;
-    private String description;
+    private Integer position;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    // Constructors
-
-    public CourseResponse() {
+    public ChapterResponse() {
     }
 
-    public CourseResponse(UUID id, String title, String description,
-                        LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public ChapterResponse(UUID id, UUID courseId, UUID parentId, String title,
+                         Integer position, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
+        this.courseId = courseId;
+        this.parentId = parentId;
         this.title = title;
-        this.description = description;
+        this.position = position;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
-    // Getters & Setters
 
     public UUID getId() {
         return id;
@@ -33,6 +33,22 @@ public class CourseResponse {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public UUID getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(UUID courseId) {
+        this.courseId = courseId;
+    }
+
+    public UUID getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(UUID parentId) {
+        this.parentId = parentId;
     }
 
     public String getTitle() {
@@ -43,12 +59,12 @@ public class CourseResponse {
         this.title = title;
     }
 
-    public String getDescription() {
-        return description;
+    public Integer getPosition() {
+        return position;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -67,4 +83,3 @@ public class CourseResponse {
         this.updatedAt = updatedAt;
     }
 }
-

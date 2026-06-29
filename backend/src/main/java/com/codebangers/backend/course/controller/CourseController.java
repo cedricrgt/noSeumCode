@@ -1,15 +1,17 @@
 package com.codebangers.backend.course.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import com.codebangers.backend.course.dto.CourseRequest;
+import com.codebangers.backend.course.dto.CourseResponse;
 import com.codebangers.backend.course.model.Course;
 import com.codebangers.backend.course.service.CourseService;
-
-import java.util.UUID;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/courses")
@@ -22,28 +24,74 @@ public class CourseController {
         this.courseService = courseService;
     }
 
-    // GET /api/users - Liste tous les utilisateurs
     @GetMapping
-    public List<Course> getAllCourses() {
-        return courseService.getAllCourses();
+    public ResponseEntity<List<CourseResponse>> getAllCourses() {
+        List<Course> courses = courseService.getAllActiveCourses();
+        List<CourseResponse> responses = courses.stream()
+            .map(this::mapToResponse)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
-    // GET /api/courses/{id} - Récupère un utilisateur spécifique
+    @GetMapping("/all")
+    public ResponseEntity<List<CourseResponse>> getAllCoursesIncludingDeleted() {
+        List<Course> courses = courseService.getAllNonDeletedCourses();
+        List<CourseResponse> responses = courses.stream()
+            .map(this::mapToResponse)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<Course> getCourseById(@PathVariable UUID id) {
+    public ResponseEntity<CourseResponse> getCourseById(@PathVariable UUID id) {
         return courseService.getCourseById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+            .map(course -> ResponseEntity.ok(mapToResponse(course)))
+            .orElse(ResponseEntity.notFound().build());
     }
 
-    // POST /api/users - Crée un utilisateur
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody Course course) {
+    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    public ResponseEntity<?> createCourse(@RequestBody CourseRequest request) {
         try {
-            Course createdCourse = courseService.createCourse(course);
-            return new ResponseEntity<>(createdCourse, HttpStatus.CREATED);
+            if (request.getTitle() == null || request.getTitle().isBlank()) {
+                return ResponseEntity.badRequest().body("Course title is required");
+            }
+            Course course = courseService.createCourse(request.getTitle(), request.getDescription());
+            return new ResponseEntity<>(mapToResponse(course), HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    public ResponseEntity<?> updateCourse(@PathVariable UUID id, @RequestBody CourseRequest request) {
+        try {
+            Course course = courseService.updateCourse(id, request.getTitle(), request.getDescription());
+            return ResponseEntity.ok(mapToResponse(course));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    public ResponseEntity<?> softDeleteCourse(@PathVariable UUID id) {
+        try {
+            courseService.softDeleteCourse(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    private CourseResponse mapToResponse(Course course) {
+        return new CourseResponse(
+            course.getId(),
+            course.getTitle(),
+            course.getDescription(),
+            course.getCreatedAt(),
+            course.getUpdatedAt()
+        );
     }
 }

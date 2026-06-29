@@ -1,31 +1,32 @@
-package com.codebangers.backend.course.dto;
+package com.codebangers.backend.workshop.dto;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class CourseResponse {
+public class WorkshopResponse {
 
     private UUID id;
     private String title;
     private String description;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    // Constructors
-
-    public CourseResponse() {
+    public WorkshopResponse() {
     }
 
-    public CourseResponse(UUID id, String title, String description,
-                        LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public WorkshopResponse(UUID id, String title, String description,
+                          LocalDateTime startDate, LocalDateTime endDate,
+                          LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
-    // Getters & Setters
 
     public UUID getId() {
         return id;
@@ -51,6 +52,22 @@ public class CourseResponse {
         this.description = description;
     }
 
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -67,4 +84,3 @@ public class CourseResponse {
         this.updatedAt = updatedAt;
     }
 }
-

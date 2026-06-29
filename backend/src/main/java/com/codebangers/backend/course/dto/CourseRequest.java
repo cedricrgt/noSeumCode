@@ -2,16 +2,34 @@ package com.codebangers.backend.course.dto;
 
 public class CourseRequest {
 
-    private String courseTitle;
+    private String title;
+    private String description;
 
-    // Getters
+    // Constructors
 
-    public String getCourseTitle() {
-        return courseTitle;
+    public CourseRequest() {
     }
-    // Setters
 
-    public void setCourseTitle(String courseTitle) {
-        this.courseTitle = courseTitle;
+    public CourseRequest(String title, String description) {
+        this.title = title;
+        this.description = description;
     }
+
+    // Getters & Setters
+
+    public String getTitle() {
+        return title;
     }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+}

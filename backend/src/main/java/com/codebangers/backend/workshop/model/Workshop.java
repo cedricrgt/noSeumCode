@@ -1,6 +1,5 @@
-package com.codebangers.backend.course.model;
+package com.codebangers.backend.workshop.model;
 
-import com.codebangers.backend.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,8 +11,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "course")
-public class Course {
+@Table(name = "workshop")
+public class Workshop {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -25,23 +24,19 @@ public class Course {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "start_date", nullable = false)
+    private LocalDateTime startDate;
+
+    @Column(name = "end_date", nullable = false)
+    private LocalDateTime endDate;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by_id")
-    private User createdBy;
-
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "updated_by_id")
-    private User updatedBy;
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
@@ -50,28 +45,21 @@ public class Course {
     private LocalDateTime deletedAt;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "deleted_by_id")
-    private User deletedBy;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Chapter> chapters = new ArrayList<>();
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Enrollment> enrollments = new ArrayList<>();
+    @OneToMany(mappedBy = "workshop", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserWorkshop> registrations = new ArrayList<>();
 
     // =========================
     // Constructors
     // =========================
 
-    public Course() {
+    public Workshop() {
     }
 
-    public Course(String title, String description) {
+    public Workshop(String title, String description, LocalDateTime startDate, LocalDateTime endDate) {
         this.title = title;
         this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     // =========================
@@ -102,28 +90,28 @@ public class Course {
         this.description = description;
     }
 
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
-    }
-
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
-    }
-
-    public User getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(User updatedBy) {
-        this.updatedBy = updatedBy;
     }
 
     public boolean isDeleted() {
@@ -142,27 +130,11 @@ public class Course {
         this.deletedAt = deletedAt;
     }
 
-    public User getDeletedBy() {
-        return deletedBy;
+    public List<UserWorkshop> getRegistrations() {
+        return registrations;
     }
 
-    public void setDeletedBy(User deletedBy) {
-        this.deletedBy = deletedBy;
-    }
-
-    public List<Chapter> getChapters() {
-        return chapters;
-    }
-
-    public void setChapters(List<Chapter> chapters) {
-        this.chapters = chapters;
-    }
-
-    public List<Enrollment> getEnrollments() {
-        return enrollments;
-    }
-
-    public void setEnrollments(List<Enrollment> enrollments) {
-        this.enrollments = enrollments;
+    public void setRegistrations(List<UserWorkshop> registrations) {
+        this.registrations = registrations;
     }
 }

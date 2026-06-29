@@ -1,0 +1,161 @@
+{
+  "version": 1,
+  "skills": {
+    "better-auth-best-practices": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "skillPath": "better-auth/best-practices/SKILL.md",
+      "computedHash": "a4c830509e85557b59339d8d93a4e243e9e59c686e7678854d39230e12c2a6dc"
+    },
+    "better-auth-security-best-practices": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "skillPath": "security/SKILL.md",
+      "computedHash": "5717187bba9c22030c7174c74012f01c359f21e2ce87e0eb80e24244d8b8c915"
+    },
+    "clean-architecture": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/clean-architecture/SKILL.md",
+      "computedHash": "930e4d5639e1a0afcebb0f2d43c6d90fedcbacb2c6844d6396ad0d324f758982"
+    },
+    "create-auth-skill": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "skillPath": "better-auth/create-auth/SKILL.md",
+      "computedHash": "31c027d02dbf1faa37f58191f574b9443143042fb2b684fe32df53ab0270487c"
+    },
+    "email-and-password-best-practices": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "skillPath": "better-auth/emailAndPassword/SKILL.md",
+      "computedHash": "747d7f73bd9e2ec5317b8ef88dc70f97df716d00e3d02de4051feebaa48b062d"
+    },
+    "organization-best-practices": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "skillPath": "better-auth/organization/SKILL.md",
+      "computedHash": "79a5a85b43d10e9fe37582b3506b051a33a991817b938f349099baa5ddba21aa"
+    },
+    "spring-boot-cache": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/spring-boot-cache/SKILL.md",
+      "computedHash": "46de281bd90f33c35d20e702f0c18978c37755c6c7bc9132722bdead42b174d0"
+    },
+    "spring-boot-crud-patterns": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/spring-boot-crud-patterns/SKILL.md",
+      "computedHash": "db06e4b4c44dbfd223771b434006f09d1791f0c2cec1e8e459742e0d0b1fbf9c"
+    },
+    "spring-boot-dependency-injection": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/spring-boot-dependency-injection/SKILL.md",
+      "computedHash": "f205c2e439ae70db6bb59f79fcd8dbca32f4febcf9b8df8bb1d047de650ed91d"
+    },
+    "spring-boot-event-driven-patterns": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/spring-boot-event-driven-patterns/SKILL.md",
+      "computedHash": "5614e5f7f2485af5a0bd64f3f3280ea70ce6b8162f09a626f3c183cc12450b27"
+    },
+    "spring-boot-project-creator": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/spring-boot-project-creator/SKILL.md",
+      "computedHash": "c080ba35d713a7c658eb8ee54fe21a15e58db0ada560947ef21003266f9a12c8"
+    },
+    "spring-boot-resilience4j": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/spring-boot-resilience4j/SKILL.md",
+      "computedHash": "4083c0dc19a02e598b1703d1e9b3fcf29b69cf306712157599bba5a9730a7906"
+    },
+    "spring-boot-rest-api-standards": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/spring-boot-rest-api-standards/SKILL.md",
+      "computedHash": "64cdf48d3045aaea5108a0d125d4193dc0cbf70804a37cd0d07d17a4851c1414"
+    },
+    "spring-boot-security-jwt": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/spring-boot-security-jwt/SKILL.md",
+      "computedHash": "ed40cb6fd4928fe83151c1cfad59e37afcf1557d7b31247c4d09022e9159ef53"
+    },
+    "spring-boot-test-patterns": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/spring-boot-test-patterns/SKILL.md",
+      "computedHash": "8c2a847c1b9e5c1652545106e385a31683915e35f15e2ef862cadbe073aadcfc"
+    },
+    "spring-data-jpa": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/spring-data-jpa/SKILL.md",
+      "computedHash": "be931b019eabb76dcdb72620f982997e6e6b4b942e794a797c1afe02e59aa592"
+    },
+    "two-factor-authentication-best-practices": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "skillPath": "better-auth/twoFactor/SKILL.md",
+      "computedHash": "7e297aaf887e11fdc03e52bdbf44974e161e8f7c393170ced7dc66cace4f6d46"
+    },
+    "unit-test-application-events": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/unit-test-application-events/SKILL.md",
+      "computedHash": "7779cb6182f7afca8b948516c4748878957a01e6d4359e719a96a8d934ac8461"
+    },
+    "unit-test-bean-validation": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/unit-test-bean-validation/SKILL.md",
+      "computedHash": "2eaed25096c921d9dd7d96f7bc2536ae2645255ffedd773752b81b871066416f"
+    },
+    "unit-test-boundary-conditions": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/unit-test-boundary-conditions/SKILL.md",
+      "computedHash": "a19b65853df56b1de36fc3a008691e92b1a654d0e2c8dfcd2a823492fbcf6f65"
+    },
+    "unit-test-exception-handler": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/unit-test-exception-handler/SKILL.md",
+      "computedHash": "5d7c7b0f699101fd8dfb4c7e9a4cbbc86d3fd4fd922e412e60a3e3a50eddc7c9"
+    },
+    "unit-test-json-serialization": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/unit-test-json-serialization/SKILL.md",
+      "computedHash": "f239ec36503816c28237fcc02fe12b666364337843a8b7088550a5d4ccf13e61"
+    },
+    "unit-test-scheduled-async": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/unit-test-scheduled-async/SKILL.md",
+      "computedHash": "bf3ddbd2246aef53bce7f040c827303cda8629e531c7bb69ecfa8ed5bf39e17c"
+    },
+    "unit-test-security-authorization": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/unit-test-security-authorization/SKILL.md",
+      "computedHash": "d33ab489cf4358ad3e372d643e6523b578ca3eae629ba7232db17bc80aa96479"
+    },
+    "unit-test-service-layer": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/unit-test-service-layer/SKILL.md",
+      "computedHash": "e24d6b55c360cf55b8564a6ccc7bb743d83306db22ae6ec48d00a0ccc31cc898"
+    },
+    "unit-test-utility-methods": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/unit-test-utility-methods/SKILL.md",
+      "computedHash": "a73711c9bdbd4b301a91d3c3edd654676e7166348010e139dbf434ce063aba9e"
+    }
+  }
+}
