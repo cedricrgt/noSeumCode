@@ -729,7 +729,7 @@ html {
 
   .navbar__links {
     flex-direction: column;
-    gap: var(--spacing-xl);
+    gap: var(--spacing-sm);
     width: 100%;
     text-align: center;
     opacity: 0;
