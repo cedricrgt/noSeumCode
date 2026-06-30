@@ -13,7 +13,7 @@ async function loadHeader() {
     const headerHTML = await headerResponse.text();
     headerPlaceholder.innerHTML = headerHTML;
 
-    await updatePromoBanner();
+  await updatePromoBanner();
 
     const popoversPlaceholder = document.getElementById("popovers-placeholder");
     if (popoversPlaceholder) {
@@ -28,7 +28,7 @@ async function loadHeader() {
 
     setActiveNavLink();
 
-    initPromoPopup();
+    //initPromoPopup();
 
   } catch (error) {
     console.error("Error loading header:", error);
