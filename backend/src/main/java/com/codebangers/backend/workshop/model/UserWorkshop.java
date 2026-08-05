@@ -48,6 +48,12 @@ public class UserWorkshop {
         this.attended = false;
     }
 
+    public UserWorkshop(User user, Workshop workshop, boolean attended) {
+        this.user = user;
+        this.workshop = workshop;
+        this.attended = attended;
+    }
+
     // =========================
     // Getters & Setters
     // =========================
@@ -82,6 +88,10 @@ public class UserWorkshop {
 
     public Boolean getAttended() {
         return attended;
+    }
+
+    public boolean isAttended() {
+        return Boolean.TRUE.equals(attended);
     }
 
     public void setAttended(Boolean attended) {

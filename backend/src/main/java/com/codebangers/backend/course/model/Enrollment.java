@@ -56,6 +56,13 @@ public class Enrollment {
         this.progress = 0;
     }
 
+    public Enrollment(User user, Course course, PaymentStatus paymentStatus, int progress) {
+        this.user = user;
+        this.course = course;
+        this.paymentStatus = paymentStatus;
+        this.progress = progress;
+    }
+
     // =========================
     // Getters & Setters
     // =========================
