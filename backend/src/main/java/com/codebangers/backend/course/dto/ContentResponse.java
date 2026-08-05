@@ -1,6 +1,6 @@
 package com.codebangers.backend.course.dto;
 
-import com.codebangers.backend.course.model.Content.ContentType;
+import com.codebangers.backend.content.model.Content.ContentType;
 import java.time.LocalDateTime;
 import java.util.UUID;
 

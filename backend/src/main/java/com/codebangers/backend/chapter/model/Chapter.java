@@ -2,6 +2,8 @@ package com.codebangers.backend.chapter.model;
 
 import com.codebangers.backend.content.model.Content;
 import com.codebangers.backend.course.model.Course;
+import com.codebangers.backend.user.model.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -12,17 +14,19 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "chapters")
+@Table(name = "chapter")
 public class Chapter {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Chapter parent;
@@ -33,9 +37,17 @@ public class Chapter {
     @Column(nullable = false)
     private Integer position;
 
+    @Column(name = "is_published", nullable = false)
+    private boolean isPublished = false;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by_id")
+    private User createdBy;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
@@ -44,10 +56,25 @@ public class Chapter {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Chapter> subChapters = new ArrayList<>();
+
+    @JsonIgnore
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Content> contents = new ArrayList<>();
 
+    // =========================
+    // Constructors
+    // =========================
+
     public Chapter() {
+    }
+
+    public Chapter(Course course, String title, Integer position) {
+        this.course = course;
+        this.title = title;
+        this.position = position;
     }
 
     public Chapter(Course course, Chapter parent, String title, Integer position) {
@@ -57,8 +84,16 @@ public class Chapter {
         this.position = position;
     }
 
+    // =========================
+    // Getters & Setters
+    // =========================
+
     public UUID getId() {
         return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public Course getCourse() {
@@ -93,8 +128,24 @@ public class Chapter {
         this.position = position;
     }
 
+    public boolean isPublished() {
+        return isPublished;
+    }
+
+    public void setPublished(boolean published) {
+        isPublished = published;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 
     public LocalDateTime getUpdatedAt() {
@@ -107,6 +158,14 @@ public class Chapter {
 
     public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
+    }
+
+    public List<Chapter> getSubChapters() {
+        return subChapters;
+    }
+
+    public void setSubChapters(List<Chapter> subChapters) {
+        this.subChapters = subChapters;
     }
 
     public List<Content> getContents() {

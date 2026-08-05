@@ -2,7 +2,7 @@ package com.codebangers.backend.course.controller;
 
 import com.codebangers.backend.course.dto.ChapterRequest;
 import com.codebangers.backend.course.dto.ChapterResponse;
-import com.codebangers.backend.course.model.Chapter;
+import com.codebangers.backend.chapter.model.Chapter;
 import com.codebangers.backend.course.service.ChapterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

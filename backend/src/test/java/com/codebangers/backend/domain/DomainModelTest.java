@@ -2,7 +2,7 @@ package com.codebangers.backend.domain;
 
 import com.codebangers.backend.chapter.model.Chapter;
 import com.codebangers.backend.content.model.Content;
-import com.codebangers.backend.content.model.ContentType;
+import com.codebangers.backend.content.model.Content.ContentType;
 import com.codebangers.backend.course.model.Course;
 import com.codebangers.backend.course.model.Enrollment;
 import com.codebangers.backend.course.model.Enrollment.PaymentStatus;

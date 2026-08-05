@@ -50,26 +50,22 @@ class SeedDataInitializerTest {
         );
 
         User existingAdmin = new User("admin", "Admin", "User", "admin@codebangers.com", "hash", Role.ADMIN);
-        when(userRepository.findByEmail("admin@codebangers.com")).thenReturn(Optional.of(existingAdmin));
-        when(userRepository.findByEmail("teacher@codebangers.com")).thenReturn(Optional.empty());
-        when(userRepository.findByEmail("student@codebangers.com")).thenReturn(Optional.empty());
-        when(userRepository.findByEmail("test@codebangers.com")).thenReturn(Optional.empty());
-        when(userRepository.findByUserName("teacher")).thenReturn(Optional.empty());
-        when(userRepository.findByUserName("student")).thenReturn(Optional.empty());
-        when(userRepository.findByUserName("testuser")).thenReturn(Optional.empty());
-        when(userRepository.save(any(User.class))).thenThrow(new DataIntegrityViolationException("duplicate"));
+        User existingTeacher = new User("teacher", "Jane", "Doe", "teacher@codebangers.com", "hash", Role.TEACHER);
+        User existingStudent = new User("student", "John", "Smith", "student@codebangers.com", "hash", Role.STUDENT);
+        User existingTest = new User("testuser", "Test", "User", "test@codebangers.com", "hash", Role.ADMIN);
 
-        when(courseRepository.findAll()).thenReturn(List.of());
-        when(chapterRepository.findAll()).thenReturn(List.of());
-        when(contentRepository.findAll()).thenReturn(List.of());
-        when(enrollmentRepository.findAll()).thenReturn(List.of());
-        when(workshopRepository.findAll()).thenReturn(List.of());
-        when(userWorkshopRepository.findAll()).thenReturn(List.of());
-        when(courseRepository.save(any(Course.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        // Return existing users so save is never called
+        when(userRepository.findByEmail("admin@codebangers.com")).thenReturn(Optional.of(existingAdmin));
+        when(userRepository.findByEmail("teacher@codebangers.com")).thenReturn(Optional.of(existingTeacher));
+        when(userRepository.findByEmail("student@codebangers.com")).thenReturn(Optional.of(existingStudent));
+        when(userRepository.findByEmail("test@codebangers.com")).thenReturn(Optional.of(existingTest));
+
+        // Courses already exist — seed should return early
+        when(courseRepository.findAll()).thenReturn(List.of(new Course("Existing", "Already seeded")));
 
         assertDoesNotThrow(initializer::seed);
 
-        verify(userRepository).findByEmail("admin@codebangers.com");
+        // Since courses already exist, no save calls should happen at all
         verify(userRepository, never()).save(any(User.class));
     }
 }

@@ -3,7 +3,7 @@ package com.codebangers.backend.config;
 import com.codebangers.backend.chapter.model.Chapter;
 import com.codebangers.backend.chapter.repository.ChapterRepository;
 import com.codebangers.backend.content.model.Content;
-import com.codebangers.backend.content.model.ContentType;
+import com.codebangers.backend.content.model.Content.ContentType;
 import com.codebangers.backend.content.repository.ContentRepository;
 import com.codebangers.backend.course.model.Course;
 import com.codebangers.backend.course.repository.CourseRepository;

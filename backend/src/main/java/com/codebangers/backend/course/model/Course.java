@@ -1,5 +1,6 @@
 package com.codebangers.backend.course.model;
 
+import com.codebangers.backend.chapter.model.Chapter;
 import com.codebangers.backend.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

@@ -2,7 +2,7 @@ package com.codebangers.backend.course.controller;
 
 import com.codebangers.backend.course.dto.ContentRequest;
 import com.codebangers.backend.course.dto.ContentResponse;
-import com.codebangers.backend.course.model.Content;
+import com.codebangers.backend.content.model.Content;
 import com.codebangers.backend.course.service.ContentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,5 +1,6 @@
 package com.codebangers.backend.workshop.model;
 
+import com.codebangers.backend.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -33,6 +34,11 @@ public class Workshop {
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by_id")
+    private User createdBy;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
@@ -112,6 +118,14 @@ public class Workshop {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 
     public boolean isDeleted() {

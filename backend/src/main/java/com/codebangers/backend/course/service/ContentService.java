@@ -1,10 +1,10 @@
 package com.codebangers.backend.course.service;
 
-import com.codebangers.backend.course.model.Chapter;
-import com.codebangers.backend.course.model.Content;
-import com.codebangers.backend.course.model.Content.ContentType;
-import com.codebangers.backend.course.repository.ChapterRepository;
-import com.codebangers.backend.course.repository.ContentRepository;
+import com.codebangers.backend.chapter.model.Chapter;
+import com.codebangers.backend.chapter.repository.ChapterRepository;
+import com.codebangers.backend.content.model.Content;
+import com.codebangers.backend.content.model.Content.ContentType;
+import com.codebangers.backend.content.repository.ContentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,7 +67,6 @@ public class ContentService {
         Content content = contentRepository.findById(contentId)
             .orElseThrow(() -> new IllegalArgumentException("Content not found: " + contentId));
 
-        content.setDeleted(true);
         content.setDeletedAt(LocalDateTime.now());
         contentRepository.save(content);
     }
