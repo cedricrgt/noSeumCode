@@ -28,8 +28,12 @@ entity "Course" as course {
   title : VARCHAR
   description : TEXT
   created_at : TIMESTAMP
+  created_by_id : UUID <<FK, NULL>>
   updated_at : TIMESTAMP
+  updated_by_id : UUID <<FK, NULL>>
+  is_deleted : BOOLEAN
   deleted_at : TIMESTAMP NULL
+  deleted_by_id : UUID <<FK, NULL>>
 }
 
 entity "Enrollment" as enrollment {
@@ -50,7 +54,9 @@ entity "Chapter" as chapter {
   parent_id : UUID <<FK, NULL>>
   title : VARCHAR
   position : INTEGER
+  is_published : BOOLEAN
   created_at : TIMESTAMP
+  created_by_id : UUID <<FK, NULL>>
   updated_at : TIMESTAMP
   deleted_at : TIMESTAMP NULL
 }
@@ -63,7 +69,9 @@ entity "Content" as content {
   body : TEXT / JSON NULL
   media_url : VARCHAR NULL
   position : INTEGER
+  is_published : BOOLEAN
   created_at : TIMESTAMP
+  created_by_id : UUID <<FK, NULL>>
   updated_at : TIMESTAMP
   deleted_at : TIMESTAMP NULL
 }
@@ -76,7 +84,9 @@ entity "Workshop" as workshop {
   start_date : TIMESTAMP
   end_date : TIMESTAMP
   created_at : TIMESTAMP
+  created_by_id : UUID <<FK, NULL>>
   updated_at : TIMESTAMP
+  is_deleted : BOOLEAN
   deleted_at : TIMESTAMP NULL
 }
 
@@ -98,5 +108,10 @@ chapter ||--o{ content
 
 user ||--o{ user_workshop
 workshop ||--o{ user_workshop
+
+user ||--o{ course : created_by
+user ||--o{ chapter : created_by
+user ||--o{ content : created_by
+user ||--o{ workshop : created_by
 
 @enduml
