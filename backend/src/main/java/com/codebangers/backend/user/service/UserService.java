@@ -58,6 +58,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional(readOnly = true)
     public User authenticateUser(String email, String password) {
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));

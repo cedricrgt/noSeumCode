@@ -8,6 +8,7 @@ import com.codebangers.backend.user.dto.UserResponse;
 import com.codebangers.backend.user.model.Role;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +20,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "*")
 public class UserController {
 
     private final UserService userService;
@@ -31,18 +31,8 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserRequest request) {
+    public ResponseEntity<?> register(@Valid @RequestBody UserRequest request) {
         try {
-            if (request.getUserName() == null || request.getUserName().isBlank()) {
-                return ResponseEntity.badRequest().body("Username is required");
-            }
-            if (request.getEmail() == null || request.getEmail().isBlank()) {
-                return ResponseEntity.badRequest().body("Email is required");
-            }
-            if (request.getPassword() == null || request.getPassword().isBlank()) {
-                return ResponseEntity.badRequest().body("Password is required");
-            }
-
             User user = new User(
                 request.getUserName(),
                 request.getFirstName(),
@@ -59,15 +49,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
-            if (request.getEmail() == null || request.getEmail().isBlank()) {
-                return ResponseEntity.badRequest().body("Email is required");
-            }
-            if (request.getPassword() == null || request.getPassword().isBlank()) {
-                return ResponseEntity.badRequest().body("Password is required");
-            }
-
             User user = userService.authenticateUser(request.getEmail(), request.getPassword());
             return ResponseEntity.ok(mapToAuthResponse(user, "Login successful"));
         } catch (IllegalArgumentException e) {
@@ -138,4 +121,3 @@ public class UserController {
         return response;
     }
 }
-
