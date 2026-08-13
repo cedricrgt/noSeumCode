@@ -1,5 +1,7 @@
 package com.codebangers.backend.course.service;
 
+import com.codebangers.backend.config.exception.DuplicateResourceException;
+import com.codebangers.backend.config.exception.ResourceNotFoundException;
 import com.codebangers.backend.course.model.Enrollment;
 import com.codebangers.backend.course.model.Enrollment.PaymentStatus;
 import com.codebangers.backend.course.model.Course;
@@ -48,12 +50,11 @@ public class EnrollmentService {
 
     public Enrollment enrollUserInCourse(User user, UUID courseId) {
         Course course = courseRepository.findById(courseId)
-            .orElseThrow(() -> new IllegalArgumentException("Course not found: " + courseId));
+            .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
 
-        // Check if already enrolled
         Optional<Enrollment> existing = enrollmentRepository.findByUserIdAndCourseId(user.getId(), courseId);
         if (existing.isPresent()) {
-            throw new IllegalArgumentException("User already enrolled in this course");
+            throw new DuplicateResourceException("User already enrolled in this course");
         }
 
         Enrollment enrollment = new Enrollment(user, course);
@@ -62,7 +63,7 @@ public class EnrollmentService {
 
     public Enrollment updatePaymentStatus(UUID enrollmentId, PaymentStatus status) {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
-            .orElseThrow(() -> new IllegalArgumentException("Enrollment not found: " + enrollmentId));
+            .orElseThrow(() -> new ResourceNotFoundException("Enrollment", enrollmentId));
 
         enrollment.setPaymentStatus(status);
         return enrollmentRepository.save(enrollment);
@@ -70,7 +71,7 @@ public class EnrollmentService {
 
     public Enrollment updateProgress(UUID enrollmentId, Integer progress) {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
-            .orElseThrow(() -> new IllegalArgumentException("Enrollment not found: " + enrollmentId));
+            .orElseThrow(() -> new ResourceNotFoundException("Enrollment", enrollmentId));
 
         enrollment.setProgress(Math.min(100, Math.max(0, progress)));
         return enrollmentRepository.save(enrollment);

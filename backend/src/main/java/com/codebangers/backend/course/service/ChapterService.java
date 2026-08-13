@@ -1,9 +1,11 @@
 package com.codebangers.backend.course.service;
 
 import com.codebangers.backend.chapter.model.Chapter;
-import com.codebangers.backend.course.model.Course;
 import com.codebangers.backend.chapter.repository.ChapterRepository;
+import com.codebangers.backend.config.exception.ResourceNotFoundException;
+import com.codebangers.backend.course.model.Course;
 import com.codebangers.backend.course.repository.CourseRepository;
+import com.codebangers.backend.user.model.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,34 +52,44 @@ public class ChapterService {
         return chapterRepository.findActiveByCourseId(courseId);
     }
 
-    public Chapter createChapter(UUID courseId, String title, Integer position) {
+    public Chapter createChapter(UUID courseId, String title, Integer position, User createdBy) {
         Course course = courseRepository.findById(courseId)
-            .orElseThrow(() -> new IllegalArgumentException("Course not found: " + courseId));
+            .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
 
         Chapter chapter = new Chapter(course, title, position);
+        chapter.setCreatedBy(createdBy);
         return chapterRepository.save(chapter);
     }
 
-    public Chapter createSubChapter(UUID parentChapterId, String title, Integer position) {
+    public Chapter createSubChapter(UUID parentChapterId, String title, Integer position, User createdBy) {
         Chapter parent = chapterRepository.findById(parentChapterId)
-            .orElseThrow(() -> new IllegalArgumentException("Parent chapter not found: " + parentChapterId));
+            .orElseThrow(() -> new ResourceNotFoundException("Chapter", parentChapterId));
 
         Chapter chapter = new Chapter(parent.getCourse(), parent, title, position);
+        chapter.setCreatedBy(createdBy);
         return chapterRepository.save(chapter);
     }
 
     public Chapter updateChapter(UUID chapterId, String title, Integer position) {
         Chapter chapter = chapterRepository.findById(chapterId)
-            .orElseThrow(() -> new IllegalArgumentException("Chapter not found: " + chapterId));
+            .orElseThrow(() -> new ResourceNotFoundException("Chapter", chapterId));
 
         chapter.setTitle(title);
         chapter.setPosition(position);
         return chapterRepository.save(chapter);
     }
 
+    public Chapter togglePublished(UUID chapterId) {
+        Chapter chapter = chapterRepository.findById(chapterId)
+            .orElseThrow(() -> new ResourceNotFoundException("Chapter", chapterId));
+
+        chapter.setPublished(!chapter.isPublished());
+        return chapterRepository.save(chapter);
+    }
+
     public void softDeleteChapter(UUID chapterId) {
         Chapter chapter = chapterRepository.findById(chapterId)
-            .orElseThrow(() -> new IllegalArgumentException("Chapter not found: " + chapterId));
+            .orElseThrow(() -> new ResourceNotFoundException("Chapter", chapterId));
 
         chapter.setDeletedAt(LocalDateTime.now());
         chapterRepository.save(chapter);

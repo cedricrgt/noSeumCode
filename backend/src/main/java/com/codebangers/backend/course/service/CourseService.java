@@ -1,7 +1,10 @@
 package com.codebangers.backend.course.service;
 
+import com.codebangers.backend.config.exception.DuplicateResourceException;
+import com.codebangers.backend.config.exception.ResourceNotFoundException;
 import com.codebangers.backend.course.model.Course;
 import com.codebangers.backend.course.repository.CourseRepository;
+import com.codebangers.backend.user.model.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,29 +48,28 @@ public class CourseService {
         return courseRepository.findByTitle(title);
     }
 
-    public Course createCourse(String title, String description) {
+    public Course createCourse(String title, String description, User createdBy) {
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Course title cannot be empty");
         }
 
-        // Check for duplicate title
         if (courseRepository.findByTitle(title).isPresent()) {
-            throw new IllegalArgumentException("Course with this title already exists");
+            throw new DuplicateResourceException("Course with this title already exists");
         }
 
         Course course = new Course(title, description);
+        course.setCreatedBy(createdBy);
         return courseRepository.save(course);
     }
 
-    public Course updateCourse(UUID courseId, String title, String description) {
+    public Course updateCourse(UUID courseId, String title, String description, User updatedBy) {
         Course course = courseRepository.findById(courseId)
-            .orElseThrow(() -> new IllegalArgumentException("Course not found: " + courseId));
+            .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
 
         if (title != null && !title.isBlank()) {
-            // Check if new title conflicts with existing course
             Optional<Course> existing = courseRepository.findByTitle(title);
             if (existing.isPresent() && !existing.get().getId().equals(courseId)) {
-                throw new IllegalArgumentException("Course with this title already exists");
+                throw new DuplicateResourceException("Course with this title already exists");
             }
             course.setTitle(title);
         }
@@ -76,15 +78,17 @@ public class CourseService {
             course.setDescription(description);
         }
 
+        course.setUpdatedBy(updatedBy);
         return courseRepository.save(course);
     }
 
-    public void softDeleteCourse(UUID courseId) {
+    public void softDeleteCourse(UUID courseId, User deletedBy) {
         Course course = courseRepository.findById(courseId)
-            .orElseThrow(() -> new IllegalArgumentException("Course not found: " + courseId));
+            .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
 
         course.setDeleted(true);
         course.setDeletedAt(LocalDateTime.now());
+        course.setDeletedBy(deletedBy);
         courseRepository.save(course);
     }
 

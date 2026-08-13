@@ -1,5 +1,7 @@
 package com.codebangers.backend.workshop.service;
 
+import com.codebangers.backend.config.exception.DuplicateResourceException;
+import com.codebangers.backend.config.exception.ResourceNotFoundException;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.workshop.model.UserWorkshop;
 import com.codebangers.backend.workshop.model.Workshop;
@@ -47,12 +49,11 @@ public class UserWorkshopService {
 
     public UserWorkshop registerUserToWorkshop(User user, UUID workshopId) {
         Workshop workshop = workshopRepository.findById(workshopId)
-            .orElseThrow(() -> new IllegalArgumentException("Workshop not found: " + workshopId));
+            .orElseThrow(() -> new ResourceNotFoundException("Workshop", workshopId));
 
-        // Check if already registered
         Optional<UserWorkshop> existing = userWorkshopRepository.findByUserIdAndWorkshopId(user.getId(), workshopId);
         if (existing.isPresent()) {
-            throw new IllegalArgumentException("User already registered for this workshop");
+            throw new DuplicateResourceException("User already registered for this workshop");
         }
 
         UserWorkshop registration = new UserWorkshop(user, workshop);
@@ -61,7 +62,7 @@ public class UserWorkshopService {
 
     public UserWorkshop markAttendance(UUID registrationId, Boolean attended) {
         UserWorkshop registration = userWorkshopRepository.findById(registrationId)
-            .orElseThrow(() -> new IllegalArgumentException("Registration not found: " + registrationId));
+            .orElseThrow(() -> new ResourceNotFoundException("Registration", registrationId));
 
         registration.setAttended(attended);
         return userWorkshopRepository.save(registration);

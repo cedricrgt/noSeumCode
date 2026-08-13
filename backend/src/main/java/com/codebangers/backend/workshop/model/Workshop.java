@@ -22,8 +22,14 @@ public class Workshop {
     @Column(name = "title", nullable = false)
     private String title;
 
+    @Column(name = "theme")
+    private String theme;
+
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
+
+    @Column(name = "max_participants")
+    private Integer maxParticipants;
 
     @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
@@ -44,11 +50,21 @@ public class Workshop {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "updated_by_id")
+    private User updatedBy;
+
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deleted_by_id")
+    private User deletedBy;
 
     @JsonIgnore
     @OneToMany(mappedBy = "workshop", cascade = CascadeType.ALL, orphanRemoval = true)

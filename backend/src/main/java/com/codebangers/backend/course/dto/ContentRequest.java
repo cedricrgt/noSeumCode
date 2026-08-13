@@ -1,12 +1,18 @@
 package com.codebangers.backend.course.dto;
 
 import com.codebangers.backend.content.model.Content.ContentType;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 public class ContentRequest {
 
+    @NotNull(message = "Content type is required")
     private ContentType contentType;
     private String body;
     private String mediaUrl;
+
+    @NotNull(message = "Position is required")
+    @Min(value = 1, message = "Position must be at least 1")
     private Integer position;
 
     public ContentRequest() {

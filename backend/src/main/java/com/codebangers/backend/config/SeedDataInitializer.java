@@ -18,6 +18,7 @@ import com.codebangers.backend.workshop.model.Workshop;
 import com.codebangers.backend.workshop.repository.UserWorkshopRepository;
 import com.codebangers.backend.workshop.repository.WorkshopRepository;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
+@Profile("dev")
 public class SeedDataInitializer {
 
     private final UserRepository userRepository;
@@ -64,13 +66,13 @@ public class SeedDataInitializer {
         }
 
         User admin = userRepository.findByEmail("admin@codebangers.com")
-                .orElseGet(() -> userRepository.save(new User("admin", "Admin", "User", "admin@codebangers.com", passwordEncoder.encode("admin123"), Role.ADMIN)));
+                .orElseGet(() -> userRepository.save(new User("admin", "Admin", "User", "admin@codebangers.com", passwordEncoder.encode("changeme123"), Role.ADMIN)));
         User teacher = userRepository.findByEmail("teacher@codebangers.com")
-                .orElseGet(() -> userRepository.save(new User("teacher", "Jane", "Doe", "teacher@codebangers.com", passwordEncoder.encode("teacher123"), Role.TEACHER)));
+                .orElseGet(() -> userRepository.save(new User("teacher", "Jane", "Doe", "teacher@codebangers.com", passwordEncoder.encode("changeme123"), Role.TEACHER)));
         User student = userRepository.findByEmail("student@codebangers.com")
-                .orElseGet(() -> userRepository.save(new User("student", "John", "Smith", "student@codebangers.com", passwordEncoder.encode("student123"), Role.STUDENT)));
+                .orElseGet(() -> userRepository.save(new User("student", "John", "Smith", "student@codebangers.com", passwordEncoder.encode("changeme123"), Role.STUDENT)));
         User testUser = userRepository.findByEmail("test@codebangers.com")
-                .orElseGet(() -> userRepository.save(new User("testuser", "Test", "User", "test@codebangers.com", passwordEncoder.encode("778195Cedric"), Role.ADMIN)));
+                .orElseGet(() -> userRepository.save(new User("testuser", "Test", "User", "test@codebangers.com", passwordEncoder.encode("changeme123"), Role.ADMIN)));
 
         Course javaCourse = courseRepository.save(new Course("Java Fundamentals", "Learn the basics of Java programming"));
         Course springCourse = courseRepository.save(new Course("Spring Boot Essentials", "Build modern APIs with Spring Boot"));

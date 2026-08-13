@@ -2,9 +2,11 @@ package com.codebangers.backend.course.service;
 
 import com.codebangers.backend.chapter.model.Chapter;
 import com.codebangers.backend.chapter.repository.ChapterRepository;
+import com.codebangers.backend.config.exception.ResourceNotFoundException;
 import com.codebangers.backend.content.model.Content;
 import com.codebangers.backend.content.model.Content.ContentType;
 import com.codebangers.backend.content.repository.ContentRepository;
+import com.codebangers.backend.user.model.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,20 +43,21 @@ public class ContentService {
         return contentRepository.findActiveByChapterId(chapterId);
     }
 
-    public Content createContent(UUID chapterId, ContentType contentType, 
-                               String body, String mediaUrl, Integer position) {
+    public Content createContent(UUID chapterId, ContentType contentType,
+                               String body, String mediaUrl, Integer position, User createdBy) {
         Chapter chapter = chapterRepository.findById(chapterId)
-            .orElseThrow(() -> new IllegalArgumentException("Chapter not found: " + chapterId));
+            .orElseThrow(() -> new ResourceNotFoundException("Chapter", chapterId));
 
         Content content = new Content(chapter, contentType, body, position);
         content.setMediaUrl(mediaUrl);
+        content.setCreatedBy(createdBy);
         return contentRepository.save(content);
     }
 
     public Content updateContent(UUID contentId, ContentType contentType,
                                String body, String mediaUrl, Integer position) {
         Content content = contentRepository.findById(contentId)
-            .orElseThrow(() -> new IllegalArgumentException("Content not found: " + contentId));
+            .orElseThrow(() -> new ResourceNotFoundException("Content", contentId));
 
         content.setContentType(contentType);
         content.setBody(body);
@@ -63,9 +66,17 @@ public class ContentService {
         return contentRepository.save(content);
     }
 
+    public Content togglePublished(UUID contentId) {
+        Content content = contentRepository.findById(contentId)
+            .orElseThrow(() -> new ResourceNotFoundException("Content", contentId));
+
+        content.setPublished(!content.isPublished());
+        return contentRepository.save(content);
+    }
+
     public void softDeleteContent(UUID contentId) {
         Content content = contentRepository.findById(contentId)
-            .orElseThrow(() -> new IllegalArgumentException("Content not found: " + contentId));
+            .orElseThrow(() -> new ResourceNotFoundException("Content", contentId));
 
         content.setDeletedAt(LocalDateTime.now());
         contentRepository.save(content);

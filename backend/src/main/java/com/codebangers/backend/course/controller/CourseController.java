@@ -1,44 +1,48 @@
 package com.codebangers.backend.course.controller;
 
+import com.codebangers.backend.config.exception.ResourceNotFoundException;
 import com.codebangers.backend.course.dto.CourseRequest;
 import com.codebangers.backend.course.dto.CourseResponse;
 import com.codebangers.backend.course.model.Course;
 import com.codebangers.backend.course.service.CourseService;
+import com.codebangers.backend.user.model.User;
+import com.codebangers.backend.user.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/courses")
-@CrossOrigin(origins = "*")
 public class CourseController {
 
     private final CourseService courseService;
+    private final UserService userService;
 
-    public CourseController(CourseService courseService) {
+    public CourseController(CourseService courseService, UserService userService) {
         this.courseService = courseService;
+        this.userService = userService;
     }
 
     @GetMapping
     public ResponseEntity<List<CourseResponse>> getAllCourses() {
-        List<Course> courses = courseService.getAllActiveCourses();
-        List<CourseResponse> responses = courses.stream()
+        List<CourseResponse> responses = courseService.getAllActiveCourses().stream()
             .map(this::mapToResponse)
-            .collect(Collectors.toList());
+            .toList();
         return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<CourseResponse>> getAllCoursesIncludingDeleted() {
-        List<Course> courses = courseService.getAllNonDeletedCourses();
-        List<CourseResponse> responses = courses.stream()
+        List<CourseResponse> responses = courseService.getAllNonDeletedCourses().stream()
             .map(this::mapToResponse)
-            .collect(Collectors.toList());
+            .toList();
         return ResponseEntity.ok(responses);
     }
 
@@ -51,38 +55,35 @@ public class CourseController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
-    public ResponseEntity<?> createCourse(@RequestBody CourseRequest request) {
-        try {
-            if (request.getTitle() == null || request.getTitle().isBlank()) {
-                return ResponseEntity.badRequest().body("Course title is required");
-            }
-            Course course = courseService.createCourse(request.getTitle(), request.getDescription());
-            return new ResponseEntity<>(mapToResponse(course), HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<CourseResponse> createCourse(@Valid @RequestBody CourseRequest request,
+                                                       @AuthenticationPrincipal Jwt jwt) {
+        User creator = resolveUser(jwt);
+        Course course = courseService.createCourse(request.getTitle(), request.getDescription(), creator);
+        return new ResponseEntity<>(mapToResponse(course), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
-    public ResponseEntity<?> updateCourse(@PathVariable UUID id, @RequestBody CourseRequest request) {
-        try {
-            Course course = courseService.updateCourse(id, request.getTitle(), request.getDescription());
-            return ResponseEntity.ok(mapToResponse(course));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<CourseResponse> updateCourse(@PathVariable UUID id,
+                                                       @Valid @RequestBody CourseRequest request,
+                                                       @AuthenticationPrincipal Jwt jwt) {
+        User updater = resolveUser(jwt);
+        Course course = courseService.updateCourse(id, request.getTitle(), request.getDescription(), updater);
+        return ResponseEntity.ok(mapToResponse(course));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
-    public ResponseEntity<?> softDeleteCourse(@PathVariable UUID id) {
-        try {
-            courseService.softDeleteCourse(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Void> softDeleteCourse(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
+        User deleter = resolveUser(jwt);
+        courseService.softDeleteCourse(id, deleter);
+        return ResponseEntity.noContent().build();
+    }
+
+    private User resolveUser(Jwt jwt) {
+        String email = jwt.getSubject();
+        return userService.getUserByEmail(email)
+            .orElseThrow(() -> new ResourceNotFoundException("User", email));
     }
 
     private CourseResponse mapToResponse(Course course) {

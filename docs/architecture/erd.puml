@@ -9,9 +9,11 @@ entity "User" as user {
   first_name : VARCHAR(50)
   last_name : VARCHAR(50)
   email : VARCHAR(100) <<UNIQUE>>
+  phone : VARCHAR(20) NULL
   password_hash : VARCHAR(255)
   role : ENUM('user','student','admin')
   created_at : TIMESTAMP
+  created_by_id : UUID <<FK, NULL>>
   updated_at : TIMESTAMP
   updated_by_id : UUID <<FK, NULL>>
   is_deleted : BOOLEAN
@@ -58,7 +60,10 @@ entity "Chapter" as chapter {
   created_at : TIMESTAMP
   created_by_id : UUID <<FK, NULL>>
   updated_at : TIMESTAMP
+  updated_by_id : UUID <<FK, NULL>>
+  is_deleted : BOOLEAN
   deleted_at : TIMESTAMP NULL
+  deleted_by_id : UUID <<FK, NULL>>
 }
 
 entity "Content" as content {
@@ -66,6 +71,7 @@ entity "Content" as content {
   --
   chapter_id : UUID <<FK>>
   content_type : ENUM('heading','paragraph','video','image','file','list','code','quiz')
+  title : VARCHAR NULL
   body : TEXT / JSON NULL
   media_url : VARCHAR NULL
   position : INTEGER
@@ -73,21 +79,27 @@ entity "Content" as content {
   created_at : TIMESTAMP
   created_by_id : UUID <<FK, NULL>>
   updated_at : TIMESTAMP
+  updated_by_id : UUID <<FK, NULL>>
   deleted_at : TIMESTAMP NULL
+  deleted_by_id : UUID <<FK, NULL>>
 }
 
 entity "Workshop" as workshop {
   * id : UUID <<PK>>
   --
   title : VARCHAR
+  theme : VARCHAR NULL
   description : TEXT
+  max_participants : INTEGER NULL
   start_date : TIMESTAMP
   end_date : TIMESTAMP
   created_at : TIMESTAMP
   created_by_id : UUID <<FK, NULL>>
   updated_at : TIMESTAMP
+  updated_by_id : UUID <<FK, NULL>>
   is_deleted : BOOLEAN
   deleted_at : TIMESTAMP NULL
+  deleted_by_id : UUID <<FK, NULL>>
 }
 
 entity "User_Workshop" as user_workshop {
@@ -113,5 +125,11 @@ user ||--o{ course : created_by
 user ||--o{ chapter : created_by
 user ||--o{ content : created_by
 user ||--o{ workshop : created_by
+user ||--o{ chapter : updated_by
+user ||--o{ content : updated_by
+user ||--o{ workshop : updated_by
+user ||--o{ chapter : deleted_by
+user ||--o{ content : deleted_by
+user ||--o{ workshop : deleted_by
 
 @enduml

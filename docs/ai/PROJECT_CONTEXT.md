@@ -1,7 +1,7 @@
 # Project Context — NoSeumCode
 
-> **Dernière mise à jour** : 2026-08-05
-> **Mis à jour par** : Conversation `d9e3329b` (analyse architecture backend)
+> **Dernière mise à jour** : 2026-08-13
+> **Mis à jour par** : Conversation `e1ee8484` (complétion backend business-and-api)
 
 ---
 
@@ -45,12 +45,13 @@ Controller → Service → Repository → PostgreSQL
 | `auth/` | AuthController, AuthService, JwtTokenService, DTOs | 5 |
 | `chapter/` | Chapter entity + repository (⚠️ controller/service dans `course/`) | 2 |
 | `config/` | SecurityConfig, GlobalExceptionHandler, JwtService, SeedDataInitializer | 4 |
+| `config/exception/` | ResourceNotFoundException, DuplicateResourceException, AccountStatusException, ApiError | 4 |
 | `content/` | Content entity + repository (⚠️ controller/service dans `course/`) | 2 |
 | `course/` | Course + Enrollment entities, controllers, services, DTOs | 14 |
 | `user/` | User entity, Role enum, controller, service, DTOs | 9 |
 | `workshop/` | Workshop + UserWorkshop entities, controllers, services, DTOs | 10 |
 
-**Total** : 56 fichiers Java
+**Total** : 60 fichiers Java
 
 ### Entités JPA (7)
 
@@ -86,11 +87,16 @@ Enum `Role` : `USER`, `STUDENT`, `TEACHER`, `ADMIN`
 - ✅ CRUD fonctionnel sur User, Course, Chapter, Content, Enrollment, Workshop
 - ✅ Authentification JWT HS256 fonctionnelle
 - ✅ Migrations Flyway idempotentes
-- ⚠️ Double système d'authentification (voir KNOWN_ISSUES)
-- ⚠️ Seed data s'exécute en production (voir KNOWN_ISSUES)
-- ⚠️ Couverture de tests très faible (4 fichiers)
+- ✅ Exceptions custom (ResourceNotFoundException, DuplicateResourceException, AccountStatusException)
+- ✅ Format d'erreur standardisé (ApiError) avec support validation JSR-380
+- ✅ CORS centralisé configurable (plus de wildcard)
+- ✅ SeedDataInitializer protégé par @Profile("dev")
+- ✅ Audit trail createdBy/updatedBy/deletedBy sur Course, Chapter, Content, Workshop
+- ✅ @PreAuthorize sur tous les endpoints de gestion
+- ✅ @Valid + JSR-380 sur tous les DTOs entrants
+- ⚠️ Double système d'authentification (ISSUE-001 — le package auth/ n'existe plus sur feat/backend)
+- ⚠️ Couverture de tests très faible (3 fichiers)
 - ⚠️ Pas de pagination sur les endpoints de liste
-- ⚠️ Pas de validation Jakarta Bean Validation (`@Valid`)
 
 ### Frontend
 - Non analysé

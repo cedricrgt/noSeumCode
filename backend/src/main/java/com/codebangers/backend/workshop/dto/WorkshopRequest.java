@@ -2,11 +2,21 @@ package com.codebangers.backend.workshop.dto;
 
 import java.time.LocalDateTime;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 public class WorkshopRequest {
 
+    @NotBlank(message = "Workshop title is required")
+    @Size(max = 255, message = "Title must not exceed 255 characters")
     private String title;
     private String description;
+
+    @NotNull(message = "Start date is required")
     private LocalDateTime startDate;
+
+    @NotNull(message = "End date is required")
     private LocalDateTime endDate;
 
     public WorkshopRequest() {

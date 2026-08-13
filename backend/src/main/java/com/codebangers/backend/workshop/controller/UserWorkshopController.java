@@ -1,22 +1,23 @@
 package com.codebangers.backend.workshop.controller;
 
+import com.codebangers.backend.config.exception.ResourceNotFoundException;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.service.UserService;
-import com.codebangers.backend.workshop.dto.UserWorkshopRequest;
 import com.codebangers.backend.workshop.dto.UserWorkshopResponse;
 import com.codebangers.backend.workshop.model.UserWorkshop;
 import com.codebangers.backend.workshop.service.UserWorkshopService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user-workshops")
-@CrossOrigin(origins = "*")
 public class UserWorkshopController {
 
     private final UserWorkshopService userWorkshopService;
@@ -27,61 +28,57 @@ public class UserWorkshopController {
         this.userService = userService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserWorkshopResponse> getRegistration(@PathVariable UUID id) {
-        return userWorkshopService.getRegistration(id, id)
-            .map(registration -> ResponseEntity.ok(mapToResponse(registration)))
-            .orElse(ResponseEntity.notFound().build());
-    }
-
     @GetMapping("/workshop/{workshopId}")
     public ResponseEntity<List<UserWorkshopResponse>> getRegistrationsByWorkshop(@PathVariable UUID workshopId) {
-        List<UserWorkshop> registrations = userWorkshopService.getRegistrationsByWorkshop(workshopId);
-        List<UserWorkshopResponse> responses = registrations.stream()
+        List<UserWorkshopResponse> responses = userWorkshopService.getRegistrationsByWorkshop(workshopId).stream()
             .map(this::mapToResponse)
-            .collect(Collectors.toList());
+            .toList();
         return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<UserWorkshopResponse>> getRegistrationsByUser(@PathVariable UUID userId) {
-        List<UserWorkshop> registrations = userWorkshopService.getRegistrationsByUser(userId);
-        List<UserWorkshopResponse> responses = registrations.stream()
+        List<UserWorkshopResponse> responses = userWorkshopService.getRegistrationsByUser(userId).stream()
             .map(this::mapToResponse)
-            .collect(Collectors.toList());
+            .toList();
         return ResponseEntity.ok(responses);
     }
 
-    @PostMapping
-    public ResponseEntity<?> registerUserToWorkshop(@RequestBody UserWorkshopRequest request) {
-        try {
-            User user = userService.getUserById(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-            UserWorkshop registration = userWorkshopService.registerUserToWorkshop(user, request.getWorkshopId());
-            return new ResponseEntity<>(mapToResponse(registration), HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @GetMapping("/me")
+    public ResponseEntity<List<UserWorkshopResponse>> getMyRegistrations(@AuthenticationPrincipal Jwt jwt) {
+        User user = resolveUser(jwt);
+        List<UserWorkshopResponse> responses = userWorkshopService.getRegistrationsByUser(user.getId()).stream()
+            .map(this::mapToResponse)
+            .toList();
+        return ResponseEntity.ok(responses);
+    }
+
+    @PostMapping("/{workshopId}")
+    public ResponseEntity<UserWorkshopResponse> registerCurrentUser(@PathVariable UUID workshopId,
+                                                                     @AuthenticationPrincipal Jwt jwt) {
+        User user = resolveUser(jwt);
+        UserWorkshop registration = userWorkshopService.registerUserToWorkshop(user, workshopId);
+        return new ResponseEntity<>(mapToResponse(registration), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}/attendance")
-    public ResponseEntity<?> markAttendance(@PathVariable UUID id, @RequestParam Boolean attended) {
-        try {
-            UserWorkshop registration = userWorkshopService.markAttendance(id, attended);
-            return ResponseEntity.ok(mapToResponse(registration));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    public ResponseEntity<UserWorkshopResponse> markAttendance(@PathVariable UUID id,
+                                                                @RequestParam Boolean attended) {
+        UserWorkshop registration = userWorkshopService.markAttendance(id, attended);
+        return ResponseEntity.ok(mapToResponse(registration));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> unregisterUserFromWorkshop(@PathVariable UUID id) {
-        try {
-            userWorkshopService.unregisterUserFromWorkshop(id);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Void> unregisterUserFromWorkshop(@PathVariable UUID id) {
+        userWorkshopService.unregisterUserFromWorkshop(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    private User resolveUser(Jwt jwt) {
+        String email = jwt.getSubject();
+        return userService.getUserByEmail(email)
+            .orElseThrow(() -> new ResourceNotFoundException("User", email));
     }
 
     private UserWorkshopResponse mapToResponse(UserWorkshop registration) {

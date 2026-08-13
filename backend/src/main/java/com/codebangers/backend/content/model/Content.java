@@ -27,6 +27,9 @@ public class Content {
     @Enumerated(EnumType.STRING)
     private ContentType contentType;
 
+    @Column(name = "title")
+    private String title;
+
     @Column(name = "body", columnDefinition = "TEXT")
     private String body;
 
@@ -52,8 +55,18 @@ public class Content {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "updated_by_id")
+    private User updatedBy;
+
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deleted_by_id")
+    private User deletedBy;
 
     // =========================
     // Constructors
@@ -105,6 +118,14 @@ public class Content {
         this.contentType = contentType;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getBody() {
         return body;
     }
@@ -153,12 +174,28 @@ public class Content {
         return updatedAt;
     }
 
+    public User getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(User updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
     public LocalDateTime getDeletedAt() {
         return deletedAt;
     }
 
     public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
+    }
+
+    public User getDeletedBy() {
+        return deletedBy;
+    }
+
+    public void setDeletedBy(User deletedBy) {
+        this.deletedBy = deletedBy;
     }
 
     // =========================

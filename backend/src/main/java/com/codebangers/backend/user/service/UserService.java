@@ -1,5 +1,8 @@
 package com.codebangers.backend.user.service;
 
+import com.codebangers.backend.config.exception.AccountStatusException;
+import com.codebangers.backend.config.exception.DuplicateResourceException;
+import com.codebangers.backend.config.exception.ResourceNotFoundException;
 import com.codebangers.backend.user.dto.UserRequest;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.repository.UserRepository;
@@ -27,7 +30,9 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.findAll().stream()
+                .filter(u -> !u.isDeleted())
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -46,12 +51,11 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        // Check if user already exists
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("User with this email already exists");
+            throw new DuplicateResourceException("User with this email already exists");
         }
         if (userRepository.findByUserName(user.getUserName()).isPresent()) {
-            throw new IllegalArgumentException("User with this username already exists");
+            throw new DuplicateResourceException("User with this username already exists");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -68,11 +72,11 @@ public class UserService {
         }
 
         if (user.isBlocked()) {
-            throw new IllegalArgumentException("User account is blocked");
+            throw new AccountStatusException("User account is blocked");
         }
 
         if (user.isDeleted()) {
-            throw new IllegalArgumentException("User account has been deleted");
+            throw new AccountStatusException("User account has been deleted");
         }
 
         return user;
@@ -80,7 +84,7 @@ public class UserService {
 
     public User updateUser(UUID userId, UserRequest request) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User", userId));
 
         if (request.getFirstName() != null && !request.getFirstName().isBlank()) {
             user.setFirstName(request.getFirstName());
@@ -89,10 +93,9 @@ public class UserService {
             user.setLastName(request.getLastName());
         }
         if (request.getEmail() != null && !request.getEmail().isBlank()) {
-            // Check if new email conflicts with existing user
             Optional<User> existing = userRepository.findByEmail(request.getEmail());
             if (existing.isPresent() && !existing.get().getId().equals(userId)) {
-                throw new IllegalArgumentException("User with this email already exists");
+                throw new DuplicateResourceException("User with this email already exists");
             }
             user.setEmail(request.getEmail());
         }
@@ -100,30 +103,33 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void softDeleteUser(UUID userId) {
+    public void softDeleteUser(UUID userId, User actor) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User", userId));
 
         user.setDeleted(true);
         user.setDeletedAt(LocalDateTime.now());
+        user.setDeletedBy(actor);
         userRepository.save(user);
     }
 
-    public void blockUser(UUID userId) {
+    public void blockUser(UUID userId, User actor) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User", userId));
 
         user.setBlocked(true);
         user.setBlockedAt(LocalDateTime.now());
+        user.setBlockedBy(actor);
         userRepository.save(user);
     }
 
     public void unblockUser(UUID userId) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User", userId));
 
         user.setBlocked(false);
         user.setBlockedAt(null);
+        user.setBlockedBy(null);
         userRepository.save(user);
     }
 }

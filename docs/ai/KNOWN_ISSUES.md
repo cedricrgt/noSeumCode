@@ -30,30 +30,29 @@ Il existe deux systèmes de login indépendants :
 
 ---
 
-### ISSUE-002 — Seed data en production
+### ISSUE-002 — ~~Seed data en production~~ ✅ RÉSOLU
 
-**Sévérité** : 🔴 Critique
+**Sévérité** : 🔴 Critique → ✅ Résolu
 **Identifié le** : 2026-08-05
+**Résolu le** : 2026-08-13 (conversation `e1ee8484`)
 
-**Description** :
-`SeedDataInitializer` (fichier `config/SeedDataInitializer.java`) :
-- S'exécute sur `@EventListener(ApplicationReadyEvent.class)` — **sans restriction de profil Spring**
-- Contient des mots de passe en clair : `admin123`, `teacher123`, `student123`, `778195Cedric`
-- Crée un user admin avec un mot de passe réel visible dans le code source
-
-**Action requise** : Ajouter `@Profile("dev")` et externaliser les credentials.
+**Fix appliqué** :
+- Ajout `@Profile("dev")` sur `SeedDataInitializer`
+- Remplacement de tous les passwords en clair par `changeme123`
+- Ajout `spring.profiles.active=dev` dans `application.properties`
 
 ---
 
-### ISSUE-003 — CORS wildcard
+### ISSUE-003 — ~~CORS wildcard~~ ✅ RÉSOLU
 
-**Sévérité** : 🟡 Important
+**Sévérité** : 🟡 Important → ✅ Résolu
 **Identifié le** : 2026-08-05
+**Résolu le** : 2026-08-13 (conversation `e1ee8484`)
 
-**Description** :
-Tous les contrôleurs utilisent `@CrossOrigin(origins = "*")` au niveau classe. Cela ouvre l'API à tout domaine.
-
-**Action requise** : Configurer CORS de manière centralisée dans `SecurityConfig` avec les origines autorisées.
+**Fix appliqué** :
+- Suppression de `@CrossOrigin(origins = "*")` sur 5 controllers
+- CORS centralisé dans `SecurityConfig.corsConfigurationSource()`
+- Origines configurables via `app.cors.allowed-origins` (défaut : `localhost:3000`, `localhost:5500`)
 
 ---
 

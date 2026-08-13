@@ -1,5 +1,7 @@
 package com.codebangers.backend.workshop.service;
 
+import com.codebangers.backend.config.exception.ResourceNotFoundException;
+import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.workshop.model.Workshop;
 import com.codebangers.backend.workshop.repository.WorkshopRepository;
 import org.springframework.stereotype.Service;
@@ -42,12 +44,13 @@ public class WorkshopService {
     }
 
     public Workshop createWorkshop(String title, String description,
-                                 LocalDateTime startDate, LocalDateTime endDate) {
+                                 LocalDateTime startDate, LocalDateTime endDate, User createdBy) {
         if (endDate.isBefore(startDate)) {
             throw new IllegalArgumentException("End date must be after start date");
         }
 
         Workshop workshop = new Workshop(title, description, startDate, endDate);
+        workshop.setCreatedBy(createdBy);
         return workshopRepository.save(workshop);
     }
 
@@ -58,7 +61,7 @@ public class WorkshopService {
         }
 
         Workshop workshop = workshopRepository.findById(workshopId)
-            .orElseThrow(() -> new IllegalArgumentException("Workshop not found: " + workshopId));
+            .orElseThrow(() -> new ResourceNotFoundException("Workshop", workshopId));
 
         workshop.setTitle(title);
         workshop.setDescription(description);
@@ -69,7 +72,7 @@ public class WorkshopService {
 
     public void softDeleteWorkshop(UUID workshopId) {
         Workshop workshop = workshopRepository.findById(workshopId)
-            .orElseThrow(() -> new IllegalArgumentException("Workshop not found: " + workshopId));
+            .orElseThrow(() -> new ResourceNotFoundException("Workshop", workshopId));
 
         workshop.setDeleted(true);
         workshop.setDeletedAt(LocalDateTime.now());
