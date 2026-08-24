@@ -354,3 +354,19 @@
   - Gestion asynchrone avec feedback immédiat lors de la modification du statut de paiement.
 
 **Résultat** : Système de paiement hybride, hautement scalable, modulaire et prêt pour Stripe.
+
+---
+
+### Session 16 — Option Afficher / Masquer le Mot de Passe (Connexion & Inscription)
+
+**Objectif** : Permettre aux utilisateurs d'afficher ou masquer en temps réel le mot de passe saisi dans les formulaires de connexion et de création de compte.
+
+**Réalisé** :
+- **Frontend ([popovers-shared.html](file:///d:/Archive-mac/dev/code-bangers/frontend/partials/popovers-shared.html), [header.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/header.js), [dashboard.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/dashboard.js))** :
+  - Intégration d'un bouton œil interactif (SVG Eye / Eye-off) positionné dans les champs de mot de passe (`#global-login-password` et `#global-reg-password`).
+  - Fonction utilitaire globale `togglePasswordVisibility(inputId, btnId)` basculant dynamiquement le champ entre `type="password"` et `type="text"`.
+  - Mise à jour des attributs d'accessibilité (`aria-label`, `title`).
+- **Backend ([PaymentService.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/payment/service/PaymentService.java))** :
+  - Correction de la déclaration de package (`upackage` ➔ `package`).
+
+**Résultat** : Expérience utilisateur améliorée avec prévisualisation sécurisée du mot de passe sur tous les formulaires d'authentification.

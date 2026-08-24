@@ -110,7 +110,15 @@
         </div>
         <div style="margin-bottom: 1.25rem;">
           <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e0; margin-bottom: 0.35rem;">Mot de passe</label>
-          <input id="global-login-password" type="password" placeholder="••••••••" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.7rem 0.9rem; font-size: 0.9rem; outline: none;" />
+          <div style="position: relative; display: flex; align-items: center;">
+            <input id="global-login-password" type="password" placeholder="••••••••" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.7rem 2.6rem 0.7rem 0.9rem; font-size: 0.9rem; outline: none; transition: border-color 0.2s;" />
+            <button type="button" id="toggle-login-password-btn" onclick="togglePasswordVisibility('global-login-password', 'toggle-login-password-btn')" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #a0aec0; padding: 4px; display: flex; align-items: center; justify-content: center; transition: color 0.2s;" title="Afficher/Masquer le mot de passe" aria-label="Afficher le mot de passe">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
         </div>
         <button type="submit" id="global-login-submit-btn" class="button button__primary bangers-regular" style="width: 100%; padding: 12px; font-size: 1.25rem; border: none; cursor: pointer; border-radius: 8px;">
           SE CONNECTER
@@ -184,7 +192,15 @@
 
         <div style="margin-bottom: 1.25rem;">
           <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e0; margin-bottom: 0.25rem;">Mot de passe</label>
-          <input id="global-reg-password" type="password" placeholder="•••••••• (min. 6 caractères)" required minlength="6" style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.65rem 0.8rem; font-size: 0.85rem; outline: none;" />
+          <div style="position: relative; display: flex; align-items: center;">
+            <input id="global-reg-password" type="password" placeholder="•••••••• (min. 6 caractères)" required minlength="6" style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.65rem 2.6rem 0.65rem 0.8rem; font-size: 0.85rem; outline: none; transition: border-color 0.2s;" />
+            <button type="button" id="toggle-reg-password-btn" onclick="togglePasswordVisibility('global-reg-password', 'toggle-reg-password-btn')" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #a0aec0; padding: 4px; display: flex; align-items: center; justify-content: center; transition: color 0.2s;" title="Afficher/Masquer le mot de passe" aria-label="Afficher le mot de passe">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <button type="submit" id="global-reg-submit-btn" class="button button__primary bangers-regular" style="width: 100%; padding: 12px; font-size: 1.25rem; border: none; cursor: pointer; border-radius: 8px;">
