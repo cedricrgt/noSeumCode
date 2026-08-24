@@ -740,7 +740,7 @@ function renderAdminCourses() {
 
     tr.innerHTML = `
       <td style="padding: 1rem 1.25rem;">
-        <a href="article.html?id=${course.id}" class="course-title-link" target="_blank" title="Cliquez pour accéder à la formation">
+        <a href="cours.html?id=${course.id}" class="course-title-link" target="_blank" title="Cliquez pour accéder à la formation">
           🎓 ${escapeHtml(course.title)}
           <span style="font-size: 0.75rem; color: #00d9ff;">↗</span>
         </a>

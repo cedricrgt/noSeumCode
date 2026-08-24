@@ -370,3 +370,79 @@
   - Correction de la déclaration de package (`upackage` ➔ `package`).
 
 **Résultat** : Expérience utilisateur améliorée avec prévisualisation sécurisée du mot de passe sur tous les formulaires d'authentification.
+
+---
+
+### Session 17 — Visualiseur de Cours Interactif & RBAC Étudiant / Enseignant / Admin
+
+**Objectif** :
+1. Générer du contenu technique factice (Lorem Ipsum enrichi, code Java/Spring, markdown) pour les deux formations existantes.
+2. Créer une mise en page immersive de consultation de cours (`article.html`).
+3. Appliquer les règles RBAC strictes :
+   - Étudiant : consultation et complétion uniquement (pas de boutons d'édition/suppression).
+   - Enseignant : création et modification de sections avec soumission obligatoire à la validation Admin (pas de droit de suppression).
+   - Admin : création, modification, suppression totale (cours/chapitres) et approbation/rejet direct des modifications soumises par les enseignants.
+
+**Réalisé** :
+- **Backend ([V007__seed_courses_chapters_content.sql](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/resources/db/migration/V007__seed_courses_chapters_content.sql), [CourseController.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/course/controller/CourseController.java), [ChapterController.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/course/controller/ChapterController.java))** :
+  - Migration Flyway V007 insérant les 2 cours (`Fullstack Java 21`, `Clean Architecture & DDD`), les chapitres avec statuts (`APPROVED`, `PENDING_APPROVAL`) et le contenu Markdown enrichi.
+  - Verrouillage backend de la suppression (`DELETE /api/courses/{id}` et `DELETE /api/chapters/{id}`) réservé exclusivement à `@PreAuthorize("hasRole('ADMIN')")`.
+- **Frontend ([article.html](file:///d:/Archive-mac/dev/code-bangers/frontend/article.html), [article.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/article.js), [article.css](file:///d:/Archive-mac/dev/code-bangers/frontend/styles/pages/article.css))** :
+  - Mise en page Classroom : Bannière du cours avec métadonnées d'auteurs, sommaire latéral avec statuts de validation (`✓ Validé`, `⏳ À valider`), visualiseur Markdown avec blocs de code et citations.
+  - Barres d'action contextuelles adaptatives selon le rôle connecté (`STUDENT`, `TEACHER`, `ADMIN`).
+  - Modale d'édition/création de section avec avertissement enseignant et synchronisation API REST.
+
+**Résultat** : Expérience d'apprentissage et de gestion de cours collaborative, fluide et 100% sécurisée selon les permissions de chaque profil.
+
+---
+
+### Session 18 — Découplage Strict Articles vs Cours & Composant Réutilisable `/cours`
+
+**Objectif** :
+1. Séparer rigoureusement les articles de blog statiques (`/article.html`) des cours / formations dynamiques (`/cours.html` ou `/cours`).
+2. Rétablir le fonctionnement d'origine pour les articles de blog (`data/articles.json` sur `article.html?id=html-css`, `javascript`, `git-github`).
+3. Créer un composant / page réutilisable dédié pour les formations (`cours.html`, `js/cours.js`, `styles/pages/cours.css`) connecté à l'API Spring Boot (`/api/courses`, `/api/chapters`).
+4. Mettre à jour les liens du dashboard administrateur pour pointer vers `/cours.html?id=...`.
+
+**Réalisé** :
+- **Frontend Articles ([article.html](file:///d:/Archive-mac/dev/code-bangers/frontend/article.html), [article.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/article.js))** :
+  - Restauration de la vue d'origine pour les articles de blog avec chargement depuis `data/articles.json`.
+  - Conservation des liens d'articles sur la page d'accueil (`article.html?id=html-css`, `article.html?id=javascript`, `article.html?id=git-github`).
+- **Frontend Formations ([cours.html](file:///d:/Archive-mac/dev/code-bangers/frontend/cours.html), [course.html](file:///d:/Archive-mac/dev/code-bangers/frontend/course.html), [cours.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/cours.js), [cours.css](file:///d:/Archive-mac/dev/code-bangers/frontend/styles/pages/cours.css))** :
+  - Création du visualiseur de cours réutilisable universel : charge dynamiquement n'importe quel cours via son ID via l'API REST (`GET /api/courses/{id}` et `GET /api/chapters/course/{id}/all`).
+  - Gestion des rôles RBAC :
+    - `STUDENT` : consultation & complétion.
+    - `TEACHER` : ajout & modification de sections (soumis à validation, sans suppression).
+    - `ADMIN` : validation, rejet, modification directe, suppression de sections/cours.
+  - Modale interactive d'édition et création connectée aux endpoints `PUT /api/chapters/{id}` et `POST /api/chapters/course/{courseId}`.
+- **Dashboard ([dashboard.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/dashboard.js))** :
+  - Redirection des liens de cours vers `cours.html?id=${course.id}`.
+
+**Résultat** : Séparation nette et architecturale entre articles de blog et formations, avec un composant de cours 100% réutilisable et connecté à l'API backend.
+
+---
+
+### Session 19 — Contrôle d'Accès Strict & RBAC (Inscription, Statut de Paiement & Rôles Enseignant/Admin)
+
+**Objectif** :
+1. Verrouiller l'accès aux cours pour les étudiants :
+   - Bloqué si l'étudiant n'est pas inscrit à la formation.
+   - Bloqué si l'étudiant est inscrit mais que son statut de paiement n'est pas validé (`PENDING`, `FAILED`, `REFUNDED`).
+   - Débloqué uniquement si inscrit ET payé (`PAID`, `PAYÉ`, `FREE`, `GRATUIT`).
+2. Adapter l'affichage sur `/cours.html` selon le rôle et les inscriptions :
+   - Vue catalogue/hub si aucun ID spécifié avec état d'inscription et de paiement.
+   - Enseignant (`TEACHER`) : accès complet en modification/création avec soumission à validation Admin (interdiction absolue de suppression).
+   - Administrateur (`ADMIN`) : accès universel à tous les cours, toutes les opérations CRUD (créer, modifier, supprimer cours et chapitres), et validation/rejet des modifications faites par les enseignants.
+
+**Réalisé** :
+- **Backend ([V007__seed_courses_chapters_content.sql](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/resources/db/migration/V007__seed_courses_chapters_content.sql), [V008__seed_enrollments_and_student_accounts.sql](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/resources/db/migration/V008__seed_enrollments_and_student_accounts.sql), [CourseController.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/course/controller/CourseController.java), [ChapterController.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/course/controller/ChapterController.java), [EnrollmentController.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/course/controller/EnrollmentController.java))** :
+  - Correction du parsing Flyway dans `V007` (remplacement de la syntaxe de placeholder `${...}` dans le texte markdown par une chaîne littérale).
+  - Seed des comptes étudiants démo : `student.paid@codebangers.fr` (PAID) et `student.pending@codebangers.fr` (PENDING).
+  - Contrôle des permissions `@PreAuthorize` pour les opérations de suppression (Admin exclusif) et de modification (Teacher & Admin).
+- **Frontend ([cours.html](file:///d:/Archive-mac/dev/code-bangers/frontend/cours.html), [cours.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/cours.js), [cours.css](file:///d:/Archive-mac/dev/code-bangers/frontend/styles/pages/cours.css), [header.html](file:///d:/Archive-mac/dev/code-bangers/frontend/partials/header.html))** :
+  - Écrans de blocage d'accès (Access Gate & Paywall) avec explications claires et actions associées.
+  - Hub catalogue personnalisé selon le rôle connecté.
+  - Modales d'édition du cours, de création de cours, d'ajout et d'édition de sections.
+  - Menu de navigation principal mis à jour avec le lien vers `cours.html`.
+
+**Résultat** : Système d'apprentissage sécurisé de bout en bout avec contrôle d'accès granulaire basé sur l'inscription, le statut de paiement et la matrice de droits RBAC.

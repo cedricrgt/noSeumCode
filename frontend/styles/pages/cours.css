@@ -1,10 +1,10 @@
-.article-page {
+.cours-page {
   background-color: #070e18;
   color: #fff;
   min-height: 100vh;
 }
 
-#article-content {
+#cours-content {
   padding-top: calc(var(--header-height, 80px) + 20px);
   padding-bottom: 5rem;
 }
@@ -15,8 +15,8 @@
 .course-header-banner {
   max-width: 1300px;
   margin: 0 auto 2rem;
-  padding: 2rem 2rem;
-  background: linear-gradient(135deg, rgba(13, 27, 42, 0.9), rgba(7, 14, 24, 0.95));
+  padding: 2rem 2.25rem;
+  background: linear-gradient(135deg, rgba(13, 27, 42, 0.95), rgba(7, 14, 24, 0.98));
   border: 1px solid rgba(0, 255, 135, 0.25);
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
@@ -40,16 +40,16 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .course-badge-role {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.35rem 0.85rem;
+  padding: 0.4rem 0.95rem;
   border-radius: 9999px;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 700;
   background: rgba(0, 255, 135, 0.15);
   color: #00ff87;
@@ -66,11 +66,11 @@
 }
 
 .course-description {
-  font-size: 1rem;
+  font-size: 1.05rem;
   line-height: 1.6;
   color: #94a3b8;
-  max-width: 900px;
-  margin: 0 0 1.25rem 0;
+  max-width: 950px;
+  margin: 0 0 1.5rem 0;
 }
 
 .course-metadata-row {
@@ -78,7 +78,7 @@
   align-items: center;
   gap: 1.5rem;
   flex-wrap: wrap;
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   color: #64748b;
 }
 
@@ -283,11 +283,128 @@
   color: #00ff87;
 }
 
+/* ========================================================
+   Paywall & Access Restricted Gate
+   ======================================================== */
+.access-gate-card {
+  max-width: 800px;
+  margin: 3rem auto;
+  background: #0d1b2a;
+  border-radius: 20px;
+  padding: 3rem 2.5rem;
+  text-align: center;
+  border: 1px solid rgba(255, 51, 102, 0.4);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.access-gate-card.pending {
+  border-color: rgba(245, 158, 11, 0.5);
+}
+
+.access-gate-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  margin-bottom: 1.5rem;
+  background: rgba(255, 51, 102, 0.15);
+  border: 2px solid #ff3366;
+}
+
+.access-gate-card.pending .access-gate-icon {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: #f59e0b;
+}
+
+.access-gate-title {
+  font-family: 'Bangers', cursive;
+  font-size: 2.4rem;
+  letter-spacing: 0.5px;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.access-gate-desc {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #94a3b8;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
+.access-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+}
+
+/* ========================================================
+   Course Catalog / Hub Grid
+   ======================================================== */
+.catalog-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem 5rem;
+}
+
+.catalog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 2rem;
+}
+
+.course-card-box {
+  background: #0d1b2a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.course-card-box:hover {
+  transform: translateY(-5px);
+  border-color: rgba(0, 255, 135, 0.4);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+.course-card-title {
+  font-family: 'Bangers', cursive;
+  font-size: 1.7rem;
+  letter-spacing: 0.5px;
+  color: #fff;
+  margin: 0.75rem 0;
+  line-height: 1.2;
+}
+
 /* Modals */
 .course-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
@@ -307,4 +424,3 @@
   padding: 2rem;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
 }
-

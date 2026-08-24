@@ -162,7 +162,7 @@ public class ChapterController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> softDeleteChapter(@PathVariable UUID id) {
         try {
             chapterService.softDeleteChapter(id);

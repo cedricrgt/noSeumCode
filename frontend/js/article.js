@@ -10,7 +10,6 @@ async function loadArticle() {
   }
 
   try {
-
     const response = await fetch("data/articles.json");
     if (!response.ok) throw new Error("Erreur lors du chargement des données");
     
