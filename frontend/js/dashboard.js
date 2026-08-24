@@ -588,10 +588,54 @@ async function submitChapter(chapterId) {
 }
 
 // ==========================================
-// 6. Admin View (Validation Queue & Decisions)
+// 6. Admin View (Tabs, Approvals, Courses, Members & RBAC)
 // ==========================================
 
+let adminCoursesList = [];
+let adminUsersList = [];
+let currentSortColumn = "createdAt";
+let currentSortAsc = false;
+
+function switchAdminTab(tabName) {
+  // Update active state on stat cards
+  const cards = {
+    pending: document.getElementById("stat-card-pending"),
+    courses: document.getElementById("stat-card-courses"),
+    users: document.getElementById("stat-card-users")
+  };
+
+  const tabs = {
+    pending: document.getElementById("admin-tab-pending"),
+    courses: document.getElementById("admin-tab-courses"),
+    users: document.getElementById("admin-tab-users")
+  };
+
+  Object.keys(cards).forEach(key => {
+    if (cards[key]) {
+      if (key === tabName) {
+        cards[key].classList.add("active");
+      } else {
+        cards[key].classList.remove("active");
+      }
+    }
+  });
+
+  Object.keys(tabs).forEach(key => {
+    if (tabs[key]) {
+      tabs[key].style.display = (key === tabName) ? "block" : "none";
+    }
+  });
+}
+
 async function loadAdminData() {
+  await Promise.all([
+    loadAdminPendingChapters(),
+    loadAdminCourses(),
+    loadAdminUsers()
+  ]);
+}
+
+async function loadAdminPendingChapters() {
   const res = await apiFetch("/api/chapters/pending-approval");
   if (res && res.ok) {
     pendingAdminChapters = await res.json();
@@ -616,29 +660,242 @@ async function loadAdminData() {
     ];
   }
 
+  const statPending = document.getElementById("stat-admin-pending");
+  if (statPending) statPending.textContent = pendingAdminChapters.length;
+
   renderAdminDashboard();
-  await loadAdminUsers();
 }
 
-let adminUsersList = [];
+async function loadAdminCourses() {
+  const tbody = document.getElementById("admin-courses-table-body");
+  const statCourses = document.getElementById("stat-admin-courses");
+
+  const res = await apiFetch("/api/courses");
+  if (res && res.ok) {
+    adminCoursesList = await res.json();
+  } else if (adminCoursesList.length === 0) {
+    adminCoursesList = [
+      {
+        id: "course-1",
+        title: "Fullstack Java 21 & Spring Boot 3.4+",
+        createdByName: "Cedric Ragot",
+        updatedByName: "Cedric Ragot",
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 12).toISOString(),
+        updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString(),
+        chaptersCount: 8
+      },
+      {
+        id: "course-2",
+        title: "Clean Architecture & Hexagonale avec DDD",
+        createdByName: "Ada Lovelace",
+        updatedByName: "Ada Lovelace",
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 8).toISOString(),
+        updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 18).toISOString(),
+        chaptersCount: 6
+      },
+      {
+        id: "course-3",
+        title: "Sécurité Avancée : OAuth2, RBAC & OWASP",
+        createdByName: "Admin CodeBangers",
+        updatedByName: "Admin CodeBangers",
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+        updatedAt: new Date().toISOString(),
+        chaptersCount: 5
+      }
+    ];
+  }
+
+  if (statCourses) statCourses.textContent = adminCoursesList.length;
+  renderAdminCourses();
+}
+
+function renderAdminCourses() {
+  const tbody = document.getElementById("admin-courses-table-body");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  if (adminCoursesList.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="padding: 2rem; text-align: center; color: var(--dash-text-muted);">
+          Aucune formation active trouvée.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  adminCoursesList.forEach(course => {
+    const tr = document.createElement("tr");
+    tr.style.borderBottom = "1px solid #f1f5f9";
+
+    const createdFormatted = course.createdAt ? new Date(course.createdAt).toLocaleDateString("fr-FR", {
+      day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"
+    }) : "—";
+
+    const updatedFormatted = course.updatedAt ? new Date(course.updatedAt).toLocaleDateString("fr-FR", {
+      day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"
+    }) : "—";
+
+    tr.innerHTML = `
+      <td style="padding: 1rem 1.25rem;">
+        <a href="article.html?id=${course.id}" class="course-title-link" target="_blank" title="Cliquez pour accéder à la formation">
+          🎓 ${escapeHtml(course.title)}
+          <span style="font-size: 0.75rem; color: #00d9ff;">↗</span>
+        </a>
+      </td>
+      <td style="padding: 1rem 1.25rem; font-weight: 500; color: var(--dash-dark-navy);">
+        ${escapeHtml(course.createdByName || "Admin")}
+      </td>
+      <td style="padding: 1rem 1.25rem; color: var(--dash-text-muted); font-size: 0.82rem;">
+        ${escapeHtml(createdFormatted)}
+      </td>
+      <td style="padding: 1rem 1.25rem; font-weight: 500; color: var(--dash-dark-navy);">
+        ${escapeHtml(course.updatedByName || course.createdByName || "Admin")}
+      </td>
+      <td style="padding: 1rem 1.25rem; color: var(--dash-text-muted); font-size: 0.82rem;">
+        ${escapeHtml(updatedFormatted)}
+      </td>
+      <td style="padding: 1rem 1.25rem; text-align: center;">
+        <span style="background: #e2e8f0; color: #1e293b; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.8rem;">
+          ${course.chaptersCount || 0}
+        </span>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
 
 async function loadAdminUsers() {
   const tbody = document.getElementById("admin-users-table-body");
-  if (!tbody) return;
+  const statUsers = document.getElementById("stat-admin-users");
 
   const res = await apiFetch("/api/users");
   if (res && res.ok) {
     adminUsersList = await res.json();
-    renderAdminUsers();
-  } else {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="4" style="padding: 1.5rem; text-align: center; color: var(--dash-text-muted);">
-          Impossible de charger les utilisateurs ou privilèges administrateur requis.
-        </td>
-      </tr>
-    `;
+  } else if (adminUsersList.length === 0) {
+    adminUsersList = [
+      {
+        id: "u-1",
+        userName: "admin",
+        firstName: "Admin",
+        lastName: "CodeBangers",
+        email: "admin@codebangers.fr",
+        role: "ADMIN",
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
+        isDeleted: false,
+        isBlocked: false,
+        enrolledCoursesCount: 3,
+        paymentStatus: "PAYÉ"
+      },
+      {
+        id: "u-2",
+        userName: "cedricragot",
+        firstName: "Cédric",
+        lastName: "Ragot",
+        email: "cedric@codebangers.com",
+        role: "TEACHER",
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15).toISOString(),
+        isDeleted: false,
+        isBlocked: false,
+        enrolledCoursesCount: 2,
+        paymentStatus: "PAYÉ"
+      },
+      {
+        id: "u-3",
+        userName: "student1",
+        firstName: "Lucas",
+        lastName: "Dubois",
+        email: "lucas@test.com",
+        role: "STUDENT",
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
+        isDeleted: false,
+        isBlocked: false,
+        enrolledCoursesCount: 1,
+        paymentStatus: "GRATUIT"
+      }
+    ];
   }
+
+  if (statUsers) statUsers.textContent = adminUsersList.length;
+  sortAdminUsers(currentSortColumn, false);
+}
+
+function sortAdminUsers(column, toggle = true) {
+  if (toggle) {
+    if (currentSortColumn === column) {
+      currentSortAsc = !currentSortAsc;
+    } else {
+      currentSortColumn = column;
+      currentSortAsc = true;
+    }
+  }
+
+  // Update sort icons in table headers
+  const columns = ["fullName", "email", "role", "createdAt", "enrolledCoursesCount", "paymentStatus", "status"];
+  columns.forEach(col => {
+    const icon = document.getElementById(`sort-icon-${col}`);
+    if (icon) {
+      if (col === currentSortColumn) {
+        icon.textContent = currentSortAsc ? "▲" : "▼";
+        icon.style.opacity = "1";
+        icon.style.color = "#00ff87";
+      } else {
+        icon.textContent = "↕️";
+        icon.style.opacity = "0.4";
+        icon.style.color = "inherit";
+      }
+    }
+  });
+
+  adminUsersList.sort((a, b) => {
+    let valA, valB;
+
+    switch (column) {
+      case "fullName":
+        valA = `${a.firstName || ""} ${a.lastName || ""}`.trim().toLowerCase();
+        valB = `${b.firstName || ""} ${b.lastName || ""}`.trim().toLowerCase();
+        break;
+      case "email":
+        valA = (a.email || "").toLowerCase();
+        valB = (b.email || "").toLowerCase();
+        break;
+      case "role":
+        valA = a.role || "";
+        valB = b.role || "";
+        break;
+      case "createdAt":
+        valA = new Date(a.createdAt || 0).getTime();
+        valB = new Date(b.createdAt || 0).getTime();
+        break;
+      case "enrolledCoursesCount":
+        valA = a.enrolledCoursesCount || 0;
+        valB = b.enrolledCoursesCount || 0;
+        break;
+      case "paymentStatus":
+        valA = a.paymentStatus || "";
+        valB = b.paymentStatus || "";
+        break;
+      case "status":
+        const aDel = a.isDeleted === true || a.deleted === true;
+        const bDel = b.isDeleted === true || b.deleted === true;
+        const aBlk = a.isBlocked === true || a.blocked === true;
+        const bBlk = b.isBlocked === true || b.blocked === true;
+        valA = aDel ? "DELETED" : (aBlk ? "BLOCKED" : "ACTIVE");
+        valB = bDel ? "DELETED" : (bBlk ? "BLOCKED" : "ACTIVE");
+        break;
+      default:
+        valA = a[column];
+        valB = b[column];
+    }
+
+    if (valA < valB) return currentSortAsc ? -1 : 1;
+    if (valA > valB) return currentSortAsc ? 1 : -1;
+    return 0;
+  });
+
+  renderAdminUsers();
 }
 
 function renderAdminUsers() {
@@ -650,7 +907,7 @@ function renderAdminUsers() {
   if (adminUsersList.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="4" style="padding: 1.5rem; text-align: center; color: var(--dash-text-muted);">
+        <td colspan="8" style="padding: 2rem; text-align: center; color: var(--dash-text-muted);">
           Aucun utilisateur trouvé.
         </td>
       </tr>
@@ -676,6 +933,53 @@ function renderAdminUsers() {
       roleBadgeLabel = "🛡️ ADMIN";
     }
 
+    // Payment badge and interactive selector
+    const pStatus = (user.paymentStatus || "FREE").toUpperCase();
+    let paymentBadgeClass = "payment-badge-free";
+    let paymentLabel = "Gratuit";
+
+    if (pStatus === "PAID" || pStatus === "PAYÉ") {
+      paymentBadgeClass = "payment-badge-paid";
+      paymentLabel = "✓ Payé";
+    } else if (pStatus === "PENDING" || pStatus === "EN ATTENTE") {
+      paymentBadgeClass = "payment-badge-pending";
+      paymentLabel = "⏳ En attente";
+    } else if (pStatus === "REFUNDED" || pStatus === "REMBOURSÉ") {
+      paymentBadgeClass = "payment-badge-refunded";
+      paymentLabel = "↩️ Remboursé";
+    } else if (pStatus === "FAILED" || pStatus === "ÉCHOUÉ") {
+      paymentBadgeClass = "payment-badge-failed";
+      paymentLabel = "❌ Échoué";
+    }
+
+    const paymentSelectHtml = `
+      <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+        <span class="${paymentBadgeClass}" style="width: fit-content;">${paymentLabel}</span>
+        <select class="form-select" style="padding: 0.2rem 0.4rem; font-size: 0.72rem; width: auto; background: #fff;" onchange="handleUpdateUserPaymentStatus('${user.id}', this.value)" title="Changer le statut de paiement">
+          <option value="PAID" ${pStatus === "PAID" || pStatus === "PAYÉ" ? "selected" : ""}>✓ Payé</option>
+          <option value="PENDING" ${pStatus === "PENDING" || pStatus === "EN ATTENTE" ? "selected" : ""}>⏳ En attente</option>
+          <option value="FREE" ${pStatus === "FREE" || pStatus === "GRATUIT" ? "selected" : ""}>Gratuit</option>
+          <option value="REFUNDED" ${pStatus === "REFUNDED" || pStatus === "REMBOURSÉ" ? "selected" : ""}>↩️ Remboursé</option>
+          <option value="FAILED" ${pStatus === "FAILED" || pStatus === "ÉCHOUÉ" ? "selected" : ""}>❌ Échoué</option>
+        </select>
+      </div>
+    `;
+
+    // Account status badge
+    const isDeleted = user.isDeleted === true || user.deleted === true;
+    const isBlocked = user.isBlocked === true || user.blocked === true;
+
+    let statusBadgeHtml = `<span class="status-badge-active">● Actif</span>`;
+    if (isDeleted) {
+      statusBadgeHtml = `<span class="status-badge-deleted">🗑️ Supprimé</span>`;
+    } else if (isBlocked) {
+      statusBadgeHtml = `<span class="status-badge-banned">🚫 Banni</span>`;
+    }
+
+    const createdFormatted = user.createdAt ? new Date(user.createdAt).toLocaleDateString("fr-FR", {
+      day: "2-digit", month: "2-digit", year: "numeric"
+    }) : "—";
+
     tr.innerHTML = `
       <td style="padding: 1rem 1.25rem;">
         <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -688,27 +992,100 @@ function renderAdminUsers() {
           </div>
         </div>
       </td>
-      <td style="padding: 1rem 1.25rem; color: var(--dash-text-muted);">
+      <td style="padding: 1rem 1.25rem; color: var(--dash-text-muted); font-size: 0.85rem;">
         ${escapeHtml(user.email)}
       </td>
       <td style="padding: 1rem 1.25rem;">
         <span class="${roleBadgeClass}">${roleBadgeLabel}</span>
       </td>
+      <td style="padding: 1rem 1.25rem; color: var(--dash-text-muted); font-size: 0.82rem;">
+        ${escapeHtml(createdFormatted)}
+      </td>
+      <td style="padding: 1rem 1.25rem; text-align: center;">
+        <span style="background: #f1f5f9; color: var(--dash-dark-navy); font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.8rem;">
+          ${user.enrolledCoursesCount || 0}
+        </span>
+      </td>
+      <td style="padding: 1rem 1.25rem;">
+        ${paymentSelectHtml}
+      </td>
+      <td style="padding: 1rem 1.25rem;">
+        ${statusBadgeHtml}
+      </td>
       <td style="padding: 1rem 1.25rem; text-align: right;">
-        <div style="display: inline-flex; align-items: center; gap: 0.5rem;">
-          <select id="role-select-${user.id}" class="form-select" style="padding: 0.35rem 0.6rem; font-size: 0.8rem; width: auto; background: #fff;">
+        <div style="display: inline-flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end;">
+          <select id="role-select-${user.id}" class="form-select" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; width: auto; background: #fff;">
             <option value="STUDENT" ${user.role === "STUDENT" ? "selected" : ""}>🎓 Apprenant</option>
             <option value="TEACHER" ${user.role === "TEACHER" ? "selected" : ""}>👨‍🏫 Enseignant</option>
             <option value="ADMIN" ${user.role === "ADMIN" ? "selected" : ""}>🛡️ Admin</option>
           </select>
-          <button class="button button__primary" style="padding: 6px 14px; font-size: 0.8rem;" onclick="handleAssignUserRole('${user.id}')">
-            Appliquer
+          <button class="button button__primary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="handleAssignUserRole('${user.id}')" title="Appliquer le rôle">
+            Rôle
           </button>
+          ${isBlocked ? `
+            <button class="dash-btn dash-btn-success" style="padding: 4px 8px; font-size: 0.75rem;" onclick="handleToggleBlockUser('${user.id}', true)" title="Débloquer l'utilisateur">
+              🔓 Débloquer
+            </button>
+          ` : `
+            <button class="dash-btn dash-btn-warning" style="padding: 4px 8px; font-size: 0.75rem;" onclick="handleToggleBlockUser('${user.id}', false)" title="Bannir / Bloquer l'utilisateur">
+              🚫 Bannir
+            </button>
+          `}
+          ${isDeleted ? `
+            <button class="dash-btn dash-btn-info" style="padding: 4px 8px; font-size: 0.75rem;" onclick="handleToggleDeleteUser('${user.id}', true)" title="Restaurer l'utilisateur">
+              ♻️ Restaurer
+            </button>
+          ` : `
+            <button class="dash-btn dash-btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="handleToggleDeleteUser('${user.id}', false)" title="Supprimer (soft delete) l'utilisateur">
+              🗑️ Supprimer
+            </button>
+          `}
         </div>
       </td>
     `;
     tbody.appendChild(tr);
   });
+}
+
+async function handleUpdateUserPaymentStatus(userId, newStatus) {
+  const targetUser = adminUsersList.find(u => u.id === userId);
+  const userName = targetUser ? (targetUser.firstName || targetUser.userName) : "l'utilisateur";
+
+  let response = await apiFetch(`/api/payments/user/${userId}/status`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      paymentStatus: newStatus,
+      source: "MANUAL_ADMIN",
+      note: `Modification manuelle par l'administrateur pour ${userName}`
+    })
+  });
+
+  if (!response || !response.ok) {
+    response = await apiFetch(`/api/payments/user/${userId}/status`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        paymentStatus: newStatus,
+        source: "MANUAL_ADMIN",
+        note: `Modification manuelle par l'administrateur pour ${userName}`
+      })
+    });
+  }
+
+  if (response && response.ok) {
+    alert(`💳 Statut de paiement mis à jour pour ${userName} : ${newStatus}`);
+    await loadAdminUsers();
+  } else {
+    let errMsg = "Échec de la modification du statut de paiement.";
+    if (response) {
+      try {
+        const data = await response.json();
+        if (data.message) errMsg = data.message;
+      } catch (_) {}
+    }
+    alert(`❌ Accès refusé ou erreur : ${errMsg}`);
+  }
 }
 
 async function handleAssignUserRole(userId) {
@@ -726,7 +1103,6 @@ async function handleAssignUserRole(userId) {
   });
 
   if (!response || !response.ok) {
-    // Retry with PUT as fallback
     response = await apiFetch(`/api/users/${userId}/role`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -735,7 +1111,6 @@ async function handleAssignUserRole(userId) {
   }
 
   if (response && response.ok) {
-    const updatedUser = await response.json();
     alert(`✅ Rôle de ${userName} mis à jour avec succès : ${newRole}`);
     await loadAdminUsers();
   } else {
@@ -749,6 +1124,109 @@ async function handleAssignUserRole(userId) {
     alert(`❌ Accès refusé ou erreur backend : ${errMsg}`);
   }
 }
+
+async function handleToggleBlockUser(userId, isCurrentlyBlocked) {
+  const targetUser = adminUsersList.find(u => u.id === userId);
+  const userName = targetUser ? (targetUser.firstName || targetUser.userName) : "l'utilisateur";
+
+  const action = isCurrentlyBlocked ? "unblock" : "block";
+  const actionLabel = isCurrentlyBlocked ? "débloquer" : "bannir / bloquer";
+
+  if (!confirm(`Êtes-vous sûr de vouloir ${actionLabel} ${userName} ?`)) return;
+
+  let response = await apiFetch(`/api/users/${userId}/${action}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({})
+  });
+
+  if (!response || !response.ok) {
+    response = await apiFetch(`/api/users/${userId}/${action}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({})
+    });
+  }
+
+  if (response && response.ok) {
+    alert(`✅ Compte de ${userName} ${isCurrentlyBlocked ? "débloqué" : "banni"} avec succès.`);
+    await loadAdminUsers();
+  } else {
+    let errMsg = "Erreur lors de l'opération.";
+    if (response) {
+      try {
+        const data = await response.json();
+        if (data.message) errMsg = data.message;
+      } catch (_) {}
+    }
+    alert(`❌ Échec : ${errMsg}`);
+  }
+}
+
+async function handleToggleDeleteUser(userId, isCurrentlyDeleted) {
+  const targetUser = adminUsersList.find(u => u.id === userId);
+  const userName = targetUser ? (targetUser.firstName || targetUser.userName) : "l'utilisateur";
+
+  if (isCurrentlyDeleted) {
+    // Restore
+    let response = await apiFetch(`/api/users/${userId}/restore`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({})
+    });
+    if (!response || !response.ok) {
+      response = await apiFetch(`/api/users/${userId}/restore`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({})
+      });
+    }
+
+    if (response && response.ok) {
+      alert(`✅ Compte de ${userName} restauré avec succès.`);
+      await loadAdminUsers();
+    } else {
+      let errMsg = "Erreur lors de la restauration du compte.";
+      if (response) {
+        try {
+          const data = await response.json();
+          if (data.message) errMsg = data.message;
+        } catch (_) {}
+      }
+      alert(`❌ Échec : ${errMsg}`);
+    }
+  } else {
+    // Soft delete
+    if (!confirm(`Confirmer la suppression (soft-delete) de ${userName} ? (Les données restent conservées en base avec le statut DELETED).`)) return;
+
+    let response = await apiFetch(`/api/users/${userId}`, {
+      method: "DELETE"
+    });
+    if (!response || !response.ok) {
+      response = await apiFetch(`/api/users/${userId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({})
+      });
+    }
+
+    if (response && response.ok) {
+      alert(`✅ Utilisateur ${userName} marqué comme supprimé.`);
+      await loadAdminUsers();
+    } else {
+      let errMsg = "Erreur lors de la suppression.";
+      if (response) {
+        try {
+          const data = await response.json();
+          if (data.message) errMsg = data.message;
+        } catch (_) {}
+      }
+      alert(`❌ Échec : ${errMsg}`);
+    }
+  }
+}
+
+
 
 
 

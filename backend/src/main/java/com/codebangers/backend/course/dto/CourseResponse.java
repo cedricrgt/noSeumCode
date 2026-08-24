@@ -10,6 +10,9 @@ public class CourseResponse {
     private String description;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String createdByName;
+    private String updatedByName;
+    private int chaptersCount = 0;
 
     // Constructors
 
@@ -23,6 +26,19 @@ public class CourseResponse {
         this.description = description;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public CourseResponse(UUID id, String title, String description,
+                        LocalDateTime createdAt, LocalDateTime updatedAt,
+                        String createdByName, String updatedByName, int chaptersCount) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.createdByName = createdByName;
+        this.updatedByName = updatedByName;
+        this.chaptersCount = chaptersCount;
     }
 
     // Getters & Setters
@@ -66,5 +82,28 @@ public class CourseResponse {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-}
 
+    public String getCreatedByName() {
+        return createdByName;
+    }
+
+    public void setCreatedByName(String createdByName) {
+        this.createdByName = createdByName;
+    }
+
+    public String getUpdatedByName() {
+        return updatedByName;
+    }
+
+    public void setUpdatedByName(String updatedByName) {
+        this.updatedByName = updatedByName;
+    }
+
+    public int getChaptersCount() {
+        return chaptersCount;
+    }
+
+    public void setChaptersCount(int chaptersCount) {
+        this.chaptersCount = chaptersCount;
+    }
+}

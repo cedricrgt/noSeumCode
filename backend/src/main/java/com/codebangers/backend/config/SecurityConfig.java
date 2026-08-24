@@ -42,6 +42,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/workshops", "/api/workshops/upcoming",
                                 "/api/workshops/ongoing", "/api/workshops/{id}").permitAll()
                         .requestMatchers("/login/oauth2/**", "/oauth2/**").permitAll()
+                        .requestMatchers("/api/payments/webhook/**").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2

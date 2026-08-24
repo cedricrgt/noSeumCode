@@ -144,12 +144,35 @@ public class UserService {
     }
 
     public void unblockUser(UUID userId) {
+        unblockUser(userId, null);
+    }
+
+    public void unblockUser(UUID userId, User actor) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new ResourceNotFoundException("User", userId));
 
         user.setBlocked(false);
         user.setBlockedAt(null);
         user.setBlockedBy(null);
+        userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> getAllUsersForAdmin() {
+        return userRepository.findAll();
+    }
+
+    public void restoreUser(UUID userId) {
+        restoreUser(userId, null);
+    }
+
+    public void restoreUser(UUID userId, User actor) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User", userId));
+
+        user.setDeleted(false);
+        user.setDeletedAt(null);
+        user.setDeletedBy(null);
         userRepository.save(user);
     }
 }

@@ -87,12 +87,27 @@ public class CourseController {
     }
 
     private CourseResponse mapToResponse(Course course) {
+        String createdByName = "Admin";
+        if (course.getCreatedBy() != null) {
+            createdByName = (course.getCreatedBy().getFirstName() != null ? course.getCreatedBy().getFirstName() + " " + (course.getCreatedBy().getLastName() != null ? course.getCreatedBy().getLastName() : "") : course.getCreatedBy().getUserName()).trim();
+        }
+
+        String updatedByName = createdByName;
+        if (course.getUpdatedBy() != null) {
+            updatedByName = (course.getUpdatedBy().getFirstName() != null ? course.getUpdatedBy().getFirstName() + " " + (course.getUpdatedBy().getLastName() != null ? course.getUpdatedBy().getLastName() : "") : course.getUpdatedBy().getUserName()).trim();
+        }
+
+        int chaptersCount = (course.getChapters() != null) ? course.getChapters().size() : 0;
+
         return new CourseResponse(
             course.getId(),
             course.getTitle(),
             course.getDescription(),
             course.getCreatedAt(),
-            course.getUpdatedAt()
+            course.getUpdatedAt(),
+            createdByName,
+            updatedByName,
+            chaptersCount
         );
     }
 }

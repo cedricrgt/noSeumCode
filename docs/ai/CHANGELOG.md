@@ -298,3 +298,59 @@
   - Configuration JWT basée uniquement sur `JWT_SECRET`.
 
 **Résultat** : Architecture d'authentification 100% unifiée et allégée sur Spring Boot Security & JWT.
+
+---
+
+### Session 13 — Dashboard Admin Interactif : Soft Delete, Bannissement, Vue Formations & Tableau des Membres Triable
+
+**Objectif** :
+1. Implémenter la suppression douce (soft delete `is_deleted = true`) et le blocage/bannissement (`is_blocked = true`) des utilisateurs avec conservation des données en base.
+2. Rendre les 3 cartes de statistiques administratives interactives au clic (Sections à valider, Formations actives, Utilisateurs inscrits).
+3. Afficher la liste des formations actives avec titre cliquable, dates de création/modification, auteur et responsable de l'update.
+4. Créer un tableau complet des membres avec tri interactif multi-colonnes (Nom, Email, Rôle, Date d'inscription, Formations, Paiement, Statut).
+
+**Réalisé** :
+- **Backend ([UserController.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/user/controller/UserController.java), [UserService.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/user/service/UserService.java), [UserResponse.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/user/dto/UserResponse.java), [CourseResponse.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/course/dto/CourseResponse.java), [CourseController.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/course/controller/CourseController.java))** :
+  - Endpoints REST : `DELETE /api/users/{id}` (soft-delete), `PATCH /api/users/{id}/restore` (restauration), `PATCH /api/users/{id}/block` (bannissement), `PATCH /api/users/{id}/unblock` (déblocage).
+  - Enrichissement de `UserResponse` avec `isDeleted`, `isBlocked`, `enrolledCoursesCount` et `paymentStatus`.
+  - Enrichissement de `CourseResponse` avec `createdByName`, `updatedByName` et `chaptersCount`.
+- **Frontend ([dashboard.html](file:///d:/Archive-mac/dev/code-bangers/frontend/dashboard.html), [dashboard.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/dashboard.js), [dashboard.css](file:///d:/Archive-mac/dev/code-bangers/frontend/styles/pages/dashboard.css))** :
+  - Cartes de statistiques interactives (`.stat-card-interactive`) permettant de basculer dynamiquement entre les 3 vues administratives.
+  - Onglet **Formations Actives** : affichage du tableau avec titre cliquable vers la formation, auteur initial, date de création, auteur du dernier update et date de dernière mise à jour.
+  - Onglet **Membres & Inscriptions** : tableau triable dynamiquement par clic sur les en-têtes de colonnes (avec indicateurs `▲` / `▼`), badges de statut (`● Actif`, `🚫 Banni`, `🗑️ Supprimé`) et boutons d'actions contextuels (Bannir/Débloquer, Supprimer/Restaurer, Modifier Rôle).
+
+**Résultat** : Console d'administration interactive, complète et sécurisée, conforme aux exigences de gestion des membres et des cours.
+
+---
+
+### Session 14 — Correction de la Sérialisation JSON des Statuts (isBlocked / isDeleted)
+
+**Objectif** : Corriger l'affichage du statut utilisateur dans le tableau d'administration pour refléter immédiatement le statut "🚫 Banni" ou "🗑️ Supprimé" suite à la convention de nommage des getters booléens Jackson (`isBlocked` ➔ `blocked`).
+
+**Réalisé** :
+- **Backend ([UserResponse.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/user/dto/UserResponse.java))** :
+  - Ajout des annotations `@JsonProperty("isBlocked")`, `@JsonProperty("blocked")`, `@JsonProperty("isDeleted")`, `@JsonProperty("deleted")`.
+- **Frontend ([dashboard.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/dashboard.js))** :
+  - Prise en charge des deux clés (`user.isBlocked || user.blocked`, `user.isDeleted || user.deleted`) pour le rendu des badges, le tri et l'affichage des boutons d'actions (Débloquer / Bannir, Restaurer / Supprimer).
+
+**Résultat** : Affichage exact et en temps réel des badges de statut `🚫 Banni`, `🗑️ Supprimé` et `● Actif` dans le tableau d'administration.
+
+---
+
+### Session 15 — Architecture de Paiement Évolutive (Admin Manuel + Stripe Webhook Automatisé)
+
+**Objectif** :
+1. Permettre à un Administrateur de modifier manuellement le statut de paiement d'un utilisateur (`PAID`, `PENDING`, `FREE`, `REFUNDED`, `FAILED`).
+2. Concevoir une architecture découplée, propre et évolutive prête pour l'intégration automatique de l'API Stripe (Webhooks).
+
+**Réalisé** :
+- **Backend ([PaymentService.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/payment/service/PaymentService.java), [PaymentController.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/payment/controller/PaymentController.java), [PaymentStatusUpdateRequest.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/payment/dto/PaymentStatusUpdateRequest.java), [SecurityConfig.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/config/SecurityConfig.java))** :
+  - Création du module `payment` avec `PaymentService` comme point d'entrée universel pour les transitions d'état de paiement.
+  - Endpoint Admin : `PATCH/POST /api/payments/user/{userId}/status` protégé par `@PreAuthorize("hasRole('ADMIN')")`.
+  - Endpoint Stripe Webhook : `POST /api/payments/webhook/stripe` (public dans `SecurityConfig`, prêt pour la réception des événements Stripe `checkout.session.completed`, `charge.refunded`, `invoice.payment_failed`...).
+- **Frontend ([dashboard.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/dashboard.js), [dashboard.css](file:///d:/Archive-mac/dev/code-bangers/frontend/styles/pages/dashboard.css))** :
+  - Ajout d'un sélecteur interactif de paiement dans la colonne "Paiement" du Dashboard Admin.
+  - Nouveaux badges stylisés : `✓ Payé` (vert), `⏳ En attente` (orange), `Gratuit` (gris), `↩️ Remboursé` (violet), `❌ Échoué` (rouge).
+  - Gestion asynchrone avec feedback immédiat lors de la modification du statut de paiement.
+
+**Résultat** : Système de paiement hybride, hautement scalable, modulaire et prêt pour Stripe.

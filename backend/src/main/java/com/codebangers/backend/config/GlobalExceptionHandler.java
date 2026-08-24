@@ -82,12 +82,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGenericException(Exception ex, WebRequest request) {
+        log.error("Unhandled Exception at {}: {}", extractPath(request), ex.getMessage(), ex);
         ApiError error = new ApiError(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Internal Server Error",
-                "An unexpected error occurred",
+                ex.getMessage() != null ? ex.getMessage() : "An unexpected error occurred",
                 extractPath(request));
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
