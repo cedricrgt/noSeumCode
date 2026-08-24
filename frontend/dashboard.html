@@ -76,40 +76,53 @@
   <main class="dash-container">
 
     <!-- Hero Banner spécifique au rôle -->
-    <section class="dash-hero">
+    <section class="dash-hero" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
       <div>
         <span class="section-tag" id="dash-hero-tag">ESPACE MEMBRE</span>
-        <h1 class="dash-hero-title" id="dash-hero-title">TABLEAU DE BORD APPRENANT</h1>
+        <h1 class="dash-hero-title" id="dash-hero-title">TABLEAU DE BORD</h1>
         <p class="dash-hero-subtitle" id="dash-hero-subtitle">
-          Retrouvez vos formations en cours, suivez votre progression et téléchargez vos certifications.
+          Chargement de votre espace personnalisé...
         </p>
+      </div>
+
+      <!-- Sélecteur de vue rapide pour les Administrateurs -->
+      <div id="admin-view-switcher" style="display: none; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); padding: 6px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.15); display: none; align-items: center; gap: 6px;">
+        <button id="btn-view-admin" class="button button__primary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="manuallySwitchDashboardView('ADMIN')">
+          🛡️ Vue Admin
+        </button>
+        <button id="btn-view-teacher" class="button button__secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="manuallySwitchDashboardView('TEACHER')">
+          👨‍🏫 Vue Formateur
+        </button>
+        <button id="btn-view-student" class="button button__secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="manuallySwitchDashboardView('STUDENT')">
+          🎓 Vue Apprenant
+        </button>
       </div>
     </section>
 
     <!-- ========================================================
-         VUE 1 : ESPACE APPRENANT (STUDENT) — Affiché par défaut
+         VUE 1 : ESPACE APPRENANT (STUDENT)
          ======================================================== -->
-    <div id="view-student">
+    <div id="view-student" style="display: none;">
       <!-- Stats -->
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon-wrapper green">📚</div>
           <div>
-            <div id="stat-student-enrolled-count" class="stat-value">2</div>
+            <div id="stat-student-enrolled-count" class="stat-value">0</div>
             <div class="stat-label">Formations en cours</div>
           </div>
         </div>
         <div class="stat-card">
           <div class="stat-icon-wrapper blue">📈</div>
           <div>
-            <div id="stat-student-avg-progress" class="stat-value">45%</div>
+            <div id="stat-student-avg-progress" class="stat-value">0%</div>
             <div class="stat-label">Progression moyenne</div>
           </div>
         </div>
         <div class="stat-card">
           <div class="stat-icon-wrapper pink">🏆</div>
           <div>
-            <div class="stat-value">1</div>
+            <div class="stat-value">0</div>
             <div class="stat-label">Certificat disponible</div>
           </div>
         </div>
@@ -251,13 +264,16 @@
 
       <!-- ONGLET 3 : Gestion des Membres & Inscriptions -->
       <div id="admin-tab-users" class="admin-tab-content" style="display: none;">
-        <div class="dash-section-header">
+        <div class="dash-section-header" style="display: flex; justify-content: space-between; align-items: center;">
           <h2 class="dash-section-title">👥 Gestion des Membres & Inscriptions</h2>
+          <button class="button button__secondary" style="padding: 6px 14px; font-size: 0.82rem; border-radius: 999px; cursor: pointer;" onclick="loadAdminUsers()">
+            🔄 Actualiser la liste
+          </button>
         </div>
 
         <div class="alert-box info">
           <div>
-            🛡️ <strong>Gestion Globale des Utilisateurs :</strong> Cliquez sur les en-têtes de colonnes (Nom, Date, Rôle, Cours, Paiement, Statut) pour trier la liste. Les actions de suppression (soft-delete) et de bannissement sont appliquées instantanément par le backend.
+            🛡️ <strong>Gestion des Utilisateurs & Formations :</strong> Cliquez sur un utilisateur pour <strong>dérouler toutes ses informations détaillées</strong> et gérer le <strong>statut de paiement pour chaque formation</strong> individuellement.
           </div>
         </div>
 

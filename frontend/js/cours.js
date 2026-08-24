@@ -109,24 +109,7 @@ async function loadInitialData() {
     if (enrollRes && enrollRes.ok) {
       userEnrollments = await enrollRes.json();
     } else {
-      // Demo fallback inscriptions selon le compte
-      if (currentUser.email === "student.pending@codebangers.fr" || currentUser.paymentStatus === "PENDING" || currentUser.paymentStatus === "EN ATTENTE") {
-        userEnrollments = [
-          {
-            courseId: "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
-            paymentStatus: "PENDING",
-            progress: 0
-          }
-        ];
-      } else {
-        userEnrollments = [
-          {
-            courseId: "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
-            paymentStatus: (currentUser.paymentStatus && currentUser.paymentStatus.toUpperCase().includes("PAID")) ? "PAID" : "PAID",
-            progress: 35
-          }
-        ];
-      }
+      userEnrollments = [];
     }
   }
 }
@@ -296,6 +279,25 @@ async function loadSingleCourse(courseId, requestedChapterId) {
   // 3. Vérification des Droits d'Accès de l'Étudiant (Inscription & Statut de Paiement)
   if (currentRole === "STUDENT") {
     let enrollment = userEnrollments.find(e => e.courseId === currentCourse.id);
+
+    // Détecter si le compte a un statut de paiement validé globalement ou par l'admin
+    let storedPayment = currentUser.paymentStatus;
+    try {
+      const paymentMap = JSON.parse(localStorage.getItem("noseum_payments") || "{}");
+      if (currentUser.id && paymentMap[currentUser.id]) storedPayment = paymentMap[currentUser.id];
+      if (currentUser.email && paymentMap[currentUser.email]) storedPayment = paymentMap[currentUser.email];
+    } catch (_) {}
+
+    const isGlobalPaid = (storedPayment === "PAID" || storedPayment === "PAYÉ" || storedPayment === "FREE" || storedPayment === "GRATUIT");
+
+    if (!enrollment && isGlobalPaid) {
+      enrollment = {
+        courseId: currentCourse.id,
+        paymentStatus: "PAID",
+        progress: 0
+      };
+      userEnrollments.push(enrollment);
+    }
     
     // Si l'étudiant n'est pas inscrit à ce cours
     if (!enrollment) {
@@ -308,7 +310,12 @@ async function loadSingleCourse(courseId, requestedChapterId) {
     }
 
     // Si l'étudiant est inscrit mais que son paiement n'est pas validé (ex: PENDING, FAILED, REFUNDED)
-    const pStatus = (enrollment.paymentStatus || "").toUpperCase();
+    let pStatus = (enrollment.paymentStatus || "").toUpperCase();
+    if (isGlobalPaid && (pStatus === "PENDING" || pStatus === "EN ATTENTE")) {
+      pStatus = "PAID";
+      enrollment.paymentStatus = "PAID";
+    }
+
     const isPaid = (pStatus === "PAID" || pStatus === "PAYÉ" || pStatus === "FREE" || pStatus === "GRATUIT");
 
     if (!isPaid) {

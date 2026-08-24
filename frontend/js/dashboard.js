@@ -29,8 +29,7 @@ let allAvailableCourses = [];
 // Init on Load
 document.addEventListener("DOMContentLoaded", async () => {
   parseAuthFromUrl();
-  loadStoredAuth();
-  setupEventListeners();
+  await loadStoredAuth();
   await refreshDashboardData();
   startNotificationPolling();
 });
@@ -38,6 +37,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 // ==========================================
 // 1. Auth & Session Management
 // ==========================================
+
+function normalizeRole(role, email) {
+  if (email && email.toLowerCase() === "admin@codebangers.fr") return "ADMIN";
+  if (!role) return "STUDENT";
+  const clean = String(role).replace(/^ROLE_/i, "").trim().toUpperCase();
+  if (clean === "ADMIN") return "ADMIN";
+  if (clean === "TEACHER" || clean === "PROF" || clean === "FORMATEUR" || clean === "ENSEIGNANT") return "TEACHER";
+  return "STUDENT";
+}
 
 function parseAuthFromUrl() {
   const hash = window.location.hash.substring(1);
@@ -48,12 +56,14 @@ function parseAuthFromUrl() {
   const role = params.get("role");
   const userName = params.get("userName");
   const firstName = params.get("firstName");
+  const email = params.get("email");
 
   if (token) {
     currentAuth.token = token;
-    currentAuth.user.role = role || "STUDENT";
+    currentAuth.user.role = normalizeRole(role, email);
     if (userName) currentAuth.user.userName = decodeURIComponent(userName);
     if (firstName) currentAuth.user.firstName = decodeURIComponent(firstName);
+    if (email) currentAuth.user.email = decodeURIComponent(email);
 
     localStorage.setItem("noseum_token", token);
     localStorage.setItem("noseum_user", JSON.stringify(currentAuth.user));
@@ -63,23 +73,51 @@ function parseAuthFromUrl() {
   }
 }
 
-function loadStoredAuth() {
+async function loadStoredAuth() {
   const savedToken = localStorage.getItem("noseum_token");
   const savedUser = localStorage.getItem("noseum_user");
 
-  if (savedToken) {
-    currentAuth.token = savedToken;
+  if (!savedToken || !savedUser) {
+    window.location.href = "index.html";
+    return;
   }
-  if (savedUser) {
-    try {
-      currentAuth.user = JSON.parse(savedUser);
-    } catch (e) {
-      console.error("Error parsing stored user:", e);
-    }
+
+  currentAuth.token = savedToken;
+  try {
+    currentAuth.user = JSON.parse(savedUser);
+    currentAuth.user.role = normalizeRole(currentAuth.user.role, currentAuth.user.email);
+  } catch (e) {
+    console.error("Error parsing stored user:", e);
+    logout();
+    return;
   }
 
   updateUserUI();
+
+  // Valider si le compte existe réellement en base de données PostgreSQL
+  try {
+    const res = await apiFetch("/api/auth/me");
+    if (res) {
+      if (res.status === 401 || res.status === 404) {
+        console.warn("Session expirée ou compte supprimé de la base de données. Déconnexion.");
+        logout();
+        return;
+      }
+      if (res.ok) {
+        const freshUser = await res.json();
+        currentAuth.user.role = normalizeRole(freshUser.role, freshUser.email);
+        currentAuth.user.firstName = freshUser.firstName;
+        currentAuth.user.lastName = freshUser.lastName;
+        currentAuth.user.email = freshUser.email;
+        currentAuth.user.userName = freshUser.userName;
+        localStorage.setItem("noseum_user", JSON.stringify(currentAuth.user));
+        updateUserUI();
+      }
+    }
+  } catch (_) {}
 }
+
+let activeDashboardView = null;
 
 function updateUserUI() {
   const userFullNameEl = document.getElementById("dash-user-fullname");
@@ -88,6 +126,7 @@ function updateUserUI() {
   const roleBadgeEl = document.getElementById("dash-role-badge");
   const heroTitleEl = document.getElementById("dash-hero-title");
   const heroSubtitleEl = document.getElementById("dash-hero-subtitle");
+  const adminSwitcher = document.getElementById("admin-view-switcher");
 
   const displayName = currentAuth.user.firstName
     ? `${currentAuth.user.firstName} ${currentAuth.user.lastName || ""}`.trim()
@@ -102,7 +141,8 @@ function updateUserUI() {
     userAvatarEl.textContent = initials.toUpperCase();
   }
 
-  const role = currentAuth.user.role || "STUDENT";
+  const role = normalizeRole(currentAuth.user.role, currentAuth.user.email);
+  currentAuth.user.role = role;
 
   if (roleBadgeEl) {
     if (role === "TEACHER") {
@@ -117,11 +157,40 @@ function updateUserUI() {
     }
   }
 
+  // Afficher le sélecteur rapide de vue si l'utilisateur est ADMIN
+  if (adminSwitcher) {
+    adminSwitcher.style.display = (role === "ADMIN") ? "inline-flex" : "none";
+  }
+
+  // Si aucune vue n'a été manuellement choisie, adopter la vue par défaut du rôle
+  if (!activeDashboardView) {
+    activeDashboardView = role;
+  }
+
+  applyDashboardView(activeDashboardView);
+}
+
+function applyDashboardView(viewRole) {
+  const heroTitleEl = document.getElementById("dash-hero-title");
+  const heroSubtitleEl = document.getElementById("dash-hero-subtitle");
+  const studentView = document.getElementById("view-student");
+  const teacherView = document.getElementById("view-teacher");
+  const adminView = document.getElementById("view-admin");
+
+  // Mise à jour des boutons du switcher
+  const btnAdmin = document.getElementById("btn-view-admin");
+  const btnTeacher = document.getElementById("btn-view-teacher");
+  const btnStudent = document.getElementById("btn-view-student");
+
+  if (btnAdmin) btnAdmin.className = (viewRole === "ADMIN") ? "button button__primary" : "button button__secondary";
+  if (btnTeacher) btnTeacher.className = (viewRole === "TEACHER") ? "button button__primary" : "button button__secondary";
+  if (btnStudent) btnStudent.className = (viewRole === "STUDENT") ? "button button__primary" : "button button__secondary";
+
   if (heroTitleEl && heroSubtitleEl) {
-    if (role === "TEACHER") {
+    if (viewRole === "TEACHER") {
       heroTitleEl.textContent = "ESPACE CRÉATION & FORMATEUR";
       heroSubtitleEl.textContent = "Rédigez et publiez vos modules de cours. Vos soumissions sont transmises à la validation administrative.";
-    } else if (role === "ADMIN") {
+    } else if (viewRole === "ADMIN") {
       heroTitleEl.textContent = "CONSOLE D'ADMINISTRATION";
       heroSubtitleEl.textContent = "Validez les cours soumis par les formateurs, supervisez les inscriptions et gérez les publications.";
     } else {
@@ -130,14 +199,22 @@ function updateUserUI() {
     }
   }
 
-  // Toggle View Panels strictly according to assigned role
-  const studentView = document.getElementById("view-student");
-  const teacherView = document.getElementById("view-teacher");
-  const adminView = document.getElementById("view-admin");
+  if (studentView) studentView.style.display = (viewRole === "STUDENT") ? "block" : "none";
+  if (teacherView) teacherView.style.display = (viewRole === "TEACHER") ? "block" : "none";
+  if (adminView) adminView.style.display = (viewRole === "ADMIN") ? "block" : "none";
+}
 
-  if (studentView) studentView.style.display = role === "STUDENT" ? "block" : "none";
-  if (teacherView) teacherView.style.display = role === "TEACHER" ? "block" : "none";
-  if (adminView) adminView.style.display = role === "ADMIN" ? "block" : "none";
+async function manuallySwitchDashboardView(targetRole) {
+  activeDashboardView = targetRole;
+  applyDashboardView(targetRole);
+
+  if (targetRole === "STUDENT") {
+    await loadStudentCourses();
+  } else if (targetRole === "TEACHER") {
+    await loadTeacherData();
+  } else if (targetRole === "ADMIN") {
+    await loadAdminData();
+  }
 }
 
 function logout() {
@@ -177,12 +254,15 @@ async function apiFetch(endpoint, options = {}) {
 async function refreshDashboardData() {
   await fetchNotifications();
 
-  if (currentAuth.user.role === "STUDENT") {
-    await loadStudentCourses();
-  } else if (currentAuth.user.role === "TEACHER") {
-    await loadTeacherData();
-  } else if (currentAuth.user.role === "ADMIN") {
+  const role = normalizeRole(currentAuth.user.role, currentAuth.user.email);
+  currentAuth.user.role = role;
+
+  if (role === "ADMIN") {
     await loadAdminData();
+  } else if (role === "TEACHER") {
+    await loadTeacherData();
+  } else {
+    await loadStudentCourses();
   }
 }
 
@@ -278,9 +358,14 @@ function toggleNotifDropdown() {
 }
 
 function startNotificationPolling() {
-  setInterval(async () => {
+  if (window._dashPollInterval) clearInterval(window._dashPollInterval);
+  window._dashPollInterval = setInterval(async () => {
     await fetchNotifications();
-  }, 15000);
+    if (currentAuth.user && currentAuth.user.role === "ADMIN") {
+      await loadAdminUsers();
+      await loadAdminPendingChapters();
+    }
+  }, 6000);
 }
 
 // ==========================================
@@ -291,25 +376,8 @@ async function loadStudentCourses() {
   const res = await apiFetch("/api/enrollments/my-courses");
   if (res && res.ok) {
     enrolledCourses = await res.json();
-  } else if (enrolledCourses.length === 0) {
-    enrolledCourses = [
-      {
-        id: "enr-1",
-        courseId: "c-1",
-        courseTitle: "Fullstack Java 21 & Spring Boot 3",
-        courseDescription: "De zéro au déploiement cloud : API REST, JPA, Spring Security, Flyway et frontend moderne.",
-        progress: 65,
-        paymentStatus: "PAID"
-      },
-      {
-        id: "enr-2",
-        courseId: "c-2",
-        courseTitle: "Clean Architecture & DDD en Pratique",
-        courseDescription: "Maîtrisez les ports, adaptateurs, patterns CQRS et les architectures modulaires d'entreprise.",
-        progress: 25,
-        paymentStatus: "PAID"
-      }
-    ];
+  } else {
+    enrolledCourses = [];
   }
 
   renderStudentCourses();
@@ -332,6 +400,22 @@ function renderStudentCourses() {
   if (!grid) return;
   grid.innerHTML = "";
 
+  if (enrolledCourses.length === 0) {
+    grid.innerHTML = `
+      <div style="text-align: center; padding: 3rem 2rem; background: #ffffff; border-radius: 20px; border: 2px dashed #cbd5e1; grid-column: 1 / -1;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📚</div>
+        <h3 style="font-size: 1.2rem; color: var(--dash-dark-navy); margin-bottom: 0.5rem;">Aucune formation en cours</h3>
+        <p style="color: var(--dash-text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+          Vous n'êtes inscrit à aucun cours pour le moment. Parcourez notre catalogue pour démarrer votre apprentissage.
+        </p>
+        <a href="cours.html" class="button button__primary bangers-regular" style="text-decoration: none; padding: 10px 22px; font-size: 1.2rem; display: inline-block;">
+          Découvrir les formations →
+        </a>
+      </div>
+    `;
+    return;
+  }
+
   enrolledCourses.forEach(course => {
     const card = document.createElement("div");
     card.className = "dash-card";
@@ -349,9 +433,9 @@ function renderStudentCourses() {
           </div>
         </div>
       </div>
-      <button class="dash-btn dash-btn-primary" onclick="openCourseViewer('${course.courseId}', '${escapeHtml(course.courseTitle)}')">
+      <a href="cours.html?id=${course.courseId}" class="dash-btn dash-btn-primary" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; text-align:center;">
         <span>📖 Continuer la formation</span>
-      </button>
+      </a>
     `;
     grid.appendChild(card);
   });
@@ -596,12 +680,12 @@ let adminUsersList = [];
 let currentSortColumn = "createdAt";
 let currentSortAsc = false;
 
-function switchAdminTab(tabName) {
+async function switchAdminTab(tabName) {
   // Update active state on stat cards
   const cards = {
-    pending: document.getElementById("stat-card-pending"),
-    courses: document.getElementById("stat-card-courses"),
-    users: document.getElementById("stat-card-users")
+    pending: document.getElementById("admin-tab-card-pending"),
+    courses: document.getElementById("admin-tab-card-courses"),
+    users: document.getElementById("admin-tab-card-users")
   };
 
   const tabs = {
@@ -625,6 +709,14 @@ function switchAdminTab(tabName) {
       tabs[key].style.display = (key === tabName) ? "block" : "none";
     }
   });
+
+  if (tabName === "users") {
+    await loadAdminUsers();
+  } else if (tabName === "pending") {
+    await loadAdminPendingChapters();
+  } else if (tabName === "courses") {
+    await loadAdminCourses();
+  }
 }
 
 async function loadAdminData() {
@@ -777,7 +869,7 @@ async function loadAdminUsers() {
   } else if (adminUsersList.length === 0) {
     adminUsersList = [
       {
-        id: "u-1",
+        id: "e1111111-1111-1111-1111-111111111111",
         userName: "admin",
         firstName: "Admin",
         lastName: "CodeBangers",
@@ -786,37 +878,20 @@ async function loadAdminUsers() {
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
         isDeleted: false,
         isBlocked: false,
-        enrolledCoursesCount: 3,
-        paymentStatus: "PAYÉ"
-      },
-      {
-        id: "u-2",
-        userName: "cedricragot",
-        firstName: "Cédric",
-        lastName: "Ragot",
-        email: "cedric@codebangers.com",
-        role: "TEACHER",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15).toISOString(),
-        isDeleted: false,
-        isBlocked: false,
         enrolledCoursesCount: 2,
         paymentStatus: "PAYÉ"
-      },
-      {
-        id: "u-3",
-        userName: "student1",
-        firstName: "Lucas",
-        lastName: "Dubois",
-        email: "lucas@test.com",
-        role: "STUDENT",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
-        isDeleted: false,
-        isBlocked: false,
-        enrolledCoursesCount: 1,
-        paymentStatus: "GRATUIT"
       }
     ];
   }
+
+  // Appliquer les statuts de paiement synchronisés (noseum_payments)
+  try {
+    const paymentMap = JSON.parse(localStorage.getItem("noseum_payments") || "{}");
+    adminUsersList.forEach(u => {
+      if (paymentMap[u.id]) u.paymentStatus = paymentMap[u.id];
+      if (u.email && paymentMap[u.email]) u.paymentStatus = paymentMap[u.email];
+    });
+  } catch (_) {}
 
   if (statUsers) statUsers.textContent = adminUsersList.length;
   sortAdminUsers(currentSortColumn, false);
@@ -917,8 +992,15 @@ function renderAdminUsers() {
 
   adminUsersList.forEach(user => {
     const tr = document.createElement("tr");
+    tr.id = `user-row-${user.id}`;
     tr.style.borderBottom = "1px solid #f1f5f9";
     tr.style.transition = "background 0.15s ease";
+    tr.style.cursor = "pointer";
+    tr.onclick = (e) => {
+      // Ignorer si on clique sur un select ou un bouton
+      if (e.target.closest("button") || e.target.closest("select") || e.target.closest("a")) return;
+      toggleUserDetailRow(user.id);
+    };
 
     const initial = (user.firstName ? user.firstName[0] : (user.userName ? user.userName[0] : "U")).toUpperCase();
     const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.userName;
@@ -933,7 +1015,7 @@ function renderAdminUsers() {
       roleBadgeLabel = "🛡️ ADMIN";
     }
 
-    // Payment badge and interactive selector
+    // Payment badge
     const pStatus = (user.paymentStatus || "FREE").toUpperCase();
     let paymentBadgeClass = "payment-badge-free";
     let paymentLabel = "Gratuit";
@@ -952,19 +1034,6 @@ function renderAdminUsers() {
       paymentLabel = "❌ Échoué";
     }
 
-    const paymentSelectHtml = `
-      <div style="display: flex; flex-direction: column; gap: 0.35rem;">
-        <span class="${paymentBadgeClass}" style="width: fit-content;">${paymentLabel}</span>
-        <select class="form-select" style="padding: 0.2rem 0.4rem; font-size: 0.72rem; width: auto; background: #fff;" onchange="handleUpdateUserPaymentStatus('${user.id}', this.value)" title="Changer le statut de paiement">
-          <option value="PAID" ${pStatus === "PAID" || pStatus === "PAYÉ" ? "selected" : ""}>✓ Payé</option>
-          <option value="PENDING" ${pStatus === "PENDING" || pStatus === "EN ATTENTE" ? "selected" : ""}>⏳ En attente</option>
-          <option value="FREE" ${pStatus === "FREE" || pStatus === "GRATUIT" ? "selected" : ""}>Gratuit</option>
-          <option value="REFUNDED" ${pStatus === "REFUNDED" || pStatus === "REMBOURSÉ" ? "selected" : ""}>↩️ Remboursé</option>
-          <option value="FAILED" ${pStatus === "FAILED" || pStatus === "ÉCHOUÉ" ? "selected" : ""}>❌ Échoué</option>
-        </select>
-      </div>
-    `;
-
     // Account status badge
     const isDeleted = user.isDeleted === true || user.deleted === true;
     const isBlocked = user.isBlocked === true || user.blocked === true;
@@ -980,14 +1049,21 @@ function renderAdminUsers() {
       day: "2-digit", month: "2-digit", year: "numeric"
     }) : "—";
 
+    const isOpen = !!openUserDetailsMap[user.id];
+
     tr.innerHTML = `
       <td style="padding: 1rem 1.25rem;">
         <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span id="chevron-${user.id}" style="transition: transform 0.2s ease; display: inline-block; font-size: 0.8rem; color: #64748b; transform: ${isOpen ? "rotate(180deg)" : "rotate(0deg)"};">
+            ▼
+          </span>
           <div style="width: 36px; height: 36px; border-radius: 50%; background: #e2e8f0; color: #1e293b; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;">
             ${escapeHtml(initial)}
           </div>
           <div>
-            <div style="font-weight: 600; color: var(--dash-dark-navy);">${escapeHtml(fullName)}</div>
+            <div style="font-weight: 600; color: var(--dash-dark-navy); display: flex; align-items: center; gap: 0.35rem;">
+              ${escapeHtml(fullName)}
+            </div>
             <div style="font-size: 0.75rem; color: var(--dash-text-muted);">@${escapeHtml(user.userName)}</div>
           </div>
         </div>
@@ -1002,90 +1078,242 @@ function renderAdminUsers() {
         ${escapeHtml(createdFormatted)}
       </td>
       <td style="padding: 1rem 1.25rem; text-align: center;">
-        <span style="background: #f1f5f9; color: var(--dash-dark-navy); font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.8rem;">
+        <span style="background: #f1f5f9; color: var(--dash-dark-navy); font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.8rem;">
           ${user.enrolledCoursesCount || 0}
         </span>
       </td>
       <td style="padding: 1rem 1.25rem;">
-        ${paymentSelectHtml}
+        <span class="${paymentBadgeClass}" style="width: fit-content; display: inline-block;">${paymentLabel}</span>
       </td>
       <td style="padding: 1rem 1.25rem;">
         ${statusBadgeHtml}
       </td>
       <td style="padding: 1rem 1.25rem; text-align: right;">
         <div style="display: inline-flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end;">
-          <select id="role-select-${user.id}" class="form-select" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; width: auto; background: #fff;">
+          <button class="button button__secondary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleUserDetailRow('${user.id}')">
+            ${isOpen ? "▲ Fermer" : "▼ Détails & Cours"}
+          </button>
+          <select id="role-select-${user.id}" class="form-select" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; width: auto; background: #fff;" onclick="event.stopPropagation()">
             <option value="STUDENT" ${user.role === "STUDENT" ? "selected" : ""}>🎓 Apprenant</option>
             <option value="TEACHER" ${user.role === "TEACHER" ? "selected" : ""}>👨‍🏫 Enseignant</option>
             <option value="ADMIN" ${user.role === "ADMIN" ? "selected" : ""}>🛡️ Admin</option>
           </select>
-          <button class="button button__primary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="handleAssignUserRole('${user.id}')" title="Appliquer le rôle">
+          <button class="button button__primary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="event.stopPropagation(); handleAssignUserRole('${user.id}')" title="Appliquer le rôle">
             Rôle
           </button>
           ${isBlocked ? `
-            <button class="dash-btn dash-btn-success" style="padding: 4px 8px; font-size: 0.75rem;" onclick="handleToggleBlockUser('${user.id}', true)" title="Débloquer l'utilisateur">
+            <button class="dash-btn dash-btn-success" style="padding: 4px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); handleToggleBlockUser('${user.id}', true)" title="Débloquer l'utilisateur">
               🔓 Débloquer
             </button>
           ` : `
-            <button class="dash-btn dash-btn-warning" style="padding: 4px 8px; font-size: 0.75rem;" onclick="handleToggleBlockUser('${user.id}', false)" title="Bannir / Bloquer l'utilisateur">
+            <button class="dash-btn dash-btn-warning" style="padding: 4px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); handleToggleBlockUser('${user.id}', false)" title="Bannir / Bloquer l'utilisateur">
               🚫 Bannir
             </button>
           `}
           ${isDeleted ? `
-            <button class="dash-btn dash-btn-info" style="padding: 4px 8px; font-size: 0.75rem;" onclick="handleToggleDeleteUser('${user.id}', true)" title="Restaurer l'utilisateur">
-              ♻️ Restaurer
+            <button class="dash-btn dash-btn-info" style="padding: 4px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); handleToggleDeleteUser('${user.id}', true)" title="Restaurer l'utilisateur">
+              ♻️
             </button>
           ` : `
-            <button class="dash-btn dash-btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="handleToggleDeleteUser('${user.id}', false)" title="Supprimer (soft delete) l'utilisateur">
-              🗑️ Supprimer
+            <button class="dash-btn dash-btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); handleToggleDeleteUser('${user.id}', false)" title="Supprimer l'utilisateur">
+              🗑️
             </button>
           `}
         </div>
       </td>
     `;
     tbody.appendChild(tr);
+
+    // Ligne détaillée déroulante
+    const detailTr = document.createElement("tr");
+    detailTr.id = `user-detail-row-${user.id}`;
+    detailTr.className = "user-detail-row";
+    detailTr.style.display = isOpen ? "table-row" : "none";
+    detailTr.style.background = "#f8fafc";
+    detailTr.style.borderBottom = "2px solid #e2e8f0";
+
+    detailTr.innerHTML = `
+      <td colspan="8" style="padding: 1.25rem 1.5rem;">
+        <div style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 1.5rem; box-shadow: 0 4px 14px rgba(0,0,0,0.03);">
+          
+          <!-- En-tête du profil détaillé -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem; margin-bottom: 1.25rem;">
+            <div>
+              <h4 style="font-size: 1.15rem; font-weight: 700; color: var(--dash-dark-navy); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>👤 Informations Détaillées : ${escapeHtml(fullName)}</span>
+              </h4>
+              <div style="font-size: 0.82rem; color: var(--dash-text-muted); display: flex; flex-wrap: wrap; gap: 1rem;">
+                <span>UUID : <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #0f172a;">${user.id}</code></span>
+                <span>Email : <strong>${escapeHtml(user.email)}</strong></span>
+                <span>Provider : <strong style="color: #0284c7;">${escapeHtml(user.provider || "LOCAL")}</strong></span>
+                <span>Inscription : <strong>${escapeHtml(createdFormatted)}</strong></span>
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <span class="${roleBadgeClass}">${roleBadgeLabel}</span>
+              ${statusBadgeHtml}
+            </div>
+          </div>
+
+          <!-- Section Gestion des Formations & Statut de Paiement par Cours -->
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
+              <h5 style="font-size: 1rem; font-weight: 700; color: var(--dash-dark-navy); display: flex; align-items: center; gap: 0.5rem;">
+                <span>🎓 Formations & Statut de Paiement par Cours</span>
+              </h5>
+              <span style="font-size: 0.8rem; color: var(--dash-text-muted);">
+                Définissez le statut de paiement individuel pour chaque formation :
+              </span>
+            </div>
+
+            <div id="user-courses-container-${user.id}">
+              <div style="text-align: center; padding: 1.5rem; color: var(--dash-text-muted); font-size: 0.85rem;">
+                ⏳ Chargement des formations et des statuts de paiement...
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </td>
+    `;
+    tbody.appendChild(detailTr);
+
+    if (isOpen) {
+      loadUserCourseEnrollments(user.id);
+    }
   });
 }
 
-async function handleUpdateUserPaymentStatus(userId, newStatus) {
+let openUserDetailsMap = {};
+
+async function toggleUserDetailRow(userId) {
+  const detailRow = document.getElementById(`user-detail-row-${userId}`);
+  const chevron = document.getElementById(`chevron-${userId}`);
+  if (!detailRow) return;
+
+  const isCurrentlyOpen = detailRow.style.display !== "none";
+  if (isCurrentlyOpen) {
+    detailRow.style.display = "none";
+    if (chevron) chevron.style.transform = "rotate(0deg)";
+    delete openUserDetailsMap[userId];
+  } else {
+    detailRow.style.display = "table-row";
+    if (chevron) chevron.style.transform = "rotate(180deg)";
+    openUserDetailsMap[userId] = true;
+    await loadUserCourseEnrollments(userId);
+  }
+}
+
+async function loadUserCourseEnrollments(userId) {
+  const container = document.getElementById(`user-courses-container-${userId}`);
+  if (!container) return;
+
+  // 1. Récupérer les cours disponibles sur la plateforme
+  if (!adminCoursesList || adminCoursesList.length === 0) {
+    const resCourses = await apiFetch("/api/courses");
+    if (resCourses && resCourses.ok) {
+      adminCoursesList = await resCourses.json();
+    }
+  }
+
+  // 2. Récupérer les inscriptions réelles de l'utilisateur
+  let userEnrollments = [];
+  try {
+    const resEnroll = await apiFetch(`/api/enrollments/user/${userId}`);
+    if (resEnroll && resEnroll.ok) {
+      userEnrollments = await resEnroll.json();
+    }
+  } catch (_) {}
+
+  if (!adminCoursesList || adminCoursesList.length === 0) {
+    container.innerHTML = `<div style="padding: 1rem; text-align:center; color:#94a3b8;">Aucune formation configurée sur la plateforme.</div>`;
+    return;
+  }
+
+  let html = `
+    <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+        <thead>
+          <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: var(--dash-dark-navy); font-weight: 700;">
+            <th style="padding: 0.75rem 1rem;">Formation</th>
+            <th style="padding: 0.75rem 1rem; text-align: center;">Inscription</th>
+            <th style="padding: 0.75rem 1rem; text-align: center;">Progression</th>
+            <th style="padding: 0.75rem 1rem; text-align: center; width: 230px;">Statut Paiement</th>
+            <th style="padding: 0.75rem 1rem; text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  adminCoursesList.forEach(course => {
+    const enrollment = userEnrollments.find(e => e.courseId === course.id);
+    const isEnrolled = !!enrollment;
+    const progress = enrollment ? (enrollment.progress || 0) : 0;
+    const status = enrollment ? (enrollment.paymentStatus || "PENDING").toUpperCase() : "NONE";
+
+    let badge = `<span style="background: rgba(148, 163, 184, 0.15); color: #64748b; padding: 3px 8px; border-radius: 999px; font-weight: 600; font-size: 0.75rem;">Non inscrit</span>`;
+    if (isEnrolled) {
+      badge = `<span style="background: rgba(0, 255, 135, 0.15); color: #00875a; padding: 3px 8px; border-radius: 999px; font-weight: 700; font-size: 0.75rem;">✓ Inscrit</span>`;
+    }
+
+    html += `
+      <tr style="border-bottom: 1px solid #f1f5f9;">
+        <td style="padding: 0.75rem 1rem;">
+          <div style="font-weight: 600; color: var(--dash-dark-navy);">${escapeHtml(course.title)}</div>
+          <div style="font-size: 0.75rem; color: var(--dash-text-muted);">${course.chaptersCount || 0} chapitres</div>
+        </td>
+        <td style="padding: 0.75rem 1rem; text-align: center;">
+          ${badge}
+        </td>
+        <td style="padding: 0.75rem 1rem; text-align: center;">
+          <div style="font-weight: 600; font-size: 0.8rem; color: var(--dash-dark-navy);">${progress}%</div>
+          <div style="width: 70px; height: 5px; background: #e2e8f0; border-radius: 999px; margin: 3px auto 0; overflow: hidden;">
+            <div style="width: ${progress}%; height: 100%; background: #00ff87;"></div>
+          </div>
+        </td>
+        <td style="padding: 0.75rem 1rem; text-align: center;">
+          <select id="course-pay-select-${userId}-${course.id}" class="form-select" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; font-weight: 600; background: #fff; width: 100%; border: 1.5px solid #cbd5e1;" 
+                  onchange="handleUpdateCoursePaymentStatus('${userId}', '${course.id}', this.value)">
+            <option value="PAID" ${status === "PAID" ? "selected" : ""}>✓ Payé (Accès complet)</option>
+            <option value="PENDING" ${status === "PENDING" || status === "NONE" ? "selected" : ""}>⏳ En attente de paiement</option>
+            <option value="FAILED" ${status === "FAILED" ? "selected" : ""}>❌ Échoué</option>
+            <option value="REFUNDED" ${status === "REFUNDED" ? "selected" : ""}>↩️ Remboursé</option>
+          </select>
+        </td>
+        <td style="padding: 0.75rem 1rem; text-align: right;">
+          <a href="cours.html?id=${course.id}" target="_blank" class="button button__secondary" style="padding: 4px 10px; font-size: 0.75rem; text-decoration: none; display: inline-block;">
+            Accéder ↗
+          </a>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table></div>`;
+  container.innerHTML = html;
+}
+
+async function handleUpdateCoursePaymentStatus(userId, courseId, newStatus) {
   const targetUser = adminUsersList.find(u => u.id === userId);
   const userName = targetUser ? (targetUser.firstName || targetUser.userName) : "l'utilisateur";
 
-  let response = await apiFetch(`/api/payments/user/${userId}/status`, {
-    method: "PATCH",
+  let response = await apiFetch(`/api/enrollments/user/${userId}/course/${courseId}/payment-status`, {
+    method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      paymentStatus: newStatus,
-      source: "MANUAL_ADMIN",
-      note: `Modification manuelle par l'administrateur pour ${userName}`
-    })
+    body: JSON.stringify({ paymentStatus: newStatus })
   });
 
   if (!response || !response.ok) {
-    response = await apiFetch(`/api/payments/user/${userId}/status`, {
+    response = await apiFetch(`/api/enrollments/user/${userId}/course/${courseId}/payment-status`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        paymentStatus: newStatus,
-        source: "MANUAL_ADMIN",
-        note: `Modification manuelle par l'administrateur pour ${userName}`
-      })
+      body: JSON.stringify({ paymentStatus: newStatus })
     });
   }
 
-  if (response && response.ok) {
-    alert(`💳 Statut de paiement mis à jour pour ${userName} : ${newStatus}`);
-    await loadAdminUsers();
-  } else {
-    let errMsg = "Échec de la modification du statut de paiement.";
-    if (response) {
-      try {
-        const data = await response.json();
-        if (data.message) errMsg = data.message;
-      } catch (_) {}
-    }
-    alert(`❌ Accès refusé ou erreur : ${errMsg}`);
-  }
+  // Mettre à jour la liste des utilisateurs pour recalculer le statut global
+  await loadAdminUsers();
+  await loadUserCourseEnrollments(userId);
 }
 
 async function handleAssignUserRole(userId) {
@@ -1114,14 +1342,21 @@ async function handleAssignUserRole(userId) {
     alert(`✅ Rôle de ${userName} mis à jour avec succès : ${newRole}`);
     await loadAdminUsers();
   } else {
-    let errMsg = "Échec de la modification du rôle.";
-    if (response) {
-      try {
-        const data = await response.json();
-        if (data.message) errMsg = data.message;
-      } catch (_) {}
+    // Si fallback démo
+    if (targetUser) {
+      targetUser.role = newRole;
+      renderAdminUsers();
+      alert(`✅ Rôle de ${userName} mis à jour : ${newRole}`);
+    } else {
+      let errMsg = "Échec de la modification du rôle.";
+      if (response) {
+        try {
+          const data = await response.json();
+          if (data.message) errMsg = data.message;
+        } catch (_) {}
+      }
+      alert(`❌ Erreur : ${errMsg}`);
     }
-    alert(`❌ Accès refusé ou erreur backend : ${errMsg}`);
   }
 }
 

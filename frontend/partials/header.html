@@ -1,27 +1,18 @@
 <header class="header">
-  
-  <div class="promo-banner">
+
+  <!--<div class="promo-banner">
     <div class="promo-banner__track">
         <button popovertarget="promo-popup" class="promo-banner__cta bangers-regular">VOIR LE PLANNING</button></span>
     </div>
-  </div>
-  
-  
+  </div>-->
+
+
   <input type="checkbox" id="burger-toggle" class="burger-toggle" />
   <div class="header__container">
-    
+
     <label for="burger-toggle" class="burger-button">
-      <svg
-        class="burger-icon"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
+      <svg class="burger-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="3" y1="12" x2="21" y2="12"></line>
         <line x1="3" y1="6" x2="21" y2="6"></line>
         <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -30,11 +21,7 @@
 
     <div class="header__logo">
       <a href="index.html">
-        <img
-          alt="Logo de NoSeumCode"
-          class="logo__img"
-          src="images/header/logo.png"
-        />
+        <img alt="Logo de NoSeumCode" class="logo__img" src="images/header/logo.png" />
       </a>
     </div>
     <div class="header__navbar">
@@ -49,17 +36,24 @@
       </nav>
       <div class="header__actions" style="display: flex; gap: 0.75rem; align-items: center;">
         <!-- Bouton Se connecter (visiteur non connecté) -->
-        <button id="header-auth-btn" class="button button__secondary bangers-regular" onclick="openGlobalAuthModal('login')" style="cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; font-size: 1.1rem; border: none;">
+        <button id="header-auth-btn" class="button button__secondary bangers-regular"
+          onclick="openGlobalAuthModal('login')"
+          style="cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; font-size: 1.1rem; border: none;">
           Se connecter
         </button>
 
         <!-- Profil connecté (affiché si token présent) -->
         <div id="header-user-badge" style="display: none; align-items: center; gap: 0.5rem;">
-          <a href="dashboard.html" class="user-profile-pill" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem; background: rgba(10, 22, 40, 0.9); padding: 0.35rem 0.8rem; border-radius: 30px; border: 1px solid rgba(0, 255, 135, 0.4); box-shadow: 0 0 10px rgba(0, 255, 135, 0.15);">
-            <div id="header-user-avatar-text" style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #00ff87, #00d9ff); color: #070e18; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem;">U</div>
-            <span id="header-user-name-text" style="font-weight: 600; font-size: 0.85rem; color: #fff;">Mon Espace</span>
+          <a href="dashboard.html" class="user-profile-pill"
+            style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem; background: rgba(10, 22, 40, 0.9); padding: 0.35rem 0.8rem; border-radius: 30px; border: 1px solid rgba(0, 255, 135, 0.4); box-shadow: 0 0 10px rgba(0, 255, 135, 0.15);">
+            <div id="header-user-avatar-text"
+              style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #00ff87, #00d9ff); color: #070e18; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem;">
+              U</div>
+            <span id="header-user-name-text" style="font-weight: 600; font-size: 0.85rem; color: #fff;">Mon
+              Espace</span>
           </a>
-          <button onclick="globalLogout()" title="Déconnexion" style="background: rgba(255,51,102,0.15); border: 1px solid rgba(255,51,102,0.4); color: #ff3366; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 0.85rem;">⏻</button>
+          <button onclick="globalLogout()" title="Déconnexion"
+            style="background: rgba(255,51,102,0.15); border: 1px solid rgba(255,51,102,0.4); color: #ff3366; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 0.85rem;">⏻</button>
         </div>
 
         <button class="button button__primary bangers-regular" popovertarget="hubspot-popover">
