@@ -27,4 +27,10 @@ public interface ChapterRepository extends JpaRepository<Chapter, UUID> {
 
     @Query("SELECT c FROM Chapter c JOIN FETCH c.course WHERE c.course.id = :courseId AND c.deletedAt IS NULL")
     List<Chapter> findActiveByCourseId(@Param("courseId") UUID courseId);
+
+    @Query("SELECT c FROM Chapter c JOIN FETCH c.course LEFT JOIN FETCH c.createdBy WHERE c.status = :status AND c.deletedAt IS NULL ORDER BY c.submittedAt ASC")
+    List<Chapter> findByStatusWithCourse(@Param("status") com.codebangers.backend.course.model.ApprovalStatus status);
+
+    @Query("SELECT c FROM Chapter c JOIN FETCH c.course WHERE c.course.id = :courseId AND c.status = com.codebangers.backend.course.model.ApprovalStatus.APPROVED AND c.deletedAt IS NULL ORDER BY c.position ASC")
+    List<Chapter> findApprovedByCourseId(@Param("courseId") UUID courseId);
 }

@@ -1,23 +1,35 @@
 package com.codebangers.backend.course.dto;
 
+import com.codebangers.backend.course.model.ApprovalStatus;
+
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class ChapterResponse {
 
     private UUID id;
     private UUID courseId;
+    private String courseTitle;
     private UUID parentId;
     private String title;
     private Integer position;
+    private ApprovalStatus status;
+    private String rejectionReason;
+    private LocalDateTime submittedAt;
+    private LocalDateTime reviewedAt;
+    private UUID createdById;
+    private String createdByName;
+    private UUID reviewedById;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<ContentResponse> contents;
 
     public ChapterResponse() {
     }
 
     public ChapterResponse(UUID id, UUID courseId, UUID parentId, String title,
-                         Integer position, LocalDateTime createdAt, LocalDateTime updatedAt) {
+                          Integer position, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.courseId = courseId;
         this.parentId = parentId;
@@ -25,6 +37,7 @@ public class ChapterResponse {
         this.position = position;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.status = ApprovalStatus.APPROVED;
     }
 
     public UUID getId() {
@@ -41,6 +54,14 @@ public class ChapterResponse {
 
     public void setCourseId(UUID courseId) {
         this.courseId = courseId;
+    }
+
+    public String getCourseTitle() {
+        return courseTitle;
+    }
+
+    public void setCourseTitle(String courseTitle) {
+        this.courseTitle = courseTitle;
     }
 
     public UUID getParentId() {
@@ -67,6 +88,62 @@ public class ChapterResponse {
         this.position = position;
     }
 
+    public ApprovalStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ApprovalStatus status) {
+        this.status = status;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
+    }
+
+    public LocalDateTime getSubmittedAt() {
+        return submittedAt;
+    }
+
+    public void setSubmittedAt(LocalDateTime submittedAt) {
+        this.submittedAt = submittedAt;
+    }
+
+    public LocalDateTime getReviewedAt() {
+        return reviewedAt;
+    }
+
+    public void setReviewedAt(LocalDateTime reviewedAt) {
+        this.reviewedAt = reviewedAt;
+    }
+
+    public UUID getCreatedById() {
+        return createdById;
+    }
+
+    public void setCreatedById(UUID createdById) {
+        this.createdById = createdById;
+    }
+
+    public String getCreatedByName() {
+        return createdByName;
+    }
+
+    public void setCreatedByName(String createdByName) {
+        this.createdByName = createdByName;
+    }
+
+    public UUID getReviewedById() {
+        return reviewedById;
+    }
+
+    public void setReviewedById(UUID reviewedById) {
+        this.reviewedById = reviewedById;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -81,5 +158,13 @@ public class ChapterResponse {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<ContentResponse> getContents() {
+        return contents;
+    }
+
+    public void setContents(List<ContentResponse> contents) {
+        this.contents = contents;
     }
 }

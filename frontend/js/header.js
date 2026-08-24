@@ -27,11 +27,267 @@ async function loadHeader() {
     }
 
     setActiveNavLink();
-
+    checkUserAuthHeader();
     initPromoPopup();
 
   } catch (error) {
     console.error("Error loading header:", error);
+  }
+}
+
+// ========================================================
+// Authentification Globale & Pop-up Modal
+// ========================================================
+
+const AUTH_API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+  ? "http://localhost:8080"
+  : "";
+
+function checkUserAuthHeader() {
+  const token = localStorage.getItem("noseum_token");
+  const userStr = localStorage.getItem("noseum_user");
+  const authBtn = document.getElementById("header-auth-btn");
+  const userBadge = document.getElementById("header-user-badge");
+  const avatarText = document.getElementById("header-user-avatar-text");
+  const userNameText = document.getElementById("header-user-name-text");
+
+  if (token && userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      if (authBtn) authBtn.style.display = "none";
+      if (userBadge) userBadge.style.display = "flex";
+      
+      const displayName = user.firstName || user.userName || "Mon Espace";
+      if (userNameText) userNameText.textContent = displayName;
+      if (avatarText) {
+        const initial = (user.firstName ? user.firstName[0] : (user.userName ? user.userName[0] : "U")).toUpperCase();
+        avatarText.textContent = initial;
+      }
+    } catch (e) {
+      console.error("Error parsing user session:", e);
+    }
+  } else {
+    if (authBtn) authBtn.style.display = "inline-flex";
+    if (userBadge) userBadge.style.display = "none";
+  }
+}
+
+function openGlobalAuthModal(tab = "login") {
+  const popover = document.getElementById("auth-popover");
+  if (!popover) return;
+
+  switchGlobalAuthTab(tab);
+  clearGlobalAuthAlert();
+
+  if (typeof popover.showPopover === "function" && !popover.matches(":popover-open")) {
+    popover.showPopover();
+  } else {
+    popover.style.display = "flex";
+  }
+}
+
+function closeGlobalAuthModal() {
+  const popover = document.getElementById("auth-popover");
+  if (!popover) return;
+
+  if (typeof popover.hidePopover === "function" && popover.matches(":popover-open")) {
+    popover.hidePopover();
+  } else {
+    popover.style.display = "none";
+  }
+}
+
+function switchGlobalAuthTab(tab) {
+  const loginView = document.getElementById("global-auth-login-view");
+  const regView = document.getElementById("global-auth-register-view");
+  const loginBtn = document.getElementById("global-tab-btn-login");
+  const regBtn = document.getElementById("global-tab-btn-register");
+
+  clearGlobalAuthAlert();
+
+  if (tab === "login") {
+    if (loginView) loginView.style.display = "block";
+    if (regView) regView.style.display = "none";
+    if (loginBtn) {
+      loginBtn.className = "button button__primary bangers-regular";
+      loginBtn.style.background = "";
+      loginBtn.style.color = "";
+    }
+    if (regBtn) {
+      regBtn.className = "button button__secondary bangers-regular";
+      regBtn.style.background = "transparent";
+      regBtn.style.color = "#fff";
+    }
+  } else {
+    if (loginView) loginView.style.display = "none";
+    if (regView) regView.style.display = "block";
+    if (regBtn) {
+      regBtn.className = "button button__primary bangers-regular";
+      regBtn.style.background = "";
+      regBtn.style.color = "";
+    }
+    if (loginBtn) {
+      loginBtn.className = "button button__secondary bangers-regular";
+      loginBtn.style.background = "transparent";
+      loginBtn.style.color = "#fff";
+    }
+  }
+}
+
+function showGlobalAuthAlert(message, type = "error") {
+  const alertEl = document.getElementById("global-auth-alert");
+  if (!alertEl) return;
+
+  alertEl.style.display = "block";
+  alertEl.textContent = message;
+
+  if (type === "success") {
+    alertEl.style.background = "rgba(0, 255, 135, 0.15)";
+    alertEl.style.border = "1px solid #00ff87";
+    alertEl.style.color = "#00ff87";
+  } else {
+    alertEl.style.background = "rgba(255, 51, 102, 0.15)";
+    alertEl.style.border = "1px solid #ff3366";
+    alertEl.style.color = "#ff3366";
+  }
+}
+
+function clearGlobalAuthAlert() {
+  const alertEl = document.getElementById("global-auth-alert");
+  if (alertEl) {
+    alertEl.style.display = "none";
+    alertEl.textContent = "";
+  }
+}
+
+async function handleGlobalEmailLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById("global-login-email").value.trim();
+  const password = document.getElementById("global-login-password").value;
+  const submitBtn = document.getElementById("global-login-submit-btn");
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "CONNEXION EN COURS...";
+  }
+
+  try {
+    const response = await fetch(`${AUTH_API_BASE}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const user = {
+        id: data.userId,
+        userName: data.userName,
+        firstName: data.firstName || data.userName,
+        lastName: data.lastName || "",
+        email: data.email,
+        role: data.role || "STUDENT",
+        avatarUrl: data.avatarUrl
+      };
+
+      localStorage.setItem("noseum_token", data.accessToken);
+      localStorage.setItem("noseum_user", JSON.stringify(user));
+
+      showGlobalAuthAlert("✅ Connexion réussie ! Redirection vers votre espace...", "success");
+      checkUserAuthHeader();
+
+      setTimeout(() => {
+        closeGlobalAuthModal();
+        window.location.href = "dashboard.html";
+      }, 800);
+    } else {
+      let errMsg = "Email ou mot de passe incorrect.";
+      try {
+        const errData = await response.json();
+        if (errData.message) errMsg = errData.message;
+      } catch (_) {}
+      showGlobalAuthAlert(`❌ ${errMsg}`, "error");
+    }
+  } catch (err) {
+    console.error("Login error:", err);
+    showGlobalAuthAlert("❌ Impossible de joindre le serveur. Assurez-vous que le backend est démarré.", "error");
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "SE CONNECTER";
+    }
+  }
+}
+
+async function handleGlobalEmailRegister(e) {
+  e.preventDefault();
+  const firstName = document.getElementById("global-reg-firstname").value.trim();
+  const lastName = document.getElementById("global-reg-lastname").value.trim();
+  const userName = document.getElementById("global-reg-username").value.trim();
+  const email = document.getElementById("global-reg-email").value.trim();
+  const password = document.getElementById("global-reg-password").value;
+  const role = "STUDENT";
+  const submitBtn = document.getElementById("global-reg-submit-btn");
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "CRÉATION EN COURS...";
+  }
+
+  try {
+    const response = await fetch(`${AUTH_API_BASE}/api/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ firstName, lastName, userName, email, password, role })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const user = {
+        id: data.userId,
+        userName: data.userName,
+        firstName: data.firstName || firstName,
+        lastName: data.lastName || lastName,
+        email: data.email,
+        role: data.role || role,
+        avatarUrl: data.avatarUrl
+      };
+
+      localStorage.setItem("noseum_token", data.accessToken);
+      localStorage.setItem("noseum_user", JSON.stringify(user));
+
+      showGlobalAuthAlert("🎉 Compte créé avec succès ! Bienvenue sur NoSeumCode.", "success");
+      checkUserAuthHeader();
+
+      setTimeout(() => {
+        closeGlobalAuthModal();
+        window.location.href = "dashboard.html";
+      }, 1000);
+    } else {
+      let errMsg = "Erreur lors de l'inscription (email ou pseudo déjà utilisé).";
+      try {
+        const errData = await response.json();
+        if (errData.message) errMsg = errData.message;
+      } catch (_) {}
+      showGlobalAuthAlert(`❌ ${errMsg}`, "error");
+    }
+  } catch (err) {
+    console.error("Register error:", err);
+    showGlobalAuthAlert("❌ Impossible de joindre le serveur. Assurez-vous que le backend est démarré.", "error");
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "CRÉER MON COMPTE";
+    }
+  }
+}
+
+function globalLogout() {
+  localStorage.removeItem("noseum_token");
+  localStorage.removeItem("noseum_user");
+  checkUserAuthHeader();
+  if (window.location.pathname.includes("dashboard")) {
+    window.location.href = "index.html";
   }
 }
 
@@ -127,8 +383,6 @@ async function updatePromoBanner() {
   }
 }
 
-
-
 function setActiveNavLink() {
   const navLinks = document.querySelectorAll(".navbar__link");
   const currentPath = window.location.pathname;
@@ -146,11 +400,8 @@ function setActiveNavLink() {
 
     if (isHomePage && (href === "index.html" || href === "/")) {
       link.classList.add("active");
-    } else if (!isHomePage && currentPath.includes("article") && href === "index.html") {
-
-
-    } else if (!isHomePage && currentPath.includes("thanks") && href === "index.html") {
-
+    } else if (currentPath.includes("dashboard") && href && href.includes("dashboard")) {
+      link.classList.add("active");
     }
   });
 
@@ -161,8 +412,6 @@ function setActiveNavLink() {
     });
   });
 }
-
-
 
 function initPromoPopup() {
   const promoPopup = document.getElementById("promo-popup");
@@ -181,8 +430,6 @@ function initPromoPopup() {
   });
 }
 
-
-
 function initScrollEffect() {
   const header = document.querySelector(".header");
   if (!header) return;
@@ -197,10 +444,9 @@ function initScrollEffect() {
   });
 }
 
-
-
 document.addEventListener("DOMContentLoaded", async () => {
   await loadHeader();
   await loadFooter();
   initScrollEffect();
 });
+

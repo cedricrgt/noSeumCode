@@ -1,6 +1,7 @@
 package com.codebangers.backend.chapter.model;
 
 import com.codebangers.backend.content.model.Content;
+import com.codebangers.backend.course.model.ApprovalStatus;
 import com.codebangers.backend.course.model.Course;
 import com.codebangers.backend.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,8 +38,23 @@ public class Chapter {
     @Column(nullable = false)
     private Integer position;
 
-    @Column(name = "is_published", nullable = false)
-    private boolean isPublished = false;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    private ApprovalStatus status = ApprovalStatus.APPROVED;
+
+    @Column(name = "rejection_reason", columnDefinition = "TEXT")
+    private String rejectionReason;
+
+    @Column(name = "submitted_at")
+    private LocalDateTime submittedAt;
+
+    @Column(name = "reviewed_at")
+    private LocalDateTime reviewedAt;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reviewed_by_id")
+    private User reviewedBy;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -53,21 +69,8 @@ public class Chapter {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "updated_by_id")
-    private User updatedBy;
-
-    @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
-
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
-
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "deleted_by_id")
-    private User deletedBy;
 
     @JsonIgnore
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -141,12 +144,52 @@ public class Chapter {
         this.position = position;
     }
 
+    public ApprovalStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ApprovalStatus status) {
+        this.status = status;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
+    }
+
+    public LocalDateTime getSubmittedAt() {
+        return submittedAt;
+    }
+
+    public void setSubmittedAt(LocalDateTime submittedAt) {
+        this.submittedAt = submittedAt;
+    }
+
+    public LocalDateTime getReviewedAt() {
+        return reviewedAt;
+    }
+
+    public void setReviewedAt(LocalDateTime reviewedAt) {
+        this.reviewedAt = reviewedAt;
+    }
+
+    public User getReviewedBy() {
+        return reviewedBy;
+    }
+
+    public void setReviewedBy(User reviewedBy) {
+        this.reviewedBy = reviewedBy;
+    }
+
     public boolean isPublished() {
-        return isPublished;
+        return status == ApprovalStatus.APPROVED;
     }
 
     public void setPublished(boolean published) {
-        isPublished = published;
+        this.status = published ? ApprovalStatus.APPROVED : ApprovalStatus.DRAFT;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -165,36 +208,12 @@ public class Chapter {
         return updatedAt;
     }
 
-    public User getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(User updatedBy) {
-        this.updatedBy = updatedBy;
-    }
-
-    public boolean isDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        isDeleted = deleted;
-    }
-
     public LocalDateTime getDeletedAt() {
         return deletedAt;
     }
 
     public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
-    }
-
-    public User getDeletedBy() {
-        return deletedBy;
-    }
-
-    public void setDeletedBy(User deletedBy) {
-        this.deletedBy = deletedBy;
     }
 
     public List<Chapter> getSubChapters() {

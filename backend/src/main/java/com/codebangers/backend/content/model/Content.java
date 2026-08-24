@@ -1,6 +1,7 @@
 package com.codebangers.backend.content.model;
 
 import com.codebangers.backend.chapter.model.Chapter;
+import com.codebangers.backend.course.model.ApprovalStatus;
 import com.codebangers.backend.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -27,9 +28,6 @@ public class Content {
     @Enumerated(EnumType.STRING)
     private ContentType contentType;
 
-    @Column(name = "title")
-    private String title;
-
     @Column(name = "body", columnDefinition = "TEXT")
     private String body;
 
@@ -39,8 +37,23 @@ public class Content {
     @Column(name = "position", nullable = false)
     private Integer position;
 
-    @Column(name = "is_published", nullable = false)
-    private boolean isPublished = false;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    private ApprovalStatus status = ApprovalStatus.APPROVED;
+
+    @Column(name = "rejection_reason", columnDefinition = "TEXT")
+    private String rejectionReason;
+
+    @Column(name = "submitted_at")
+    private LocalDateTime submittedAt;
+
+    @Column(name = "reviewed_at")
+    private LocalDateTime reviewedAt;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reviewed_by_id")
+    private User reviewedBy;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -55,18 +68,8 @@ public class Content {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "updated_by_id")
-    private User updatedBy;
-
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
-
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "deleted_by_id")
-    private User deletedBy;
 
     // =========================
     // Constructors
@@ -118,14 +121,6 @@ public class Content {
         this.contentType = contentType;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getBody() {
         return body;
     }
@@ -150,12 +145,52 @@ public class Content {
         this.position = position;
     }
 
+    public ApprovalStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ApprovalStatus status) {
+        this.status = status;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
+    }
+
+    public LocalDateTime getSubmittedAt() {
+        return submittedAt;
+    }
+
+    public void setSubmittedAt(LocalDateTime submittedAt) {
+        this.submittedAt = submittedAt;
+    }
+
+    public LocalDateTime getReviewedAt() {
+        return reviewedAt;
+    }
+
+    public void setReviewedAt(LocalDateTime reviewedAt) {
+        this.reviewedAt = reviewedAt;
+    }
+
+    public User getReviewedBy() {
+        return reviewedBy;
+    }
+
+    public void setReviewedBy(User reviewedBy) {
+        this.reviewedBy = reviewedBy;
+    }
+
     public boolean isPublished() {
-        return isPublished;
+        return status == ApprovalStatus.APPROVED;
     }
 
     public void setPublished(boolean published) {
-        isPublished = published;
+        this.status = published ? ApprovalStatus.APPROVED : ApprovalStatus.DRAFT;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -174,28 +209,12 @@ public class Content {
         return updatedAt;
     }
 
-    public User getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(User updatedBy) {
-        this.updatedBy = updatedBy;
-    }
-
     public LocalDateTime getDeletedAt() {
         return deletedAt;
     }
 
     public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
-    }
-
-    public User getDeletedBy() {
-        return deletedBy;
-    }
-
-    public void setDeletedBy(User deletedBy) {
-        this.deletedBy = deletedBy;
     }
 
     // =========================

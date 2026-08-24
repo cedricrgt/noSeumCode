@@ -1,29 +1,26 @@
 # Project Context — NoSeumCode
 
-> **Dernière mise à jour** : 2026-08-13
-> **Mis à jour par** : Conversation `e1ee8484` (complétion backend business-and-api)
+> **Dernière mise à jour** : 2026-08-24
+> **Mis à jour par** : Conversation `4d4a372d` (Étape 1 : Modèle validation, Notifications & Unification Auth)
 
 ---
 
 ## Stack technique
 
 ### Backend
-- **Framework** : Spring Boot 4.1.0
+- **Framework** : Spring Boot 3.4.3
 - **Langage** : Java 21
 - **Base de données** : PostgreSQL (locale, port 5432, base `db`)
 - **ORM** : Spring Data JPA / Hibernate
-- **Migrations** : Flyway (3 migrations : V001, V002, V003)
-- **Sécurité** : Spring Security + OAuth2 Resource Server (JWT HS256, secret partagé via `BETTER_AUTH_SECRET`)
+- **Migrations** : Flyway (6 migrations : V001, V002, V003, V004, V005, V006)
+- **Sécurité** : Spring Security + OAuth2 Resource Server (JWT HS256) + OAuth2 Client
 - **Hashing** : BCrypt
 - **Build** : Maven
 - **Sérialisation** : Jackson
 - **Crypto** : BouncyCastle (bcprov-jdk18on 1.80)
 
 ### Frontend
-- Existe dans `frontend/` — non encore analysé en détail
-
-### Infrastructure
-- Non configurée (pas de Docker Compose, pas de CI/CD détecté)
+- HTML5 / CSS3 / Vanilla JS moderne avec composants modulaires
 
 ---
 
@@ -40,69 +37,66 @@ Controller → Service → Repository → PostgreSQL
 
 ### Packages fonctionnels
 
-| Package | Contenu | Fichiers |
+| Package | Contenu | Rôle |
 |---|---|---|
-| `auth/` | AuthController, AuthService, JwtTokenService, DTOs | 5 |
-| `chapter/` | Chapter entity + repository (⚠️ controller/service dans `course/`) | 2 |
-| `config/` | SecurityConfig, GlobalExceptionHandler, JwtService, SeedDataInitializer | 4 |
-| `config/exception/` | ResourceNotFoundException, DuplicateResourceException, AccountStatusException, ApiError | 4 |
-| `content/` | Content entity + repository (⚠️ controller/service dans `course/`) | 2 |
-| `course/` | Course + Enrollment entities, controllers, services, DTOs | 14 |
-| `user/` | User entity, Role enum, controller, service, DTOs | 9 |
-| `workshop/` | Workshop + UserWorkshop entities, controllers, services, DTOs | 10 |
+| `auth/` | AuthController, AuthService, DTOs (RegisterRequest, LoginRequest, AuthResponse) | Authentification unifiée & profil utilisateur |
+| `chapter/` | Chapter entity, ChapterRepository | Chapitres et sections de cours avec statut d'approbation |
+| `config/` | SecurityConfig, GlobalExceptionHandler, JwtService, SeedDataInitializer | Configuration de sécurité, JWT, CORS |
+| `content/` | Content entity, ContentRepository | Blocs de contenu avec statut d'approbation |
+| `course/` | Course + Enrollment entities, controllers, services, DTOs | Cours, inscriptions et progression |
+| `notification/` | Notification entity, NotificationRepository | Système d'alertes asynchrones et validation |
+| `user/` | User entity, Role enum, controller, service, DTOs | Gestion des utilisateurs et rôles |
+| `workshop/` | Workshop + UserWorkshop entities, controllers, services, DTOs | Événements et ateliers |
 
-**Total** : 60 fichiers Java
+### Entités JPA (8)
 
-### Entités JPA (7)
-
-| Entité | Table | PK | Soft Delete |
-|---|---|---|---|
-| User | `users` | UUID | ✅ (`is_deleted`, `deleted_at`, `deleted_by`) |
-| Course | `course` | UUID | ✅ |
-| Chapter | `chapter` | UUID | ✅ (via `deleted_at`) |
-| Content | `content` | UUID | ✅ (via `deleted_at`) |
-| Enrollment | `enrollment` | UUID | ❌ |
-| Workshop | `workshop` | UUID | ✅ |
-| UserWorkshop | `user_workshop` | UUID | ❌ |
+| Entité | Table | PK | Soft Delete | Description |
+|---|---|---|---|---|
+| User | `users` | UUID | ✅ (`is_deleted`, `deleted_at`, `deleted_by`) | Comptes utilisateurs, rôles, support OAuth2 |
+| Course | `course` | UUID | ✅ | Formations et cours |
+| Chapter | `chapter` | UUID | ✅ (via `deleted_at`) | Chapitres/sections avec cycle `status` (DRAFT, PENDING_APPROVAL, APPROVED, REJECTED) |
+| Content | `content` | UUID | ✅ (via `deleted_at`) | Contenus (vidéo, texte, code...) avec cycle `status` |
+| Enrollment | `enrollment` | UUID | ❌ | Inscriptions des étudiants et suivi de progression |
+| Workshop | `workshop` | UUID | ✅ | Ateliers pratiques |
+| UserWorkshop | `user_workshop` | UUID | ❌ | Inscriptions aux ateliers |
+| Notification | `notification` | UUID | ❌ | Notifications in-app (soumissions, validations, rejets) |
 
 ### Rôles
 Enum `Role` : `USER`, `STUDENT`, `TEACHER`, `ADMIN`
 
 ### Endpoints REST publics
-- `POST /api/users/register`
-- `POST /api/users/login`
+- `POST /api/auth/register`
+- `POST /api/auth/login`
 - `GET /api/courses`, `GET /api/courses/{id}`
 - `GET /api/workshops`, `GET /api/workshops/upcoming`, `GET /api/workshops/ongoing`, `GET /api/workshops/{id}`
 
 ### Endpoints protégés (JWT requis)
+- `GET /api/auth/me`
 - Tout `/api/**` non listé ci-dessus
-- RBAC via `@PreAuthorize` (ADMIN pour gestion users, TEACHER/ADMIN pour gestion courses)
+- RBAC via `@PreAuthorize` (ADMIN pour gestion users et validation, TEACHER/ADMIN pour gestion cours, STUDENT pour cours inscrits)
 
 ---
 
 ## État actuel du projet
 
 ### Backend
-- ✅ Modèle de données complet (7 entités alignées avec ERD)
-- ✅ CRUD fonctionnel sur User, Course, Chapter, Content, Enrollment, Workshop
-- ✅ Authentification JWT HS256 fonctionnelle
-- ✅ Migrations Flyway idempotentes
-- ✅ Exceptions custom (ResourceNotFoundException, DuplicateResourceException, AccountStatusException)
-- ✅ Format d'erreur standardisé (ApiError) avec support validation JSR-380
-- ✅ CORS centralisé configurable (plus de wildcard)
-- ✅ SeedDataInitializer protégé par @Profile("dev")
-- ✅ Audit trail createdBy/updatedBy/deletedBy sur Course, Chapter, Content, Workshop
-- ✅ @PreAuthorize sur tous les endpoints de gestion
-- ✅ @Valid + JSR-380 sur tous les DTOs entrants
-- ⚠️ Double système d'authentification (ISSUE-001 — le package auth/ n'existe plus sur feat/backend)
-- ⚠️ Couverture de tests très faible (3 fichiers)
-- ⚠️ Pas de pagination sur les endpoints de liste
+- ✅ Modèle de données complet (8 entités JPA, migration Flyway V004 idempotente)
+- ✅ Cycle d'approbation (`ApprovalStatus`) et entité `Notification` intégrés
+- ✅ Authentification unifiée et sécurisée (`AuthService` + BCrypt + validation JSR-380)
+- ✅ ISSUE-001 résolue (suppression de la duplication de login/register)
+- ✅ Centralisation CORS dans `SecurityConfig`
+- ✅ Workflow de validation de cours pour enseignants et administrateurs avec notifications
+- ✅ Intégration Spring Security OAuth2 Social Login (Google, GitHub, Facebook, Discord) avec token JWT
+- ✅ Tests unitaires (`AuthServiceTest`, `NotificationServiceTest`, `ChapterServiceTest`, `CustomOAuth2UserServiceTest`)
 
 ### Frontend
-- Non analysé
+- ✅ Page `dashboard.html` avec navigation par rôles (Student, Teacher, Admin)
+- ✅ Centre de notifications interactif avec badge de non-lus et marquage à la volée
+- ✅ Modal de connexion multi-réseaux (Google, GitHub, Facebook, Discord) et Email/Password
+- ✅ Interface de soumission pour formateurs et file d'attente d'approbation pour administrateurs
 
 ### Documentation
-- `docs/architecture/erd.puml` — Diagramme ERD (7 entités)
+- `docs/architecture/erd.puml` — Diagramme ERD (7 entités initiales)
 - `docs/architecture/usecase.puml` — 9 use cases, 4 acteurs
 - `docs/architecture/mcd.webp` — MCD Merise
 - `docs/architecture/DataDictionnary.pdf` — Dictionnaire de données

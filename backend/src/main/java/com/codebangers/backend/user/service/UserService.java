@@ -103,6 +103,22 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User updateUserRole(UUID userId, com.codebangers.backend.user.model.Role newRole) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User", userId));
+
+        if (newRole == null) {
+            throw new IllegalArgumentException("Le rôle spécifié est invalide.");
+        }
+
+        user.setRole(newRole);
+        return userRepository.save(user);
+    }
+
+    public void softDeleteUser(UUID userId) {
+        softDeleteUser(userId, null);
+    }
+
     public void softDeleteUser(UUID userId, User actor) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new ResourceNotFoundException("User", userId));
@@ -111,6 +127,10 @@ public class UserService {
         user.setDeletedAt(LocalDateTime.now());
         user.setDeletedBy(actor);
         userRepository.save(user);
+    }
+
+    public void blockUser(UUID userId) {
+        blockUser(userId, null);
     }
 
     public void blockUser(UUID userId, User actor) {

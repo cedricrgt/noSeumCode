@@ -66,3 +66,17 @@
 | **Décision** | Créer un dossier `docs/ai/` avec 4 fichiers de mémoire (PROJECT_CONTEXT, DECISIONS, KNOWN_ISSUES, CHANGELOG) et une règle AGENTS.md pour les charger automatiquement. |
 | **Raison** | Réduire le coût en tokens, éviter de répéter les mêmes erreurs, garder une continuité entre les sessions. |
 | **Alternative rejetée** | Mettre tout dans le GEMINI.md global — trop lourd, pollue les autres projets. |
+
+---
+
+## ADR-006 — Workflow de validation de cours & Notifications asynchrones
+
+| | |
+|---|---|
+| **Date** | 2026-08-24 |
+| **Statut** | ✅ Adoptée |
+| **Contexte** | Les enseignants créent/modifient des sections et contenus de cours qui doivent être revus et approuvés par un administrateur avant publication. Les administrateurs doivent être notifiés des soumissions en attente. |
+| **Décision** | 1. Ajouter un enum `ApprovalStatus` (`DRAFT`, `PENDING_APPROVAL`, `APPROVED`, `REJECTED`) avec horodatage et auditeur sur `Chapter` et `Content`.<br>2. Créer une entité `Notification` pour persister les alertes in-app avec statut de lecture et ciblage par utilisateur/rôle.<br>3. Unifier l'authentification dans le package `auth` et préparer les attributs OAuth2 sur `User`. |
+| **Raison** | Découplage clair, traçabilité des modifications, gestion fluide des retours/rejets avec motifs. |
+| **Alternative rejetée** | Publication directe sans contrôle ou table de shadow-copy complexe (trop de surcoût d'architecture pour le besoin actuel). |
+

@@ -5,54 +5,49 @@
 
 ---
 
-## Problèmes critiques (non résolus)
+## Problèmes résolus
 
 ### ISSUE-001 — Double système d'authentification
 
 **Sévérité** : 🔴 Critique
 **Identifié le** : 2026-08-05 (conversations `3538bba0` et `d9e3329b`)
+**Résolu le** : 2026-08-24 (conversation `4d4a372d`)
+
+**Solution appliquée** :
+- Consolidation du système d'authentification dans le package `com.codebangers.backend.auth`.
+- Création de `RegisterRequest`, `LoginRequest`, `AuthResponse` unifiés avec Bean Validation.
+- `AuthService` utilise le `JwtService` standard (`config/JwtService`), vérifie les statuts `isBlocked` et `isDeleted`, et chiffre les mots de passe avec `PasswordEncoder` (BCrypt).
+- Nettoyage d'`UserController` pour supprimer les méthodes dupliquées `register` et `login`.
+- Endpoints publics `/api/auth/register` et `/api/auth/login` autorisés dans `SecurityConfig`.
+
+---
+
+## Problèmes ouverts
+
+### ISSUE-002 — Seed data en production
+
+**Sévérité** : 🔴 Critique
+**Identifié le** : 2026-08-05
 
 **Description** :
-Il existe deux systèmes de login indépendants :
+`SeedDataInitializer` (fichier `config/SeedDataInitializer.java`) :
+- S'exécute sur `@EventListener(ApplicationReadyEvent.class)` — **sans restriction de profil Spring**
+- Contient des mots de passe en clair : `admin123`, `teacher123`, `student123`, `778195Cedric`
+- Crée un user admin avec un mot de passe réel visible dans le code source
 
-| Système | Endpoint | Service | JWT Service | DTOs |
-|---|---|---|---|---|
-| 1 | `POST /api/users/login` | `UserService.authenticateUser()` | `config/JwtService` | `user/dto/LoginRequest`, `user/dto/AuthResponse` |
-| 2 | `POST /api/auth/login` | `auth/AuthService.login()` | `auth/JwtTokenService` | `auth/LoginRequest`, `auth/AuthResponse` |
-
-**Impact** :
-- DTOs dupliqués (`LoginRequest`, `AuthResponse` dans 2 packages)
-- 2 services JWT différents (`JwtService` dans `config/`, `JwtTokenService` dans `auth/`)
-- Le endpoint `/api/auth/login` n'est **pas déclaré comme public** dans `SecurityConfig` → il requiert un JWT pour s'authentifier (paradoxe)
-- Les deux systèmes vérifient le password indépendamment mais seul le système 1 vérifie `isBlocked` et `isDeleted`
-
-**Action requise** : Consolider en un seul système d'auth.
+**Action requise** : Ajouter `@Profile("dev")` et externaliser les credentials.
 
 ---
 
-### ISSUE-002 — ~~Seed data en production~~ ✅ RÉSOLU
+### ISSUE-003 — CORS wildcard
 
-**Sévérité** : 🔴 Critique → ✅ Résolu
+**Sévérité** : 🟡 Important
 **Identifié le** : 2026-08-05
-**Résolu le** : 2026-08-13 (conversation `e1ee8484`)
 
-**Fix appliqué** :
-- Ajout `@Profile("dev")` sur `SeedDataInitializer`
-- Remplacement de tous les passwords en clair par `changeme123`
-- Ajout `spring.profiles.active=dev` dans `application.properties`
+**Description** :
+Tous les contrôleurs utilisent `@CrossOrigin(origins = "*")` au niveau classe. Cela ouvre l'API à tout domaine.
 
----
-
-### ISSUE-003 — ~~CORS wildcard~~ ✅ RÉSOLU
-
-**Sévérité** : 🟡 Important → ✅ Résolu
-**Identifié le** : 2026-08-05
-**Résolu le** : 2026-08-13 (conversation `e1ee8484`)
-
-**Fix appliqué** :
-- Suppression de `@CrossOrigin(origins = "*")` sur 5 controllers
-- CORS centralisé dans `SecurityConfig.corsConfigurationSource()`
-- Origines configurables via `app.cors.allowed-origins` (défaut : `localhost:3000`, `localhost:5500`)
+**Action requise** : Configurer CORS de manière centralisée dans `SecurityConfig` avec les origines autorisées.
 
 ---
 
@@ -107,3 +102,6 @@ Aucun test pour : contrôleurs, services Course/Workshop/Enrollment/Chapter/Cont
 
 ### ❌ "Le role TEACHER est dans les use cases"
 **Réalité** : L'enum `Role` contient `TEACHER` et le use case diagram inclut un acteur `Teacher`, mais les permissions `@PreAuthorize` existantes n'ont été testées qu'avec `ADMIN`. Vérifier le comportement réel.
+
+### ❌ "La commande Maven est `spring:run` ou `spring-boot-starter-flyway` existe"
+**Réalité** : Le plugin Spring Boot s'exécute avec `.\mvnw.cmd spring-boot:run` (et non `spring:run`). De plus, `spring-boot-starter-flyway` n'existe pas dans Spring Boot 3 : utiliser directement `flyway-core` et `flyway-database-postgresql`.

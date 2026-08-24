@@ -9,6 +9,8 @@ public class EnrollmentResponse {
     private UUID id;
     private UUID userId;
     private UUID courseId;
+    private String courseTitle;
+    private String courseDescription;
     private LocalDateTime enrolledAt;
     private PaymentStatus paymentStatus;
     private Integer progress;
@@ -51,6 +53,22 @@ public class EnrollmentResponse {
 
     public void setCourseId(UUID courseId) {
         this.courseId = courseId;
+    }
+
+    public String getCourseTitle() {
+        return courseTitle;
+    }
+
+    public void setCourseTitle(String courseTitle) {
+        this.courseTitle = courseTitle;
+    }
+
+    public String getCourseDescription() {
+        return courseDescription;
+    }
+
+    public void setCourseDescription(String courseDescription) {
+        this.courseDescription = courseDescription;
     }
 
     public LocalDateTime getEnrolledAt() {

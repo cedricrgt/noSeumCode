@@ -17,4 +17,7 @@ public interface ContentRepository extends JpaRepository<Content, UUID> {
 
     @Query("SELECT c FROM Content c WHERE c.chapter.id = :chapterId AND c.deletedAt IS NULL ORDER BY c.position ASC")
     List<Content> findActiveByChapterId(@Param("chapterId") UUID chapterId);
+
+    @Query("SELECT c FROM Content c WHERE c.chapter.id = :chapterId AND c.status = com.codebangers.backend.course.model.ApprovalStatus.APPROVED AND c.deletedAt IS NULL ORDER BY c.position ASC")
+    List<Content> findApprovedByChapterId(@Param("chapterId") UUID chapterId);
 }
