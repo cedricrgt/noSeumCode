@@ -73,7 +73,7 @@ public class CourseController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> softDeleteCourse(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
         User deleter = resolveUser(jwt);
         courseService.softDeleteCourse(id, deleter);

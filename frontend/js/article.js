@@ -10,7 +10,6 @@ async function loadArticle() {
   }
 
   try {
-
     const response = await fetch("data/articles.json");
     if (!response.ok) throw new Error("Erreur lors du chargement des données");
     
@@ -74,9 +73,9 @@ async function loadArticle() {
 
           <div class="article-conclusion">
             <p class="poppins-regular">${article.conclusion}</p>
-            <a href="${
-              article.cta_link
-            }" class="button button__primary bangers-regular">Rejoindre NoSeumCode</a>
+            <button type="button" class="button button__primary bangers-regular" onclick="window.openGlobalAuthModal ? window.openGlobalAuthModal('register') : openAuthModal('register')">
+              Rejoindre NoSeumCode
+            </button>
           </div>
         </article>
       </div>

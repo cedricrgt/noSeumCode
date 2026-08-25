@@ -25,14 +25,15 @@ public class PaymentController {
 
     /**
      * Modification manuelle du statut de paiement par un Administrateur (RBAC Zero Trust).
+     * Accepte l'UUID de l'utilisateur ou son adresse email.
      */
-    @RequestMapping(value = "/user/{userId}/status", method = {RequestMethod.PATCH, RequestMethod.PUT, RequestMethod.POST})
+    @RequestMapping(value = "/user/{userIdentifier}/status", method = {RequestMethod.PATCH, RequestMethod.PUT, RequestMethod.POST})
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updatePaymentStatusManually(
-            @PathVariable UUID userId,
+            @PathVariable String userIdentifier,
             @Valid @RequestBody PaymentStatusUpdateRequest request) {
         try {
-            List<Enrollment> updatedEnrollments = paymentService.processPaymentStatusUpdate(userId, request);
+            List<Enrollment> updatedEnrollments = paymentService.processPaymentStatusUpdate(userIdentifier, request);
             return ResponseEntity.ok(Map.of(
                     "message", "Statut de paiement mis à jour avec succès.",
                     "status", request.getPaymentStatus(),

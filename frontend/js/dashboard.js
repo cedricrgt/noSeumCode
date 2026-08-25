@@ -29,8 +29,8 @@ let allAvailableCourses = [];
 // Init on Load
 document.addEventListener("DOMContentLoaded", async () => {
   parseAuthFromUrl();
-  loadStoredAuth();
   setupEventListeners();
+  await loadStoredAuth();
   await refreshDashboardData();
   startNotificationPolling();
 });
@@ -38,6 +38,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 // ==========================================
 // 1. Auth & Session Management
 // ==========================================
+
+function normalizeRole(role, email) {
+  if (email && email.toLowerCase() === "admin@codebangers.fr") return "ADMIN";
+  if (!role) return "STUDENT";
+  const clean = String(role).replace(/^ROLE_/i, "").trim().toUpperCase();
+  if (clean === "ADMIN") return "ADMIN";
+  if (clean === "TEACHER" || clean === "PROF" || clean === "FORMATEUR" || clean === "ENSEIGNANT") return "TEACHER";
+  return "STUDENT";
+}
 
 function parseAuthFromUrl() {
   const hash = window.location.hash.substring(1);
@@ -48,12 +57,14 @@ function parseAuthFromUrl() {
   const role = params.get("role");
   const userName = params.get("userName");
   const firstName = params.get("firstName");
+  const email = params.get("email");
 
   if (token) {
     currentAuth.token = token;
-    currentAuth.user.role = role || "STUDENT";
+    currentAuth.user.role = normalizeRole(role, email);
     if (userName) currentAuth.user.userName = decodeURIComponent(userName);
     if (firstName) currentAuth.user.firstName = decodeURIComponent(firstName);
+    if (email) currentAuth.user.email = decodeURIComponent(email);
 
     localStorage.setItem("noseum_token", token);
     localStorage.setItem("noseum_user", JSON.stringify(currentAuth.user));
@@ -63,23 +74,51 @@ function parseAuthFromUrl() {
   }
 }
 
-function loadStoredAuth() {
+async function loadStoredAuth() {
   const savedToken = localStorage.getItem("noseum_token");
   const savedUser = localStorage.getItem("noseum_user");
 
-  if (savedToken) {
-    currentAuth.token = savedToken;
+  if (!savedToken || !savedUser) {
+    window.location.href = "index.html";
+    return;
   }
-  if (savedUser) {
-    try {
-      currentAuth.user = JSON.parse(savedUser);
-    } catch (e) {
-      console.error("Error parsing stored user:", e);
-    }
+
+  currentAuth.token = savedToken;
+  try {
+    currentAuth.user = JSON.parse(savedUser);
+    currentAuth.user.role = normalizeRole(currentAuth.user.role, currentAuth.user.email);
+  } catch (e) {
+    console.error("Error parsing stored user:", e);
+    logout();
+    return;
   }
 
   updateUserUI();
+
+  // Valider si le compte existe réellement en base de données PostgreSQL
+  try {
+    const res = await apiFetch("/api/auth/me");
+    if (res) {
+      if (res.status === 401 || res.status === 404) {
+        console.warn("Session expirée ou compte supprimé de la base de données. Déconnexion.");
+        logout();
+        return;
+      }
+      if (res.ok) {
+        const freshUser = await res.json();
+        currentAuth.user.role = normalizeRole(freshUser.role, freshUser.email);
+        currentAuth.user.firstName = freshUser.firstName;
+        currentAuth.user.lastName = freshUser.lastName;
+        currentAuth.user.email = freshUser.email;
+        currentAuth.user.userName = freshUser.userName;
+        localStorage.setItem("noseum_user", JSON.stringify(currentAuth.user));
+        updateUserUI();
+      }
+    }
+  } catch (_) {}
 }
+
+let activeDashboardView = null;
 
 function updateUserUI() {
   const userFullNameEl = document.getElementById("dash-user-fullname");
@@ -88,6 +127,7 @@ function updateUserUI() {
   const roleBadgeEl = document.getElementById("dash-role-badge");
   const heroTitleEl = document.getElementById("dash-hero-title");
   const heroSubtitleEl = document.getElementById("dash-hero-subtitle");
+  const adminSwitcher = document.getElementById("admin-view-switcher");
 
   const displayName = currentAuth.user.firstName
     ? `${currentAuth.user.firstName} ${currentAuth.user.lastName || ""}`.trim()
@@ -102,7 +142,8 @@ function updateUserUI() {
     userAvatarEl.textContent = initials.toUpperCase();
   }
 
-  const role = currentAuth.user.role || "STUDENT";
+  const role = normalizeRole(currentAuth.user.role, currentAuth.user.email);
+  currentAuth.user.role = role;
 
   if (roleBadgeEl) {
     if (role === "TEACHER") {
@@ -117,11 +158,40 @@ function updateUserUI() {
     }
   }
 
+  // Afficher le sélecteur rapide de vue si l'utilisateur est ADMIN
+  if (adminSwitcher) {
+    adminSwitcher.style.display = (role === "ADMIN") ? "inline-flex" : "none";
+  }
+
+  // Si aucune vue n'a été manuellement choisie, adopter la vue par défaut du rôle
+  if (!activeDashboardView) {
+    activeDashboardView = role;
+  }
+
+  applyDashboardView(activeDashboardView);
+}
+
+function applyDashboardView(viewRole) {
+  const heroTitleEl = document.getElementById("dash-hero-title");
+  const heroSubtitleEl = document.getElementById("dash-hero-subtitle");
+  const studentView = document.getElementById("view-student");
+  const teacherView = document.getElementById("view-teacher");
+  const adminView = document.getElementById("view-admin");
+
+  // Mise à jour des boutons du switcher
+  const btnAdmin = document.getElementById("btn-view-admin");
+  const btnTeacher = document.getElementById("btn-view-teacher");
+  const btnStudent = document.getElementById("btn-view-student");
+
+  if (btnAdmin) btnAdmin.className = (viewRole === "ADMIN") ? "button button__primary" : "button button__secondary";
+  if (btnTeacher) btnTeacher.className = (viewRole === "TEACHER") ? "button button__primary" : "button button__secondary";
+  if (btnStudent) btnStudent.className = (viewRole === "STUDENT") ? "button button__primary" : "button button__secondary";
+
   if (heroTitleEl && heroSubtitleEl) {
-    if (role === "TEACHER") {
+    if (viewRole === "TEACHER") {
       heroTitleEl.textContent = "ESPACE CRÉATION & FORMATEUR";
       heroSubtitleEl.textContent = "Rédigez et publiez vos modules de cours. Vos soumissions sont transmises à la validation administrative.";
-    } else if (role === "ADMIN") {
+    } else if (viewRole === "ADMIN") {
       heroTitleEl.textContent = "CONSOLE D'ADMINISTRATION";
       heroSubtitleEl.textContent = "Validez les cours soumis par les formateurs, supervisez les inscriptions et gérez les publications.";
     } else {
@@ -130,14 +200,22 @@ function updateUserUI() {
     }
   }
 
-  // Toggle View Panels strictly according to assigned role
-  const studentView = document.getElementById("view-student");
-  const teacherView = document.getElementById("view-teacher");
-  const adminView = document.getElementById("view-admin");
+  if (studentView) studentView.style.display = (viewRole === "STUDENT") ? "block" : "none";
+  if (teacherView) teacherView.style.display = (viewRole === "TEACHER") ? "block" : "none";
+  if (adminView) adminView.style.display = (viewRole === "ADMIN") ? "block" : "none";
+}
 
-  if (studentView) studentView.style.display = role === "STUDENT" ? "block" : "none";
-  if (teacherView) teacherView.style.display = role === "TEACHER" ? "block" : "none";
-  if (adminView) adminView.style.display = role === "ADMIN" ? "block" : "none";
+async function manuallySwitchDashboardView(targetRole) {
+  activeDashboardView = targetRole;
+  applyDashboardView(targetRole);
+
+  if (targetRole === "STUDENT") {
+    await loadStudentCourses();
+  } else if (targetRole === "TEACHER") {
+    await loadTeacherData();
+  } else if (targetRole === "ADMIN") {
+    await loadAdminData();
+  }
 }
 
 function logout() {
@@ -177,12 +255,15 @@ async function apiFetch(endpoint, options = {}) {
 async function refreshDashboardData() {
   await fetchNotifications();
 
-  if (currentAuth.user.role === "STUDENT") {
-    await loadStudentCourses();
-  } else if (currentAuth.user.role === "TEACHER") {
-    await loadTeacherData();
-  } else if (currentAuth.user.role === "ADMIN") {
+  const role = normalizeRole(currentAuth.user.role, currentAuth.user.email);
+  currentAuth.user.role = role;
+
+  if (role === "ADMIN") {
     await loadAdminData();
+  } else if (role === "TEACHER") {
+    await loadTeacherData();
+  } else {
+    await loadStudentCourses();
   }
 }
 
@@ -272,15 +353,24 @@ async function markAllNotificationsRead() {
 
 function toggleNotifDropdown() {
   const dropdown = document.getElementById("notif-dropdown");
+  const bellBtn = document.getElementById("notif-bell-btn");
   if (dropdown) {
-    dropdown.classList.toggle("open");
+    const isOpen = dropdown.classList.toggle("open");
+    if (bellBtn) {
+      bellBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    }
   }
 }
 
 function startNotificationPolling() {
-  setInterval(async () => {
+  if (window._dashPollInterval) clearInterval(window._dashPollInterval);
+  window._dashPollInterval = setInterval(async () => {
     await fetchNotifications();
-  }, 15000);
+    if (currentAuth.user && currentAuth.user.role === "ADMIN") {
+      await loadAdminUsers();
+      await loadAdminPendingChapters();
+    }
+  }, 6000);
 }
 
 // ==========================================
@@ -291,28 +381,21 @@ async function loadStudentCourses() {
   const res = await apiFetch("/api/enrollments/my-courses");
   if (res && res.ok) {
     enrolledCourses = await res.json();
-  } else if (enrolledCourses.length === 0) {
-    enrolledCourses = [
-      {
-        id: "enr-1",
-        courseId: "c-1",
-        courseTitle: "Fullstack Java 21 & Spring Boot 3",
-        courseDescription: "De zéro au déploiement cloud : API REST, JPA, Spring Security, Flyway et frontend moderne.",
-        progress: 65,
-        paymentStatus: "PAID"
-      },
-      {
-        id: "enr-2",
-        courseId: "c-2",
-        courseTitle: "Clean Architecture & DDD en Pratique",
-        courseDescription: "Maîtrisez les ports, adaptateurs, patterns CQRS et les architectures modulaires d'entreprise.",
-        progress: 25,
-        paymentStatus: "PAID"
-      }
-    ];
+  } else {
+    enrolledCourses = [];
   }
 
   renderStudentCourses();
+}
+
+function getCourseImageForTitle(title, desc = "") {
+  const combined = ((title || "") + " " + (desc || "")).toLowerCase();
+  if (combined.includes("html") || combined.includes("css")) return "images/courses/html.webp";
+  if (combined.includes("javascript") || combined.includes("js")) return "images/courses/javascript.webp";
+  if (combined.includes("git") || combined.includes("github")) return "images/courses/git.webp";
+  if (combined.includes("java") || combined.includes("spring")) return "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=400&fit=crop";
+  if (combined.includes("architecture") || combined.includes("ddd")) return "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop";
+  return "images/courses/html.webp";
 }
 
 function renderStudentCourses() {
@@ -332,26 +415,64 @@ function renderStudentCourses() {
   if (!grid) return;
   grid.innerHTML = "";
 
+  if (enrolledCourses.length === 0) {
+    grid.innerHTML = `
+      <div style="text-align: center; padding: 3rem 2rem; background: #ffffff; border-radius: 20px; border: 2px dashed #cbd5e1; grid-column: 1 / -1;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📚</div>
+        <h3 style="font-size: 1.2rem; color: var(--dash-dark-navy); margin-bottom: 0.5rem;">Aucune formation en cours</h3>
+        <p style="color: var(--dash-text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+          Vous n'êtes inscrit à aucun cours pour le moment. Parcourez notre catalogue pour démarrer votre apprentissage.
+        </p>
+        <a href="cours.html" class="button button__primary bangers-regular" style="text-decoration: none; padding: 10px 22px; font-size: 1.2rem; display: inline-block;">
+          Découvrir les formations →
+        </a>
+      </div>
+    `;
+    return;
+  }
+
   enrolledCourses.forEach(course => {
-    const card = document.createElement("div");
-    card.className = "dash-card";
+    const imgUrl = getCourseImageForTitle(course.courseTitle, course.courseDescription);
+    const card = document.createElement("article");
+    card.className = "card card-white card-paddingtop";
+    card.style.overflow = "hidden";
     card.innerHTML = `
-      <div>
-        <h4 class="dash-card-title">${escapeHtml(course.courseTitle)}</h4>
-        <p class="dash-card-desc">${escapeHtml(course.courseDescription || "Accédez à tous les modules validés.")}</p>
-        <div class="progress-bar-container">
-          <div class="progress-info">
-            <span>Progression</span>
-            <span>${course.progress || 0}%</span>
+      <header class="card__imageContainer">
+        <img
+          class="card__image"
+          src="${imgUrl}"
+          alt="${escapeHtml(course.courseTitle)}"
+          width="400"
+          height="250"
+          loading="lazy"
+          decoding="async"
+        />
+      </header>
+      <main class="card__main">
+        <div class="card__header">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.25rem;">
+            <span class="section-tag" style="font-size: 0.72rem; margin-bottom: 0;">🎓 EN COURS</span>
+            <span style="font-size: 0.78rem; font-weight: 700; color: #00a85a; background: rgba(0,255,135,0.15); padding: 2px 8px; border-radius: 999px;">${course.progress || 0}% complété</span>
           </div>
-          <div class="progress-track">
-            <div class="progress-fill" style="width: ${course.progress || 0}%;"></div>
+          <h3 class="card__title" style="font-size: 1.35rem;">${escapeHtml(course.courseTitle)}</h3>
+        </div>
+        <p class="card__paragraphe card__textGreen poppins-regular" style="font-size: 0.92rem;">
+          ${escapeHtml(course.courseDescription || "Accédez à tous les modules validés et poursuivez votre progression.")}
+        </p>
+        
+        <div class="progress-bar-container" style="margin: 0.5rem 0 1rem 0;">
+          <div class="progress-track" style="height: 8px; border-radius: 99px; background: #e2e8f0; overflow: hidden;">
+            <div class="progress-fill" style="width: ${course.progress || 0}%; height: 100%; background: linear-gradient(90deg, #00ff87, #00d9ff); border-radius: 99px;"></div>
           </div>
         </div>
-      </div>
-      <button class="dash-btn dash-btn-primary" onclick="openCourseViewer('${course.courseId}', '${escapeHtml(course.courseTitle)}')">
-        <span>📖 Continuer la formation</span>
-      </button>
+
+        <a href="cours.html?id=${course.courseId}" class="card__link bangers-regular" style="margin-top: auto;">
+          Continuer la formation
+          <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </main>
     `;
     grid.appendChild(card);
   });
@@ -406,6 +527,7 @@ async function loadTeacherData() {
   }
 
   // Load teacher chapters
+  // Load teacher chapters
   if (teacherChapters.length === 0) {
     teacherChapters = [
       {
@@ -414,6 +536,7 @@ async function loadTeacherData() {
         courseTitle: "Fullstack Java 21 & Spring Boot 3",
         title: "Introduction aux Records et Pattern Matching Java 21",
         position: 1,
+        content: "# Introduction aux Records Java 21\n\nLes records permettent de définir des classes de données immuables de manière concise et lisible.\n\n```java\npublic record CourseDto(UUID id, String title, int position) {}\n```\n\n### Points clés :\n- Immuabilité native\n- Génération automatique des accesseurs, equals, hashCode et toString",
         status: "APPROVED",
         submittedAt: "2026-08-20T10:00:00"
       },
@@ -423,6 +546,7 @@ async function loadTeacherData() {
         courseTitle: "Fullstack Java 21 & Spring Boot 3",
         title: "Mise en place de Spring Security & OAuth2 Social Login",
         position: 2,
+        content: "# Spring Security & OAuth2 Social Login\n\nConfiguration de la chaîne de filtres Spring Security 6.x et intégration des fournisseurs OAuth2 (Google, GitHub, Discord).\n\n```java\n@Bean\npublic SecurityFilterChain filterChain(HttpSecurity http) throws Exception {\n    return http\n        .csrf(AbstractHttpConfigurer::disable)\n        .oauth2Login(Customizer.withDefaults())\n        .build();\n}\n```",
         status: "PENDING_APPROVAL",
         submittedAt: "2026-08-24T09:30:00"
       },
@@ -432,6 +556,7 @@ async function loadTeacherData() {
         courseTitle: "Clean Architecture & DDD en Pratique",
         title: "Gestion des Événements de Domaine avec Kafka",
         position: 3,
+        content: "# Gestion des Événements de Domaine avec Kafka\n\nPublication fiable d'événements métier et mise en place du Transactional Outbox Pattern pour garantir la consistance éventuelle.",
         status: "REJECTED",
         rejectionReason: "Veuillez inclure le schéma architectural du Transactional Outbox Pattern avant de republier.",
         submittedAt: "2026-08-23T14:15:00"
@@ -485,6 +610,11 @@ function renderTeacherDashboard() {
         </div>
         <h4 class="dash-card-title">${escapeHtml(chapter.title)}</h4>
         <p class="dash-card-desc">Position dans le cours : ${chapter.position}</p>
+        ${chapter.content ? `
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.6rem 0.75rem; margin-top: 0.5rem; max-height: 80px; overflow: hidden; font-size: 0.8rem; color: var(--dash-text-muted); font-family: monospace; white-space: pre-line;">
+            ${escapeHtml(chapter.content.slice(0, 150))}${chapter.content.length > 150 ? "..." : ""}
+          </div>
+        ` : ""}
         ${chapter.status === "REJECTED" && chapter.rejectionReason ? `
           <div class="alert-box danger" style="margin-top: 0.5rem;">
             <div>
@@ -507,12 +637,52 @@ function renderTeacherDashboard() {
 
 function openAddChapterModal() {
   const modal = document.getElementById("add-chapter-modal");
+  const titleHeading = document.getElementById("add-chapter-modal-title");
+  const chapterIdInput = document.getElementById("chapter-id-input");
+  const titleInput = document.getElementById("chapter-title-input");
+  const positionInput = document.getElementById("chapter-position-input");
+  const contentInput = document.getElementById("chapter-content-input");
   const courseSelect = document.getElementById("chapter-course-select");
+
+  if (titleHeading) titleHeading.textContent = "Ajouter une Section de Cours";
+  if (chapterIdInput) chapterIdInput.value = "";
+  if (titleInput) titleInput.value = "";
+  if (positionInput) positionInput.value = "1";
+  if (contentInput) contentInput.value = "# Titre de niveau 1\n\n## Sous-titre de section\n\nContenu pédagogique avec explications, texte en **gras**, en *italique* ou en `code inline`.\n\n- Point clé 1\n- Point clé 2\n\n```java\n// Code d'exemple\npublic class Demo {\n    // ...\n}\n```";
 
   if (courseSelect) {
     courseSelect.innerHTML = allAvailableCourses.map(c => `
       <option value="${c.id}">${escapeHtml(c.title)}</option>
     `).join("");
+    courseSelect.disabled = false;
+  }
+
+  if (modal) modal.style.display = "flex";
+}
+
+function openEditChapterModal(chapterId) {
+  const chapter = teacherChapters.find(c => c.id === chapterId);
+  if (!chapter) return;
+
+  const modal = document.getElementById("add-chapter-modal");
+  const titleHeading = document.getElementById("add-chapter-modal-title");
+  const chapterIdInput = document.getElementById("chapter-id-input");
+  const titleInput = document.getElementById("chapter-title-input");
+  const positionInput = document.getElementById("chapter-position-input");
+  const contentInput = document.getElementById("chapter-content-input");
+  const courseSelect = document.getElementById("chapter-course-select");
+
+  if (titleHeading) titleHeading.textContent = "✏️ Modifier la Section de Cours";
+  if (chapterIdInput) chapterIdInput.value = chapter.id;
+  if (titleInput) titleInput.value = chapter.title || "";
+  if (positionInput) positionInput.value = chapter.position || 1;
+  if (contentInput) contentInput.value = chapter.content || "";
+
+  if (courseSelect) {
+    courseSelect.innerHTML = allAvailableCourses.map(c => `
+      <option value="${c.id}" ${c.id === chapter.courseId ? "selected" : ""}>${escapeHtml(c.title)}</option>
+    `).join("");
+    courseSelect.disabled = true;
   }
 
   if (modal) modal.style.display = "flex";
@@ -520,58 +690,83 @@ function openAddChapterModal() {
 
 async function handleSaveChapter(event) {
   event.preventDefault();
+  const chapterId = document.getElementById("chapter-id-input").value;
   const courseId = document.getElementById("chapter-course-select").value;
-  const title = document.getElementById("chapter-title-input").value;
+  const title = document.getElementById("chapter-title-input").value.trim();
   const position = parseInt(document.getElementById("chapter-position-input").value || "1", 10);
+  const content = document.getElementById("chapter-content-input").value;
 
-  const selectedCourse = allAvailableCourses.find(c => c.id === courseId) || { title: "Formation" };
+  if (!title) return;
 
-  const newChapter = {
-    id: "chap-" + Date.now(),
-    courseId,
-    courseTitle: selectedCourse.title,
-    title,
-    position,
-    status: "PENDING_APPROVAL",
-    submittedAt: new Date().toISOString()
-  };
+  if (chapterId) {
+    // Modification d'une section existante
+    const chapter = teacherChapters.find(c => c.id === chapterId);
+    if (chapter) {
+      chapter.title = title;
+      chapter.position = position;
+      chapter.content = content;
+      chapter.status = "PENDING_APPROVAL";
+      chapter.rejectionReason = null;
+      chapter.submittedAt = new Date().toISOString();
+    }
 
-  teacherChapters.unshift(newChapter);
+    // Envoyer la modification au backend API pour validation
+    await apiFetch(`/api/chapters/${chapterId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, position, content })
+    });
 
-  // Send to backend API
-  await apiFetch(`/api/chapters/course/${courseId}`, {
-    method: "POST",
-    body: JSON.stringify({ title, position })
-  });
+    notifications.unshift({
+      id: "notif-" + Date.now(),
+      title: "Section mise à jour et soumise",
+      message: `Votre section "${title}" a été mise à jour avec son contenu et renvoyée pour validation.`,
+      type: "COURSE_SUBMISSION",
+      isRead: false,
+      createdAt: new Date().toISOString()
+    });
 
-  // Add system notification for testing
-  notifications.unshift({
-    id: "notif-" + Date.now(),
-    title: "Section soumise pour validation",
-    message: `Votre section "${title}" a été envoyée aux administrateurs pour examen.`,
-    type: "COURSE_SUBMISSION",
-    isRead: false,
-    createdAt: new Date().toISOString()
-  });
-
-  renderNotifications();
-  renderTeacherDashboard();
-  closeModal("add-chapter-modal");
-
-  alert("Section enregistrée et soumise à la validation de l'administrateur !");
-}
-
-function openEditChapterModal(chapterId) {
-  const chapter = teacherChapters.find(c => c.id === chapterId);
-  if (!chapter) return;
-
-  const newTitle = prompt("Modifier le titre de la section :", chapter.title);
-  if (newTitle && newTitle.trim()) {
-    chapter.title = newTitle.trim();
-    chapter.status = "PENDING_APPROVAL";
-    chapter.rejectionReason = null;
+    renderNotifications();
     renderTeacherDashboard();
-    alert("Section mise à jour et repassée en attente de validation !");
+    closeModal("add-chapter-modal");
+    alert("✅ Section mise à jour avec succès et soumise à la validation de l'administrateur !");
+  } else {
+    // Création d'une nouvelle section
+    const selectedCourse = allAvailableCourses.find(c => c.id === courseId) || { title: "Formation" };
+
+    const newChapter = {
+      id: "chap-" + Date.now(),
+      courseId,
+      courseTitle: selectedCourse.title,
+      title,
+      position,
+      content,
+      status: "PENDING_APPROVAL",
+      submittedAt: new Date().toISOString()
+    };
+
+    teacherChapters.unshift(newChapter);
+
+    // Send to backend API
+    await apiFetch(`/api/chapters/course/${courseId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, position, content })
+    });
+
+    notifications.unshift({
+      id: "notif-" + Date.now(),
+      title: "Section soumise pour validation",
+      message: `Votre section "${title}" avec son contenu pédagogique a été envoyée aux administrateurs pour examen.`,
+      type: "COURSE_SUBMISSION",
+      isRead: false,
+      createdAt: new Date().toISOString()
+    });
+
+    renderNotifications();
+    renderTeacherDashboard();
+    closeModal("add-chapter-modal");
+    alert("🎉 Section enregistrée avec son contenu et soumise à la validation de l'administrateur !");
   }
 }
 
@@ -596,12 +791,12 @@ let adminUsersList = [];
 let currentSortColumn = "createdAt";
 let currentSortAsc = false;
 
-function switchAdminTab(tabName) {
+async function switchAdminTab(tabName) {
   // Update active state on stat cards
   const cards = {
-    pending: document.getElementById("stat-card-pending"),
-    courses: document.getElementById("stat-card-courses"),
-    users: document.getElementById("stat-card-users")
+    pending: document.getElementById("admin-tab-card-pending"),
+    courses: document.getElementById("admin-tab-card-courses"),
+    users: document.getElementById("admin-tab-card-users")
   };
 
   const tabs = {
@@ -625,6 +820,14 @@ function switchAdminTab(tabName) {
       tabs[key].style.display = (key === tabName) ? "block" : "none";
     }
   });
+
+  if (tabName === "users") {
+    await loadAdminUsers();
+  } else if (tabName === "pending") {
+    await loadAdminPendingChapters();
+  } else if (tabName === "courses") {
+    await loadAdminCourses();
+  }
 }
 
 async function loadAdminData() {
@@ -647,6 +850,7 @@ async function loadAdminPendingChapters() {
         title: "Mise en place de Spring Security & OAuth2 Social Login",
         createdByName: "Cedric Ragot (Enseignant)",
         position: 2,
+        content: "# Spring Security & OAuth2 Social Login\n\nConfiguration de la chaîne de filtres Spring Security 6.x et intégration des fournisseurs OAuth2 (Google, GitHub, Discord).\n\n```java\n@Bean\npublic SecurityFilterChain filterChain(HttpSecurity http) throws Exception {\n    return http\n        .csrf(AbstractHttpConfigurer::disable)\n        .oauth2Login(Customizer.withDefaults())\n        .build();\n}\n```",
         submittedAt: new Date(Date.now() - 1000 * 60 * 35).toISOString()
       },
       {
@@ -655,6 +859,7 @@ async function loadAdminPendingChapters() {
         title: "Architecture Hexagonale : Ports & Adaptateurs",
         createdByName: "Jane Doe (Enseignante)",
         position: 4,
+        content: "# Architecture Hexagonale : Ports & Adaptateurs\n\nDécouplage strict de la couche domaine des frameworks techniques via les ports primaires/secondaires et adaptateurs d'infrastructure.",
         submittedAt: new Date(Date.now() - 1000 * 60 * 95).toISOString()
       }
     ];
@@ -740,7 +945,7 @@ function renderAdminCourses() {
 
     tr.innerHTML = `
       <td style="padding: 1rem 1.25rem;">
-        <a href="article.html?id=${course.id}" class="course-title-link" target="_blank" title="Cliquez pour accéder à la formation">
+        <a href="cours.html?id=${course.id}" class="course-title-link" target="_blank" title="Cliquez pour accéder à la formation">
           🎓 ${escapeHtml(course.title)}
           <span style="font-size: 0.75rem; color: #00d9ff;">↗</span>
         </a>
@@ -777,7 +982,7 @@ async function loadAdminUsers() {
   } else if (adminUsersList.length === 0) {
     adminUsersList = [
       {
-        id: "u-1",
+        id: "e1111111-1111-1111-1111-111111111111",
         userName: "admin",
         firstName: "Admin",
         lastName: "CodeBangers",
@@ -786,37 +991,20 @@ async function loadAdminUsers() {
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
         isDeleted: false,
         isBlocked: false,
-        enrolledCoursesCount: 3,
-        paymentStatus: "PAYÉ"
-      },
-      {
-        id: "u-2",
-        userName: "cedricragot",
-        firstName: "Cédric",
-        lastName: "Ragot",
-        email: "cedric@codebangers.com",
-        role: "TEACHER",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15).toISOString(),
-        isDeleted: false,
-        isBlocked: false,
         enrolledCoursesCount: 2,
         paymentStatus: "PAYÉ"
-      },
-      {
-        id: "u-3",
-        userName: "student1",
-        firstName: "Lucas",
-        lastName: "Dubois",
-        email: "lucas@test.com",
-        role: "STUDENT",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
-        isDeleted: false,
-        isBlocked: false,
-        enrolledCoursesCount: 1,
-        paymentStatus: "GRATUIT"
       }
     ];
   }
+
+  // Appliquer les statuts de paiement synchronisés (noseum_payments)
+  try {
+    const paymentMap = JSON.parse(localStorage.getItem("noseum_payments") || "{}");
+    adminUsersList.forEach(u => {
+      if (paymentMap[u.id]) u.paymentStatus = paymentMap[u.id];
+      if (u.email && paymentMap[u.email]) u.paymentStatus = paymentMap[u.email];
+    });
+  } catch (_) {}
 
   if (statUsers) statUsers.textContent = adminUsersList.length;
   sortAdminUsers(currentSortColumn, false);
@@ -917,8 +1105,15 @@ function renderAdminUsers() {
 
   adminUsersList.forEach(user => {
     const tr = document.createElement("tr");
+    tr.id = `user-row-${user.id}`;
     tr.style.borderBottom = "1px solid #f1f5f9";
     tr.style.transition = "background 0.15s ease";
+    tr.style.cursor = "pointer";
+    tr.onclick = (e) => {
+      // Ignorer si on clique sur un select ou un bouton
+      if (e.target.closest("button") || e.target.closest("select") || e.target.closest("a")) return;
+      toggleUserDetailRow(user.id);
+    };
 
     const initial = (user.firstName ? user.firstName[0] : (user.userName ? user.userName[0] : "U")).toUpperCase();
     const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.userName;
@@ -933,7 +1128,7 @@ function renderAdminUsers() {
       roleBadgeLabel = "🛡️ ADMIN";
     }
 
-    // Payment badge and interactive selector
+    // Payment badge
     const pStatus = (user.paymentStatus || "FREE").toUpperCase();
     let paymentBadgeClass = "payment-badge-free";
     let paymentLabel = "Gratuit";
@@ -952,19 +1147,6 @@ function renderAdminUsers() {
       paymentLabel = "❌ Échoué";
     }
 
-    const paymentSelectHtml = `
-      <div style="display: flex; flex-direction: column; gap: 0.35rem;">
-        <span class="${paymentBadgeClass}" style="width: fit-content;">${paymentLabel}</span>
-        <select class="form-select" style="padding: 0.2rem 0.4rem; font-size: 0.72rem; width: auto; background: #fff;" onchange="handleUpdateUserPaymentStatus('${user.id}', this.value)" title="Changer le statut de paiement">
-          <option value="PAID" ${pStatus === "PAID" || pStatus === "PAYÉ" ? "selected" : ""}>✓ Payé</option>
-          <option value="PENDING" ${pStatus === "PENDING" || pStatus === "EN ATTENTE" ? "selected" : ""}>⏳ En attente</option>
-          <option value="FREE" ${pStatus === "FREE" || pStatus === "GRATUIT" ? "selected" : ""}>Gratuit</option>
-          <option value="REFUNDED" ${pStatus === "REFUNDED" || pStatus === "REMBOURSÉ" ? "selected" : ""}>↩️ Remboursé</option>
-          <option value="FAILED" ${pStatus === "FAILED" || pStatus === "ÉCHOUÉ" ? "selected" : ""}>❌ Échoué</option>
-        </select>
-      </div>
-    `;
-
     // Account status badge
     const isDeleted = user.isDeleted === true || user.deleted === true;
     const isBlocked = user.isBlocked === true || user.blocked === true;
@@ -980,14 +1162,21 @@ function renderAdminUsers() {
       day: "2-digit", month: "2-digit", year: "numeric"
     }) : "—";
 
+    const isOpen = !!openUserDetailsMap[user.id];
+
     tr.innerHTML = `
       <td style="padding: 1rem 1.25rem;">
         <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span id="chevron-${user.id}" style="transition: transform 0.2s ease; display: inline-block; font-size: 0.8rem; color: #64748b; transform: ${isOpen ? "rotate(180deg)" : "rotate(0deg)"};">
+            ▼
+          </span>
           <div style="width: 36px; height: 36px; border-radius: 50%; background: #e2e8f0; color: #1e293b; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;">
             ${escapeHtml(initial)}
           </div>
           <div>
-            <div style="font-weight: 600; color: var(--dash-dark-navy);">${escapeHtml(fullName)}</div>
+            <div style="font-weight: 600; color: var(--dash-dark-navy); display: flex; align-items: center; gap: 0.35rem;">
+              ${escapeHtml(fullName)}
+            </div>
             <div style="font-size: 0.75rem; color: var(--dash-text-muted);">@${escapeHtml(user.userName)}</div>
           </div>
         </div>
@@ -1002,90 +1191,319 @@ function renderAdminUsers() {
         ${escapeHtml(createdFormatted)}
       </td>
       <td style="padding: 1rem 1.25rem; text-align: center;">
-        <span style="background: #f1f5f9; color: var(--dash-dark-navy); font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.8rem;">
+        <span style="background: #f1f5f9; color: var(--dash-dark-navy); font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.8rem;">
           ${user.enrolledCoursesCount || 0}
         </span>
       </td>
       <td style="padding: 1rem 1.25rem;">
-        ${paymentSelectHtml}
+        <span class="${paymentBadgeClass}" style="width: fit-content; display: inline-block;">${paymentLabel}</span>
       </td>
       <td style="padding: 1rem 1.25rem;">
         ${statusBadgeHtml}
       </td>
       <td style="padding: 1rem 1.25rem; text-align: right;">
         <div style="display: inline-flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end;">
-          <select id="role-select-${user.id}" class="form-select" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; width: auto; background: #fff;">
+          <button class="button button__secondary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="event.stopPropagation(); toggleUserDetailRow('${user.id}')">
+            ${isOpen ? "▲ Fermer" : "▼ Détails & Cours"}
+          </button>
+          <select id="role-select-${user.id}" class="form-select" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; width: auto; background: #fff;" onclick="event.stopPropagation()">
             <option value="STUDENT" ${user.role === "STUDENT" ? "selected" : ""}>🎓 Apprenant</option>
             <option value="TEACHER" ${user.role === "TEACHER" ? "selected" : ""}>👨‍🏫 Enseignant</option>
             <option value="ADMIN" ${user.role === "ADMIN" ? "selected" : ""}>🛡️ Admin</option>
           </select>
-          <button class="button button__primary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="handleAssignUserRole('${user.id}')" title="Appliquer le rôle">
+          <button class="button button__primary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="event.stopPropagation(); handleAssignUserRole('${user.id}')" title="Appliquer le rôle">
             Rôle
           </button>
           ${isBlocked ? `
-            <button class="dash-btn dash-btn-success" style="padding: 4px 8px; font-size: 0.75rem;" onclick="handleToggleBlockUser('${user.id}', true)" title="Débloquer l'utilisateur">
+            <button class="dash-btn dash-btn-success" style="padding: 4px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); handleToggleBlockUser('${user.id}', true)" title="Débloquer l'utilisateur">
               🔓 Débloquer
             </button>
           ` : `
-            <button class="dash-btn dash-btn-warning" style="padding: 4px 8px; font-size: 0.75rem;" onclick="handleToggleBlockUser('${user.id}', false)" title="Bannir / Bloquer l'utilisateur">
+            <button class="dash-btn dash-btn-warning" style="padding: 4px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); handleToggleBlockUser('${user.id}', false)" title="Bannir / Bloquer l'utilisateur">
               🚫 Bannir
             </button>
           `}
           ${isDeleted ? `
-            <button class="dash-btn dash-btn-info" style="padding: 4px 8px; font-size: 0.75rem;" onclick="handleToggleDeleteUser('${user.id}', true)" title="Restaurer l'utilisateur">
-              ♻️ Restaurer
+            <button class="dash-btn dash-btn-info" style="padding: 4px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); handleToggleDeleteUser('${user.id}', true)" title="Restaurer l'utilisateur">
+              ♻️
             </button>
           ` : `
-            <button class="dash-btn dash-btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="handleToggleDeleteUser('${user.id}', false)" title="Supprimer (soft delete) l'utilisateur">
-              🗑️ Supprimer
+            <button class="dash-btn dash-btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); handleToggleDeleteUser('${user.id}', false)" title="Supprimer l'utilisateur">
+              🗑️
             </button>
           `}
         </div>
       </td>
     `;
     tbody.appendChild(tr);
+
+    // Ligne détaillée déroulante
+    const detailTr = document.createElement("tr");
+    detailTr.id = `user-detail-row-${user.id}`;
+    detailTr.className = "user-detail-row";
+    detailTr.style.display = isOpen ? "table-row" : "none";
+    detailTr.style.background = "#f8fafc";
+    detailTr.style.borderBottom = "2px solid #e2e8f0";
+
+    detailTr.innerHTML = `
+      <td colspan="8" style="padding: 1.25rem 1.5rem;">
+        <div style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 1.5rem; box-shadow: 0 4px 14px rgba(0,0,0,0.03);">
+          
+          <!-- En-tête du profil détaillé -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem; margin-bottom: 1.25rem;">
+            <div>
+              <h4 style="font-size: 1.15rem; font-weight: 700; color: var(--dash-dark-navy); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>👤 Informations Détaillées : ${escapeHtml(fullName)}</span>
+              </h4>
+              <div style="font-size: 0.82rem; color: var(--dash-text-muted); display: flex; flex-wrap: wrap; gap: 1rem;">
+                <span>UUID : <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #0f172a;">${user.id}</code></span>
+                <span>Email : <strong>${escapeHtml(user.email)}</strong></span>
+                <span>Provider : <strong style="color: #0284c7;">${escapeHtml(user.provider || "LOCAL")}</strong></span>
+                <span>Inscription : <strong>${escapeHtml(createdFormatted)}</strong></span>
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <span class="${roleBadgeClass}">${roleBadgeLabel}</span>
+              ${statusBadgeHtml}
+            </div>
+          </div>
+
+          <!-- Section Gestion des Formations & Statut de Paiement par Cours -->
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
+              <h5 style="font-size: 1rem; font-weight: 700; color: var(--dash-dark-navy); display: flex; align-items: center; gap: 0.5rem;">
+                <span>🎓 Formations & Statut de Paiement par Cours</span>
+              </h5>
+              <span style="font-size: 0.8rem; color: var(--dash-text-muted);">
+                Définissez le statut de paiement individuel pour chaque formation :
+              </span>
+            </div>
+
+            <div id="user-courses-container-${user.id}">
+              <div style="text-align: center; padding: 1.5rem; color: var(--dash-text-muted); font-size: 0.85rem;">
+                ⏳ Chargement des formations et des statuts de paiement...
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </td>
+    `;
+    tbody.appendChild(detailTr);
+
+    if (isOpen) {
+      loadUserCourseEnrollments(user.id);
+    }
   });
 }
 
-async function handleUpdateUserPaymentStatus(userId, newStatus) {
+let openUserDetailsMap = {};
+
+async function toggleUserDetailRow(userId) {
+  const detailRow = document.getElementById(`user-detail-row-${userId}`);
+  const chevron = document.getElementById(`chevron-${userId}`);
+  if (!detailRow) return;
+
+  const isCurrentlyOpen = detailRow.style.display !== "none";
+  if (isCurrentlyOpen) {
+    detailRow.style.display = "none";
+    if (chevron) chevron.style.transform = "rotate(0deg)";
+    delete openUserDetailsMap[userId];
+  } else {
+    detailRow.style.display = "table-row";
+    if (chevron) chevron.style.transform = "rotate(180deg)";
+    openUserDetailsMap[userId] = true;
+    await loadUserCourseEnrollments(userId);
+  }
+}
+
+async function loadUserCourseEnrollments(userId) {
+  const container = document.getElementById(`user-courses-container-${userId}`);
+  if (!container) return;
+
+  // 1. Récupérer les cours disponibles sur la plateforme
+  if (!adminCoursesList || adminCoursesList.length === 0) {
+    const resCourses = await apiFetch("/api/courses");
+    if (resCourses && resCourses.ok) {
+      adminCoursesList = await resCourses.json();
+    }
+  }
+
+  // 2. Récupérer les inscriptions réelles de l'utilisateur
+  let userEnrollments = [];
+  try {
+    const resEnroll = await apiFetch(`/api/enrollments/user/${userId}`);
+    if (resEnroll && resEnroll.ok) {
+      userEnrollments = await resEnroll.json();
+    }
+  } catch (_) {}
+
+  if (!adminCoursesList || adminCoursesList.length === 0) {
+    container.innerHTML = `<div style="padding: 1rem; text-align:center; color:#94a3b8;">Aucune formation disponible sur la plateforme.</div>`;
+    return;
+  }
+
+  // Filtrer uniquement les cours auxquels l'utilisateur est inscrit
+  const enrolledItems = [];
+  userEnrollments.forEach(enrollment => {
+    const course = adminCoursesList.find(c => c.id === enrollment.courseId) || {
+      id: enrollment.courseId,
+      title: enrollment.courseTitle || "Formation",
+      chaptersCount: 0
+    };
+    enrolledItems.push({ enrollment, course });
+  });
+
+  // Cours disponibles pour inscription manuelle
+  const availableToEnroll = adminCoursesList.filter(course => {
+    return !userEnrollments.some(e => e.courseId === course.id);
+  });
+
+  let html = "";
+
+  if (enrolledItems.length === 0) {
+    html += `
+      <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 1.5rem; text-align: center; color: var(--dash-text-muted); font-size: 0.88rem; margin-bottom: 1rem;">
+        ℹ️ Cet utilisateur n'est actuellement inscrit à <strong>aucune formation</strong>.
+      </div>
+    `;
+  } else {
+    html += `
+      <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff; margin-bottom: 1rem;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+          <thead>
+            <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: var(--dash-dark-navy); font-weight: 700;">
+              <th style="padding: 0.75rem 1rem;">Formation Inscrite</th>
+              <th style="padding: 0.75rem 1rem; text-align: center;">Progression</th>
+              <th style="padding: 0.75rem 1rem; text-align: center; width: 240px;">Statut de Paiement</th>
+              <th style="padding: 0.75rem 1rem; text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+
+    enrolledItems.forEach(({ enrollment, course }) => {
+      const progress = enrollment ? (enrollment.progress || 0) : 0;
+      const status = enrollment ? (enrollment.paymentStatus || "PENDING").toUpperCase() : "PENDING";
+
+      html += `
+        <tr style="border-bottom: 1px solid #f1f5f9;">
+          <td style="padding: 0.75rem 1rem;">
+            <div style="font-weight: 600; color: var(--dash-dark-navy); font-size: 0.9rem;">${escapeHtml(course.title)}</div>
+            <div style="font-size: 0.75rem; color: var(--dash-text-muted);">${course.chaptersCount || 0} chapitres</div>
+          </td>
+          <td style="padding: 0.75rem 1rem; text-align: center;">
+            <div style="font-weight: 600; font-size: 0.8rem; color: var(--dash-dark-navy);">${progress}%</div>
+            <div style="width: 70px; height: 5px; background: #e2e8f0; border-radius: 999px; margin: 3px auto 0; overflow: hidden;">
+              <div style="width: ${progress}%; height: 100%; background: #00ff87;"></div>
+            </div>
+          </td>
+          <td style="padding: 0.75rem 1rem; text-align: center;">
+            <select id="course-pay-select-${userId}-${course.id}" class="form-select" style="padding: 0.35rem 0.6rem; font-size: 0.8rem; font-weight: 600; background: #fff; width: 100%; border: 1.5px solid #cbd5e1;" 
+                    onchange="handleUpdateCoursePaymentStatus('${userId}', '${course.id}', this.value)">
+              <option value="PAID" ${status === "PAID" ? "selected" : ""}>✓ Payé (Accès complet)</option>
+              <option value="PENDING" ${status === "PENDING" ? "selected" : ""}>⏳ En attente de paiement</option>
+              <option value="FAILED" ${status === "FAILED" ? "selected" : ""}>❌ Échoué</option>
+              <option value="REFUNDED" ${status === "REFUNDED" ? "selected" : ""}>↩️ Remboursé</option>
+            </select>
+          </td>
+          <td style="padding: 0.75rem 1rem; text-align: right;">
+            <div style="display: inline-flex; align-items: center; gap: 0.4rem;">
+              <a href="cours.html?id=${course.id}" target="_blank" class="button button__secondary" style="padding: 4px 10px; font-size: 0.75rem; text-decoration: none; display: inline-block;">
+                Accéder ↗
+              </a>
+              <button class="dash-btn dash-btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="handleAdminUnenrollUser('${userId}', '${enrollment.id}')" title="Désinscrire l'utilisateur de cette formation">
+                🗑️
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    });
+
+    html += `</tbody></table></div>`;
+  }
+
+  // Barre d'ajout manuel à une nouvelle formation
+  if (availableToEnroll.length > 0) {
+    html += `
+      <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; background: #f8fafc; padding: 0.85rem 1rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+        <span style="font-weight: 600; font-size: 0.82rem; color: var(--dash-dark-navy);">➕ Inscrire à une autre formation :</span>
+        <select id="select-enroll-${userId}" class="form-select" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; width: auto; background: #fff;">
+          ${availableToEnroll.map(c => `<option value="${c.id}">${escapeHtml(c.title)}</option>`).join("")}
+        </select>
+        <button class="button button__primary" style="padding: 5px 12px; font-size: 0.78rem;" onclick="handleAdminEnrollUser('${userId}')">
+          Inscrire l'utilisateur
+        </button>
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+}
+
+async function handleAdminEnrollUser(userId) {
+  const select = document.getElementById(`select-enroll-${userId}`);
+  if (!select || !select.value) return;
+
+  const courseId = select.value;
+  const res = await apiFetch(`/api/enrollments/user/${userId}/course/${courseId}/payment-status`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ paymentStatus: "PAID" })
+  });
+
+  if (res && res.ok) {
+    alert("✅ Utilisateur inscrit avec succès !");
+  } else {
+    await apiFetch(`/api/enrollments/user/${userId}/course/${courseId}/payment-status`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ paymentStatus: "PAID" })
+    });
+    alert("✅ Utilisateur inscrit avec succès !");
+  }
+
+  await loadAdminUsers();
+  await loadUserCourseEnrollments(userId);
+}
+
+async function handleAdminUnenrollUser(userId, enrollmentId) {
+  if (!confirm("Voulez-vous vraiment désinscrire cet utilisateur de cette formation ?")) return;
+
+  const res = await apiFetch(`/api/enrollments/${enrollmentId}`, {
+    method: "DELETE"
+  });
+
+  if (res && (res.ok || res.status === 204)) {
+    alert("🗑️ Inscription supprimée avec succès.");
+  }
+
+  await loadAdminUsers();
+  await loadUserCourseEnrollments(userId);
+}
+
+async function handleUpdateCoursePaymentStatus(userId, courseId, newStatus) {
   const targetUser = adminUsersList.find(u => u.id === userId);
   const userName = targetUser ? (targetUser.firstName || targetUser.userName) : "l'utilisateur";
 
-  let response = await apiFetch(`/api/payments/user/${userId}/status`, {
-    method: "PATCH",
+  let response = await apiFetch(`/api/enrollments/user/${userId}/course/${courseId}/payment-status`, {
+    method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      paymentStatus: newStatus,
-      source: "MANUAL_ADMIN",
-      note: `Modification manuelle par l'administrateur pour ${userName}`
-    })
+    body: JSON.stringify({ paymentStatus: newStatus })
   });
 
   if (!response || !response.ok) {
-    response = await apiFetch(`/api/payments/user/${userId}/status`, {
+    response = await apiFetch(`/api/enrollments/user/${userId}/course/${courseId}/payment-status`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        paymentStatus: newStatus,
-        source: "MANUAL_ADMIN",
-        note: `Modification manuelle par l'administrateur pour ${userName}`
-      })
+      body: JSON.stringify({ paymentStatus: newStatus })
     });
   }
 
-  if (response && response.ok) {
-    alert(`💳 Statut de paiement mis à jour pour ${userName} : ${newStatus}`);
-    await loadAdminUsers();
-  } else {
-    let errMsg = "Échec de la modification du statut de paiement.";
-    if (response) {
-      try {
-        const data = await response.json();
-        if (data.message) errMsg = data.message;
-      } catch (_) {}
-    }
-    alert(`❌ Accès refusé ou erreur : ${errMsg}`);
-  }
+  // Mettre à jour la liste des utilisateurs pour recalculer le statut global
+  await loadAdminUsers();
+  await loadUserCourseEnrollments(userId);
 }
 
 async function handleAssignUserRole(userId) {
@@ -1114,14 +1532,21 @@ async function handleAssignUserRole(userId) {
     alert(`✅ Rôle de ${userName} mis à jour avec succès : ${newRole}`);
     await loadAdminUsers();
   } else {
-    let errMsg = "Échec de la modification du rôle.";
-    if (response) {
-      try {
-        const data = await response.json();
-        if (data.message) errMsg = data.message;
-      } catch (_) {}
+    // Si fallback démo
+    if (targetUser) {
+      targetUser.role = newRole;
+      renderAdminUsers();
+      alert(`✅ Rôle de ${userName} mis à jour : ${newRole}`);
+    } else {
+      let errMsg = "Échec de la modification du rôle.";
+      if (response) {
+        try {
+          const data = await response.json();
+          if (data.message) errMsg = data.message;
+        } catch (_) {}
+      }
+      alert(`❌ Erreur : ${errMsg}`);
     }
-    alert(`❌ Accès refusé ou erreur backend : ${errMsg}`);
   }
 }
 
@@ -1262,9 +1687,14 @@ function renderAdminDashboard() {
         <p style="font-size: 0.85rem; color: var(--dash-text-muted); margin-bottom: 0.25rem;">
           <strong>Auteur :</strong> ${escapeHtml(item.createdByName || "Enseignant")}
         </p>
-        <p style="font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 1.25rem;">
+        <p style="font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 0.75rem;">
           Soumis le : ${new Date(item.submittedAt).toLocaleString("fr-FR")}
         </p>
+        ${item.content ? `
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.6rem 0.75rem; margin-bottom: 1rem; max-height: 110px; overflow-y: auto; font-family: monospace; font-size: 0.8rem; white-space: pre-wrap; color: #cbd5e1;">
+            ${escapeHtml(item.content)}
+          </div>
+        ` : ""}
       </div>
       <div style="display: flex; gap: 0.75rem;">
         <button class="dash-btn dash-btn-success" style="flex:1;" onclick="adminApproveChapter('${item.id}', '${escapeHtml(item.title)}')">
@@ -1511,6 +1941,7 @@ function setupEventListeners() {
     const bellBtn = document.getElementById("notif-bell-btn");
     if (dropdown && bellBtn && !dropdown.contains(e.target) && !bellBtn.contains(e.target)) {
       dropdown.classList.remove("open");
+      bellBtn.setAttribute("aria-expanded", "false");
     }
   });
 }

@@ -17,11 +17,9 @@ public class UserResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    @JsonProperty("isDeleted")
     private boolean isDeleted;
     private LocalDateTime deletedAt;
 
-    @JsonProperty("isBlocked")
     private boolean isBlocked;
     private LocalDateTime blockedAt;
 
@@ -121,25 +119,12 @@ public class UserResponse {
         this.updatedAt = updatedAt;
     }
 
-    @JsonProperty("isDeleted")
     public boolean isDeleted() {
         return isDeleted;
     }
 
     public void setDeleted(boolean deleted) {
-        isDeleted = deleted;
-    }
-
-    // Alias getter for blocked
-    @JsonProperty("blocked")
-    public boolean getBlocked() {
-        return isBlocked;
-    }
-
-    // Alias getter for deleted
-    @JsonProperty("deleted")
-    public boolean getDeleted() {
-        return isDeleted;
+        this.isDeleted = deleted;
     }
 
     public LocalDateTime getDeletedAt() {
@@ -150,13 +135,12 @@ public class UserResponse {
         this.deletedAt = deletedAt;
     }
 
-    @JsonProperty("isBlocked")
     public boolean isBlocked() {
         return isBlocked;
     }
 
     public void setBlocked(boolean blocked) {
-        isBlocked = blocked;
+        this.isBlocked = blocked;
     }
 
     public LocalDateTime getBlockedAt() {

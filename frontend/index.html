@@ -6,9 +6,46 @@
     <title>NoSeumCode - Apprends à coder en mode banger !</title>
     <meta
       name="description"
-      content="Cours de programmation en ligne – Apprends HTML, CSS, JavaScript & Git en classe virtuelle"
+      content="Cours de programmation en ligne – Apprends HTML, CSS, JavaScript & Git en classe virtuelle interactive."
     />
+    <link rel="canonical" href="https://noseumcode.fr/index.html" />
     <link rel="icon" type="image/png" href="images/favicon.png" />
+
+    <!-- OpenGraph / Facebook / Discord -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="NoSeumCode" />
+    <meta property="og:title" content="NoSeumCode - Apprends à coder en mode banger !" />
+    <meta
+      property="og:description"
+      content="Cours de programmation en ligne – Apprends HTML, CSS, JavaScript & Git en classe virtuelle interactive."
+    />
+    <meta property="og:url" content="https://noseumcode.fr/index.html" />
+    <meta property="og:image" content="https://noseumcode.fr/images/header/logo.png" />
+    <meta property="og:locale" content="fr_FR" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="NoSeumCode - Apprends à coder en mode banger !" />
+    <meta
+      name="twitter:description"
+      content="Cours de programmation en ligne – Apprends HTML, CSS, JavaScript & Git en classe virtuelle interactive."
+    />
+    <meta name="twitter:image" content="https://noseumcode.fr/images/header/logo.png" />
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "NoSeumCode",
+      "url": "https://noseumcode.fr",
+      "logo": "https://noseumcode.fr/images/header/logo.png",
+      "description": "Cours de programmation en ligne – Apprends HTML, CSS, JavaScript & Git en classe virtuelle interactive.",
+      "sameAs": [
+        "https://github.com/cedricrgt/noSeumCode"
+      ]
+    }
+    </script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -28,8 +65,13 @@
     <link rel="stylesheet" href="styles/dist/homepage.min.css" />
   </head>
   <body>
-    <main class="home">
-      <div id="header-placeholder"></div>
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+    <!-- Header landmark container -->
+    <div id="header-placeholder"></div>
+
+    <main id="main-content" class="home">
       
       
       <section class="hero poppins-regular">
@@ -147,9 +189,9 @@
 
         
         <section id="services" class="section section--light">
-          <h1 class="section-tag">Nos services</h1>
+          <span class="section-tag">Nos services</span>
           <h2 class="section-title">
-            Pose les bases, perfectionne-toi, deviens expert !
+            Pose les bases, perfectionne-toi, deviens expert&nbsp;!
           </h2>
 
           <div class="card-grid">
@@ -159,7 +201,11 @@
                 <img
                   class="card__image"
                   src="https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?w=400&h=300&fit=crop"
-                  alt="Live classes"
+                  alt="Sessions interactives en classe virtuelle"
+                  width="400"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
                 />
               </header>
               <main class="card__main">
@@ -170,6 +216,7 @@
                       viewBox="0 0 24 24"
                       fill="#00ff87"
                       xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
                     >
                       <path
                         d="M15 10L20 5V19L15 14M4 6H14C15.1046 6 16 6.89543 16 8V16C16 17.1046 15.1046 18 14 18H4C2.89543 18 2 17.1046 2 16V8C2 6.89543 2.89543 6 4 6Z"
@@ -187,13 +234,14 @@
                 >
                   Pas de vidéos ennuyeuses ! On se retrouve en classe virtuelle pour coder ensemble, poser tes questions en live et progresser avec le groupe.
                 </p>
-                <button popovertarget="pedagogy-live" class="card__link bangers-regular" style="background:none; border:none; cursor:pointer;">
+                <button popovertarget="pedagogy-live" class="card__link bangers-regular" style="background:none; border:none; cursor:pointer;" aria-haspopup="dialog">
                   En savoir plus
                   <svg
                     class="card__chevron"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
                   >
                     <path
                       d="M9 18L15 12L9 6"
@@ -213,7 +261,11 @@
                 <img
                   class="card__image"
                   src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop"
-                  alt="Real projects"
+                  alt="Développement de projets réels pour portfolio"
+                  width="400"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
                 />
               </header>
               <main class="card__main">
@@ -224,6 +276,7 @@
                       viewBox="0 0 24 24"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
                     >
                       <path
                         d="M12 2L2 7L12 12L22 7L12 2Z"
@@ -253,13 +306,14 @@
                 <p class="card__paragraphe card__textGreen poppins-regular">
                   Oublie les exercices théoriques. Tu construis de vrais sites et applications que tu pourras fièrement montrer dans ton portfolio professionnel.
                 </p>
-                <button popovertarget="pedagogy-projects" class="card__link bangers-regular" style="background:none; border:none; cursor:pointer;">
+                <button popovertarget="pedagogy-projects" class="card__link bangers-regular" style="background:none; border:none; cursor:pointer;" aria-haspopup="dialog">
                   Ce que tu vas créer
                   <svg
                     class="card__chevron-darken"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
                   >
                     <path
                       d="M9 18L15 12L9 6"
@@ -279,7 +333,11 @@
                 <img
                   class="card__image"
                   src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=400&h=300&fit=crop"
-                  alt="Mentoring"
+                  alt="Coaching individuel et mentorat"
+                  width="400"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
                 />
               </header>
               <main class="card__main">
@@ -290,6 +348,7 @@
                       viewBox="0 0 24 24"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
                     >
                       <path
                         d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21"
@@ -328,13 +387,14 @@
                 <p class="card__paragraphe card__textGreen poppins-regular">
                   Tu n'es jamais seul. Profite d'un mentorat personnalisé, de reviews de ton code et de conseils pour lancer ta carrière dans la tech.
                 </p>
-                <button popovertarget="pedagogy-mentoring" class="card__link bangers-regular" style="background:none; border:none; cursor:pointer;">
+                <button popovertarget="pedagogy-mentoring" class="card__link bangers-regular" style="background:none; border:none; cursor:pointer;" aria-haspopup="dialog">
                   Découvrir le coaching
                   <svg
                     class="card__chevron-darken"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
                   >
                     <path
                       d="M9 18L15 12L9 6"
@@ -353,9 +413,9 @@
         
         <section id="courses" class="section section--white">
           <div class="courses__header">
-            <h1 class="section-tag">Nos Cours</h1>
+            <span class="section-tag">Nos Cours</span>
             <h2 class="section-subtitle">
-              Explore les technos qui te feront briller !
+              Explore les technos qui te feront briller&nbsp;!
             </h2>
           </div>
 
@@ -365,7 +425,11 @@
                 <img
                   class="card__image"
                   src="images/courses/html.webp"
-                  alt="HTML & CSS"
+                  alt="Illustration cours HTML5 et CSS3"
+                  width="400"
+                  height="250"
+                  loading="lazy"
+                  decoding="async"
                 />
               </header>
               <main class="card__main">
@@ -377,13 +441,14 @@
                   comment ces langages transforment une simple page en une
                   expérience visuelle immersive.
                 </p>
-                <button popovertarget="course-html-css" class="card__link bangers-regular" style="background:none; border:none; cursor:pointer;">
+                <button popovertarget="course-html-css" class="card__link bangers-regular" style="background:none; border:none; cursor:pointer;" aria-haspopup="dialog">
                   Plonge dans le design web
                   <svg
                     class="card__chevron-darken"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
                   >
                     <path
                       d="M9 18L15 12L9 6"
@@ -402,7 +467,11 @@
                 <img
                   class="card__image"
                   src="images/courses/javascript.webp"
-                  alt="JavaScript"
+                  alt="Illustration cours programmation JavaScript moderne"
+                  width="400"
+                  height="250"
+                  loading="lazy"
+                  decoding="async"
                 />
               </header>
               <main class="card__main">
@@ -414,13 +483,14 @@
                   interactions… JavaScript te permet de créer des sites vivants
                   et réactifs !
                 </p>
-                <button popovertarget="course-js" class="card__link bangers-regular" style="background:none; border:none; cursor:pointer;">
+                <button popovertarget="course-js" class="card__link bangers-regular" style="background:none; border:none; cursor:pointer;" aria-haspopup="dialog">
                   Découvre JavaScript
                   <svg
                     class="card__chevron-darken"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
                   >
                     <path
                       d="M9 18L15 12L9 6"
@@ -439,7 +509,11 @@
                 <img
                   class="card__image"
                   src="./images/logos/Git_Logo_full.svg"
-                  alt="Git & GitHub"
+                  alt="Logo officiel Git pour la gestion de versions"
+                  width="400"
+                  height="250"
+                  loading="lazy"
+                  decoding="async"
                 />
               </header>
               <main class="card__main">
@@ -449,13 +523,14 @@
                 <p class="card__paragraphe card__textGreen poppins-regular">
                   Ne perds plus jamais ton code et apprends à bosser à plusieurs sur le même projet sans tout casser. Versionne comme un expert !
                 </p>
-                <button popovertarget="course-git" class="card__link bangers-regular" style="background:none; border:none; cursor:pointer;">
+                <button popovertarget="course-git" class="card__link bangers-regular" style="background:none; border:none; cursor:pointer;" aria-haspopup="dialog">
                   Maîtrise Git & GitHub
                   <svg
                     class="card__chevron-darken"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
                   >
                     <path
                       d="M9 18L15 12L9 6"
@@ -473,17 +548,17 @@
 
         
         <section class="section section--dark">
-          <h1 class="section-title section-title--light">
-            🚀 Explore, Apprends, Code !
-          </h1>
-          <h2 class="section-subtitle section-subtitle--light">
+          <h2 class="section-title section-title--light">
+            🚀 Explore, Apprends, Code&nbsp;!
+          </h2>
+          <p class="section-subtitle section-subtitle--light">
             Nos <span class="gradient-text">articles</span> et vidéos pour
             <span class="gradient-text">progresser</span> à ton
-            <span class="gradient-text">rythme</span> !
-          </h2>
-          <h3 class="section-subtitle section-subtitle--muted">
+            <span class="gradient-text">rythme</span>&nbsp;!
+          </p>
+          <p class="section-subtitle section-subtitle--muted">
             Les bases du web n'auront plus de secrets pour toi.
-          </h3>
+          </p>
 
           <div class="card-grid">
             <article class="card card-green card-paddingtop">
@@ -491,7 +566,11 @@
                 <img
                   class="card__image"
                   src="https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&h=300&fit=crop"
-                  alt="HTML basics"
+                  alt="Guide pour débuter en HTML et créer une page web"
+                  width="400"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
                 />
               </header>
               <main class="card__main">
@@ -512,6 +591,7 @@
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
                   >
                     <path
                       d="M9 18L15 12L9 6"
@@ -530,7 +610,11 @@
                 <img
                   class="card__image"
                   src="https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=400&h=300&fit=crop"
-                  alt="JavaScript basics"
+                  alt="Tutoriel premiers pas en programmation JavaScript"
+                  width="400"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
                 />
               </header>
               <main class="card__main">
@@ -551,6 +635,7 @@
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
                   >
                     <path
                       d="M9 18L15 12L9 6"
@@ -569,7 +654,11 @@
                 <img
                   class="card__image"
                   src="./images/courses/git.webp"
-                  alt="Git basics"
+                  alt="Importance de Git et GitHub pour les développeurs professionnels"
+                  width="400"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
                 />
               </header>
               <main class="card__main">
@@ -579,7 +668,7 @@
                 <p
                   class="card__paragraphe card__paragraphe-white poppins-regular"
                 >
-                  Tu veux bosser chez Google ou Ubisfot ? Ils utilisent tous Git. Découvre comment cet outil sauve tes fesses et boost ton équipe.
+                  Tu veux bosser chez Google ou Ubisoft ? Ils utilisent tous Git. Découvre comment cet outil sauve tes fesses et boost ton équipe.
                 </p>
                 <a href="article.html?id=git-github" class="card__link bangers-regular">
                   Lire l'article
@@ -588,6 +677,7 @@
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
                   >
                     <path
                       d="M9 18L15 12L9 6"
@@ -607,7 +697,7 @@
         
         <section id="faq" class="faq section section--light">
           <div class="faq__header">
-            <h1 class="section-tag">FAQ</h1>
+            <span class="section-tag">FAQ</span>
             <h2 class="section-title">Tes questions, nos réponses en mode banger</h2>
           </div>
 
@@ -615,7 +705,7 @@
             <details class="faq__item">
               <summary class="faq__summary">
                 C'est quoi exactement NoSeumCode ?
-                <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                   <path d="M6 9l6 6 6-6"/>
                 </svg>
               </summary>
@@ -627,7 +717,7 @@
             <details class="faq__item">
               <summary class="faq__summary">
                 Est-ce que je dois être fort en maths pour coder ?
-                <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                   <path d="M6 9l6 6 6-6"/>
                 </svg>
               </summary>
@@ -639,7 +729,7 @@
             <details class="faq__item">
               <summary class="faq__summary">
                 Quels sont les tarifs des formations ?
-                <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                   <path d="M6 9l6 6 6-6"/>
                 </svg>
               </summary>
@@ -651,7 +741,7 @@
             <details class="faq__item">
               <summary class="faq__summary">
                 Je peux suivre les cours si j'étudie ou travaille à côté ?
-                <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                   <path d="M6 9l6 6 6-6"/>
                 </svg>
               </summary>
@@ -663,7 +753,7 @@
             <details class="faq__item">
               <summary class="faq__summary">
                 Quel matériel me faut-il pour commencer ?
-                <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                   <path d="M6 9l6 6 6-6"/>
                 </svg>
               </summary>
@@ -674,11 +764,13 @@
           </div>
         </section>
 
-      <div id="footer-placeholder"></div>
     </main>
 
-    <div id="course-html-css" popover>
-      <button class="popover__close" popovertarget="course-html-css" popovertargetaction="hide">×</button>
+    <!-- Footer landmark container placed outside main -->
+    <div id="footer-placeholder"></div>
+
+    <div id="course-html-css" popover aria-label="Détails de la formation HTML et CSS">
+      <button class="popover__close" popovertarget="course-html-css" popovertargetaction="hide" aria-label="Fermer">×</button>
       <header class="popover__header">
         <h3 class="popover__title">HTML & CSS</h3>
         <p class="popover__tagline">Design ton propre univers web !</p>
@@ -710,12 +802,12 @@
         </ul>
       </div>
       <footer class="popover__footer">
-        <a href="#" class="button button__primary bangers-regular popover__cta">S'inscrire direct !</a>
+        <button type="button" class="button button__primary bangers-regular popover__cta" onclick="openGlobalAuthModal('register')">S'inscrire direct !</button>
       </footer>
     </div>
 
-    <div id="course-js" popover>
-      <button class="popover__close" popovertarget="course-js" popovertargetaction="hide">×</button>
+    <div id="course-js" popover aria-label="Détails de la formation JavaScript">
+      <button class="popover__close" popovertarget="course-js" popovertargetaction="hide" aria-label="Fermer">×</button>
       <header class="popover__header">
         <h3 class="popover__title">JavaScript</h3>
         <p class="popover__tagline">Donne vie à tes créations !</p>
@@ -747,12 +839,12 @@
         </ul>
       </div>
       <footer class="popover__footer">
-        <a href="#" class="button button__primary bangers-regular popover__cta">Je veux tester !</a>
+        <button type="button" class="button button__primary bangers-regular popover__cta" onclick="openGlobalAuthModal('register')">Je veux tester !</button>
       </footer>
     </div>
 
-    <div id="course-git" popover>
-      <button class="popover__close" popovertarget="course-git" popovertargetaction="hide">×</button>
+    <div id="course-git" popover aria-label="Détails de la formation Git et GitHub">
+      <button class="popover__close" popovertarget="course-git" popovertargetaction="hide" aria-label="Fermer">×</button>
       <header class="popover__header">
         <h3 class="popover__title">Git & GitHub</h3>
         <p class="popover__tagline">Le combo ultime du travail en équipe !</p>
@@ -784,12 +876,12 @@
         </ul>
       </div>
       <footer class="popover__footer">
-        <a href="#" class="button button__primary bangers-regular popover__cta">Go devenir un pro !</a>
+        <button type="button" class="button button__primary bangers-regular popover__cta" onclick="openGlobalAuthModal('register')">Go devenir un pro !</button>
       </footer>
     </div>
 
-    <div id="pedagogy-live" popover>
-      <button class="popover__close" popovertarget="pedagogy-live" popovertargetaction="hide">×</button>
+    <div id="pedagogy-live" popover aria-label="Détails pédagogie Cours en Direct">
+      <button class="popover__close" popovertarget="pedagogy-live" popovertargetaction="hide" aria-label="Fermer">×</button>
       <header class="popover__header">
         <h3 class="popover__title">Cours en Direct</h3>
         <p class="popover__tagline">L'énergie du groupe, l'aide en temps réel !</p>
@@ -819,7 +911,7 @@
             </div>
           </li>
           <li class="popover__syllabus-item">
-            <span class="popvoer__syllabus-icon">📅</span>
+            <span class="popover__syllabus-icon">📅</span>
             <div class="popover__syllabus-text">
               <strong>Régularité Efficace</strong>
               Un rendez-vous fixe chaque semaine pour avancer pas à pas, sans décrocher.
@@ -828,12 +920,12 @@
         </ul>
       </div>
       <footer class="popover__footer">
-        <a href="#" class="button button__primary bangers-regular popover__cta">Je veux rejoindre le live !</a>
+        <button type="button" class="button button__primary bangers-regular popover__cta" onclick="openGlobalAuthModal('register')">Je veux rejoindre le live !</button>
       </footer>
     </div>
 
-    <div id="pedagogy-projects" popover>
-      <button class="popover__close" popovertarget="pedagogy-projects" popovertargetaction="hide">×</button>
+    <div id="pedagogy-projects" popover aria-label="Détails pédagogie Projets Professionnels">
+      <button class="popover__close" popovertarget="pedagogy-projects" popovertargetaction="hide" aria-label="Fermer">×</button>
       <header class="popover__header">
         <h3 class="popover__title">Projets Pro</h3>
         <p class="popover__tagline">Construis ton avenir ligne par ligne !</p>
@@ -865,12 +957,12 @@
         </ul>
       </div>
       <footer class="popover__footer">
-        <a href="#" class="button button__primary bangers-regular popover__cta">Je lance mon projet !</a>
+        <button type="button" class="button button__primary bangers-regular popover__cta" onclick="openGlobalAuthModal('register')">Je lance mon projet !</button>
       </footer>
     </div>
 
-    <div id="pedagogy-mentoring" popover>
-      <button class="popover__close" popovertarget="pedagogy-mentoring" popovertargetaction="hide">×</button>
+    <div id="pedagogy-mentoring" popover aria-label="Détails pédagogie Suivi Mentorat">
+      <button class="popover__close" popovertarget="pedagogy-mentoring" popovertargetaction="hide" aria-label="Fermer">×</button>
       <header class="popover__header">
         <h3 class="popover__title">Suivi G.O.A.T</h3>
         <p class="popover__tagline">Un mentor dédié pour ta réussite !</p>
@@ -902,7 +994,7 @@
         </ul>
       </div>
       <footer class="popover__footer">
-        <a href="#" class="button button__primary bangers-regular popover__cta">Je veux mon mentor !</a>
+        <button type="button" class="button button__primary bangers-regular popover__cta" onclick="openGlobalAuthModal('register')">Je veux mon mentor !</button>
       </footer>
     </div>
 

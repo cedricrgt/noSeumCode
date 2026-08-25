@@ -160,11 +160,31 @@ public class ChapterResponse {
         this.updatedAt = updatedAt;
     }
 
+    private String content;
+
     public List<ContentResponse> getContents() {
         return contents;
     }
 
     public void setContents(List<ContentResponse> contents) {
         this.contents = contents;
+    }
+
+    public String getContent() {
+        if (content != null && !content.isEmpty()) {
+            return content;
+        }
+        if (contents != null && !contents.isEmpty()) {
+            return contents.stream()
+                .map(ContentResponse::getBody)
+                .filter(b -> b != null && !b.isEmpty())
+                .findFirst()
+                .orElse("");
+        }
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }

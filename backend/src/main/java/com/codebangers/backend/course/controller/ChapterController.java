@@ -93,7 +93,7 @@ public class ChapterController {
     public ResponseEntity<?> createChapter(@PathVariable UUID courseId, @RequestBody ChapterRequest request, @AuthenticationPrincipal Jwt jwt) {
         try {
             User author = getAuthenticatedUser(jwt);
-            Chapter chapter = chapterService.createChapter(courseId, request.getTitle(), request.getPosition(), author);
+            Chapter chapter = chapterService.createChapter(courseId, request.getTitle(), request.getPosition(), request.getContent(), author);
             return new ResponseEntity<>(mapToResponse(chapter), HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -117,7 +117,7 @@ public class ChapterController {
     public ResponseEntity<?> updateChapter(@PathVariable UUID id, @RequestBody ChapterRequest request, @AuthenticationPrincipal Jwt jwt) {
         try {
             User editor = getAuthenticatedUser(jwt);
-            Chapter chapter = chapterService.updateChapter(id, request.getTitle(), request.getPosition(), editor);
+            Chapter chapter = chapterService.updateChapter(id, request.getTitle(), request.getPosition(), request.getContent(), editor);
             return ResponseEntity.ok(mapToResponse(chapter));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -162,7 +162,7 @@ public class ChapterController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> softDeleteChapter(@PathVariable UUID id) {
         try {
             chapterService.softDeleteChapter(id);
@@ -195,6 +195,9 @@ public class ChapterController {
         }
         if (chapter.getReviewedBy() != null) {
             response.setReviewedById(chapter.getReviewedBy().getId());
+        }
+        if (chapter.getContents() != null && !chapter.getContents().isEmpty()) {
+            response.setContent(chapter.getContents().get(0).getBody());
         }
         return response;
     }

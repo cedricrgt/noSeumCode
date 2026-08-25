@@ -8,6 +8,7 @@ import com.codebangers.backend.course.model.Course;
 import com.codebangers.backend.course.repository.CourseRepository;
 import com.codebangers.backend.course.repository.EnrollmentRepository;
 import com.codebangers.backend.user.model.User;
+import com.codebangers.backend.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +22,14 @@ public class EnrollmentService {
 
     private final EnrollmentRepository enrollmentRepository;
     private final CourseRepository courseRepository;
+    private final UserRepository userRepository;
 
     public EnrollmentService(EnrollmentRepository enrollmentRepository,
-                           CourseRepository courseRepository) {
+                           CourseRepository courseRepository,
+                           UserRepository userRepository) {
         this.enrollmentRepository = enrollmentRepository;
         this.courseRepository = courseRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional(readOnly = true)
@@ -67,6 +71,22 @@ public class EnrollmentService {
 
         enrollment.setPaymentStatus(status);
         return enrollmentRepository.save(enrollment);
+    }
+
+    public Enrollment setCoursePaymentStatusForUser(UUID userId, UUID courseId, PaymentStatus status) {
+        Optional<Enrollment> existing = enrollmentRepository.findByUserIdAndCourseId(userId, courseId);
+        if (existing.isPresent()) {
+            Enrollment enrollment = existing.get();
+            enrollment.setPaymentStatus(status);
+            return enrollmentRepository.save(enrollment);
+        } else {
+            User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", userId));
+            Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
+            Enrollment newEnrollment = new Enrollment(user, course, status, 0);
+            return enrollmentRepository.save(newEnrollment);
+        }
     }
 
     public Enrollment updateProgress(UUID enrollmentId, Integer progress) {

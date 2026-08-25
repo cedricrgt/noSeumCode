@@ -38,7 +38,7 @@ public class AdminSeeder implements CommandLineRunner {
             return;
         }
 
-        Optional<User> byEmail = userRepository.findByEmail(adminEmail);
+        Optional<User> byEmail = userRepository.findByEmail(adminEmail != null ? adminEmail : "admin@codebangers.fr");
         Optional<User> byUserName = userRepository.findByUserName("admin");
 
         if (byEmail.isPresent()) {
@@ -47,27 +47,39 @@ public class AdminSeeder implements CommandLineRunner {
             admin.setUserName("admin");
             admin.setPassword(passwordEncoder.encode(adminPassword));
             userRepository.save(admin);
-            log.info("✅ Compte Administrateur mis à jour : {}", adminEmail);
+            log.info("✅ Compte Administrateur mis à jour : {}", admin.getEmail());
         } else if (byUserName.isPresent()) {
             User admin = byUserName.get();
-            admin.setEmail(adminEmail);
+            admin.setEmail(adminEmail != null ? adminEmail : "admin@codebangers.fr");
             admin.setRole(Role.ADMIN);
             admin.setPassword(passwordEncoder.encode(adminPassword));
             userRepository.save(admin);
-            log.info("✅ Compte 'admin' mis à jour avec email : {}", adminEmail);
+            log.info("✅ Compte 'admin' mis à jour avec email : {}", admin.getEmail());
         } else {
             User admin = new User(
                     "admin",
                     "Admin",
                     "CodeBangers",
-                    adminEmail,
+                    adminEmail != null ? adminEmail : "admin@codebangers.fr",
                     passwordEncoder.encode(adminPassword),
                     Role.ADMIN
             );
             admin.setProvider("LOCAL");
             userRepository.save(admin);
-            log.info("✅ Compte Administrateur créé avec succès : {}", adminEmail);
+            log.info("✅ Compte Administrateur créé avec succès : {}", admin.getEmail());
         }
+
+        // Vérification et journalisation de tous les comptes pour diagnostic
+        userRepository.findAll().forEach(u -> {
+            if ("admin@codebangers.fr".equalsIgnoreCase(u.getEmail()) || "admin".equalsIgnoreCase(u.getUserName())) {
+                if (u.getRole() != Role.ADMIN) {
+                    u.setRole(Role.ADMIN);
+                    userRepository.save(u);
+                }
+            }
+            log.info("📋 Utilisateur en base : ID={} | Email={} | Username={} | Role={} | Blocked={} | Deleted={}",
+                    u.getId(), u.getEmail(), u.getUserName(), u.getRole(), u.isBlocked(), u.isDeleted());
+        });
     }
 }
 

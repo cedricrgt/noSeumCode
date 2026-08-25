@@ -15,12 +15,20 @@ public class ChapterRequest {
     @Min(value = 1, message = "Position must be at least 1")
     private Integer position;
 
+    private String content;
+
     public ChapterRequest() {
     }
 
     public ChapterRequest(String title, Integer position) {
         this.title = title;
         this.position = position;
+    }
+
+    public ChapterRequest(String title, Integer position, String content) {
+        this.title = title;
+        this.position = position;
+        this.content = content;
     }
 
     public String getTitle() {
@@ -37,5 +45,13 @@ public class ChapterRequest {
 
     public void setPosition(Integer position) {
         this.position = position;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }

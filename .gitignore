@@ -34,3 +34,6 @@ yarn-error.log*
 out/*
 conception/*
 docs/*
+
+# antigravity rules
+.agents/rules/rule-18-web-animation

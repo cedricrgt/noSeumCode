@@ -29,11 +29,24 @@ async function loadHeader() {
     setActiveNavLink();
     checkUserAuthHeader();
     initPromoPopup();
+    updateHeaderHeightVar();
 
   } catch (error) {
     console.error("Error loading header:", error);
   }
 }
+
+function updateHeaderHeightVar() {
+  const header = document.querySelector(".header");
+  if (header) {
+    const h = header.offsetHeight;
+    if (h > 0) {
+      document.documentElement.style.setProperty("--header-height", `${h}px`);
+    }
+  }
+}
+
+window.addEventListener("resize", updateHeaderHeightVar);
 
 // ========================================================
 // Authentification Globale & Pop-up Modal
@@ -43,7 +56,7 @@ const AUTH_API_BASE = (window.location.hostname === "localhost" || window.locati
   ? "http://localhost:8080"
   : "";
 
-function checkUserAuthHeader() {
+async function checkUserAuthHeader() {
   const token = localStorage.getItem("noseum_token");
   const userStr = localStorage.getItem("noseum_user");
   const authBtn = document.getElementById("header-auth-btn");
@@ -63,6 +76,20 @@ function checkUserAuthHeader() {
         const initial = (user.firstName ? user.firstName[0] : (user.userName ? user.userName[0] : "U")).toUpperCase();
         avatarText.textContent = initial;
       }
+
+      // Valider en arrière-plan si le compte existe toujours dans PostgreSQL
+      fetch(`${AUTH_API_BASE}/api/auth/me`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      }).then(res => {
+        if (res.status === 401 || res.status === 404) {
+          console.warn("Session expirée ou compte supprimé de la base, déconnexion.");
+          localStorage.removeItem("noseum_token");
+          localStorage.removeItem("noseum_user");
+          if (authBtn) authBtn.style.display = "inline-flex";
+          if (userBadge) userBadge.style.display = "none";
+        }
+      }).catch(() => {});
+
     } catch (e) {
       console.error("Error parsing user session:", e);
     }
@@ -76,6 +103,13 @@ function openGlobalAuthModal(tab = "login") {
   const popover = document.getElementById("auth-popover");
   if (!popover) return;
 
+  // Fermer les autres popovers ouverts s'il y en a
+  document.querySelectorAll("[popover]").forEach(p => {
+    if (p !== popover && p.matches && p.matches(":popover-open") && typeof p.hidePopover === "function") {
+      try { p.hidePopover(); } catch(e) {}
+    }
+  });
+
   switchGlobalAuthTab(tab);
   clearGlobalAuthAlert();
 
@@ -85,6 +119,8 @@ function openGlobalAuthModal(tab = "login") {
     popover.style.display = "flex";
   }
 }
+window.openGlobalAuthModal = openGlobalAuthModal;
+window.openAuthModal = openGlobalAuthModal;
 
 function closeGlobalAuthModal() {
   const popover = document.getElementById("auth-popover");
@@ -447,14 +483,9 @@ function initPromoPopup() {
   const promoPopup = document.getElementById("promo-popup");
   if (!promoPopup) return;
 
-  setTimeout(() => {
-    if (typeof promoPopup.showPopover === "function" && !promoPopup.matches(":popover-open")) {
-      promoPopup.showPopover();
-    }
-  }, 2000);
-
+  // Fermeture lors d'un clic en dehors du pop-up (backdrop)
   promoPopup.addEventListener("click", (e) => {
-    if (e.target === promoPopup) {
+    if (e.target === promoPopup && typeof promoPopup.hidePopover === "function") {
       promoPopup.hidePopover();
     }
   });
@@ -464,14 +495,18 @@ function initScrollEffect() {
   const header = document.querySelector(".header");
   if (!header) return;
 
-  window.addEventListener("scroll", () => {
-    const currentScroll = window.pageYOffset;
-    if (currentScroll > 100) {
-      header.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.1)";
-    } else {
-      header.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.08)";
-    }
-  });
+  window.addEventListener(
+    "scroll",
+    () => {
+      const currentScroll = window.scrollY;
+      if (currentScroll > 100) {
+        header.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.1)";
+      } else {
+        header.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.08)";
+      }
+    },
+    { passive: true }
+  );
 }
 
 document.addEventListener("DOMContentLoaded", async () => {

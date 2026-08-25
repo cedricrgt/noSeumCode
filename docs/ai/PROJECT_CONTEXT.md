@@ -90,10 +90,16 @@ Enum `Role` : `USER`, `STUDENT`, `TEACHER`, `ADMIN`
 - ✅ Tests unitaires (`AuthServiceTest`, `NotificationServiceTest`, `ChapterServiceTest`, `CustomOAuth2UserServiceTest`)
 
 ### Frontend
+- ✅ HTML5 / CSS3 / Vanilla JS moderne avec composants modulaires et bundle system
 - ✅ Page `dashboard.html` avec navigation par rôles (Student, Teacher, Admin)
 - ✅ Centre de notifications interactif avec badge de non-lus et marquage à la volée
 - ✅ Modal de connexion multi-réseaux (Google, GitHub, Facebook, Discord) et Email/Password
 - ✅ Interface de soumission pour formateurs et file d'attente d'approbation pour administrateurs
+- ✅ Page `cours.html` avec lecteur dynamique connecté à l'API Spring Boot et filtrage d'accès
+- ✅ Conformité WCAG 2.2 AA (skip-links, :focus-visible, modales accessibles, ratios de contraste, labels liés)
+- ✅ SEO Technique 100% (URLs canoniques, OpenGraph, Twitter Cards, Schema.org JSON-LD, `robots.txt`, `sitemap.xml`)
+- ✅ Respect du mouvement utilisateur (`prefers-reduced-motion: reduce`, rAF throttling)
+- ✅ Optimisation CWV (dimensions d'images explicites, `loading="lazy"`, scroll listeners passifs)
 
 ### Documentation
 - `docs/architecture/erd.puml` — Diagramme ERD (7 entités initiales)
