@@ -885,8 +885,7 @@ function openAddChapterModal() {
   document.getElementById("modal-chapter-heading").textContent = "+ AJOUTER UNE NOUVELLE SECTION";
   document.getElementById("modal-chapter-id").value = "";
   document.getElementById("modal-course-id").value = currentCourse.id;
-  document.getElementById("modal-chapter-title").value = "";
-  document.getElementById("modal-chapter-content").value = "# Titre de la section\n\nLorem ipsum dolor sit amet...\n\n```java\n// Code d'exemple\n```";
+  document.getElementById("modal-chapter-content").value = "# Titre de niveau 1\n\n## Sous-titre de section\n\nContenu pédagogique avec explications, texte en **gras**, en *italique* ou en `code inline`.\n\n- Point clé 1\n- Point clé 2\n\n```java\n// Code d'exemple\npublic class Demo {\n    // ...\n}\n```";
 
   const teacherWarning = document.getElementById("modal-teacher-warning");
   if (teacherWarning) {
@@ -987,7 +986,7 @@ async function handleSaveChapter(event) {
 
     await coursApiFetch(`/api/chapters/${chapId}`, {
       method: "PUT",
-      body: JSON.stringify({ title, position: chap ? chap.position : 1 })
+      body: JSON.stringify({ title, position: chap ? chap.position : 1, content })
     });
 
     closeChapterModal();
@@ -1009,13 +1008,22 @@ async function handleSaveChapter(event) {
     courseChapters.push(newChap);
     activeChapterId = newChap.id;
 
-    await coursApiFetch(`/api/chapters/course/${courseId}`, {
+    const res = await coursApiFetch(`/api/chapters/course/${courseId}`, {
       method: "POST",
-      body: JSON.stringify({ title, position: newChap.position })
+      body: JSON.stringify({ title, position: newChap.position, content })
     });
 
+    if (res && res.ok) {
+      try {
+        const saved = await res.json();
+        if (saved && saved.id) {
+          newChap.id = saved.id;
+        }
+      } catch (_) {}
+    }
+
     closeChapterModal();
-    alert("🎉 Nouvelle section créée !");
+    alert("🎉 Nouvelle section créée avec son contenu !");
   }
 
   renderClassroom();

@@ -527,6 +527,7 @@ async function loadTeacherData() {
   }
 
   // Load teacher chapters
+  // Load teacher chapters
   if (teacherChapters.length === 0) {
     teacherChapters = [
       {
@@ -535,6 +536,7 @@ async function loadTeacherData() {
         courseTitle: "Fullstack Java 21 & Spring Boot 3",
         title: "Introduction aux Records et Pattern Matching Java 21",
         position: 1,
+        content: "# Introduction aux Records Java 21\n\nLes records permettent de définir des classes de données immuables de manière concise et lisible.\n\n```java\npublic record CourseDto(UUID id, String title, int position) {}\n```\n\n### Points clés :\n- Immuabilité native\n- Génération automatique des accesseurs, equals, hashCode et toString",
         status: "APPROVED",
         submittedAt: "2026-08-20T10:00:00"
       },
@@ -544,6 +546,7 @@ async function loadTeacherData() {
         courseTitle: "Fullstack Java 21 & Spring Boot 3",
         title: "Mise en place de Spring Security & OAuth2 Social Login",
         position: 2,
+        content: "# Spring Security & OAuth2 Social Login\n\nConfiguration de la chaîne de filtres Spring Security 6.x et intégration des fournisseurs OAuth2 (Google, GitHub, Discord).\n\n```java\n@Bean\npublic SecurityFilterChain filterChain(HttpSecurity http) throws Exception {\n    return http\n        .csrf(AbstractHttpConfigurer::disable)\n        .oauth2Login(Customizer.withDefaults())\n        .build();\n}\n```",
         status: "PENDING_APPROVAL",
         submittedAt: "2026-08-24T09:30:00"
       },
@@ -553,6 +556,7 @@ async function loadTeacherData() {
         courseTitle: "Clean Architecture & DDD en Pratique",
         title: "Gestion des Événements de Domaine avec Kafka",
         position: 3,
+        content: "# Gestion des Événements de Domaine avec Kafka\n\nPublication fiable d'événements métier et mise en place du Transactional Outbox Pattern pour garantir la consistance éventuelle.",
         status: "REJECTED",
         rejectionReason: "Veuillez inclure le schéma architectural du Transactional Outbox Pattern avant de republier.",
         submittedAt: "2026-08-23T14:15:00"
@@ -606,6 +610,11 @@ function renderTeacherDashboard() {
         </div>
         <h4 class="dash-card-title">${escapeHtml(chapter.title)}</h4>
         <p class="dash-card-desc">Position dans le cours : ${chapter.position}</p>
+        ${chapter.content ? `
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.6rem 0.75rem; margin-top: 0.5rem; max-height: 80px; overflow: hidden; font-size: 0.8rem; color: var(--dash-text-muted); font-family: monospace; white-space: pre-line;">
+            ${escapeHtml(chapter.content.slice(0, 150))}${chapter.content.length > 150 ? "..." : ""}
+          </div>
+        ` : ""}
         ${chapter.status === "REJECTED" && chapter.rejectionReason ? `
           <div class="alert-box danger" style="margin-top: 0.5rem;">
             <div>
@@ -628,12 +637,52 @@ function renderTeacherDashboard() {
 
 function openAddChapterModal() {
   const modal = document.getElementById("add-chapter-modal");
+  const titleHeading = document.getElementById("add-chapter-modal-title");
+  const chapterIdInput = document.getElementById("chapter-id-input");
+  const titleInput = document.getElementById("chapter-title-input");
+  const positionInput = document.getElementById("chapter-position-input");
+  const contentInput = document.getElementById("chapter-content-input");
   const courseSelect = document.getElementById("chapter-course-select");
+
+  if (titleHeading) titleHeading.textContent = "Ajouter une Section de Cours";
+  if (chapterIdInput) chapterIdInput.value = "";
+  if (titleInput) titleInput.value = "";
+  if (positionInput) positionInput.value = "1";
+  if (contentInput) contentInput.value = "# Titre de niveau 1\n\n## Sous-titre de section\n\nContenu pédagogique avec explications, texte en **gras**, en *italique* ou en `code inline`.\n\n- Point clé 1\n- Point clé 2\n\n```java\n// Code d'exemple\npublic class Demo {\n    // ...\n}\n```";
 
   if (courseSelect) {
     courseSelect.innerHTML = allAvailableCourses.map(c => `
       <option value="${c.id}">${escapeHtml(c.title)}</option>
     `).join("");
+    courseSelect.disabled = false;
+  }
+
+  if (modal) modal.style.display = "flex";
+}
+
+function openEditChapterModal(chapterId) {
+  const chapter = teacherChapters.find(c => c.id === chapterId);
+  if (!chapter) return;
+
+  const modal = document.getElementById("add-chapter-modal");
+  const titleHeading = document.getElementById("add-chapter-modal-title");
+  const chapterIdInput = document.getElementById("chapter-id-input");
+  const titleInput = document.getElementById("chapter-title-input");
+  const positionInput = document.getElementById("chapter-position-input");
+  const contentInput = document.getElementById("chapter-content-input");
+  const courseSelect = document.getElementById("chapter-course-select");
+
+  if (titleHeading) titleHeading.textContent = "✏️ Modifier la Section de Cours";
+  if (chapterIdInput) chapterIdInput.value = chapter.id;
+  if (titleInput) titleInput.value = chapter.title || "";
+  if (positionInput) positionInput.value = chapter.position || 1;
+  if (contentInput) contentInput.value = chapter.content || "";
+
+  if (courseSelect) {
+    courseSelect.innerHTML = allAvailableCourses.map(c => `
+      <option value="${c.id}" ${c.id === chapter.courseId ? "selected" : ""}>${escapeHtml(c.title)}</option>
+    `).join("");
+    courseSelect.disabled = true;
   }
 
   if (modal) modal.style.display = "flex";
@@ -641,67 +690,83 @@ function openAddChapterModal() {
 
 async function handleSaveChapter(event) {
   event.preventDefault();
+  const chapterId = document.getElementById("chapter-id-input").value;
   const courseId = document.getElementById("chapter-course-select").value;
-  const title = document.getElementById("chapter-title-input").value;
+  const title = document.getElementById("chapter-title-input").value.trim();
   const position = parseInt(document.getElementById("chapter-position-input").value || "1", 10);
+  const content = document.getElementById("chapter-content-input").value;
 
-  const selectedCourse = allAvailableCourses.find(c => c.id === courseId) || { title: "Formation" };
+  if (!title) return;
 
-  const newChapter = {
-    id: "chap-" + Date.now(),
-    courseId,
-    courseTitle: selectedCourse.title,
-    title,
-    position,
-    status: "PENDING_APPROVAL",
-    submittedAt: new Date().toISOString()
-  };
+  if (chapterId) {
+    // Modification d'une section existante
+    const chapter = teacherChapters.find(c => c.id === chapterId);
+    if (chapter) {
+      chapter.title = title;
+      chapter.position = position;
+      chapter.content = content;
+      chapter.status = "PENDING_APPROVAL";
+      chapter.rejectionReason = null;
+      chapter.submittedAt = new Date().toISOString();
+    }
 
-  teacherChapters.unshift(newChapter);
-
-  // Send to backend API
-  await apiFetch(`/api/chapters/course/${courseId}`, {
-    method: "POST",
-    body: JSON.stringify({ title, position })
-  });
-
-  // Add system notification for testing
-  notifications.unshift({
-    id: "notif-" + Date.now(),
-    title: "Section soumise pour validation",
-    message: `Votre section "${title}" a été envoyée aux administrateurs pour examen.`,
-    type: "COURSE_SUBMISSION",
-    isRead: false,
-    createdAt: new Date().toISOString()
-  });
-
-  renderNotifications();
-  renderTeacherDashboard();
-  closeModal("add-chapter-modal");
-
-  alert("Section enregistrée et soumise à la validation de l'administrateur !");
-}
-
-async function openEditChapterModal(chapterId) {
-  const chapter = teacherChapters.find(c => c.id === chapterId);
-  if (!chapter) return;
-
-  const newTitle = prompt("Modifier le titre de la section :", chapter.title);
-  if (newTitle && newTitle.trim()) {
-    chapter.title = newTitle.trim();
-    chapter.status = "PENDING_APPROVAL";
-    chapter.rejectionReason = null;
-    renderTeacherDashboard();
-
-    // Envoyer la modification au backend API pour générer la notification Admin
+    // Envoyer la modification au backend API pour validation
     await apiFetch(`/api/chapters/${chapterId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: newTitle.trim(), position: chapter.position || 1 })
+      body: JSON.stringify({ title, position, content })
     });
 
-    await fetchNotifications();
-    alert("✅ Section mise à jour et soumise à la validation de l'administrateur !");
+    notifications.unshift({
+      id: "notif-" + Date.now(),
+      title: "Section mise à jour et soumise",
+      message: `Votre section "${title}" a été mise à jour avec son contenu et renvoyée pour validation.`,
+      type: "COURSE_SUBMISSION",
+      isRead: false,
+      createdAt: new Date().toISOString()
+    });
+
+    renderNotifications();
+    renderTeacherDashboard();
+    closeModal("add-chapter-modal");
+    alert("✅ Section mise à jour avec succès et soumise à la validation de l'administrateur !");
+  } else {
+    // Création d'une nouvelle section
+    const selectedCourse = allAvailableCourses.find(c => c.id === courseId) || { title: "Formation" };
+
+    const newChapter = {
+      id: "chap-" + Date.now(),
+      courseId,
+      courseTitle: selectedCourse.title,
+      title,
+      position,
+      content,
+      status: "PENDING_APPROVAL",
+      submittedAt: new Date().toISOString()
+    };
+
+    teacherChapters.unshift(newChapter);
+
+    // Send to backend API
+    await apiFetch(`/api/chapters/course/${courseId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, position, content })
+    });
+
+    notifications.unshift({
+      id: "notif-" + Date.now(),
+      title: "Section soumise pour validation",
+      message: `Votre section "${title}" avec son contenu pédagogique a été envoyée aux administrateurs pour examen.`,
+      type: "COURSE_SUBMISSION",
+      isRead: false,
+      createdAt: new Date().toISOString()
+    });
+
+    renderNotifications();
+    renderTeacherDashboard();
+    closeModal("add-chapter-modal");
+    alert("🎉 Section enregistrée avec son contenu et soumise à la validation de l'administrateur !");
   }
 }
 
@@ -785,6 +850,7 @@ async function loadAdminPendingChapters() {
         title: "Mise en place de Spring Security & OAuth2 Social Login",
         createdByName: "Cedric Ragot (Enseignant)",
         position: 2,
+        content: "# Spring Security & OAuth2 Social Login\n\nConfiguration de la chaîne de filtres Spring Security 6.x et intégration des fournisseurs OAuth2 (Google, GitHub, Discord).\n\n```java\n@Bean\npublic SecurityFilterChain filterChain(HttpSecurity http) throws Exception {\n    return http\n        .csrf(AbstractHttpConfigurer::disable)\n        .oauth2Login(Customizer.withDefaults())\n        .build();\n}\n```",
         submittedAt: new Date(Date.now() - 1000 * 60 * 35).toISOString()
       },
       {
@@ -793,6 +859,7 @@ async function loadAdminPendingChapters() {
         title: "Architecture Hexagonale : Ports & Adaptateurs",
         createdByName: "Jane Doe (Enseignante)",
         position: 4,
+        content: "# Architecture Hexagonale : Ports & Adaptateurs\n\nDécouplage strict de la couche domaine des frameworks techniques via les ports primaires/secondaires et adaptateurs d'infrastructure.",
         submittedAt: new Date(Date.now() - 1000 * 60 * 95).toISOString()
       }
     ];
@@ -1620,9 +1687,14 @@ function renderAdminDashboard() {
         <p style="font-size: 0.85rem; color: var(--dash-text-muted); margin-bottom: 0.25rem;">
           <strong>Auteur :</strong> ${escapeHtml(item.createdByName || "Enseignant")}
         </p>
-        <p style="font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 1.25rem;">
+        <p style="font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 0.75rem;">
           Soumis le : ${new Date(item.submittedAt).toLocaleString("fr-FR")}
         </p>
+        ${item.content ? `
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.6rem 0.75rem; margin-bottom: 1rem; max-height: 110px; overflow-y: auto; font-family: monospace; font-size: 0.8rem; white-space: pre-wrap; color: #cbd5e1;">
+            ${escapeHtml(item.content)}
+          </div>
+        ` : ""}
       </div>
       <div style="display: flex; gap: 0.75rem;">
         <button class="dash-btn dash-btn-success" style="flex:1;" onclick="adminApproveChapter('${item.id}', '${escapeHtml(item.title)}')">

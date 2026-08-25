@@ -2,6 +2,7 @@ package com.codebangers.backend.course.service;
 
 import com.codebangers.backend.chapter.model.Chapter;
 import com.codebangers.backend.chapter.repository.ChapterRepository;
+import com.codebangers.backend.content.model.Content;
 import com.codebangers.backend.course.model.ApprovalStatus;
 import com.codebangers.backend.course.model.Course;
 import com.codebangers.backend.course.repository.CourseRepository;
@@ -69,11 +70,21 @@ public class ChapterService {
     }
 
     public Chapter createChapter(UUID courseId, String title, Integer position, User author) {
+        return createChapter(courseId, title, position, null, author);
+    }
+
+    public Chapter createChapter(UUID courseId, String title, Integer position, String content, User author) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new IllegalArgumentException("Course not found: " + courseId));
 
         Chapter chapter = new Chapter(course, title, position);
         chapter.setCreatedBy(author);
+
+        if (content != null && !content.trim().isEmpty()) {
+            Content c = new Content(chapter, Content.ContentType.PARAGRAPH, content.trim(), 1);
+            c.setCreatedBy(author);
+            chapter.addContent(c);
+        }
 
         if (author != null && author.getRole() == Role.ADMIN) {
             chapter.setStatus(ApprovalStatus.APPROVED);
@@ -129,11 +140,26 @@ public class ChapterService {
     }
 
     public Chapter updateChapter(UUID chapterId, String title, Integer position, User editor) {
+        return updateChapter(chapterId, title, position, null, editor);
+    }
+
+    public Chapter updateChapter(UUID chapterId, String title, Integer position, String content, User editor) {
         Chapter chapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new IllegalArgumentException("Chapter not found: " + chapterId));
 
         chapter.setTitle(title);
         chapter.setPosition(position);
+
+        if (content != null) {
+            if (chapter.getContents() == null || chapter.getContents().isEmpty()) {
+                Content c = new Content(chapter, Content.ContentType.PARAGRAPH, content.trim(), 1);
+                c.setCreatedBy(editor);
+                chapter.addContent(c);
+            } else {
+                Content first = chapter.getContents().get(0);
+                first.setBody(content.trim());
+            }
+        }
 
         if (editor != null && editor.getRole() == Role.ADMIN) {
             chapter.setStatus(ApprovalStatus.APPROVED);
@@ -148,9 +174,9 @@ public class ChapterService {
 
         if (savedChapter.getStatus() == ApprovalStatus.PENDING_APPROVAL) {
             notificationService.notifyAdmins(
-                    "Section modifiée en attente de validation",
+                    "Section modifiée en attente",
                     (editor != null ? (editor.getFirstName() != null ? editor.getFirstName() + " " + (editor.getLastName() != null ? editor.getLastName() : "") : editor.getUserName()) : "Un enseignant") +
-                            " a modifié la section \"" + title + "\" dans le cours \"" + savedChapter.getCourse().getTitle() + "\".",
+                            " a modifié la section \"" + title + "\" dans le cours \"" + (savedChapter.getCourse() != null ? savedChapter.getCourse().getTitle() : "") + "\".",
                     savedChapter.getId(),
                     "CHAPTER"
             );

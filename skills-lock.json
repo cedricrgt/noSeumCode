@@ -61,6 +61,12 @@
       "skillPath": "plugins/developer-kit-java/skills/spring-boot-event-driven-patterns/SKILL.md",
       "computedHash": "5614e5f7f2485af5a0bd64f3f3280ea70ce6b8162f09a626f3c183cc12450b27"
     },
+    "spring-boot-openapi-documentation": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-java/skills/spring-boot-openapi-documentation/SKILL.md",
+      "computedHash": "bdd0f7da4a072d014a9e65235773cc3f38ca0d0925edd5d3fe85ab33b29bcd9d"
+    },
     "spring-boot-project-creator": {
       "source": "giuseppe-trisciuoglio/developer-kit",
       "sourceType": "github",

@@ -103,6 +103,13 @@ function openGlobalAuthModal(tab = "login") {
   const popover = document.getElementById("auth-popover");
   if (!popover) return;
 
+  // Fermer les autres popovers ouverts s'il y en a
+  document.querySelectorAll("[popover]").forEach(p => {
+    if (p !== popover && p.matches && p.matches(":popover-open") && typeof p.hidePopover === "function") {
+      try { p.hidePopover(); } catch(e) {}
+    }
+  });
+
   switchGlobalAuthTab(tab);
   clearGlobalAuthAlert();
 

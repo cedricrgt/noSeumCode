@@ -73,8 +73,11 @@
           </div>
 
           <div style="margin-bottom: 1.25rem;">
-            <label for="modal-chapter-content" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.4rem;">Contenu (Markdown & Code)</label>
-            <textarea id="modal-chapter-content" name="chapterContent" rows="10" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.75rem 1rem; font-size: 0.9rem; font-family: monospace; outline: none;" placeholder="# Titre principal&#10;&#10;Lorem ipsum dolor sit amet...&#10;&#10;```java&#10;// Votre code ici&#10;```"></textarea>
+            <label for="modal-chapter-content" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.4rem;">Contenu pédagogique (Markdown & Code)</label>
+            <textarea id="modal-chapter-content" name="chapterContent" rows="12" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.75rem 1rem; font-size: 0.9rem; font-family: monospace; outline: none; line-height: 1.6;" placeholder="# Titre principal (H1)&#10;## Sous-titre de section (H2)&#10;### Sous-section détaillée (H3)&#10;&#10;Paragraphe explicatif avec texte en **gras**, en *italique* ou en `code inline`.&#10;&#10;- Point clé 1&#10;- Point clé 2&#10;&#10;1. Première étape&#10;2. Deuxième étape&#10;&#10;> Remarque importante&#10;&#10;```java&#10;// Exemple de code&#10;public class Demo {&#10;    public static void main(String[] args) {&#10;        System.out.println(&quot;NoSeumCode&quot;);&#10;    }&#10;}&#10;```"></textarea>
+            <div style="margin-top: 0.4rem; font-size: 0.8rem; color: #94a3b8; line-height: 1.4; background: rgba(255,255,255,0.04); padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);">
+              💡 <strong>Aide Markdown :</strong> <code># H1</code> | <code>## H2</code> | <code>### H3</code> | <code>**gras**</code> | <code>*italique*</code> | <code>- liste</code> | <code>```java ... ```</code> code
+            </div>
           </div>
 
           <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">

@@ -904,6 +904,90 @@
 
 **Résultat** : Le clic sur le bouton *"Rejoindre NoSeumCode"* ouvre instantanément la modale d'inscription NoSeumCode.
 
+---
+
+### Session 45 — Déclenchement de la Modale d'Inscription depuis les Popovers de Services
+
+**Date** : 2026-08-25  
+**Conversation** : `9454270f`
+
+**Objectif** :
+- Sur la page d'accueil dans la section "Nos services", faire en sorte que le clic sur le bouton *"Je veux rejoindre le live !"* (dans le popover de détails) ouvre directement la modale de création de compte / inscription.
+
+**Réalisé** :
+- **[js/header.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/header.js)** : Amélioration de `openGlobalAuthModal()` pour fermer automatiquement les autres popovers ouverts avant d'afficher la modale d'authentification.
+- **[index.html](file:///d:/Archive-mac/dev/code-bangers/frontend/index.html)** : Remplacement des boutons de redirection HubSpot dans les popovers de pédagogie et de cours (`#pedagogy-live`, `#pedagogy-projects`, `#pedagogy-mentoring`, `#course-html-css`, `#course-js`, `#course-git`) par des boutons déclenchant `openGlobalAuthModal('register')`.
+
+**Résultat** : Le clic sur *"Je veux rejoindre le live !"* ainsi que sur les autres boutons d'action des popovers de services ouvre directement l'onglet de création de compte de la modale d'authentification.
+
+---
+
+### Session 46 — Gestion Complète du Contenu Pédagogique dans la Modale de Section Dashboard
+
+**Date** : 2026-08-25  
+**Conversation** : `9454270f`
+
+**Objectif** :
+- Permettre la saisie et l'édition complète du contenu pédagogique (Markdown & Code) dans la modale d'ajout et de modification de section du dashboard.
+
+**Réalisé** :
+- **[dashboard.html](file:///d:/Archive-mac/dev/code-bangers/frontend/dashboard.html)** :
+  - Ajout du champ `<textarea id="chapter-content-input">` (supportant Markdown, blocs de code et texte riche) avec aide visuelle.
+  - Ajout d'un champ caché `#chapter-id-input` permettant d'unifier la création et l'édition de section au sein d'une même modale fluide.
+- **[js/dashboard.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/dashboard.js)** :
+  - Mise à jour de `openAddChapterModal()`, `openEditChapterModal(chapterId)`, et `handleSaveChapter(event)` pour charger, éditer et soumettre le contenu pédagogique.
+  - Ajout d'un aperçu du contenu sur les cartes enseignant et sur les cartes de validation administrateur.
+- **[backend/.../ChapterRequest.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/course/dto/ChapterRequest.java)** :
+  - Ajout du champ `content` dans le DTO pour assurer la cohérence de transport API.
+
+**Résultat** : Les formateurs et administrateurs peuvent désormais saisir, modifier et prévisualiser l'intégralité du contenu pédagogique et des exemples de code des sections depuis le tableau de bord.
+
+---
+
+### Session 47 — Persistance Complète Bout-en-Bout du Contenu des Chapitres
+
+**Date** : 2026-08-25  
+**Conversation** : `9454270f`
+
+**Objectif** :
+- Corriger le problème de persistance du corps de texte (contenu pédagogique) lors de la création ou modification d'une section de cours dans le dashboard et sur la page de cours.
+
+**Réalisé** :
+- **Backend ([ChapterService.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/course/service/ChapterService.java), [ChapterController.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/course/controller/ChapterController.java), [ChapterResponse.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/course/dto/ChapterResponse.java), [ChapterRequest.java](file:///d:/Archive-mac/dev/code-bangers/backend/src/main/java/com/codebangers/backend/course/dto/ChapterRequest.java))** :
+  - `createChapter` et `updateChapter` créent / mettent à jour automatiquement l'entité `Content` associée au `Chapter` via la cascade JPA.
+  - `ChapterController.mapToResponse` mappe le corps de texte (`body`) du contenu dans le champ `content` de `ChapterResponse`.
+  - Validation complète des tests unitaires et d'intégration Spring Boot (15/15 tests validés).
+- **Frontend ([cours.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/cours.js), [dashboard.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/dashboard.js))** :
+  - Transmission du champ `content` dans les payloads JSON des requêtes POST et PUT lors de la sauvegarde d'une section.
+  - Rendu instantané du Markdown et des blocs de code dans le lecteur de formation (`cours.html`).
+
+**Résultat** : Le corps de texte des sections créées et modifiées est désormais persisté en base de données et restitué fidèlement lors de la navigation dans les cours.
+
+---
+
+### Session 48 — Guide et Placeholder de Syntaxe Markdown pour le Contenu Pédagogique
+
+**Date** : 2026-08-25  
+**Conversation** : `9454270f`
+
+**Objectif** :
+- Indiquer clairement la syntaxe Markdown (`#`, `##`, `###`, `**gras**`, `*italique*`, `- liste`, blocs de code ```` ``` ````) dans les placeholders et infobulles des modales d'édition de contenu.
+
+**Réalisé** :
+- **[dashboard.html](file:///d:/Archive-mac/dev/code-bangers/frontend/dashboard.html)** :
+  - Mise à jour du placeholder du champ `#chapter-content-input` avec la hiérarchie complète des titres (`# H1`, `## H2`, `### H3`), le formatage de texte, les listes et les blocs de code.
+  - Ajout d'une barre d'aide visuelle explicative sous le champ.
+- **[cours.html](file:///d:/Archive-mac/dev/code-bangers/frontend/cours.html)** :
+  - Mise à jour du placeholder du champ `#modal-chapter-content` et ajout du bloc d'aide synthétique Markdown.
+- **[dashboard.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/dashboard.js)** & **[cours.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/cours.js)** :
+  - Canevas de départ enrichi lors de l'ouverture de la modale d'ajout d'une nouvelle section.
+
+**Résultat** : Les formateurs et administrateurs disposent d'un guide et d'un placeholder explicites leur montrant exactement comment structurer le cours avec Markdown.
+
+
+
+
+
 
 
 
