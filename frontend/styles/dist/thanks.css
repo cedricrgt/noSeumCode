@@ -84,6 +84,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+
 .poppins-regular {
   font-family: "Poppins", sans-serif;
   font-weight: 400;
@@ -116,6 +117,8 @@ h1, h2, h3, h4, h5, h6 {
     background-position: 100% 50%;
   }
 }
+
+
 
 /* Accessibility: Skip Link */
 .skip-link {
@@ -180,6 +183,8 @@ section[id], div[id] {
 .section-subtitle--muted {
   font-size: 1.25rem;
   color: rgba(255, 255, 255, 0.8);
+  margin-top: var(--spacing-xs);
+  margin-bottom: var(--spacing-xl);
 }
 
 .card-grid {
@@ -246,6 +251,7 @@ html {
   );
 }
 
+
 .button {
   padding: 12px 32px;
   border: none;
@@ -294,6 +300,7 @@ html {
   box-shadow: var(--shadow-md);
 }
 
+
 .card {
   border-radius: var(--radius-xl);
   overflow: hidden;
@@ -334,7 +341,7 @@ html {
 .card__image {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   transition: transform var(--transition-slow);
 }
 
@@ -445,6 +452,8 @@ html {
 .card-paddingtop .card__imageContainer {
   height: 250px;
 }
+
+
 
 [popover] {
   border: none;
@@ -578,6 +587,16 @@ html {
   max-width: 600px;
 }
 
+#hubspot-form-container {
+  width: 100%;
+  min-height: 420px;
+}
+
+#hubspot-form-container iframe {
+  width: 100% !important;
+  border: none !important;
+}
+
 /* ─── Auth Popover / Modal (Cyber Dark Theme) ───────────────────────────── */
 .auth-popover-box {
   background: linear-gradient(145deg, rgba(13, 27, 49, 0.97), rgba(7, 14, 24, 0.99)) !important;
@@ -614,6 +633,8 @@ html {
   border-color: #00ff87 !important;
   box-shadow: 0 0 12px rgba(0, 255, 135, 0.35) !important;
 }
+
+
 .header {
   position: fixed;
   top: 0;
@@ -865,6 +886,8 @@ html {
     transition-delay: 0.2s;
   }
 }
+
+
 .promo-banner {
   background-color: var(--primary-green);
   color: var(--dark-navy);
@@ -922,6 +945,8 @@ html {
     animation-duration: 30s;
   }
 }
+
+
 
 #promo-popup {
   inset: 0;
@@ -1023,71 +1048,6 @@ html {
   }
 }
 
-.thanks-page {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--dark-navy);
-    }
-
-.thanks-container {
-  max-width: 800px;
-  margin: calc(var(--header-height) + var(--spacing-lg)) auto 0;
-  text-align: center;
-  flex: 1;
-  color: var(--white);
-  padding: 5rem 0;
-}
-
-.thanks__icon {
-  font-size: 5rem;
-  margin-bottom: 2rem;
-  display: block;
-}
-
-.thanks__title {
-  font-size: 4rem;
-  color: var(--primary-green);
-  margin-bottom: 1.5rem;
-  text-transform: uppercase;
-}
-
-.thanks__message {
-  font-size: 1.25rem;
-  margin-bottom: 3rem;
-  opacity: 0.9;
-}
-
-.download-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-.download-card {
-  background: var(--dark-blue);
-  padding: 2.5rem;
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(0, 255, 135, 0.1);
-  transition: var(--transition-normal);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.download-card:hover {
-  transform: translateY(-5px);
-  border-color: var(--primary-green);
-  box-shadow: var(--shadow-green);
-}
-
-.download-card i {
-  font-size: 2.5rem;
-  margin-bottom: 1.5rem;
-  color: var(--primary-green);
-}
 
 
 .thanks-page {
@@ -1199,6 +1159,8 @@ html {
     font-size: 3rem;
   }
 }
+
+
 .footer {
   background: var(--dark-navy);
   color: var(--white);

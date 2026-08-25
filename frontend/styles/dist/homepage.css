@@ -84,6 +84,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+
 .poppins-regular {
   font-family: "Poppins", sans-serif;
   font-weight: 400;
@@ -116,6 +117,8 @@ h1, h2, h3, h4, h5, h6 {
     background-position: 100% 50%;
   }
 }
+
+
 
 /* Accessibility: Skip Link */
 .skip-link {
@@ -248,6 +251,7 @@ html {
   );
 }
 
+
 .button {
   padding: 12px 32px;
   border: none;
@@ -295,6 +299,7 @@ html {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
+
 
 .card {
   border-radius: var(--radius-xl);
@@ -448,6 +453,8 @@ html {
   height: 250px;
 }
 
+
+
 [popover] {
   border: none;
   border-radius: 20px;
@@ -580,6 +587,16 @@ html {
   max-width: 600px;
 }
 
+#hubspot-form-container {
+  width: 100%;
+  min-height: 420px;
+}
+
+#hubspot-form-container iframe {
+  width: 100% !important;
+  border: none !important;
+}
+
 /* ─── Auth Popover / Modal (Cyber Dark Theme) ───────────────────────────── */
 .auth-popover-box {
   background: linear-gradient(145deg, rgba(13, 27, 49, 0.97), rgba(7, 14, 24, 0.99)) !important;
@@ -616,6 +633,8 @@ html {
   border-color: #00ff87 !important;
   box-shadow: 0 0 12px rgba(0, 255, 135, 0.35) !important;
 }
+
+
 .header {
   position: fixed;
   top: 0;
@@ -867,6 +886,8 @@ html {
     transition-delay: 0.2s;
   }
 }
+
+
 .promo-banner {
   background-color: var(--primary-green);
   color: var(--dark-navy);
@@ -924,6 +945,8 @@ html {
     animation-duration: 30s;
   }
 }
+
+
 
 #promo-popup {
   inset: 0;
@@ -1025,6 +1048,8 @@ html {
   }
 }
 
+
+
 .thanks-page {
   min-height: 100vh;
   display: flex;
@@ -1097,8 +1122,9 @@ html {
 }
 
 .download-card p {
-  font-size: 0.9rem;
-  color: var(--text-gray);
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  line-height: 1.6;
   margin-bottom: 1.5rem;
   flex: 1;
 }
@@ -1118,6 +1144,14 @@ html {
 .back-home {
   margin-top: 4rem;
   display: inline-block;
+  color: var(--primary-green);
+  font-size: 1.25rem;
+  text-decoration: underline;
+  transition: color var(--transition-fast);
+}
+
+.back-home:hover {
+  color: var(--gradient-end);
 }
 
 @media (max-width: 768px) {
@@ -1125,6 +1159,8 @@ html {
     font-size: 3rem;
   }
 }
+
+
 .hero {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 450px), 1fr));
@@ -1321,11 +1357,15 @@ html {
   transform: scale(1.1);
 }
 
+
+
 .presentation__cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: var(--spacing-xl);
 }
+
+
 .courses__header {
   margin-bottom: var(--spacing-2xl);
 }
@@ -1335,11 +1375,15 @@ html {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: var(--spacing-xl);
 }
+
+
 .blogCards__cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: var(--spacing-xl);
 }
+
+
 .faq {
   padding: var(--spacing-3xl) var(--spacing-xl);
   max-width: 900px;
@@ -1438,6 +1482,8 @@ html {
     padding: var(--spacing-md);
   }
 }
+
+
 .footer {
   background: var(--dark-navy);
   color: var(--white);
