@@ -55,6 +55,35 @@ body {
   color: var(--text-dark);
   overflow-x: hidden;
 }
+
+/* Accessibility: Accessible focus indicator */
+:focus-visible {
+  outline: 2px solid var(--primary-green);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* Accessibility & UX: Balance heading lines */
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+}
+
+/* Accessibility: Universal Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto !important;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 .poppins-regular {
   font-family: "Poppins", sans-serif;
   font-weight: 400;
@@ -88,7 +117,36 @@ body {
   }
 }
 
+/* Accessibility: Skip Link */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 20px;
+  background: var(--dark-navy);
+  color: var(--primary-green);
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--primary-green);
+  font-weight: 700;
+  font-size: 1rem;
+  z-index: 10000;
+  text-decoration: none;
+  transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+  top: 20px;
+  outline: 2px solid var(--gradient-end);
+  outline-offset: 2px;
+}
+
+/* Accessibility & Anchor Navigation: Offset scroll for sticky header */
+section[id], div[id] {
+  scroll-margin-top: calc(var(--header-height, 80px) + 20px);
+}
+
 .section-tag {
+  display: inline-block;
   font-size: 1.5rem;
   color: #00a85a;
   font-weight: 900;
@@ -122,6 +180,8 @@ body {
 .section-subtitle--muted {
   font-size: 1.25rem;
   color: rgba(255, 255, 255, 0.8);
+  margin-top: var(--spacing-xs);
+  margin-bottom: var(--spacing-xl);
 }
 
 .card-grid {
@@ -187,16 +247,26 @@ html {
     minmax(var(--min-column-size), 1fr)
   );
 }
+
 .button {
   padding: 12px 32px;
   border: none;
   border-radius: var(--radius-lg);
   font-size: 1rem;
   cursor: pointer;
-  transition: all var(--transition-normal);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), background var(--transition-normal), color var(--transition-normal);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.button:focus-visible {
+  outline: 3px solid var(--gradient-end);
+  outline-offset: 3px;
 }
 
 .button__primary {
@@ -225,10 +295,11 @@ html {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
+
 .card {
   border-radius: var(--radius-xl);
   overflow: hidden;
-  transition: all var(--transition-normal);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
   display: flex;
   flex-direction: column;
 }
@@ -265,7 +336,7 @@ html {
 .card__image {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   transition: transform var(--transition-slow);
 }
 
@@ -1273,6 +1344,7 @@ html {
   padding: var(--spacing-3xl) var(--spacing-xl);
   max-width: 900px;
   margin: 0 auto;
+  text-align: left;
 }
 
 .faq__title {
@@ -1284,6 +1356,7 @@ html {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
+  text-align: left;
 }
 
 .faq__item {
@@ -1293,6 +1366,7 @@ html {
   overflow: hidden;
   transition: var(--transition-normal);
   border: 1px solid rgba(0, 0, 0, 0.05);
+  text-align: left;
 }
 
 .faq__item[open] {
@@ -1311,6 +1385,7 @@ html {
   color: var(--dark-navy);
   font-size: 1.1rem;
   transition: var(--transition-fast);
+  text-align: left;
 }
 
 .faq__summary::-webkit-details-marker {
@@ -1338,6 +1413,7 @@ html {
   color: var(--text-gray);
   line-height: 1.8;
   font-size: 1rem;
+  text-align: left;
   animation: slideDown 0.3s ease-out;
 }
 

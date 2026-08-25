@@ -80,17 +80,22 @@ public class ChapterService {
         } else {
             chapter.setStatus(ApprovalStatus.PENDING_APPROVAL);
             chapter.setSubmittedAt(LocalDateTime.now());
+        }
+
+        Chapter savedChapter = chapterRepository.save(chapter);
+
+        if (savedChapter.getStatus() == ApprovalStatus.PENDING_APPROVAL) {
             // Notification aux admins
             notificationService.notifyAdmins(
                     "Nouvelle section soumise",
-                    (author != null ? author.getFirstName() + " " + author.getLastName() : "Un enseignant") +
+                    (author != null ? (author.getFirstName() != null ? author.getFirstName() + " " + (author.getLastName() != null ? author.getLastName() : "") : author.getUserName()) : "Un enseignant") +
                             " a soumis la section \"" + title + "\" dans le cours \"" + course.getTitle() + "\" pour validation.",
-                    chapter.getId(),
+                    savedChapter.getId(),
                     "CHAPTER"
             );
         }
 
-        return chapterRepository.save(chapter);
+        return savedChapter;
     }
 
     public Chapter createSubChapter(UUID parentChapterId, String title, Integer position, User author) {
@@ -105,17 +110,22 @@ public class ChapterService {
         } else {
             chapter.setStatus(ApprovalStatus.PENDING_APPROVAL);
             chapter.setSubmittedAt(LocalDateTime.now());
+        }
+
+        Chapter savedChapter = chapterRepository.save(chapter);
+
+        if (savedChapter.getStatus() == ApprovalStatus.PENDING_APPROVAL) {
             // Notification aux admins
             notificationService.notifyAdmins(
                     "Nouvelle sous-section soumise",
-                    (author != null ? author.getFirstName() + " " + author.getLastName() : "Un enseignant") +
+                    (author != null ? (author.getFirstName() != null ? author.getFirstName() + " " + (author.getLastName() != null ? author.getLastName() : "") : author.getUserName()) : "Un enseignant") +
                             " a soumis la sous-section \"" + title + "\" dans le cours \"" + parent.getCourse().getTitle() + "\" pour validation.",
-                    chapter.getId(),
+                    savedChapter.getId(),
                     "CHAPTER"
             );
         }
 
-        return chapterRepository.save(chapter);
+        return savedChapter;
     }
 
     public Chapter updateChapter(UUID chapterId, String title, Integer position, User editor) {
@@ -132,16 +142,21 @@ public class ChapterService {
             chapter.setStatus(ApprovalStatus.PENDING_APPROVAL);
             chapter.setSubmittedAt(LocalDateTime.now());
             chapter.setRejectionReason(null);
+        }
+
+        Chapter savedChapter = chapterRepository.save(chapter);
+
+        if (savedChapter.getStatus() == ApprovalStatus.PENDING_APPROVAL) {
             notificationService.notifyAdmins(
                     "Section modifiée en attente de validation",
-                    (editor != null ? editor.getFirstName() + " " + editor.getLastName() : "Un enseignant") +
-                            " a modifié la section \"" + title + "\" dans le cours \"" + chapter.getCourse().getTitle() + "\".",
-                    chapter.getId(),
+                    (editor != null ? (editor.getFirstName() != null ? editor.getFirstName() + " " + (editor.getLastName() != null ? editor.getLastName() : "") : editor.getUserName()) : "Un enseignant") +
+                            " a modifié la section \"" + title + "\" dans le cours \"" + savedChapter.getCourse().getTitle() + "\".",
+                    savedChapter.getId(),
                     "CHAPTER"
             );
         }
 
-        return chapterRepository.save(chapter);
+        return savedChapter;
     }
 
     public Chapter submitForApproval(UUID chapterId, User user) {
@@ -152,15 +167,17 @@ public class ChapterService {
         chapter.setSubmittedAt(LocalDateTime.now());
         chapter.setRejectionReason(null);
 
+        Chapter savedChapter = chapterRepository.save(chapter);
+
         notificationService.notifyAdmins(
                 "Demande de validation de section",
-                (user != null ? user.getFirstName() + " " + user.getLastName() : "Un enseignant") +
-                        " a soumis la section \"" + chapter.getTitle() + "\" pour validation.",
-                chapter.getId(),
+                (user != null ? (user.getFirstName() != null ? user.getFirstName() + " " + (user.getLastName() != null ? user.getLastName() : "") : user.getUserName()) : "Un enseignant") +
+                        " a soumis la section \"" + savedChapter.getTitle() + "\" pour validation.",
+                savedChapter.getId(),
                 "CHAPTER"
         );
 
-        return chapterRepository.save(chapter);
+        return savedChapter;
     }
 
     public Chapter approveChapter(UUID chapterId, User admin) {

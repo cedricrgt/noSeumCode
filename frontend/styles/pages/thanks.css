@@ -71,8 +71,9 @@
 }
 
 .download-card p {
-  font-size: 0.9rem;
-  color: var(--text-gray);
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  line-height: 1.6;
   margin-bottom: 1.5rem;
   flex: 1;
 }
@@ -92,6 +93,14 @@
 .back-home {
   margin-top: 4rem;
   display: inline-block;
+  color: var(--primary-green);
+  font-size: 1.25rem;
+  text-decoration: underline;
+  transition: color var(--transition-fast);
+}
+
+.back-home:hover {
+  color: var(--gradient-end);
 }
 
 @media (max-width: 768px) {

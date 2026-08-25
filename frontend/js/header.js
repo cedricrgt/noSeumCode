@@ -29,11 +29,24 @@ async function loadHeader() {
     setActiveNavLink();
     checkUserAuthHeader();
     initPromoPopup();
+    updateHeaderHeightVar();
 
   } catch (error) {
     console.error("Error loading header:", error);
   }
 }
+
+function updateHeaderHeightVar() {
+  const header = document.querySelector(".header");
+  if (header) {
+    const h = header.offsetHeight;
+    if (h > 0) {
+      document.documentElement.style.setProperty("--header-height", `${h}px`);
+    }
+  }
+}
+
+window.addEventListener("resize", updateHeaderHeightVar);
 
 // ========================================================
 // Authentification Globale & Pop-up Modal
@@ -99,6 +112,8 @@ function openGlobalAuthModal(tab = "login") {
     popover.style.display = "flex";
   }
 }
+window.openGlobalAuthModal = openGlobalAuthModal;
+window.openAuthModal = openGlobalAuthModal;
 
 function closeGlobalAuthModal() {
   const popover = document.getElementById("auth-popover");
@@ -473,14 +488,18 @@ function initScrollEffect() {
   const header = document.querySelector(".header");
   if (!header) return;
 
-  window.addEventListener("scroll", () => {
-    const currentScroll = window.pageYOffset;
-    if (currentScroll > 100) {
-      header.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.1)";
-    } else {
-      header.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.08)";
-    }
-  });
+  window.addEventListener(
+    "scroll",
+    () => {
+      const currentScroll = window.scrollY;
+      if (currentScroll > 100) {
+        header.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.1)";
+      } else {
+        header.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.08)";
+      }
+    },
+    { passive: true }
+  );
 }
 
 document.addEventListener("DOMContentLoaded", async () => {

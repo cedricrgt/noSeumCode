@@ -2,6 +2,7 @@
   padding: var(--spacing-3xl) var(--spacing-xl);
   max-width: 900px;
   margin: 0 auto;
+  text-align: left;
 }
 
 .faq__title {
@@ -13,6 +14,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
+  text-align: left;
 }
 
 .faq__item {
@@ -22,6 +24,7 @@
   overflow: hidden;
   transition: var(--transition-normal);
   border: 1px solid rgba(0, 0, 0, 0.05);
+  text-align: left;
 }
 
 .faq__item[open] {
@@ -40,6 +43,7 @@
   color: var(--dark-navy);
   font-size: 1.1rem;
   transition: var(--transition-fast);
+  text-align: left;
 }
 
 .faq__summary::-webkit-details-marker {
@@ -67,6 +71,7 @@
   color: var(--text-gray);
   line-height: 1.8;
   font-size: 1rem;
+  text-align: left;
   animation: slideDown 0.3s ease-out;
 }
 

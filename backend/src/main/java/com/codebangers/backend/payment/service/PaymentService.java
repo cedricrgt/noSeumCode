@@ -37,34 +37,45 @@ public class PaymentService {
 
     /**
      * Point d'entrée universel pour mettre à jour le statut de paiement d'un utilisateur.
-     * Compatible avec l'administration manuelle et les webhooks Stripe automatisés.
+     * Compatible avec l'administration manuelle (par UUID ou Email) et les webhooks Stripe automatisés.
      */
-    public List<Enrollment> processPaymentStatusUpdate(UUID userId, PaymentStatusUpdateRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", userId));
+    public List<Enrollment> processPaymentStatusUpdate(String userIdentifier, PaymentStatusUpdateRequest request) {
+        User user = null;
+        try {
+            UUID id = UUID.fromString(userIdentifier);
+            user = userRepository.findById(id).orElse(null);
+        } catch (IllegalArgumentException ignored) {}
+
+        if (user == null) {
+            user = userRepository.findByEmail(userIdentifier)
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found with identifier: " + userIdentifier));
+        }
+
+        UUID userId = user.getId();
 
         log.info("💳 Mise à jour du statut de paiement pour {} ({}) -> Statut: {}, Source: {}, Ref: {}",
                 user.getEmail(), userId, request.getPaymentStatus(), request.getSource(), request.getTransactionReference());
 
-        List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
+        List<Course> activeCourses = courseRepository.findAll().stream().filter(c -> !c.isDeleted()).toList();
+        List<Enrollment> existingEnrollments = enrollmentRepository.findByUserId(userId);
 
-        if (enrollments.isEmpty() && (request.getPaymentStatus() == PaymentStatus.PAID || request.getPaymentStatus() == PaymentStatus.PENDING)) {
-            // Si l'utilisateur n'a pas encore d'inscription, l'inscrire à la formation active principale
-            List<Course> activeCourses = courseRepository.findAll().stream().filter(c -> !c.isDeleted()).toList();
-            if (!activeCourses.isEmpty()) {
-                Course defaultCourse = activeCourses.get(0);
-                Enrollment newEnrollment = new Enrollment(user, defaultCourse, request.getPaymentStatus(), 0);
-                enrollments = List.of(enrollmentRepository.save(newEnrollment));
-                log.info("🎓 Inscription automatique créée pour {} sur le cours {}", user.getEmail(), defaultCourse.getTitle());
-            }
-        } else {
-            for (Enrollment enrollment : enrollments) {
+        for (Course course : activeCourses) {
+            Enrollment enrollment = existingEnrollments.stream()
+                    .filter(e -> e.getCourse() != null && e.getCourse().getId().equals(course.getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (enrollment != null) {
                 enrollment.setPaymentStatus(request.getPaymentStatus());
                 enrollmentRepository.save(enrollment);
+            } else if (request.getPaymentStatus() != null) {
+                Enrollment newEnrollment = new Enrollment(user, course, request.getPaymentStatus(), 0);
+                enrollmentRepository.save(newEnrollment);
+                log.info("🎓 Inscription créée pour {} sur le cours {} avec statut {}", user.getEmail(), course.getTitle(), request.getPaymentStatus());
             }
         }
 
-        return enrollments;
+        return enrollmentRepository.findByUserId(userId);
     }
 
     /**
@@ -97,6 +108,6 @@ public class PaymentService {
                 "Événement Stripe automatique : " + stripeEventType
         );
 
-        processPaymentStatusUpdate(user.getId(), request);
+        processPaymentStatusUpdate(user.getId().toString(), request);
     }
 }

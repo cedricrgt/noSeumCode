@@ -28,6 +28,12 @@ public class NotificationService {
 
     public void notifyAdmins(String title, String message, UUID referenceId, String referenceType) {
         List<User> admins = userRepository.findByRole(Role.ADMIN);
+        if (admins.isEmpty()) {
+            userRepository.findByEmail("admin@codebangers.fr").ifPresent(admins::add);
+            userRepository.findByUserName("admin").ifPresent(a -> {
+                if (!admins.contains(a)) admins.add(a);
+            });
+        }
         for (User admin : admins) {
             Notification notification = new Notification(
                     admin,

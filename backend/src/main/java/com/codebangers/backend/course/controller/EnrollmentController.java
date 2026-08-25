@@ -94,13 +94,51 @@ public class EnrollmentController {
         }
     }
 
-    @PutMapping("/{id}/payment-status")
+    @RequestMapping(value = "/{id}/payment-status", method = {RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.POST})
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updatePaymentStatus(@PathVariable UUID id, @RequestParam PaymentStatus status) {
+    public ResponseEntity<?> updatePaymentStatus(
+            @PathVariable UUID id,
+            @RequestParam(required = false) PaymentStatus status,
+            @RequestBody(required = false) java.util.Map<String, String> body) {
         try {
-            Enrollment enrollment = enrollmentService.updatePaymentStatus(id, status);
+            PaymentStatus targetStatus = status;
+            if (targetStatus == null && body != null && body.containsKey("paymentStatus")) {
+                targetStatus = PaymentStatus.valueOf(body.get("paymentStatus").toUpperCase());
+            }
+            if (targetStatus == null && body != null && body.containsKey("status")) {
+                targetStatus = PaymentStatus.valueOf(body.get("status").toUpperCase());
+            }
+            if (targetStatus == null) {
+                return ResponseEntity.badRequest().body("Le statut de paiement est obligatoire (PENDING, PAID, FAILED, REFUNDED).");
+            }
+            Enrollment enrollment = enrollmentService.updatePaymentStatus(id, targetStatus);
             return ResponseEntity.ok(mapToResponse(enrollment));
         } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/user/{userId}/course/{courseId}/payment-status", method = {RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.POST})
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> setCoursePaymentStatusForUser(
+            @PathVariable UUID userId,
+            @PathVariable UUID courseId,
+            @RequestParam(required = false) PaymentStatus status,
+            @RequestBody(required = false) java.util.Map<String, String> body) {
+        try {
+            PaymentStatus targetStatus = status;
+            if (targetStatus == null && body != null && body.containsKey("paymentStatus")) {
+                targetStatus = PaymentStatus.valueOf(body.get("paymentStatus").toUpperCase());
+            }
+            if (targetStatus == null && body != null && body.containsKey("status")) {
+                targetStatus = PaymentStatus.valueOf(body.get("status").toUpperCase());
+            }
+            if (targetStatus == null) {
+                return ResponseEntity.badRequest().body("Le statut de paiement est obligatoire (PENDING, PAID, FAILED, REFUNDED).");
+            }
+            Enrollment enrollment = enrollmentService.setCoursePaymentStatusForUser(userId, courseId, targetStatus);
+            return ResponseEntity.ok(mapToResponse(enrollment));
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

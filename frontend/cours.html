@@ -6,9 +6,20 @@
     <title>Espace Formations - NoSeumCode</title>
     <meta name="description" id="meta-description" content="Espace de formations interactif et immersif NoSeumCode.">
     
-    <meta property="og:title" id="og-title" content="NoSeumCode - Formations">
+    <link rel="canonical" href="https://noseumcode.fr/cours.html" />
+    <link rel="icon" type="image/png" href="images/favicon.png" />
+    
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="NoSeumCode" />
+    <meta property="og:title" id="og-title" content="NoSeumCode - Espace Formations">
     <meta property="og:description" id="og-description" content="Découvrez nos formations pratiques et apprenez à coder sans le seum.">
-    <meta property="og:image" id="og-image" content="">
+    <meta property="og:image" id="og-image" content="https://noseumcode.fr/images/header/logo.png">
+    <meta property="og:url" content="https://noseumcode.fr/cours.html" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="NoSeumCode - Espace Formations" />
+    <meta name="twitter:description" content="Découvrez nos formations pratiques et apprenez à coder sans le seum." />
+    <meta name="twitter:image" content="https://noseumcode.fr/images/header/logo.png" />
     
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -28,22 +39,24 @@
     <link rel="stylesheet" href="styles/pages/cours.css" />
   </head>
   <body class="cours-page poppins-regular">
+    <a href="#cours-content" class="skip-link">Aller au contenu principal</a>
+
     <div id="header-placeholder"></div>
 
     <main id="cours-content">
       <div style="max-width: 1300px; margin: 0 auto; padding: 4rem 1.5rem; text-align: center;">
-        <p style="color: #94a3b8; font-size: 1.1rem;">Chargement de l'espace de formation...</p>
+        <p style="color: #cbd5e1; font-size: 1.1rem;">Chargement de l'espace de formation...</p>
       </div>
     </main>
 
     <!-- Modale d'Édition / Création de Section (Teacher & Admin) -->
-    <div id="chapter-edit-modal" class="course-modal-backdrop" style="display: none;">
+    <div id="chapter-edit-modal" class="course-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-chapter-heading" style="display: none;">
       <div class="course-modal-box">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
           <h3 id="modal-chapter-heading" style="font-family: 'Bangers', cursive; font-size: 1.8rem; color: #fff; margin: 0;">
             ✏️ MODIFIER LA SECTION
           </h3>
-          <button type="button" onclick="closeChapterModal()" style="background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer;">✕</button>
+          <button type="button" onclick="closeChapterModal()" aria-label="Fermer la boîte de modification de section" style="background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer;">✕</button>
         </div>
 
         <div id="modal-teacher-warning" class="role-notice-banner role-notice-teacher" style="display: none;">
@@ -55,13 +68,13 @@
           <input type="hidden" id="modal-course-id" />
           
           <div style="margin-bottom: 1.25rem;">
-            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.4rem;">Titre de la section</label>
-            <input id="modal-chapter-title" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.75rem 1rem; font-size: 0.95rem; outline: none;" placeholder="ex: 1. Introduction à Spring Boot" />
+            <label for="modal-chapter-title" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.4rem;">Titre de la section</label>
+            <input id="modal-chapter-title" name="chapterTitle" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.75rem 1rem; font-size: 0.95rem; outline: none;" placeholder="ex: 1. Introduction à Spring Boot" />
           </div>
 
           <div style="margin-bottom: 1.25rem;">
-            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.4rem;">Contenu (Markdown & Code)</label>
-            <textarea id="modal-chapter-content" rows="10" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.75rem 1rem; font-size: 0.9rem; font-family: monospace; outline: none;" placeholder="# Titre principal&#10;&#10;Lorem ipsum dolor sit amet...&#10;&#10;```java&#10;// Votre code ici&#10;```"></textarea>
+            <label for="modal-chapter-content" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.4rem;">Contenu (Markdown & Code)</label>
+            <textarea id="modal-chapter-content" name="chapterContent" rows="10" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.75rem 1rem; font-size: 0.9rem; font-family: monospace; outline: none;" placeholder="# Titre principal&#10;&#10;Lorem ipsum dolor sit amet...&#10;&#10;```java&#10;// Votre code ici&#10;```"></textarea>
           </div>
 
           <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
@@ -77,26 +90,26 @@
     </div>
 
     <!-- Modale d'Édition / Création de Cours (Teacher & Admin) -->
-    <div id="course-manage-modal" class="course-modal-backdrop" style="display: none;">
+    <div id="course-manage-modal" class="course-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-course-heading" style="display: none;">
       <div class="course-modal-box">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
           <h3 id="modal-course-heading" style="font-family: 'Bangers', cursive; font-size: 1.8rem; color: #fff; margin: 0;">
             🎓 GESTION DU COURS
           </h3>
-          <button type="button" onclick="closeCourseManageModal()" style="background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer;">✕</button>
+          <button type="button" onclick="closeCourseManageModal()" aria-label="Fermer la boîte de gestion de cours" style="background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer;">✕</button>
         </div>
 
         <form id="course-manage-form" onsubmit="handleSaveCourse(event)">
           <input type="hidden" id="manage-course-id" />
           
           <div style="margin-bottom: 1.25rem;">
-            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.4rem;">Titre de la formation</label>
-            <input id="manage-course-title" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.75rem 1rem; font-size: 0.95rem; outline: none;" placeholder="ex: Fullstack Java 21 & Spring Boot 3" />
+            <label for="manage-course-title" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.4rem;">Titre de la formation</label>
+            <input id="manage-course-title" name="courseTitle" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.75rem 1rem; font-size: 0.95rem; outline: none;" placeholder="ex: Fullstack Java 21 & Spring Boot 3" />
           </div>
 
           <div style="margin-bottom: 1.25rem;">
-            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.4rem;">Description</label>
-            <textarea id="manage-course-description" rows="4" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.75rem 1rem; font-size: 0.9rem; outline: none;" placeholder="Objectifs et compétences cibles de la formation..."></textarea>
+            <label for="manage-course-description" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.4rem;">Description</label>
+            <textarea id="manage-course-description" name="courseDescription" rows="4" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.75rem 1rem; font-size: 0.9rem; outline: none;" placeholder="Objectifs et compétences cibles de la formation..."></textarea>
           </div>
 
           <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">

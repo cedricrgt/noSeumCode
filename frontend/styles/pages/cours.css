@@ -1,6 +1,10 @@
+/* ========================================================
+   NoSeumCode - Page Cours & Catalogue (Thème Lumineux & Hero Sombre)
+   ======================================================== */
+
 .cours-page {
-  background-color: #070e18;
-  color: #fff;
+  background-color: #f8fafc;
+  color: #1e293b;
   min-height: 100vh;
 }
 
@@ -10,18 +14,19 @@
 }
 
 /* ========================================================
-   Course Header & Banner
+   Course Header & Banner (Hero Sombre Contrasté)
    ======================================================== */
 .course-header-banner {
   max-width: 1300px;
   margin: 0 auto 2rem;
-  padding: 2rem 2.25rem;
-  background: linear-gradient(135deg, rgba(13, 27, 42, 0.95), rgba(7, 14, 24, 0.98));
-  border: 1px solid rgba(0, 255, 135, 0.25);
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  padding: 2.25rem 2.5rem;
+  background: linear-gradient(135deg, #0a1628 0%, #16243b 100%);
+  border: 1px solid rgba(0, 255, 135, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(10, 22, 40, 0.15);
   position: relative;
   overflow: hidden;
+  color: #ffffff;
 }
 
 .course-header-banner::before {
@@ -79,7 +84,11 @@
   gap: 1.5rem;
   flex-wrap: wrap;
   font-size: 0.88rem;
-  color: #64748b;
+  color: #94a3b8;
+}
+
+.course-metadata-row strong {
+  color: #f1f5f9;
 }
 
 /* ========================================================
@@ -101,23 +110,24 @@
   }
 }
 
-/* Sidebar Chapters */
+/* Sidebar Chapters (Carte Blanche Propre) */
 .course-sidebar {
-  background: #0d1b2a;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  padding: 1.25rem;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 18px;
+  padding: 1.5rem;
   position: sticky;
-  top: 100px;
+  top: calc(var(--header-height, 80px) + 20px);
   max-height: calc(100vh - 120px);
   overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
 }
 
 .course-sidebar-title {
   font-family: 'Bangers', cursive;
   font-size: 1.4rem;
   letter-spacing: 0.5px;
-  color: #00d9ff;
+  color: #0a1628;
   margin: 0 0 1rem 0;
   display: flex;
   align-items: center;
@@ -135,10 +145,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.85rem 1rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
-  color: #cbd5e1;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  color: #334155;
   text-decoration: none;
   font-size: 0.88rem;
   font-weight: 500;
@@ -147,46 +157,47 @@
 }
 
 .chapter-nav-item:hover {
-  background: rgba(0, 255, 135, 0.08);
-  border-color: rgba(0, 255, 135, 0.3);
-  color: #fff;
+  background: #f0fdf4;
+  border-color: rgba(0, 255, 135, 0.5);
+  color: #00a85a;
   transform: translateX(3px);
 }
 
 .chapter-nav-item.active {
-  background: rgba(0, 255, 135, 0.15);
+  background: rgba(0, 255, 135, 0.12);
   border-color: #00ff87;
-  color: #00ff87;
+  color: #059669;
   font-weight: 700;
-  box-shadow: 0 4px 12px rgba(0, 255, 135, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 255, 135, 0.12);
 }
 
 .chapter-nav-item.pending {
   border-color: rgba(245, 158, 11, 0.4);
   background: rgba(245, 158, 11, 0.08);
+  color: #d97706;
 }
 
-/* Main Content Viewer */
+/* Main Content Viewer (Panneau Blanc avec Blocs Code Sombres) */
 .chapter-content-panel {
-  background: #0d1b2a;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
   padding: 2.5rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  min-height: 500px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
+  min-height: 550px;
 }
 
 .chapter-header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #e2e8f0;
   padding-bottom: 1.5rem;
   margin-bottom: 2rem;
 }
 
 .chapter-title {
   font-family: 'Bangers', cursive;
-  font-size: 2.2rem;
+  font-size: 2.3rem;
   letter-spacing: 0.5px;
-  color: #ffffff;
+  color: #0a1628;
   margin: 0 0 0.5rem 0;
 }
 
@@ -194,7 +205,7 @@
 .rendered-markdown {
   font-size: 1.05rem;
   line-height: 1.8;
-  color: #cbd5e1;
+  color: #334155;
 }
 
 .rendered-markdown h1,
@@ -202,23 +213,24 @@
 .rendered-markdown h3 {
   font-family: 'Bangers', cursive;
   letter-spacing: 0.5px;
-  color: #fff;
+  color: #0a1628;
   margin-top: 2rem;
   margin-bottom: 0.85rem;
 }
 
-.rendered-markdown h1 { font-size: 1.8rem; color: #00ff87; }
-.rendered-markdown h2 { font-size: 1.5rem; color: #00d9ff; }
-.rendered-markdown h3 { font-size: 1.3rem; color: #f8fafc; }
+.rendered-markdown h1 { font-size: 1.9rem; color: #00a85a; }
+.rendered-markdown h2 { font-size: 1.6rem; color: #0284c7; }
+.rendered-markdown h3 { font-size: 1.35rem; color: #0a1628; }
 
 .rendered-markdown p {
   margin-bottom: 1.25rem;
+  color: #334155;
 }
 
 .rendered-markdown ul,
 .rendered-markdown ol {
   margin: 1rem 0 1.5rem 1.5rem;
-  color: #94a3b8;
+  color: #475569;
 }
 
 .rendered-markdown li {
@@ -226,34 +238,45 @@
 }
 
 .rendered-markdown blockquote {
-  background: rgba(0, 217, 255, 0.08);
-  border-left: 4px solid #00d9ff;
+  background: #f0f9ff;
+  border-left: 4px solid #0284c7;
   padding: 1rem 1.25rem;
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 10px 10px 0;
   margin: 1.5rem 0;
-  color: #e2e8f0;
+  color: #0369a1;
 }
 
 .rendered-markdown pre {
-  background: #050a12;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
+  background: #0a1628;
+  border: 1px solid rgba(0, 255, 135, 0.2);
+  border-radius: 12px;
   padding: 1.25rem;
   overflow-x: auto;
   margin: 1.5rem 0;
+  box-shadow: 0 6px 20px rgba(10, 22, 40, 0.15);
 }
 
 .rendered-markdown code {
   font-family: 'Fira Code', Consolas, Monaco, monospace;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   color: #00ff87;
+}
+
+.rendered-markdown p code,
+.rendered-markdown li code {
+  background: #f1f5f9;
+  color: #e11d48;
+  padding: 0.2rem 0.45rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  border: 1px solid #e2e8f0;
 }
 
 /* Action Bars for Roles */
 .course-actions-bar {
   margin-top: 3rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -263,8 +286,8 @@
 
 .role-notice-banner {
   padding: 0.85rem 1.25rem;
-  border-radius: 10px;
-  font-size: 0.85rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
   margin-bottom: 1.5rem;
   display: flex;
   align-items: center;
@@ -274,13 +297,13 @@
 .role-notice-teacher {
   background: rgba(245, 158, 11, 0.12);
   border: 1px solid rgba(245, 158, 11, 0.35);
-  color: #fbbf24;
+  color: #b45309;
 }
 
 .role-notice-admin {
   background: rgba(0, 255, 135, 0.12);
   border: 1px solid rgba(0, 255, 135, 0.35);
-  color: #00ff87;
+  color: #059669;
 }
 
 /* ========================================================
@@ -289,31 +312,44 @@
 .access-gate-card {
   max-width: 800px;
   margin: 3rem auto;
-  background: #0d1b2a;
-  border-radius: 20px;
-  padding: 3rem 2.5rem;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 3.5rem 2.5rem;
   text-align: center;
-  border: 1px solid rgba(255, 51, 102, 0.4);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
   position: relative;
   overflow: hidden;
 }
 
+.access-gate-card.guest {
+  border-color: rgba(0, 255, 135, 0.4);
+}
+
+.access-gate-card.not-enrolled {
+  border-color: rgba(0, 217, 255, 0.4);
+}
+
 .access-gate-card.pending {
-  border-color: rgba(245, 158, 11, 0.5);
+  border-color: rgba(245, 158, 11, 0.4);
 }
 
 .access-gate-icon {
-  width: 72px;
-  height: 72px;
+  width: 76px;
+  height: 76px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.2rem;
+  font-size: 2.3rem;
   margin-bottom: 1.5rem;
-  background: rgba(255, 51, 102, 0.15);
-  border: 2px solid #ff3366;
+  background: rgba(0, 255, 135, 0.15);
+  border: 2px solid #00a85a;
+}
+
+.access-gate-card.not-enrolled .access-gate-icon {
+  background: rgba(0, 217, 255, 0.15);
+  border-color: #0284c7;
 }
 
 .access-gate-card.pending .access-gate-icon {
@@ -323,18 +359,18 @@
 
 .access-gate-title {
   font-family: 'Bangers', cursive;
-  font-size: 2.4rem;
+  font-size: 2.5rem;
   letter-spacing: 0.5px;
   margin-bottom: 1rem;
-  color: #ffffff;
+  color: #0a1628;
 }
 
 .access-gate-desc {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   line-height: 1.7;
-  color: #94a3b8;
-  max-width: 600px;
-  margin: 0 auto 2rem;
+  color: #475569;
+  max-width: 620px;
+  margin: 0 auto 2.25rem;
 }
 
 .access-status-badge {
@@ -349,7 +385,7 @@
 }
 
 /* ========================================================
-   Course Catalog / Hub Grid
+   Course Catalog / Hub Grid (Cartes Blanches Lumineuses)
    ======================================================== */
 .catalog-container {
   max-width: 1300px;
@@ -373,9 +409,9 @@
 }
 
 .course-card-box {
-  background: #0d1b2a;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -383,28 +419,44 @@
   transition: all 0.25s ease;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .course-card-box:hover {
   transform: translateY(-5px);
-  border-color: rgba(0, 255, 135, 0.4);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  border-color: #00ff87;
+  box-shadow: 0 12px 30px rgba(0, 255, 135, 0.15);
 }
 
 .course-card-title {
   font-family: 'Bangers', cursive;
-  font-size: 1.7rem;
+  font-size: 1.8rem;
   letter-spacing: 0.5px;
-  color: #fff;
+  color: #0a1628;
   margin: 0.75rem 0;
   line-height: 1.2;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #0284c7;
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.back-link:hover {
+  color: #00a85a;
 }
 
 /* Modals */
 .course-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(10, 22, 40, 0.75);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
@@ -416,11 +468,12 @@
 .course-modal-box {
   background: #0d1b2a;
   border: 1px solid rgba(0, 255, 135, 0.3);
-  border-radius: 16px;
+  border-radius: 20px;
   width: 100%;
   max-width: 750px;
   max-height: 90vh;
   overflow-y: auto;
-  padding: 2rem;
+  padding: 2.25rem;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  color: #ffffff;
 }

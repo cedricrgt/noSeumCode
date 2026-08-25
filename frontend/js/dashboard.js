@@ -29,6 +29,7 @@ let allAvailableCourses = [];
 // Init on Load
 document.addEventListener("DOMContentLoaded", async () => {
   parseAuthFromUrl();
+  setupEventListeners();
   await loadStoredAuth();
   await refreshDashboardData();
   startNotificationPolling();
@@ -352,8 +353,12 @@ async function markAllNotificationsRead() {
 
 function toggleNotifDropdown() {
   const dropdown = document.getElementById("notif-dropdown");
+  const bellBtn = document.getElementById("notif-bell-btn");
   if (dropdown) {
-    dropdown.classList.toggle("open");
+    const isOpen = dropdown.classList.toggle("open");
+    if (bellBtn) {
+      bellBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    }
   }
 }
 
@@ -381,6 +386,16 @@ async function loadStudentCourses() {
   }
 
   renderStudentCourses();
+}
+
+function getCourseImageForTitle(title, desc = "") {
+  const combined = ((title || "") + " " + (desc || "")).toLowerCase();
+  if (combined.includes("html") || combined.includes("css")) return "images/courses/html.webp";
+  if (combined.includes("javascript") || combined.includes("js")) return "images/courses/javascript.webp";
+  if (combined.includes("git") || combined.includes("github")) return "images/courses/git.webp";
+  if (combined.includes("java") || combined.includes("spring")) return "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=400&fit=crop";
+  if (combined.includes("architecture") || combined.includes("ddd")) return "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop";
+  return "images/courses/html.webp";
 }
 
 function renderStudentCourses() {
@@ -417,25 +432,47 @@ function renderStudentCourses() {
   }
 
   enrolledCourses.forEach(course => {
-    const card = document.createElement("div");
-    card.className = "dash-card";
+    const imgUrl = getCourseImageForTitle(course.courseTitle, course.courseDescription);
+    const card = document.createElement("article");
+    card.className = "card card-white card-paddingtop";
+    card.style.overflow = "hidden";
     card.innerHTML = `
-      <div>
-        <h4 class="dash-card-title">${escapeHtml(course.courseTitle)}</h4>
-        <p class="dash-card-desc">${escapeHtml(course.courseDescription || "Accédez à tous les modules validés.")}</p>
-        <div class="progress-bar-container">
-          <div class="progress-info">
-            <span>Progression</span>
-            <span>${course.progress || 0}%</span>
+      <header class="card__imageContainer">
+        <img
+          class="card__image"
+          src="${imgUrl}"
+          alt="${escapeHtml(course.courseTitle)}"
+          width="400"
+          height="250"
+          loading="lazy"
+          decoding="async"
+        />
+      </header>
+      <main class="card__main">
+        <div class="card__header">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.25rem;">
+            <span class="section-tag" style="font-size: 0.72rem; margin-bottom: 0;">🎓 EN COURS</span>
+            <span style="font-size: 0.78rem; font-weight: 700; color: #00a85a; background: rgba(0,255,135,0.15); padding: 2px 8px; border-radius: 999px;">${course.progress || 0}% complété</span>
           </div>
-          <div class="progress-track">
-            <div class="progress-fill" style="width: ${course.progress || 0}%;"></div>
+          <h3 class="card__title" style="font-size: 1.35rem;">${escapeHtml(course.courseTitle)}</h3>
+        </div>
+        <p class="card__paragraphe card__textGreen poppins-regular" style="font-size: 0.92rem;">
+          ${escapeHtml(course.courseDescription || "Accédez à tous les modules validés et poursuivez votre progression.")}
+        </p>
+        
+        <div class="progress-bar-container" style="margin: 0.5rem 0 1rem 0;">
+          <div class="progress-track" style="height: 8px; border-radius: 99px; background: #e2e8f0; overflow: hidden;">
+            <div class="progress-fill" style="width: ${course.progress || 0}%; height: 100%; background: linear-gradient(90deg, #00ff87, #00d9ff); border-radius: 99px;"></div>
           </div>
         </div>
-      </div>
-      <a href="cours.html?id=${course.courseId}" class="dash-btn dash-btn-primary" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; text-align:center;">
-        <span>📖 Continuer la formation</span>
-      </a>
+
+        <a href="cours.html?id=${course.courseId}" class="card__link bangers-regular" style="margin-top: auto;">
+          Continuer la formation
+          <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </main>
     `;
     grid.appendChild(card);
   });
@@ -645,7 +682,7 @@ async function handleSaveChapter(event) {
   alert("Section enregistrée et soumise à la validation de l'administrateur !");
 }
 
-function openEditChapterModal(chapterId) {
+async function openEditChapterModal(chapterId) {
   const chapter = teacherChapters.find(c => c.id === chapterId);
   if (!chapter) return;
 
@@ -655,7 +692,16 @@ function openEditChapterModal(chapterId) {
     chapter.status = "PENDING_APPROVAL";
     chapter.rejectionReason = null;
     renderTeacherDashboard();
-    alert("Section mise à jour et repassée en attente de validation !");
+
+    // Envoyer la modification au backend API pour générer la notification Admin
+    await apiFetch(`/api/chapters/${chapterId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: newTitle.trim(), position: chapter.position || 1 })
+    });
+
+    await fetchNotifications();
+    alert("✅ Section mise à jour et soumise à la validation de l'administrateur !");
   }
 }
 
@@ -1226,71 +1272,148 @@ async function loadUserCourseEnrollments(userId) {
   } catch (_) {}
 
   if (!adminCoursesList || adminCoursesList.length === 0) {
-    container.innerHTML = `<div style="padding: 1rem; text-align:center; color:#94a3b8;">Aucune formation configurée sur la plateforme.</div>`;
+    container.innerHTML = `<div style="padding: 1rem; text-align:center; color:#94a3b8;">Aucune formation disponible sur la plateforme.</div>`;
     return;
   }
 
-  let html = `
-    <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
-      <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
-        <thead>
-          <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: var(--dash-dark-navy); font-weight: 700;">
-            <th style="padding: 0.75rem 1rem;">Formation</th>
-            <th style="padding: 0.75rem 1rem; text-align: center;">Inscription</th>
-            <th style="padding: 0.75rem 1rem; text-align: center;">Progression</th>
-            <th style="padding: 0.75rem 1rem; text-align: center; width: 230px;">Statut Paiement</th>
-            <th style="padding: 0.75rem 1rem; text-align: right;">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-  `;
-
-  adminCoursesList.forEach(course => {
-    const enrollment = userEnrollments.find(e => e.courseId === course.id);
-    const isEnrolled = !!enrollment;
-    const progress = enrollment ? (enrollment.progress || 0) : 0;
-    const status = enrollment ? (enrollment.paymentStatus || "PENDING").toUpperCase() : "NONE";
-
-    let badge = `<span style="background: rgba(148, 163, 184, 0.15); color: #64748b; padding: 3px 8px; border-radius: 999px; font-weight: 600; font-size: 0.75rem;">Non inscrit</span>`;
-    if (isEnrolled) {
-      badge = `<span style="background: rgba(0, 255, 135, 0.15); color: #00875a; padding: 3px 8px; border-radius: 999px; font-weight: 700; font-size: 0.75rem;">✓ Inscrit</span>`;
-    }
-
-    html += `
-      <tr style="border-bottom: 1px solid #f1f5f9;">
-        <td style="padding: 0.75rem 1rem;">
-          <div style="font-weight: 600; color: var(--dash-dark-navy);">${escapeHtml(course.title)}</div>
-          <div style="font-size: 0.75rem; color: var(--dash-text-muted);">${course.chaptersCount || 0} chapitres</div>
-        </td>
-        <td style="padding: 0.75rem 1rem; text-align: center;">
-          ${badge}
-        </td>
-        <td style="padding: 0.75rem 1rem; text-align: center;">
-          <div style="font-weight: 600; font-size: 0.8rem; color: var(--dash-dark-navy);">${progress}%</div>
-          <div style="width: 70px; height: 5px; background: #e2e8f0; border-radius: 999px; margin: 3px auto 0; overflow: hidden;">
-            <div style="width: ${progress}%; height: 100%; background: #00ff87;"></div>
-          </div>
-        </td>
-        <td style="padding: 0.75rem 1rem; text-align: center;">
-          <select id="course-pay-select-${userId}-${course.id}" class="form-select" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; font-weight: 600; background: #fff; width: 100%; border: 1.5px solid #cbd5e1;" 
-                  onchange="handleUpdateCoursePaymentStatus('${userId}', '${course.id}', this.value)">
-            <option value="PAID" ${status === "PAID" ? "selected" : ""}>✓ Payé (Accès complet)</option>
-            <option value="PENDING" ${status === "PENDING" || status === "NONE" ? "selected" : ""}>⏳ En attente de paiement</option>
-            <option value="FAILED" ${status === "FAILED" ? "selected" : ""}>❌ Échoué</option>
-            <option value="REFUNDED" ${status === "REFUNDED" ? "selected" : ""}>↩️ Remboursé</option>
-          </select>
-        </td>
-        <td style="padding: 0.75rem 1rem; text-align: right;">
-          <a href="cours.html?id=${course.id}" target="_blank" class="button button__secondary" style="padding: 4px 10px; font-size: 0.75rem; text-decoration: none; display: inline-block;">
-            Accéder ↗
-          </a>
-        </td>
-      </tr>
-    `;
+  // Filtrer uniquement les cours auxquels l'utilisateur est inscrit
+  const enrolledItems = [];
+  userEnrollments.forEach(enrollment => {
+    const course = adminCoursesList.find(c => c.id === enrollment.courseId) || {
+      id: enrollment.courseId,
+      title: enrollment.courseTitle || "Formation",
+      chaptersCount: 0
+    };
+    enrolledItems.push({ enrollment, course });
   });
 
-  html += `</tbody></table></div>`;
+  // Cours disponibles pour inscription manuelle
+  const availableToEnroll = adminCoursesList.filter(course => {
+    return !userEnrollments.some(e => e.courseId === course.id);
+  });
+
+  let html = "";
+
+  if (enrolledItems.length === 0) {
+    html += `
+      <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 1.5rem; text-align: center; color: var(--dash-text-muted); font-size: 0.88rem; margin-bottom: 1rem;">
+        ℹ️ Cet utilisateur n'est actuellement inscrit à <strong>aucune formation</strong>.
+      </div>
+    `;
+  } else {
+    html += `
+      <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff; margin-bottom: 1rem;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+          <thead>
+            <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: var(--dash-dark-navy); font-weight: 700;">
+              <th style="padding: 0.75rem 1rem;">Formation Inscrite</th>
+              <th style="padding: 0.75rem 1rem; text-align: center;">Progression</th>
+              <th style="padding: 0.75rem 1rem; text-align: center; width: 240px;">Statut de Paiement</th>
+              <th style="padding: 0.75rem 1rem; text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+
+    enrolledItems.forEach(({ enrollment, course }) => {
+      const progress = enrollment ? (enrollment.progress || 0) : 0;
+      const status = enrollment ? (enrollment.paymentStatus || "PENDING").toUpperCase() : "PENDING";
+
+      html += `
+        <tr style="border-bottom: 1px solid #f1f5f9;">
+          <td style="padding: 0.75rem 1rem;">
+            <div style="font-weight: 600; color: var(--dash-dark-navy); font-size: 0.9rem;">${escapeHtml(course.title)}</div>
+            <div style="font-size: 0.75rem; color: var(--dash-text-muted);">${course.chaptersCount || 0} chapitres</div>
+          </td>
+          <td style="padding: 0.75rem 1rem; text-align: center;">
+            <div style="font-weight: 600; font-size: 0.8rem; color: var(--dash-dark-navy);">${progress}%</div>
+            <div style="width: 70px; height: 5px; background: #e2e8f0; border-radius: 999px; margin: 3px auto 0; overflow: hidden;">
+              <div style="width: ${progress}%; height: 100%; background: #00ff87;"></div>
+            </div>
+          </td>
+          <td style="padding: 0.75rem 1rem; text-align: center;">
+            <select id="course-pay-select-${userId}-${course.id}" class="form-select" style="padding: 0.35rem 0.6rem; font-size: 0.8rem; font-weight: 600; background: #fff; width: 100%; border: 1.5px solid #cbd5e1;" 
+                    onchange="handleUpdateCoursePaymentStatus('${userId}', '${course.id}', this.value)">
+              <option value="PAID" ${status === "PAID" ? "selected" : ""}>✓ Payé (Accès complet)</option>
+              <option value="PENDING" ${status === "PENDING" ? "selected" : ""}>⏳ En attente de paiement</option>
+              <option value="FAILED" ${status === "FAILED" ? "selected" : ""}>❌ Échoué</option>
+              <option value="REFUNDED" ${status === "REFUNDED" ? "selected" : ""}>↩️ Remboursé</option>
+            </select>
+          </td>
+          <td style="padding: 0.75rem 1rem; text-align: right;">
+            <div style="display: inline-flex; align-items: center; gap: 0.4rem;">
+              <a href="cours.html?id=${course.id}" target="_blank" class="button button__secondary" style="padding: 4px 10px; font-size: 0.75rem; text-decoration: none; display: inline-block;">
+                Accéder ↗
+              </a>
+              <button class="dash-btn dash-btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="handleAdminUnenrollUser('${userId}', '${enrollment.id}')" title="Désinscrire l'utilisateur de cette formation">
+                🗑️
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    });
+
+    html += `</tbody></table></div>`;
+  }
+
+  // Barre d'ajout manuel à une nouvelle formation
+  if (availableToEnroll.length > 0) {
+    html += `
+      <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; background: #f8fafc; padding: 0.85rem 1rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+        <span style="font-weight: 600; font-size: 0.82rem; color: var(--dash-dark-navy);">➕ Inscrire à une autre formation :</span>
+        <select id="select-enroll-${userId}" class="form-select" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; width: auto; background: #fff;">
+          ${availableToEnroll.map(c => `<option value="${c.id}">${escapeHtml(c.title)}</option>`).join("")}
+        </select>
+        <button class="button button__primary" style="padding: 5px 12px; font-size: 0.78rem;" onclick="handleAdminEnrollUser('${userId}')">
+          Inscrire l'utilisateur
+        </button>
+      </div>
+    `;
+  }
+
   container.innerHTML = html;
+}
+
+async function handleAdminEnrollUser(userId) {
+  const select = document.getElementById(`select-enroll-${userId}`);
+  if (!select || !select.value) return;
+
+  const courseId = select.value;
+  const res = await apiFetch(`/api/enrollments/user/${userId}/course/${courseId}/payment-status`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ paymentStatus: "PAID" })
+  });
+
+  if (res && res.ok) {
+    alert("✅ Utilisateur inscrit avec succès !");
+  } else {
+    await apiFetch(`/api/enrollments/user/${userId}/course/${courseId}/payment-status`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ paymentStatus: "PAID" })
+    });
+    alert("✅ Utilisateur inscrit avec succès !");
+  }
+
+  await loadAdminUsers();
+  await loadUserCourseEnrollments(userId);
+}
+
+async function handleAdminUnenrollUser(userId, enrollmentId) {
+  if (!confirm("Voulez-vous vraiment désinscrire cet utilisateur de cette formation ?")) return;
+
+  const res = await apiFetch(`/api/enrollments/${enrollmentId}`, {
+    method: "DELETE"
+  });
+
+  if (res && (res.ok || res.status === 204)) {
+    alert("🗑️ Inscription supprimée avec succès.");
+  }
+
+  await loadAdminUsers();
+  await loadUserCourseEnrollments(userId);
 }
 
 async function handleUpdateCoursePaymentStatus(userId, courseId, newStatus) {
@@ -1746,6 +1869,7 @@ function setupEventListeners() {
     const bellBtn = document.getElementById("notif-bell-btn");
     if (dropdown && bellBtn && !dropdown.contains(e.target) && !bellBtn.contains(e.target)) {
       dropdown.classList.remove("open");
+      bellBtn.setAttribute("aria-expanded", "false");
     }
   });
 }

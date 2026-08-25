@@ -156,6 +156,18 @@
       "sourceType": "github",
       "skillPath": "plugins/developer-kit-java/skills/unit-test-utility-methods/SKILL.md",
       "computedHash": "a73711c9bdbd4b301a91d3c3edd654676e7166348010e139dbf434ce063aba9e"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474"
+    },
+    "writing-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/writing-guidelines/SKILL.md",
+      "computedHash": "25aa3a33a97bddbcb1847ce4a6169106ec25e5b19b15b99c66e75ab383866ef2"
     }
   }
 }

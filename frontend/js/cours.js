@@ -72,14 +72,68 @@ async function initCoursPage() {
   }
 }
 
+function getCourseImage(course) {
+  if (course.imageUrl) return course.imageUrl;
+  const title = ((course.title || "") + " " + (course.description || "")).toLowerCase();
+  if (title.includes("html") || title.includes("css")) {
+    return "images/courses/html.webp";
+  }
+  if (title.includes("javascript") || title.includes("js")) {
+    return "images/courses/javascript.webp";
+  }
+  if (title.includes("git") || title.includes("github")) {
+    return "images/courses/git.webp";
+  }
+  if (title.includes("java") || title.includes("spring")) {
+    return "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=400&fit=crop";
+  }
+  if (title.includes("architecture") || title.includes("ddd") || title.includes("clean")) {
+    return "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop";
+  }
+  return "images/courses/html.webp";
+}
+
 async function loadInitialData() {
   // 1. Charger tous les cours
   const coursesRes = await coursApiFetch("/api/courses");
   if (coursesRes && coursesRes.ok) {
     allCourses = await coursesRes.json();
   } else {
-    // Fallback seed courses
+    // Fallback seed courses complets
     allCourses = [
+      {
+        id: "html-css-starter-id",
+        title: "HTML & CSS – Les Fondations du Web",
+        description: "Apprends à structurer tes pages en HTML5 sémantique et à créer des designs modernes, responsives et accessibles avec CSS3, Flexbox et CSS Grid.",
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
+        updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+        createdByName: "Admin CodeBangers",
+        updatedByName: "Admin CodeBangers",
+        imageUrl: "images/courses/html.webp",
+        chaptersCount: 5
+      },
+      {
+        id: "javascript-pro-starter-id",
+        title: "JavaScript Moderne & DOM Interactif",
+        description: "Donne vie à tes créations web : manipulation du DOM, requêtes API asynchrones, animations dynamiques et logique applicative complète.",
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 25).toISOString(),
+        updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
+        createdByName: "Admin CodeBangers",
+        updatedByName: "Admin CodeBangers",
+        imageUrl: "images/courses/javascript.webp",
+        chaptersCount: 6
+      },
+      {
+        id: "git-github-starter-id",
+        title: "Git & GitHub – L'Outil n°1 des Devs Pros",
+        description: "Maîtrise le versioning de code, les branches de fonctionnalités, les Pull Requests collaboratives et crée un portfolio GitHub prêt pour l'embauche.",
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 20).toISOString(),
+        updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4).toISOString(),
+        createdByName: "Admin CodeBangers",
+        updatedByName: "Admin CodeBangers",
+        imageUrl: "images/courses/git.webp",
+        chaptersCount: 4
+      },
       {
         id: "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
         title: "Fullstack Java 21 & Spring Boot 3.4+",
@@ -88,6 +142,7 @@ async function loadInitialData() {
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
         createdByName: "Admin CodeBangers",
         updatedByName: "Cédric Ragot (Enseignant)",
+        imageUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=400&fit=crop",
         chaptersCount: 4
       },
       {
@@ -98,6 +153,7 @@ async function loadInitialData() {
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 18).toISOString(),
         createdByName: "Cédric Ragot (Enseignant)",
         updatedByName: "Cédric Ragot (Enseignant)",
+        imageUrl: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop",
         chaptersCount: 3
       }
     ];
@@ -145,8 +201,8 @@ function renderCourseCatalog() {
             </svg>
             Retour à l'accueil
           </a>
-          <h1 class="course-title" style="font-size: 2.8rem; margin: 0.5rem 0;">Catalogue des Formations</h1>
-          <p style="color: #94a3b8; font-size: 1.05rem; margin: 0;">Sélectionnez une formation pour accéder à votre espace de cours interactif.</p>
+          <h1 class="course-title" style="font-size: 2.8rem; margin: 0.5rem 0; color: var(--dark-navy);">Catalogue des Formations</h1>
+          <p style="color: #64748b; font-size: 1.05rem; margin: 0;">Sélectionnez une formation pour accéder à votre espace de cours interactif.</p>
         </div>
         <div>
           ${roleHeaderTag}
@@ -158,7 +214,7 @@ function renderCourseCatalog() {
         </div>
       </div>
 
-      <div class="catalog-grid">
+      <div class="card-grid">
         ${filteredCourses.map(course => {
           let enrollmentInfo = null;
           if (currentUser) {
@@ -167,71 +223,99 @@ function renderCourseCatalog() {
 
           let accessBadge = "";
           let actionBtn = "";
+          const courseImg = getCourseImage(course);
 
           if (currentRole === "ADMIN" || currentRole === "TEACHER") {
-            accessBadge = `<span style="background: rgba(0, 255, 135, 0.15); color: #00ff87; font-size: 0.8rem; font-weight: 700; padding: 4px 10px; border-radius: 999px;">✓ Accès Édition</span>`;
+            accessBadge = `<span style="background: rgba(0, 255, 135, 0.15); color: #00a85a; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(0, 255, 135, 0.4);">✓ Accès Édition</span>`;
             actionBtn = `
-              <a href="cours.html?id=${course.id}" class="button button__primary bangers-regular" style="display:block; text-align:center; padding: 10px; font-size: 1.1rem; text-decoration:none;">
-                Gérer le cours →
+              <a href="cours.html?id=${course.id}" class="card__link bangers-regular">
+                Gérer le cours
+                <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
               </a>
             `;
           } else if (currentRole === "STUDENT") {
             if (!enrollmentInfo) {
-              accessBadge = `<span style="background: rgba(255, 255, 255, 0.1); color: #94a3b8; font-size: 0.8rem; font-weight: 700; padding: 4px 10px; border-radius: 999px;">🔒 Non inscrit</span>`;
+              accessBadge = `<span style="background: #f1f5f9; color: #64748b; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid #cbd5e1;">🔒 Non inscrit</span>`;
               actionBtn = `
-                <button class="button button__secondary" style="width:100%; padding: 10px;" onclick="handleEnroll('${course.id}')">
+                <button class="card__link bangers-regular" style="background:none; border:none; cursor:pointer; color: var(--dark-navy); width: 100%; text-align: left; padding: 0;" onclick="handleEnroll('${course.id}')">
                   S'inscrire à ce cours
+                  <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
                 </button>
               `;
             } else {
               const isPaid = (enrollmentInfo.paymentStatus === "PAID" || enrollmentInfo.paymentStatus === "PAYÉ" || enrollmentInfo.paymentStatus === "FREE" || enrollmentInfo.paymentStatus === "GRATUIT");
               if (isPaid) {
-                accessBadge = `<span style="background: rgba(0, 255, 135, 0.15); color: #00ff87; font-size: 0.8rem; font-weight: 700; padding: 4px 10px; border-radius: 999px;">✓ Inscrit • Payé</span>`;
+                accessBadge = `<span style="background: rgba(0, 255, 135, 0.15); color: #00a85a; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(0, 255, 135, 0.4);">✓ Inscrit • Payé</span>`;
                 actionBtn = `
-                  <a href="cours.html?id=${course.id}" class="button button__primary bangers-regular" style="display:block; text-align:center; padding: 10px; font-size: 1.1rem; text-decoration:none;">
-                    Continuer la formation →
+                  <a href="cours.html?id=${course.id}" class="card__link bangers-regular">
+                    Continuer la formation
+                    <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                   </a>
                 `;
               } else {
-                accessBadge = `<span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; font-size: 0.8rem; font-weight: 700; padding: 4px 10px; border-radius: 999px;">⏳ Paiement en attente</span>`;
+                accessBadge = `<span style="background: rgba(245, 158, 11, 0.15); color: #d97706; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(245, 158, 11, 0.4);">⏳ Paiement en attente</span>`;
                 actionBtn = `
-                  <a href="cours.html?id=${course.id}" class="button button__secondary" style="display:block; text-align:center; padding: 10px; font-size: 0.95rem; text-decoration:none; border-color: rgba(245,158,11,0.5); color:#fbbf24;">
-                    Vérifier le statut →
+                  <a href="cours.html?id=${course.id}" class="card__link bangers-regular" style="color:#d97706;">
+                    Vérifier le statut
+                    <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                   </a>
                 `;
               }
             }
           } else {
             // GUEST
-            accessBadge = `<span style="background: rgba(255, 255, 255, 0.1); color: #94a3b8; font-size: 0.8rem; font-weight: 700; padding: 4px 10px; border-radius: 999px;">🔒 Connexion requise</span>`;
+            accessBadge = `<span style="background: #f1f5f9; color: #64748b; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid #cbd5e1;">🔒 Connexion requise</span>`;
             actionBtn = `
-              <a href="cours.html?id=${course.id}" class="button button__primary bangers-regular" style="display:block; text-align:center; padding: 10px; font-size: 1.1rem; text-decoration:none;">
-                Découvrir →
+              <a href="cours.html?id=${course.id}" class="card__link bangers-regular">
+                Découvrir la formation
+                <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
               </a>
             `;
           }
 
           return `
-            <div class="course-card-box">
-              <div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.75rem;">
-                  <span style="font-size: 0.85rem; color: #00d9ff; font-weight: 600;">📚 Formation NoSeumCode</span>
-                  ${accessBadge}
+            <article class="card card-white card-paddingtop">
+              <header class="card__imageContainer">
+                <img
+                  class="card__image"
+                  src="${courseImg}"
+                  alt="${escapeHtml(course.title)}"
+                  width="400"
+                  height="250"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </header>
+              <main class="card__main">
+                <div class="card__header">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.25rem;">
+                    <span class="section-tag" style="font-size: 0.75rem; margin-bottom: 0;">📚 FORMATION</span>
+                    ${accessBadge}
+                  </div>
+                  <h3 class="card__title">${escapeHtml(course.title)}</h3>
                 </div>
-                <h3 class="course-card-title">${escapeHtml(course.title)}</h3>
-                <p style="font-size: 0.95rem; line-height: 1.6; color: #94a3b8; margin-bottom: 1.5rem;">
+                <p class="card__paragraphe card__textGreen poppins-regular">
                   ${escapeHtml(course.description)}
                 </p>
-              </div>
-
-              <div>
-                <div style="display:flex; justify-content:space-between; align-items:center; font-size: 0.82rem; color: #64748b; margin-bottom: 1rem; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.75rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size: 0.82rem; color: #64748b; margin-top: auto; padding-top: 0.75rem; border-top: 1px solid rgba(0,0,0,0.06);">
                   <span>👤 ${escapeHtml(course.createdByName || "Admin")}</span>
                   <span>📅 ${new Date(course.updatedAt || Date.now()).toLocaleDateString("fr-FR")}</span>
                 </div>
-                ${actionBtn}
-              </div>
-            </div>
+                <div style="margin-top: 0.75rem;">
+                  ${actionBtn}
+                </div>
+              </main>
+            </article>
           `;
         }).join("")}
       </div>
@@ -250,7 +334,7 @@ async function loadSingleCourse(courseId, requestedChapterId) {
   if (currentRole === "GUEST" || !currentUser) {
     renderAccessGate(
       "🔒 Connexion Requise",
-      "Vous devez être connecté à votre compte NoSeumCode pour accéder au contenu interactif de cette formation.",
+      "Vous devez être connecté à votre compte NoSeumCode pour accéder au lecteur de formation et aux chapitres interactifs.",
       "GUEST"
     );
     return;
@@ -302,8 +386,8 @@ async function loadSingleCourse(courseId, requestedChapterId) {
     // Si l'étudiant n'est pas inscrit à ce cours
     if (!enrollment) {
       renderAccessGate(
-        "🔒 Inscription Requise",
-        `Vous n'êtes pas encore inscrit à la formation "${currentCourse.title}". Inscrivez-vous pour débloquer l'accès aux chapitres et exercices.`,
+        "📚 Inscription Requise",
+        `Vous êtes connecté mais vous n'êtes pas encore inscrit à la formation "<strong>${escapeHtml(currentCourse.title)}</strong>". Inscrivez-vous pour débloquer l'accès complet aux chapitres et exercices.`,
         "NOT_ENROLLED"
       );
       return;
@@ -320,8 +404,8 @@ async function loadSingleCourse(courseId, requestedChapterId) {
 
     if (!isPaid) {
       renderAccessGate(
-        "⏳ Paiement Non Validé",
-        `Votre inscription est enregistrée avec le statut de paiement "<strong>${escapeHtml(pStatus || "EN ATTENTE")}</strong>". L'accès aux chapitres sera automatiquement débloqué dès réception de la confirmation Stripe ou validation manuelle par un administrateur.`,
+        "⏳ Paiement en Attente de Validation",
+        `Votre inscription à la formation "<strong>${escapeHtml(currentCourse.title)}</strong>" est bien enregistrée, mais votre paiement est actuellement avec le statut "<strong>${escapeHtml(pStatus || "EN ATTENTE")}</strong>". L'accès aux chapitres sera automatiquement débloqué dès confirmation Stripe ou validation manuelle par un administrateur.`,
         "PAYMENT_PENDING",
         pStatus
       );
@@ -514,30 +598,34 @@ function renderAccessGate(title, description, type, extraStatus = "") {
 
   if (type === "GUEST") {
     icon = "👤";
+    cardClass += " guest";
     actionButtons = `
-      <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.2rem; cursor:pointer;" onclick="if(typeof openAuthModal==='function'){openAuthModal('login');}else{alert('Veuillez vous connecter via le menu en haut');}">
-        Se Connecter / Créer un compte
+      <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.2rem; cursor:pointer;" onclick="if(typeof openGlobalAuthModal==='function'){openGlobalAuthModal('login');}else if(typeof openAuthModal==='function'){openAuthModal('login');}">
+        🚀 Se Connecter / Créer un compte
       </button>
     `;
   } else if (type === "NOT_ENROLLED") {
-    icon = "💳";
+    icon = "📚";
+    cardClass += " not-enrolled";
     actionButtons = `
-      <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.2rem; cursor:pointer;" onclick="handleEnroll('${currentCourse ? currentCourse.id : ''}')">
-        S'inscrire à cette formation
-      </button>
-      <a href="cours.html" class="button button__secondary" style="display:inline-block; margin-left:1rem; padding: 12px 20px; text-decoration:none;">
-        Catalogue
-      </a>
+      <div style="display:flex; justify-content:center; gap: 1rem; flex-wrap:wrap;">
+        <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.2rem; cursor:pointer;" onclick="handleEnroll('${currentCourse ? currentCourse.id : ''}')">
+          ✨ S'inscrire à cette formation
+        </button>
+        <a href="cours.html" class="button button__secondary" style="padding: 12px 20px; text-decoration:none; display:inline-flex; align-items:center;">
+          Voir tout le catalogue
+        </a>
+      </div>
     `;
   } else if (type === "PAYMENT_PENDING") {
     icon = "⏳";
     cardClass += " pending";
     actionButtons = `
       <div style="display:flex; justify-content:center; gap: 1rem; flex-wrap:wrap;">
-        <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.15rem;" onclick="location.reload()">
-          🔄 Vérifier mon paiement
+        <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.15rem; cursor:pointer;" onclick="location.reload()">
+          🔄 Vérifier mon statut de paiement
         </button>
-        <a href="cours.html" class="button button__secondary" style="padding: 12px 20px; text-decoration:none;">
+        <a href="cours.html" class="button button__secondary" style="padding: 12px 20px; text-decoration:none; display:inline-flex; align-items:center;">
           Retour aux formations
         </a>
       </div>
