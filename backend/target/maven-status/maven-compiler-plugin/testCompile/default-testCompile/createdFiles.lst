@@ -1,7 +1,0 @@
-com\codebangers\backend\course\ChapterServiceTest.class
-com\codebangers\backend\auth\AuthServiceTest.class
-com\codebangers\backend\notification\NotificationServiceTest.class
-com\codebangers\backend\BackendApplicationTests.class
-com\codebangers\backend\config\SeedDataInitializerTest.class
-com\codebangers\backend\domain\DomainModelTest.class
-com\codebangers\backend\auth\CustomOAuth2UserServiceTest.class
