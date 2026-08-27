@@ -141,6 +141,22 @@ function switchGlobalAuthTab(tab) {
 
   clearGlobalAuthAlert();
 
+  const ageWarning = document.getElementById("global-reg-age-warning");
+  if (ageWarning) ageWarning.style.display = "none";
+  const birthInput = document.getElementById("global-reg-birthdate");
+  if (birthInput) {
+    birthInput.style.borderColor = "rgba(255, 255, 255, 0.2)";
+    if (!birthInput.getAttribute("max")) {
+      birthInput.setAttribute("max", new Date().toISOString().split("T")[0]);
+    }
+  }
+  const regSubmitBtn = document.getElementById("global-reg-submit-btn");
+  if (regSubmitBtn) {
+    regSubmitBtn.disabled = false;
+    regSubmitBtn.style.opacity = "1";
+    regSubmitBtn.style.cursor = "pointer";
+  }
+
   if (tab === "login") {
     if (loginView) loginView.style.display = "block";
     if (regView) regView.style.display = "none";
@@ -285,8 +301,81 @@ async function handleGlobalEmailLogin(e) {
   }
 }
 
+function calculateAge(birthDateString) {
+  if (!birthDateString) return null;
+  const birthDate = new Date(birthDateString);
+  if (isNaN(birthDate.getTime())) return null;
+
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+}
+
+function validateRegistrationAge() {
+  const birthInput = document.getElementById("global-reg-birthdate");
+  const warningEl = document.getElementById("global-reg-age-warning");
+  const submitBtn = document.getElementById("global-reg-submit-btn");
+  if (!birthInput) return true;
+
+  const val = birthInput.value;
+  if (!val) {
+    if (warningEl) warningEl.style.display = "none";
+    birthInput.style.borderColor = "rgba(255, 255, 255, 0.2)";
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = "1";
+      submitBtn.style.cursor = "pointer";
+    }
+    return false;
+  }
+
+  const age = calculateAge(val);
+
+  if (age === null || age < 16) {
+    if (warningEl) warningEl.style.display = "block";
+    birthInput.style.borderColor = "#ff3366";
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = "0.5";
+      submitBtn.style.cursor = "not-allowed";
+    }
+    return false;
+  } else {
+    if (warningEl) warningEl.style.display = "none";
+    birthInput.style.borderColor = "#00ff87";
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = "1";
+      submitBtn.style.cursor = "pointer";
+    }
+    return true;
+  }
+}
+window.validateRegistrationAge = validateRegistrationAge;
+
 async function handleGlobalEmailRegister(e) {
   e.preventDefault();
+
+  const birthInput = document.getElementById("global-reg-birthdate");
+  const birthDate = birthInput ? birthInput.value : "";
+  if (!birthDate) {
+    showGlobalAuthAlert("❌ Veuillez renseigner votre date de naissance.", "error");
+    if (birthInput) birthInput.focus();
+    return;
+  }
+
+  const isAgeValid = validateRegistrationAge();
+  if (!isAgeValid) {
+    showGlobalAuthAlert("⛔ Inscription impossible : L'accès est interdit aux moins de 16 ans. Seul un adulte avec l'autorité parentale peut vous créer un compte.", "error");
+    if (birthInput) birthInput.focus();
+    return;
+  }
+
   const firstName = document.getElementById("global-reg-firstname").value.trim();
   const lastName = document.getElementById("global-reg-lastname").value.trim();
   const userName = document.getElementById("global-reg-username").value.trim();

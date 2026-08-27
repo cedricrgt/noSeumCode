@@ -982,7 +982,28 @@
 - **[dashboard.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/dashboard.js)** & **[cours.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/cours.js)** :
   - Canevas de départ enrichi lors de l'ouverture de la modale d'ajout d'une nouvelle section.
 
-**Résultat** : Les formateurs et administrateurs disposent d'un guide et d'un placeholder explicites leur montrant exactement comment structurer le cours avec Markdown.
+---
+
+### Session 49 — Contrôle d'Accès et Limitation d'Âge (< 16 ans) dans la Modale d'Inscription
+
+**Date** : 2026-08-27  
+**Conversation** : `e37c80ce`
+
+**Objectif** :
+- Exiger la date de naissance lors de la création de compte dans la modale d'authentification et interdire l'accès autonome aux personnes de moins de 16 ans avec affichage d'un message d'information légale et désactivation bloquante.
+
+**Réalisé** :
+- **[popovers-shared.html](file:///d:/Archive-mac/dev/code-bangers/frontend/partials/popovers-shared.html)** :
+  - Ajout du champ `Date de naissance` (`<input type="date" id="global-reg-birthdate">`) avec `autocomplete="bday"` et validation temps réel.
+  - Ajout du conteneur d'alerte légale `#global-reg-age-warning` expliquant l'interdiction aux moins de 16 ans et la nécessité d'une autorité parentale adulte.
+- **[header.js](file:///d:/Archive-mac/dev/code-bangers/frontend/js/header.js)** :
+  - Ajout de la fonction `calculateAge(birthDateString)` pour calculer précisément l'âge révolu au jour près.
+  - Ajout de `validateRegistrationAge()` : affiche l'alerte rouge, passe la bordure en rouge et désactive le bouton « CRÉER MON COMPTE » si âge < 16 ans.
+  - Sécurisation du handler de soumission `handleGlobalEmailRegister(e)` pour interdire formellement toute création de compte si l'âge est inférieur à 16 ans.
+  - Réinitialisation propre de l'état lors de la bascule d'onglet et initialisation de la date max autorisée (date du jour).
+
+**Résultat** : Protection légale et contrôle de majorité numérique (< 16 ans) actif et réactif dans la modale d'inscription.
+
 
 
 
