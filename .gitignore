@@ -29,3 +29,11 @@ yarn-error.log*
 
 # agents
 .agents/*
+
+#conception
+out/*
+conception/*
+docs/*
+
+# antigravity rules
+.agents/rules/rule-18-web-animation
