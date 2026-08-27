@@ -13,7 +13,7 @@ async function loadHeader() {
     const headerHTML = await headerResponse.text();
     headerPlaceholder.innerHTML = headerHTML;
 
-    await updatePromoBanner();
+  await updatePromoBanner();
 
     const popoversPlaceholder = document.getElementById("popovers-placeholder");
     if (popoversPlaceholder) {

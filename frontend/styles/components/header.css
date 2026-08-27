@@ -208,7 +208,6 @@
     background: var(--white);
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     z-index: 10;
@@ -216,7 +215,6 @@
 
   .navbar__links {
     flex-direction: column;
-    gap: var(--spacing-xl);
     width: 100%;
     text-align: center;
     opacity: 0;
@@ -231,7 +229,6 @@
   }
 
   .header__navbar .button {
-    margin-top: var(--spacing-xl);
     width: 80%;
     opacity: 0;
     transition: opacity 0.2s ease;

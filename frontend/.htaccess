@@ -9,9 +9,9 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 # Redirection "En construction" (supprimer ce bloc quand le site est prêt)
 # ----------------------------------------------------------------------
 # RewriteCond %{REMOTE_ADDR} !^12\.34\.56\.78$
-RewriteCond %{REQUEST_URI} !/en-construction\.html$
-RewriteCond %{REQUEST_URI} !\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|otf|json)$ [NC]
-RewriteRule ^(.*)$ /en-construction.html [R=503,L]
+#RewriteCond %{REQUEST_URI} !/en-construction\.html$
+#RewriteCond %{REQUEST_URI} !\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|otf|json)$ [NC]
+#RewriteRule ^(.*)$ /en-construction.html [R=503,L]
 
 # Indiquer à Apache d'utiliser la page en-construction.html pour l'erreur 503
 ErrorDocument 503 /en-construction.html
@@ -37,6 +37,9 @@ ErrorDocument 503 /en-construction.html
     ExpiresByType image/png "access plus 1 month"
     ExpiresByType image/jpg "access plus 1 month"
     ExpiresByType image/jpeg "access plus 1 month"
+
+    # Documents PDF (no long cache)
+    ExpiresByType application/pdf "access plus 1 hour"
 </IfModule>
 
 # ----------------------------------------------------------------------
