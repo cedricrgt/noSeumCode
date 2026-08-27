@@ -83,8 +83,6 @@ h1, h2, h3, h4, h5, h6 {
     scroll-behavior: auto !important;
   }
 }
-
-
 .poppins-regular {
   font-family: "Poppins", sans-serif;
   font-weight: 400;
@@ -117,8 +115,6 @@ h1, h2, h3, h4, h5, h6 {
     background-position: 100% 50%;
   }
 }
-
-
 
 /* Accessibility: Skip Link */
 .skip-link {
@@ -250,8 +246,6 @@ html {
     minmax(var(--min-column-size), 1fr)
   );
 }
-
-
 .button {
   padding: 12px 32px;
   border: none;
@@ -299,8 +293,6 @@ html {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
-
-
 .card {
   border-radius: var(--radius-xl);
   overflow: hidden;
@@ -359,7 +351,7 @@ html {
 
 .card__header {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: var(--spacing-sm);
 }
 
@@ -452,9 +444,6 @@ html {
 .card-paddingtop .card__imageContainer {
   height: 250px;
 }
-
-
-
 [popover] {
   border: none;
   border-radius: 20px;
@@ -633,8 +622,6 @@ html {
   border-color: #00ff87 !important;
   box-shadow: 0 0 12px rgba(0, 255, 135, 0.35) !important;
 }
-
-
 .header {
   position: fixed;
   top: 0;
@@ -886,8 +873,6 @@ html {
     transition-delay: 0.2s;
   }
 }
-
-
 .promo-banner {
   background-color: var(--primary-green);
   color: var(--dark-navy);
@@ -945,8 +930,6 @@ html {
     animation-duration: 30s;
   }
 }
-
-
 
 #promo-popup {
   inset: 0;
@@ -1047,8 +1030,6 @@ html {
     font-size: 2.5rem;
   }
 }
-
-
 .article-page {
   background-color: var(--white);
   color: var(--text-dark);
@@ -1207,8 +1188,6 @@ html {
     font-size: 1.8rem;
   }
 }
-
-
 .footer {
   background: var(--dark-navy);
   color: var(--white);

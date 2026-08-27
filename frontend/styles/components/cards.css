@@ -56,7 +56,7 @@
 
 .card__header {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: var(--spacing-sm);
 }
 
