@@ -38,7 +38,7 @@ ErrorDocument 503 /en-construction.html
     ExpiresByType image/jpg "access plus 1 month"
     ExpiresByType image/jpeg "access plus 1 month"
 
-    # Documents PDF (pas de cache long pour permettre les mises à jour)
+    # Documents PDF (no long cache)
     ExpiresByType application/pdf "access plus 1 hour"
 </IfModule>
 
