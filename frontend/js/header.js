@@ -69,7 +69,7 @@ async function checkUserAuthHeader() {
       const user = JSON.parse(userStr);
       if (authBtn) authBtn.style.display = "none";
       if (userBadge) userBadge.style.display = "flex";
-      
+
       const displayName = user.firstName || user.userName || "Mon Espace";
       if (userNameText) userNameText.textContent = displayName;
       if (avatarText) {
@@ -88,7 +88,7 @@ async function checkUserAuthHeader() {
           if (authBtn) authBtn.style.display = "inline-flex";
           if (userBadge) userBadge.style.display = "none";
         }
-      }).catch(() => {});
+      }).catch(() => { });
 
     } catch (e) {
       console.error("Error parsing user session:", e);
@@ -106,7 +106,7 @@ function openGlobalAuthModal(tab = "login") {
   // Fermer les autres popovers ouverts s'il y en a
   document.querySelectorAll("[popover]").forEach(p => {
     if (p !== popover && p.matches && p.matches(":popover-open") && typeof p.hidePopover === "function") {
-      try { p.hidePopover(); } catch(e) {}
+      try { p.hidePopover(); } catch (e) { }
     }
   });
 
@@ -167,6 +167,13 @@ function switchGlobalAuthTab(tab) {
       loginBtn.style.background = "transparent";
       loginBtn.style.color = "#fff";
     }
+    const birthDateInput = document.getElementById("global-reg-birthdate");
+    if (birthDateInput && !birthDateInput.max) {
+      birthDateInput.max = new Date().toISOString().split("T")[0];
+    }
+    if (typeof toggleSocialRegisterButtons === "function") {
+      toggleSocialRegisterButtons();
+    }
   }
 }
 
@@ -196,7 +203,7 @@ function clearGlobalAuthAlert() {
   }
 }
 
-window.togglePasswordVisibility = function(inputId, btnId) {
+window.togglePasswordVisibility = function (inputId, btnId) {
   const input = document.getElementById(inputId);
   const btn = document.getElementById(btnId);
   if (!input || !btn) return;
@@ -271,7 +278,7 @@ async function handleGlobalEmailLogin(e) {
       try {
         const errData = await response.json();
         if (errData.message) errMsg = errData.message;
-      } catch (_) {}
+      } catch (_) { }
       showGlobalAuthAlert(`❌ ${errMsg}`, "error");
     }
   } catch (err) {
@@ -285,8 +292,158 @@ async function handleGlobalEmailLogin(e) {
   }
 }
 
+// ========================================================
+// Validation de l'âge (Restriction légale < 16 ans)
+// ========================================================
+
+function calculateAge(birthDateString) {
+  if (!birthDateString) return null;
+  const birthDate = new Date(birthDateString);
+  if (isNaN(birthDate.getTime())) return null;
+
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+}
+window.calculateAge = calculateAge;
+
+function validateGlobalAge() {
+  const birthDateInput = document.getElementById("global-reg-birthdate");
+  const ageWarning = document.getElementById("global-reg-age-warning");
+  const submitBtn = document.getElementById("global-reg-submit-btn");
+  if (!birthDateInput) return true;
+
+  if (!birthDateInput.value) {
+    if (ageWarning) ageWarning.style.display = "none";
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = "1";
+      submitBtn.style.cursor = "pointer";
+    }
+    return true;
+  }
+
+  const age = calculateAge(birthDateInput.value);
+
+  // Date future ou invalide
+  if (age === null || age < 0) {
+    if (ageWarning) {
+      ageWarning.style.display = "block";
+      ageWarning.innerHTML = "⚠️ <strong>Date invalide :</strong> La date de naissance ne peut pas être dans le futur.";
+    }
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = "0.5";
+      submitBtn.style.cursor = "not-allowed";
+    }
+    return false;
+  }
+
+  // Moins de 16 ans
+  if (age < 16) {
+    if (ageWarning) {
+      ageWarning.style.display = "block";
+      ageWarning.innerHTML = "⚠️ <strong>Accès restreint :</strong> Pour des raisons légales, l'accès est interdit aux personnes de moins de 16 ans. Seul un adulte titulaire de l'autorité parentale peut créer et gérer un compte pour un mineur.";
+    }
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = "0.5";
+      submitBtn.style.cursor = "not-allowed";
+    }
+    return false;
+  }
+
+  // 16 ans et plus : valide
+  if (ageWarning) {
+    ageWarning.style.display = "none";
+  }
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.style.opacity = "1";
+    submitBtn.style.cursor = "pointer";
+  }
+  return true;
+}
+window.validateGlobalAge = validateGlobalAge;
+
+// ========================================================
+// Gestion de l'opt-in d'âge pour les Réseaux Sociaux
+// ========================================================
+
+function toggleSocialRegisterButtons() {
+  const checkbox = document.getElementById("social-age-consent");
+  const grid = document.getElementById("social-register-grid");
+  const warning = document.getElementById("social-age-warning");
+  const container = document.getElementById("social-age-container");
+  if (!checkbox || !grid) return;
+
+  if (checkbox.checked) {
+    grid.style.opacity = "1";
+    grid.style.filter = "none";
+    if (warning) warning.style.display = "none";
+    if (container) {
+      container.style.borderColor = "rgba(0, 255, 135, 0.4)";
+      container.style.background = "rgba(0, 255, 135, 0.05)";
+    }
+  } else {
+    grid.style.opacity = "0.45";
+    grid.style.filter = "grayscale(0.8)";
+    if (container) {
+      container.style.borderColor = "rgba(255, 255, 255, 0.15)";
+      container.style.background = "rgba(255, 255, 255, 0.04)";
+    }
+  }
+}
+window.toggleSocialRegisterButtons = toggleSocialRegisterButtons;
+
+function handleSocialRegisterClick(e) {
+  const checkbox = document.getElementById("social-age-consent");
+  const warning = document.getElementById("social-age-warning");
+  const container = document.getElementById("social-age-container");
+
+  if (!checkbox || !checkbox.checked) {
+    if (e && typeof e.preventDefault === "function") {
+      e.preventDefault();
+    }
+    if (warning) {
+      warning.style.display = "block";
+    }
+    if (container) {
+      container.style.borderColor = "rgba(239, 68, 68, 0.6)";
+      container.style.background = "rgba(239, 68, 68, 0.08)";
+    }
+    showGlobalAuthAlert("⚠️ Veuillez cocher la case d'attestation d'âge avant de continuer.", "error");
+    if (checkbox) checkbox.focus();
+    return false;
+  }
+  return true;
+}
+window.handleSocialRegisterClick = handleSocialRegisterClick;
+
 async function handleGlobalEmailRegister(e) {
   e.preventDefault();
+
+  const birthDateInput = document.getElementById("global-reg-birthdate");
+  const birthDateValue = birthDateInput ? birthDateInput.value : "";
+  const age = calculateAge(birthDateValue);
+
+  if (age === null || !birthDateValue) {
+    showGlobalAuthAlert("❌ Veuillez renseigner votre date de naissance.", "error");
+    if (birthDateInput) birthDateInput.focus();
+    return;
+  }
+
+  if (age < 16) {
+    validateGlobalAge();
+    showGlobalAuthAlert("❌ Pour des raisons légales, l'accès est interdit aux moins de 16 ans. Seul un adulte disposant de l'autorité parentale peut créer un compte.", "error");
+    return;
+  }
+
   const firstName = document.getElementById("global-reg-firstname").value.trim();
   const lastName = document.getElementById("global-reg-lastname").value.trim();
   const userName = document.getElementById("global-reg-username").value.trim();
@@ -334,7 +491,7 @@ async function handleGlobalEmailRegister(e) {
       try {
         const errData = await response.json();
         if (errData.message) errMsg = errData.message;
-      } catch (_) {}
+      } catch (_) { }
       showGlobalAuthAlert(`❌ ${errMsg}`, "error");
     }
   } catch (err) {
@@ -389,20 +546,20 @@ async function loadSchedule() {
     if (popoverSubtitle && data.subtitle) {
       popoverSubtitle.textContent = data.subtitle;
     }
-    
+
     tbody.innerHTML = "";
-    
+
     if (data.sessions && Array.isArray(data.sessions)) {
       data.sessions.forEach(item => {
-      const tr = document.createElement("tr");
-      const td1 = document.createElement("td");
-      const td2 = document.createElement("td");
-      
-      td1.textContent = item.date;
-      td2.textContent = item.topic;
-      
-      tr.appendChild(td1);
-      tr.appendChild(td2);
+        const tr = document.createElement("tr");
+        const td1 = document.createElement("td");
+        const td2 = document.createElement("td");
+
+        td1.textContent = item.date;
+        td2.textContent = item.topic;
+
+        tr.appendChild(td1);
+        tr.appendChild(td2);
         tbody.appendChild(tr);
       });
     }
