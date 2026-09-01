@@ -192,7 +192,7 @@ scrollToTopBtn.addEventListener("mouseleave", () => {
 
 
 console.log(
-  "%c🚀 NoSeumCode - Code ton avenir!",
+  "%cNoSeumCode - Code ton avenir!",
   "color: #00FF87; font-size: 20px; font-weight: bold;",
 );
 console.log(
