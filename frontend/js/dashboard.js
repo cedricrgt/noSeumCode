@@ -2,9 +2,7 @@
  * NoSeumCode - Dashboard Multi-Rôles, Notifications & Authentification Sociale
  */
 
-const API_BASE = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-  ? "http://localhost:8080"
-  : "";
+const API_BASE = window.API_BASE_URL;
 
 // State
 let currentAuth = {
