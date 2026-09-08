@@ -1,6 +1,21 @@
 
 
 
+/**
+ * Sanitizes a raw HTML string fetched from the dev server by stripping
+ * all <script> elements. This is needed because live-server injects a
+ * live-reload <script> into every .html file it serves, which corrupts
+ * partial HTML fragments when they are set via innerHTML.
+ *
+ * Using DOMParser is more reliable than regex: the browser correctly
+ * parses the full HTML (including injected scripts), we remove all
+ * script nodes from the parsed DOM, then return the clean body content.
+ */
+function sanitizePartialHTML(rawText) {
+  const doc = new DOMParser().parseFromString(rawText, "text/html");
+  doc.querySelectorAll("script").forEach((s) => s.remove());
+  return doc.body.innerHTML;
+}
 
 async function loadHeader() {
   const headerPlaceholder = document.getElementById("header-placeholder");
@@ -10,8 +25,7 @@ async function loadHeader() {
 
     const headerResponse = await fetch("partials/header.html");
     if (!headerResponse.ok) throw new Error("Failed to load header");
-    const headerHTML = await headerResponse.text();
-    headerPlaceholder.innerHTML = headerHTML;
+    headerPlaceholder.innerHTML = sanitizePartialHTML(await headerResponse.text());
 
     await updatePromoBanner();
 
@@ -19,8 +33,7 @@ async function loadHeader() {
     if (popoversPlaceholder) {
       const popoversResponse = await fetch("partials/popovers-shared.html");
       if (popoversResponse.ok) {
-        const popoversHTML = await popoversResponse.text();
-        popoversPlaceholder.innerHTML = popoversHTML;
+        popoversPlaceholder.innerHTML = sanitizePartialHTML(await popoversResponse.text());
 
         await loadSchedule();
       }
@@ -63,7 +76,6 @@ async function checkUserAuthHeader() {
   const userBadge = document.getElementById("header-user-badge");
   const avatarText = document.getElementById("header-user-avatar-text");
   const userNameText = document.getElementById("header-user-name-text");
-
   if (token && userStr) {
     try {
       const user = JSON.parse(userStr);

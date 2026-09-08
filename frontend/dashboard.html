@@ -384,6 +384,37 @@
     </div>
   </div>
 
+  <!-- OAuth2 Callback : récupère le token du fragment URL après redirection Google/GitHub/etc. -->
+  <script>
+    (function () {
+      const hash = window.location.hash;
+      if (!hash || !hash.includes('token=')) return;
+
+      // Parse les paramètres du fragment : #token=xxx&role=yyy&userName=zzz&firstName=aaa
+      const params = new URLSearchParams(hash.substring(1));
+      const token     = params.get('token');
+      const role      = params.get('role');
+      const userName  = params.get('userName');
+      const firstName = params.get('firstName');
+
+      if (token) {
+        localStorage.setItem('noseum_token', token);
+
+        // Construit l'objet noseum_user attendu par header.js (condition token && userStr)
+        const userObj = {
+          userName:  userName  || '',
+          firstName: firstName || '',
+          role:      role      || 'STUDENT'
+        };
+        localStorage.setItem('noseum_user', JSON.stringify(userObj));
+        localStorage.setItem('noseum_role', role || 'STUDENT');
+
+        // Nettoie le fragment de l'URL (le token ne doit pas rester visible)
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+    })();
+  </script>
+
   <!-- Scripts -->
   <script src="js/header.js"></script>
   <script src="js/dashboard.js"></script>

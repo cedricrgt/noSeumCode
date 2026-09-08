@@ -1,6 +1,7 @@
 package com.codebangers.backend.config;
 
 import com.codebangers.backend.auth.oauth2.CustomOAuth2UserService;
+import com.codebangers.backend.auth.oauth2.CustomOidcUserService;
 import com.codebangers.backend.auth.oauth2.OAuth2AuthenticationSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,11 +22,14 @@ import java.util.List;
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomOidcUserService customOidcUserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
     public SecurityConfig(CustomOAuth2UserService customOAuth2UserService,
+                          CustomOidcUserService customOidcUserService,
                           OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler) {
         this.customOAuth2UserService = customOAuth2UserService;
+        this.customOidcUserService = customOidcUserService;
         this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
     }
 
@@ -35,7 +39,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                         .requestMatchers("/api/courses", "/api/courses/{id}").permitAll()
@@ -46,7 +50,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)        // GitHub, Discord, Facebook
+                                .oidcUserService(customOidcUserService))     // Google (OIDC)
                         .successHandler(oAuth2AuthenticationSuccessHandler))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
