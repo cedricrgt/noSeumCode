@@ -1,0 +1,11 @@
+{
+  "title": "SPRING WORKSHOPS GRATUITS",
+  "subtitle": "Boost tes skills gratuitement durant 2 heures !",
+  "emoji": "🌸",
+  "sessions": [
+    { "date": "Lun 13/04 (10h-12h)", "topic": "HTML & CSS" },
+    { "date": "Mar 14/04 (10h-12h)", "topic": "JavaScript" },
+    { "date": "Mer 15/04 (10h-12h)", "topic": "Git & GitHub" },
+    { "date": "Jeu 16/04 (10h-12h)", "topic": "Miniprojet - supervisé" }
+  ]
+}
