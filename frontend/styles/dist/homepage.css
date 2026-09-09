@@ -671,6 +671,14 @@ html {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
+  flex-shrink: 0;
+}
+
+/* Ensure the actions zone (auth + download) never overflows */
+.header__actions {
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
 }
 
 .navbar__links {

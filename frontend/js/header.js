@@ -1,6 +1,24 @@
+// Configuration globale de l'API
+window.API_BASE_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+  ? "http://localhost:8080"
+  : "https://ton-backend.onrender.com"; // <-- À modifier avec ton URL Render en production
 
 
-
+/**
+ * Sanitizes a raw HTML string fetched from the dev server by stripping
+ * all <script> elements. This is needed because live-server injects a
+ * live-reload <script> into every .html file it serves, which corrupts
+ * partial HTML fragments when they are set via innerHTML.
+ *
+ * Using DOMParser is more reliable than regex: the browser correctly
+ * parses the full HTML (including injected scripts), we remove all
+ * script nodes from the parsed DOM, then return the clean body content.
+ */
+function sanitizePartialHTML(rawText) {
+  const doc = new DOMParser().parseFromString(rawText, "text/html");
+  doc.querySelectorAll("script").forEach((s) => s.remove());
+  return doc.body.innerHTML;
+}
 
 async function loadHeader() {
   const headerPlaceholder = document.getElementById("header-placeholder");
@@ -10,8 +28,9 @@ async function loadHeader() {
 
     const headerResponse = await fetch("partials/header.html");
     if (!headerResponse.ok) throw new Error("Failed to load header");
-    const headerHTML = await headerResponse.text();
-    headerPlaceholder.innerHTML = headerHTML;
+    let headerHtml = await headerResponse.text();
+    headerHtml = headerHtml.replace(/http:\/\/localhost:8080/g, window.API_BASE_URL);
+    headerPlaceholder.innerHTML = sanitizePartialHTML(headerHtml);
 
     await updatePromoBanner();
 
@@ -19,8 +38,9 @@ async function loadHeader() {
     if (popoversPlaceholder) {
       const popoversResponse = await fetch("partials/popovers-shared.html");
       if (popoversResponse.ok) {
-        const popoversHTML = await popoversResponse.text();
-        popoversPlaceholder.innerHTML = popoversHTML;
+        let popoversHtml = await popoversResponse.text();
+        popoversHtml = popoversHtml.replace(/http:\/\/localhost:8080/g, window.API_BASE_URL);
+        popoversPlaceholder.innerHTML = sanitizePartialHTML(popoversHtml);
 
         await loadSchedule();
       }
@@ -52,9 +72,7 @@ window.addEventListener("resize", updateHeaderHeightVar);
 // Authentification Globale & Pop-up Modal
 // ========================================================
 
-const AUTH_API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-  ? "http://localhost:8080"
-  : "";
+// L'URL de base est maintenant définie globalement via window.API_BASE_URL en haut du fichier
 
 async function checkUserAuthHeader() {
   const token = localStorage.getItem("noseum_token");
@@ -63,7 +81,6 @@ async function checkUserAuthHeader() {
   const userBadge = document.getElementById("header-user-badge");
   const avatarText = document.getElementById("header-user-avatar-text");
   const userNameText = document.getElementById("header-user-name-text");
-
   if (token && userStr) {
     try {
       const user = JSON.parse(userStr);
@@ -78,7 +95,7 @@ async function checkUserAuthHeader() {
       }
 
       // Valider en arrière-plan si le compte existe toujours dans PostgreSQL
-      fetch(`${AUTH_API_BASE}/api/auth/me`, {
+      fetch(`${window.API_BASE_URL}/api/auth/me`, {
         headers: { "Authorization": `Bearer ${token}` }
       }).then(res => {
         if (res.status === 401 || res.status === 404) {
@@ -245,7 +262,7 @@ async function handleGlobalEmailLogin(e) {
   }
 
   try {
-    const response = await fetch(`${AUTH_API_BASE}/api/auth/login`, {
+    const response = await fetch(`${window.API_BASE_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
@@ -458,7 +475,7 @@ async function handleGlobalEmailRegister(e) {
   }
 
   try {
-    const response = await fetch(`${AUTH_API_BASE}/api/auth/register`, {
+    const response = await fetch(`${window.API_BASE_URL}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ firstName, lastName, userName, email, password, role })
