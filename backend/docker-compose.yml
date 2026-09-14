@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: noseumcode_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: noseumcode
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d noseumcode" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Ne pas exposer publiquement - accessible uniquement depuis le réseau Docker interne
+    # Décommente la ligne ci-dessous seulement si tu veux t'y connecter avec un outil (pgAdmin/DBeaver) en local
+    # ports:
+    #   - "127.0.0.1:5432:5432"
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: noseumcode_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/noseumcode
+      SPRING_PROFILES_ACTIVE: prod
+    ports:
+      # Bindé sur localhost uniquement : accessible pour tes tests locaux (localhost:8080)
+      # et pour Nginx en prod (qui tourne sur le même hôte), mais jamais exposé publiquement
+      - "127.0.0.1:8080:8080"
+
+volumes:
+  pgdata:
