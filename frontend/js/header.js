@@ -1,7 +1,7 @@
 // Configuration globale de l'API
 window.API_BASE_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
   ? "http://localhost:8080"
-  : "https://ton-backend.onrender.com"; // <-- À modifier avec ton URL Render en production
+  : "https://api.noseumcode.fr"; // Production backend URL
 
 
 /**
@@ -611,13 +611,26 @@ async function updatePromoBanner() {
     const titleText = data.title || "WORKSHOPS GRATUITS";
     const emoji = data.emoji || "✨";
 
-    const item1HTML = `${emoji} ${titleText} : ${topics} ! <button popovertarget="promo-popup" class="promo-banner__cta bangers-regular">VOIR LE PLANNING</button>`;
+    const buildBannerItem = () => {
+      const span = document.createElement("span");
+      span.className = "promo-banner__item";
 
-    track.innerHTML = `
-      <span class="promo-banner__item">${item1HTML}</span>
-      <!-- Duplicated for infinite effect -->
-      <span class="promo-banner__item">${item1HTML}</span>
-    `;
+      const textNode = document.createTextNode(`${emoji} ${titleText} : ${topics} ! `);
+      span.appendChild(textNode);
+
+      const btn = document.createElement("button");
+      btn.setAttribute("popovertarget", "promo-popup");
+      btn.className = "promo-banner__cta bangers-regular";
+      btn.textContent = "VOIR LE PLANNING";
+      span.appendChild(btn);
+
+      return span;
+    };
+
+    track.innerHTML = "";
+    // Duplicate item for infinite scroll effect
+    track.appendChild(buildBannerItem());
+    track.appendChild(buildBannerItem());
   } catch (error) {
     console.error("Error updating banner:", error);
   }

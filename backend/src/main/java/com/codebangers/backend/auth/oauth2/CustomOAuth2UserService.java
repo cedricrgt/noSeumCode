@@ -39,7 +39,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, oAuth2User.getAttributes());
 
         if (userInfo.getEmail() == null || userInfo.getEmail().isBlank()) {
-            throw new IllegalArgumentException("Email non fourni par le service " + registrationId);
+            throw new IllegalArgumentException("No email provided by provider: " + registrationId);
         }
 
         Optional<User> userOptional = userRepository.findByEmail(userInfo.getEmail());
@@ -47,7 +47,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         if (userOptional.isPresent()) {
             user = userOptional.get();
-            // Mettre à jour les informations de profil si nécessaire
             if (userInfo.getImageUrl() != null && !userInfo.getImageUrl().isBlank()) {
                 user.setAvatarUrl(userInfo.getImageUrl());
             }
@@ -57,7 +56,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             }
             user = userRepository.save(user);
         } else {
-            // Créer un nouvel utilisateur avec le rôle STUDENT par défaut
             user = registerNewOAuth2User(registrationId, userInfo);
         }
 
@@ -84,7 +82,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 firstName,
                 lastName,
                 userInfo.getEmail(),
-                null, // Pas de mot de passe requis pour OAuth2
+                null, // No password for OAuth2 users
                 Role.STUDENT
         );
         user.setProvider(registrationId.toUpperCase());

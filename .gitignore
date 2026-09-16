@@ -37,3 +37,5 @@ docs/*
 
 # antigravity rules
 .agents/rules/rule-18-web-animation
+*.key
+*.pubssh-key-2026-09-15.key.pub ssh-key-2026-09-15.key
