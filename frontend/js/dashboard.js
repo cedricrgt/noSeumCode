@@ -37,8 +37,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 // 1. Auth & Session Management
 // ==========================================
 
-function normalizeRole(role, email) {
-  if (email && email.toLowerCase() === "admin@codebangers.fr") return "ADMIN";
+function normalizeRole(role) {
+  // Role must come exclusively from the validated JWT claim — never derive it from client-side data.
   if (!role) return "STUDENT";
   const clean = String(role).replace(/^ROLE_/i, "").trim().toUpperCase();
   if (clean === "ADMIN") return "ADMIN";
@@ -1763,11 +1763,6 @@ function openAuthModal(tab = "login") {
   if (modal) modal.style.display = "flex";
 }
 
-function logout() {
-  localStorage.removeItem("noseum_token");
-  localStorage.removeItem("noseum_user");
-  window.location.href = "index.html";
-}
 
 function switchAuthTab(tab) {
   const loginForm = document.getElementById("auth-login-form");
