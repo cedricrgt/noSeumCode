@@ -38,9 +38,24 @@ async function loadHeader() {
     if (popoversPlaceholder) {
       const popoversResponse = await fetch("partials/popovers-shared.html");
       if (popoversResponse.ok) {
-        let popoversHtml = await popoversResponse.text();
-        popoversHtml = popoversHtml.replace(/http:\/\/localhost:8080/g, window.API_BASE_URL);
+        const popoversHtml = await popoversResponse.text();
         popoversPlaceholder.innerHTML = sanitizePartialHTML(popoversHtml);
+
+        // Inject dynamic OAuth2 URLs based on current environment (API_BASE_URL)
+        const oauthLinks = [
+          { id: "social-login-google",    provider: "google" },
+          { id: "social-login-github",    provider: "github" },
+          { id: "social-login-facebook",  provider: "facebook" },
+          { id: "social-login-discord",   provider: "discord" },
+          { id: "social-register-google", provider: "google" },
+          { id: "social-register-github", provider: "github" },
+          { id: "social-register-facebook", provider: "facebook" },
+          { id: "social-register-discord",  provider: "discord" },
+        ];
+        oauthLinks.forEach(({ id, provider }) => {
+          const el = document.getElementById(id);
+          if (el) el.href = `${window.API_BASE_URL}/oauth2/authorization/${provider}`;
+        });
 
         await loadSchedule();
       }
