@@ -50,11 +50,13 @@ jobs:
             CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
             TPLEOF
 
-            envsubst < ~/noSeumCode/backend/.env.tpl > ~/noSeumCode/backend/.env
+            # Substitution des variables + suppression des espaces en début de ligne
+            # (le heredoc YAML ajoute l'indentation du fichier en prefix de chaque ligne)
+            sed 's/^[[:space:]]*//' ~/noSeumCode/backend/.env.tpl | envsubst > ~/noSeumCode/backend/.env
             chmod 600 ~/noSeumCode/backend/.env
             rm ~/noSeumCode/backend/.env.tpl
 
-            # Rebuild et redémarrage du backend
+            # Rebuild et redémarrage du backend UNIQUEMENT (--no-deps = ne pas recréer postgres)
             cd ~/noSeumCode/backend
-            docker compose up -d --build backend
+            docker compose up -d --build --no-deps backend
             docker image prune -f
