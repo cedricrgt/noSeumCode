@@ -30,7 +30,7 @@ public class SecurityConfig {
         public SecurityConfig(CustomOAuth2UserService customOAuth2UserService,
                         CustomOidcUserService customOidcUserService,
                         OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler,
-                        @Value("${cors.allowed-origins:${app.cors.allowed-origins:http://localhost:3000}}") String corsOrigins) {
+                        @Value("${app.cors.allowed-origins:http://localhost:3000}") String corsOrigins) {
                 this.customOAuth2UserService = customOAuth2UserService;
                 this.customOidcUserService = customOidcUserService;
                 this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;

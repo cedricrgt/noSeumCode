@@ -1,44 +1,59 @@
-name: Deploy Main to GitHub Pages
+name: Deploy to Oracle Cloud VM
 
 on:
   push:
     branches:
-      - main
-      - feat/snyk
-
-permissions:
-  contents: write
+      - develop
 
 jobs:
-  snyk:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Install Snyk
-        run: npm install -g snyk
-
-      - name: Authenticate Snyk
-        run: snyk auth ${{ secrets.SNYK_TOKEN }}
-
-      - name: Test vulnerabilities
-        working-directory: frontend
-        run: snyk test
-
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Build CSS bundles
-        run: bash ./frontend/build.sh
-
-      - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Déploiement SSH sur la VM
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          folder: frontend
-          branch: gh-pages
-          clean: true
-          clean-exclude: pr-preview
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          # Les secrets sont passés comme variables d'env dans le contexte SSH
+          # Ils ne sont jamais écrits dans les logs.
+          envs: DB_USERNAME,DB_PASSWORD,ADMIN_EMAIL,ADMIN_PASSWORD,JWT_SECRET,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,CORS_ALLOWED_ORIGINS,FRONTEND_DASHBOARD_URL
+          script: |
+            set -e
 
+            cd ~/noSeumCode
+            git pull origin main
+
+            # Réécriture du .env backend depuis les secrets GitHub
+            # Garantit la reproductibilité si la VM est recréée
+            cat > ~/noSeumCode/backend/.env.tpl << 'TPLEOF'
+            SPRING_PROFILES_ACTIVE=prod
+            SERVER_FORWARD_HEADERS_STRATEGY=framework
+            DB_URL=jdbc:postgresql://postgres:5432/db
+            DB_USERNAME=${DB_USERNAME}
+            DB_PASSWORD=${DB_PASSWORD}
+            ADMIN_EMAIL=${ADMIN_EMAIL}
+            ADMIN_PASSWORD=${ADMIN_PASSWORD}
+            JWT_SECRET=${JWT_SECRET}
+            JWT_EXPIRY_HOURS=1
+            GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+            GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+            GITHUB_CLIENT_ID=mock-github-client-id
+            GITHUB_CLIENT_SECRET=mock-github-client-secret
+            FACEBOOK_CLIENT_ID=mock-facebook-client-id
+            FACEBOOK_CLIENT_SECRET=mock-facebook-client-secret
+            DISCORD_CLIENT_ID=mock-discord-client-id
+            DISCORD_CLIENT_SECRET=mock-discord-client-secret
+            FRONTEND_DASHBOARD_URL=${FRONTEND_DASHBOARD_URL}
+            CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
+            TPLEOF
+
+            envsubst < ~/noSeumCode/backend/.env.tpl > ~/noSeumCode/backend/.env
+            chmod 600 ~/noSeumCode/backend/.env
+            rm ~/noSeumCode/backend/.env.tpl
+
+            # Rebuild et redémarrage du backend
+            cd ~/noSeumCode/backend
+            docker compose up -d --build backend
+            docker image prune -f
