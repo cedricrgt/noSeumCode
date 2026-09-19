@@ -10,14 +10,11 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d noseumcode" ]
-      interval: 10s
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}" ]
+      interval: 5s
       timeout: 5s
       retries: 5
-    # Ne pas exposer publiquement - accessible uniquement depuis le réseau Docker interne
-    # Décommente la ligne ci-dessous seulement si tu veux t'y connecter avec un outil (pgAdmin/DBeaver) en local
-    # ports:
-    #   - "127.0.0.1:5432:5432"
+      start_period: 10s
 
   backend:
     build:

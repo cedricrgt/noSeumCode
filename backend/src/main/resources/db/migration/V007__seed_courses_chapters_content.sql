@@ -116,7 +116,7 @@ BEGIN
         VALUES (
             gen_random_uuid(),
             chap1_id,
-            'MARKDOWN',
+            'TEXT',
             '# 🚀 Bienvenue dans Java 21 LTS
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Java 21 apporte des fonctionnalités majeures dont les **Virtual Threads (Project Loom)**, les **Record Patterns** et le **Sequenced Collections**.
@@ -151,7 +151,7 @@ public void processUser(Object obj) {
         VALUES (
             gen_random_uuid(),
             chap2_id,
-            'MARKDOWN',
+            'TEXT',
             '# 🏛️ Architecture en Couches & Persistance JPA
 
 Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
@@ -192,7 +192,7 @@ public class CourseService {
         VALUES (
             gen_random_uuid(),
             chap3_id,
-            'MARKDOWN',
+            'TEXT',
             '# 🛡️ Sécurité Avancée : JWT, RBAC & OWASP
 
 Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. La sécurité de votre API repose sur le principe **Never Trust the Client**.
@@ -224,7 +224,7 @@ public class SecurityConfig {
         VALUES (
             gen_random_uuid(),
             chap4_id,
-            'MARKDOWN',
+            'TEXT',
             '# 🌐 Intégration OAuth2 Social Login
 
 *Note : Cette section a été soumise par un enseignant et est en cours de révision par l''équipe d''administration.*
