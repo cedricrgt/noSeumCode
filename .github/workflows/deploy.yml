@@ -65,5 +65,5 @@ jobs:
 
             # Rebuild et redémarrage du backend
             cd ~/noSeumCode/backend
-            docker compose up -d --build --no-deps noseumcode_backend
+            docker compose up -d --build --no-deps backend
             docker image prune -f
