@@ -12,13 +12,22 @@ jobs:
     steps:
       - name: Déploiement SSH sur la VM
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRY_HOURS: ${{ secrets.JWT_EXPIRY_HOURS }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          CORS_ALLOWED_ORIGINS: ${{ secrets.CORS_ALLOWED_ORIGINS }}
+          FRONTEND_DASHBOARD_URL: ${{ secrets.FRONTEND_DASHBOARD_URL }}
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
-          # Les secrets sont passés comme variables d'env dans le contexte SSH
-          # Ils ne sont jamais écrits dans les logs.
-          envs: DB_USERNAME,DB_PASSWORD,ADMIN_EMAIL,ADMIN_PASSWORD,JWT_SECRET,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,CORS_ALLOWED_ORIGINS,FRONTEND_DASHBOARD_URL
+          envs: DB_USERNAME,DB_PASSWORD,ADMIN_EMAIL,ADMIN_PASSWORD,JWT_SECRET,JWT_EXPIRY_HOURS,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,CORS_ALLOWED_ORIGINS,FRONTEND_DASHBOARD_URL
           script: |
             set -e
 
@@ -26,18 +35,17 @@ jobs:
             git fetch origin
             git reset --hard origin/develop
 
-            # Réécriture du .env backend depuis les secrets GitHub
-            # Garantit la reproductibilité si la VM est recréée
+            # Génération du template .env
             cat > ~/noSeumCode/backend/.env.tpl << 'TPLEOF'
             SPRING_PROFILES_ACTIVE=prod
             SERVER_FORWARD_HEADERS_STRATEGY=framework
-            DB_URL=jdbc:postgresql://postgres:5432/db
+            DB_URL=jdbc:postgresql://noseumcode_db:5432/noseumcode
             DB_USERNAME=${DB_USERNAME}
             DB_PASSWORD=${DB_PASSWORD}
             ADMIN_EMAIL=${ADMIN_EMAIL}
             ADMIN_PASSWORD=${ADMIN_PASSWORD}
             JWT_SECRET=${JWT_SECRET}
-            JWT_EXPIRY_HOURS=1
+            JWT_EXPIRY_HOURS=${JWT_EXPIRY_HOURS}
             GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
             GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
             GITHUB_CLIENT_ID=mock-github-client-id
@@ -50,13 +58,12 @@ jobs:
             CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
             TPLEOF
 
-            # Substitution des variables + suppression des espaces en début de ligne
-            # (le heredoc YAML ajoute l'indentation du fichier en prefix de chaque ligne)
+            # Substitution et nettoyage
             sed 's/^[[:space:]]*//' ~/noSeumCode/backend/.env.tpl | envsubst > ~/noSeumCode/backend/.env
             chmod 600 ~/noSeumCode/backend/.env
             rm ~/noSeumCode/backend/.env.tpl
 
-            # Rebuild et redémarrage du backend UNIQUEMENT (--no-deps = ne pas recréer postgres)
+            # Rebuild et redémarrage du backend
             cd ~/noSeumCode/backend
-            docker compose up -d --build --no-deps backend
+            docker compose up -d --build --no-deps noseumcode_backend
             docker image prune -f
