@@ -229,6 +229,7 @@ public class Content {
         FILE,
         LIST,
         CODE,
-        QUIZ
+        QUIZ,
+        MARKDOWN
     }
 }
