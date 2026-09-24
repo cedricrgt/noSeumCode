@@ -67,7 +67,7 @@ public class PaymentController {
      * Webhook Stripe récepteur d'événements automatisés (Stripe Webhook Handler).
      * Accessible publiquement par les serveurs Stripe avec validation HMAC SHA-256 cryptographique.
      */
-    @PostMapping(value = "/webhook/stripe", consumes = "application/json")
+    @PostMapping(value = {"/webhook", "/webhook/stripe"}, consumes = "application/json")
     public ResponseEntity<?> handleStripeWebhook(
             @RequestBody String rawPayload,
             @RequestHeader(value = "Stripe-Signature", required = false) String stripeSignature) {

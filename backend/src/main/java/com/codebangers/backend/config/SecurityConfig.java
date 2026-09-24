@@ -4,6 +4,7 @@ import com.codebangers.backend.auth.oauth2.CustomOAuth2UserService;
 import com.codebangers.backend.auth.oauth2.CustomOidcUserService;
 import com.codebangers.backend.auth.oauth2.OAuth2AuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -50,7 +51,8 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/workshops/**").permitAll()
                                                 .requestMatchers("/login/oauth2/**", "/oauth2/**").permitAll()
                                                 .requestMatchers("/actuator/health").permitAll()
-                                                .requestMatchers("/api/payments/webhook/**").permitAll()
+                                                .requestMatchers("/api/payments/webhook", "/api/payments/webhook/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/chapters/**", "/api/contents/**").permitAll()
                                                 .requestMatchers("/api/**").authenticated()
                                                 .anyRequest().authenticated())
                                 .oauth2Login(oauth2 -> oauth2
