@@ -92,8 +92,15 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 ### ISSUE-018 ✅ Purge totale de `noseum_payments` dans localStorage [RÉSOLU Sprint 1]
 **Status**: Résolu dans Sprint 1. Toutes les dépendances à `noseum_payments` dans `cours.js` et `dashboard.js` ont été purgées. Les statuts d'accès et d'inscription reposent exclusivement sur l'API backend et les claims vérifiés.
 
+### ISSUE-019 🟡 Exécutable `git` non exposé dans le PATH de l'environnement PowerShell Windows
+**Environment**: Shell Windows PowerShell actif
+**Risk**: Empêche les commandes Git automatiques locales (`git checkout`, `git commit`, `git push`, `gh pr create`) tant que le chemin vers Git n'est pas renseigné ou ajouté au `PATH`.
+**Fix needed**: Localiser `git.exe` sur la machine ou l'ajouter au `PATH` système/utilisateur Windows.
+
 ## Fausses Hypothèses à Éviter
 
+- Ne pas supposer qu'on peut pousser directement sur la branche `develop` : cela déclenche le déploiement immédiat en production sur la VM Oracle Cloud (`deploy.yml`). Toujours passer par une PR.
 - Ne pas supposer que la désactivation CSRF est sécurisée sans vérification du `state` OAuth2.
 - Ne pas supposer que `sanitizePartialHTML()` couvre tous les vecteurs XSS.
 - Ne pas supposer que le profil `prod` est activé par défaut (dépend de la variable env `SPRING_PROFILES_ACTIVE`).
+
