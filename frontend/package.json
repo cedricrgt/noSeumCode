@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx --yes http-server -p 8080 -a 0.0.0.0 -c-1 --cors .",
-    "dev": "live-server --port=8080 --host=0.0.0.0 ./"
+    "start": "npx --yes http-server -p 3000 -c-1 --cors .",
+    "dev": "live-server --port=3000 ./"
   },
   "repository": {
     "type": "git",

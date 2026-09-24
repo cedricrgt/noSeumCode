@@ -1,6 +1,13 @@
 // Configuration globale de l'API
-window.API_BASE_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-  ? "http://localhost:8080"
+const isLocalDev =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1" ||
+  window.location.hostname.startsWith("192.168.") ||
+  window.location.hostname.startsWith("10.") ||
+  window.location.hostname.endsWith(".local");
+
+window.API_BASE_URL = isLocalDev
+  ? `http://${window.location.hostname}:8080`
   : "https://api.noseumcode.fr"; // Production backend URL
 
 

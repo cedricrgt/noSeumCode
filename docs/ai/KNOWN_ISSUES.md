@@ -18,10 +18,9 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Risk**: Token volé valide 24h. Pas de mécanisme de révocation (`jti` blacklist absent).
 **Fix needed**: Passer à 1h max + implémenter refresh token + `jti` blacklist.
 
-### ISSUE-003 🔴 Stripe Webhook sans validation de signature
-**File**: `PaymentController.java` L.56 — `Stripe-Signature` header reçu mais jamais validé.
-**Risk**: N'importe qui peut envoyer un faux événement Stripe et déclencher des mises à jour de paiement.
-**Fix needed**: Valider la signature HMAC Stripe (`Stripe.webhooks.constructEvent()`).
+### ISSUE-003 ✅ Stripe Webhook validé par HMAC SHA-256 [RÉSOLU Sprint 1]
+**Status**: Résolu dans Sprint 1 via `StripeWebhookValidator` et `PaymentController`.
+**Validation**: HMAC SHA-256 cryptographique avec protection anti-rejeu (tolérance 300s) et comparaison en temps constant contre les attaques temporelles.
 
 ### ISSUE-004 🔴 CORS hardcodé dans SecurityConfig (mauvais domaine)
 **File**: `SecurityConfig.java` L.66 — Pattern `https://*.codebangers.com` mais le domaine prod est `noseumcode.fr`.
@@ -87,14 +86,11 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Risk**: Les champs du UserRequest ne sont pas validés par Bean Validation.
 **Fix needed**: Ajouter `@Valid` sur le `@RequestBody`.
 
-### ISSUE-017 🟡 Pas de `Content-Type` header vérifié dans le Stripe webhook
-**File**: `PaymentController.java` L.54-83 — body accepté en `Map<String, Object>` sans validation de type.
-**Risk**: Injection de payload malformé possible.
+### ISSUE-017 ✅ Content-Type JSON et payload brut vérifiés [RÉSOLU Sprint 1]
+**Status**: Résolu dans Sprint 1. `PaymentController` impose désormais `consumes = "application/json"`, lit le `@RequestBody String rawPayload` brut et effectue un parsing Jackson sécurisé avec gestion des erreurs de syntaxe.
 
-### ISSUE-018 🟡 `noseum_payments` dans localStorage (admin dashboard)
-**File**: `dashboard.js` L.1000-1004 — payment statuses synchronized to localStorage
-**Risk**: Données sensibles de paiement stockées côté client, manipulables par XSS.
-**Fix needed**: Ne pas stocker d'états de paiement en localStorage.
+### ISSUE-018 ✅ Purge totale de `noseum_payments` dans localStorage [RÉSOLU Sprint 1]
+**Status**: Résolu dans Sprint 1. Toutes les dépendances à `noseum_payments` dans `cours.js` et `dashboard.js` ont été purgées. Les statuts d'accès et d'inscription reposent exclusivement sur l'API backend et les claims vérifiés.
 
 ### ISSUE-019 🟡 Exécutable `git` non exposé dans le PATH de l'environnement PowerShell Windows
 **Environment**: Shell Windows PowerShell actif

@@ -52,6 +52,25 @@ public class EnrollmentService {
         return enrollmentRepository.findByUserId(userId);
     }
 
+    /**
+     * Vérifie si un utilisateur dispose des droits d'accès complets/payants à un cours.
+     * Les rôles ADMIN et TEACHER disposent d'un accès universel sans restriction.
+     * Pour les autres utilisateurs (STUDENT, GUEST), une inscription avec statut 'PAID' est strictement requise.
+     */
+    @Transactional(readOnly = true)
+    public boolean hasPaidAccess(User user, UUID courseId) {
+        if (user == null || courseId == null) {
+            return false;
+        }
+        if (user.getRole() == com.codebangers.backend.user.model.Role.ADMIN ||
+            user.getRole() == com.codebangers.backend.user.model.Role.TEACHER) {
+            return true;
+        }
+        return enrollmentRepository.findByUserIdAndCourseId(user.getId(), courseId)
+                .map(enrollment -> enrollment.getPaymentStatus() == PaymentStatus.PAID)
+                .orElse(false);
+    }
+
     public Enrollment enrollUserInCourse(User user, UUID courseId) {
         Course course = courseRepository.findById(courseId)
             .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));

@@ -1,9 +1,10 @@
 package com.codebangers.backend.course.controller;
 
+import com.codebangers.backend.chapter.model.Chapter;
 import com.codebangers.backend.course.dto.ChapterRequest;
 import com.codebangers.backend.course.dto.ChapterResponse;
-import com.codebangers.backend.chapter.model.Chapter;
 import com.codebangers.backend.course.service.ChapterService;
+import com.codebangers.backend.course.service.EnrollmentService;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.repository.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -23,10 +25,14 @@ import java.util.stream.Collectors;
 public class ChapterController {
 
     private final ChapterService chapterService;
+    private final EnrollmentService enrollmentService;
     private final UserRepository userRepository;
 
-    public ChapterController(ChapterService chapterService, UserRepository userRepository) {
+    public ChapterController(ChapterService chapterService,
+                             EnrollmentService enrollmentService,
+                             UserRepository userRepository) {
         this.chapterService = chapterService;
+        this.enrollmentService = enrollmentService;
         this.userRepository = userRepository;
     }
 
@@ -36,35 +42,55 @@ public class ChapterController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ChapterResponse> getChapterById(@PathVariable UUID id) {
-        return chapterService.getChapterById(id)
-            .map(chapter -> ResponseEntity.ok(mapToResponse(chapter)))
-            .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> getChapterById(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
+        Optional<Chapter> opt = chapterService.getChapterById(id);
+        if (opt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Chapter chapter = opt.get();
+        User user = getAuthenticatedUser(jwt);
+        UUID courseId = chapter.getCourse() != null ? chapter.getCourse().getId() : null;
+        boolean hasPaid = enrollmentService.hasPaidAccess(user, courseId);
+        boolean isPreview = chapter.isFreePreview();
+
+        if (!hasPaid && !isPreview) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "Accès refusé. Cette section nécessite une inscription payante validée."));
+        }
+
+        return ResponseEntity.ok(mapToResponse(chapter, true));
     }
 
     @GetMapping("/course/{courseId}")
-    public ResponseEntity<List<ChapterResponse>> getRootChaptersByCourse(@PathVariable UUID courseId) {
+    public ResponseEntity<List<ChapterResponse>> getRootChaptersByCourse(@PathVariable UUID courseId, @AuthenticationPrincipal Jwt jwt) {
+        User user = getAuthenticatedUser(jwt);
+        boolean hasPaid = enrollmentService.hasPaidAccess(user, courseId);
         List<Chapter> chapters = chapterService.getRootChaptersByCourse(courseId);
         List<ChapterResponse> responses = chapters.stream()
-            .map(this::mapToResponse)
+            .map(ch -> mapToResponse(ch, hasPaid || ch.isFreePreview()))
             .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/course/{courseId}/all")
-    public ResponseEntity<List<ChapterResponse>> getActiveChaptersByCourse(@PathVariable UUID courseId) {
+    public ResponseEntity<List<ChapterResponse>> getActiveChaptersByCourse(@PathVariable UUID courseId, @AuthenticationPrincipal Jwt jwt) {
+        User user = getAuthenticatedUser(jwt);
+        boolean hasPaid = enrollmentService.hasPaidAccess(user, courseId);
         List<Chapter> chapters = chapterService.getActiveChaptersByCourse(courseId);
         List<ChapterResponse> responses = chapters.stream()
-            .map(this::mapToResponse)
+            .map(ch -> mapToResponse(ch, hasPaid || ch.isFreePreview()))
             .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/course/{courseId}/approved")
-    public ResponseEntity<List<ChapterResponse>> getApprovedChaptersByCourse(@PathVariable UUID courseId) {
+    public ResponseEntity<List<ChapterResponse>> getApprovedChaptersByCourse(@PathVariable UUID courseId, @AuthenticationPrincipal Jwt jwt) {
+        User user = getAuthenticatedUser(jwt);
+        boolean hasPaid = enrollmentService.hasPaidAccess(user, courseId);
         List<Chapter> chapters = chapterService.getApprovedChaptersByCourse(courseId);
         List<ChapterResponse> responses = chapters.stream()
-            .map(this::mapToResponse)
+            .map(ch -> mapToResponse(ch, hasPaid || ch.isFreePreview()))
             .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
     }
@@ -80,10 +106,14 @@ public class ChapterController {
     }
 
     @GetMapping("/{id}/sub-chapters")
-    public ResponseEntity<List<ChapterResponse>> getSubChapters(@PathVariable UUID id) {
+    public ResponseEntity<List<ChapterResponse>> getSubChapters(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
+        Optional<Chapter> parentOpt = chapterService.getChapterById(id);
+        UUID courseId = parentOpt.map(p -> p.getCourse() != null ? p.getCourse().getId() : null).orElse(null);
+        User user = getAuthenticatedUser(jwt);
+        boolean hasPaid = enrollmentService.hasPaidAccess(user, courseId);
         List<Chapter> chapters = chapterService.getSubChapters(id);
         List<ChapterResponse> responses = chapters.stream()
-            .map(this::mapToResponse)
+            .map(ch -> mapToResponse(ch, hasPaid || ch.isFreePreview()))
             .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
     }
@@ -173,6 +203,10 @@ public class ChapterController {
     }
 
     private ChapterResponse mapToResponse(Chapter chapter) {
+        return mapToResponse(chapter, true);
+    }
+
+    private ChapterResponse mapToResponse(Chapter chapter, boolean includeContent) {
         ChapterResponse response = new ChapterResponse(
             chapter.getId(),
             chapter.getCourse() != null ? chapter.getCourse().getId() : null,
@@ -196,7 +230,8 @@ public class ChapterController {
         if (chapter.getReviewedBy() != null) {
             response.setReviewedById(chapter.getReviewedBy().getId());
         }
-        if (chapter.getContents() != null && !chapter.getContents().isEmpty()) {
+        response.setFreePreview(chapter.isFreePreview());
+        if (includeContent && chapter.getContents() != null && !chapter.getContents().isEmpty()) {
             response.setContent(chapter.getContents().get(0).getBody());
         }
         return response;

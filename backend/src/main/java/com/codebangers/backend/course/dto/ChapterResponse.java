@@ -24,6 +24,7 @@ public class ChapterResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<ContentResponse> contents;
+    private boolean isFreePreview = false;
 
     public ChapterResponse() {
     }
@@ -186,5 +187,13 @@ public class ChapterResponse {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public boolean isFreePreview() {
+        return isFreePreview;
+    }
+
+    public void setFreePreview(boolean freePreview) {
+        isFreePreview = freePreview;
     }
 }

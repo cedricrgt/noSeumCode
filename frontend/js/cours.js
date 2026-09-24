@@ -247,7 +247,7 @@ function renderCourseCatalog() {
                 </button>
               `;
             } else {
-              const isPaid = (enrollmentInfo.paymentStatus === "PAID" || enrollmentInfo.paymentStatus === "PAYÉ" || enrollmentInfo.paymentStatus === "FREE" || enrollmentInfo.paymentStatus === "GRATUIT");
+              const isPaid = (enrollmentInfo.paymentStatus === "PAID" || enrollmentInfo.paymentStatus === "PAYÉ");
               if (isPaid) {
                 accessBadge = `<span style="background: rgba(0, 255, 135, 0.15); color: #00a85a; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(0, 255, 135, 0.4);">✓ Inscrit • Payé</span>`;
                 actionBtn = `
@@ -259,10 +259,10 @@ function renderCourseCatalog() {
                   </a>
                 `;
               } else {
-                accessBadge = `<span style="background: rgba(245, 158, 11, 0.15); color: #d97706; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(245, 158, 11, 0.4);">⏳ Paiement en attente</span>`;
+                accessBadge = `<span style="background: rgba(245, 158, 11, 0.15); color: #d97706; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(245, 158, 11, 0.4);">⏳ Aperçu • Paiement en attente</span>`;
                 actionBtn = `
                   <a href="cours.html?id=${course.id}" class="card__link bangers-regular" style="color:#d97706;">
-                    Vérifier le statut
+                    Voir l'aperçu gratuit
                     <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -364,50 +364,12 @@ async function loadSingleCourse(courseId, requestedChapterId) {
   if (currentRole === "STUDENT") {
     let enrollment = userEnrollments.find(e => e.courseId === currentCourse.id);
 
-    // Détecter si le compte a un statut de paiement validé globalement ou par l'admin
-    let storedPayment = currentUser.paymentStatus;
-    try {
-      const paymentMap = JSON.parse(localStorage.getItem("noseum_payments") || "{}");
-      if (currentUser.id && paymentMap[currentUser.id]) storedPayment = paymentMap[currentUser.id];
-      if (currentUser.email && paymentMap[currentUser.email]) storedPayment = paymentMap[currentUser.email];
-    } catch (_) {}
-
-    const isGlobalPaid = (storedPayment === "PAID" || storedPayment === "PAYÉ" || storedPayment === "FREE" || storedPayment === "GRATUIT");
-
-    if (!enrollment && isGlobalPaid) {
-      enrollment = {
-        courseId: currentCourse.id,
-        paymentStatus: "PAID",
-        progress: 0
-      };
-      userEnrollments.push(enrollment);
-    }
-    
-    // Si l'étudiant n'est pas inscrit à ce cours
+    // Si l'étudiant n'est pas encore inscrit à ce cours, inviter à s'inscrire
     if (!enrollment) {
       renderAccessGate(
         "📚 Inscription Requise",
-        `Vous êtes connecté mais vous n'êtes pas encore inscrit à la formation "<strong>${escapeHtml(currentCourse.title)}</strong>". Inscrivez-vous pour débloquer l'accès complet aux chapitres et exercices.`,
+        `Vous êtes connecté mais vous n'êtes pas encore inscrit à la formation "<strong>${escapeHtml(currentCourse.title)}</strong>". Inscrivez-vous gratuitement pour débloquer l'aperçu de la première section.`,
         "NOT_ENROLLED"
-      );
-      return;
-    }
-
-    // Si l'étudiant est inscrit mais que son paiement n'est pas validé (ex: PENDING, FAILED, REFUNDED)
-    let pStatus = (enrollment.paymentStatus || "").toUpperCase();
-    if (isGlobalPaid && (pStatus === "PENDING" || pStatus === "EN ATTENTE")) {
-      pStatus = "PAID";
-      enrollment.paymentStatus = "PAID";
-    }
-
-    const isPaid = (pStatus === "PAID" || pStatus === "PAYÉ" || pStatus === "FREE" || pStatus === "GRATUIT");
-
-    if (!isPaid) {
-      renderAccessGate(
-        "⏳ Paiement en Attente de Validation",
-        `Votre inscription à la formation "<strong>${escapeHtml(currentCourse.title)}</strong>" est bien enregistrée, mais votre paiement est actuellement avec le statut "<strong>${escapeHtml(pStatus || "EN ATTENTE")}</strong>". L'accès aux chapitres sera automatiquement débloqué dès confirmation Stripe ou validation manuelle par un administrateur.`,
-        "PAYMENT_PENDING",
-        pStatus
       );
       return;
     }
@@ -663,8 +625,16 @@ function renderClassroom() {
 
   let roleBadgeLabel = "🎓 Étudiant (Consultation)";
   let roleNoticeHtml = "";
+  const currentEnrollment = userEnrollments.find(e => e.courseId === currentCourse.id);
+  const isPaidUser = currentEnrollment && (currentEnrollment.paymentStatus === "PAID" || currentEnrollment.paymentStatus === "PAYÉ");
 
-  if (currentRole === "TEACHER") {
+  if (currentRole === "STUDENT") {
+    if (isPaidUser) {
+      roleBadgeLabel = "✓ Formation Débloquée (Payé)";
+    } else {
+      roleBadgeLabel = "👁️ Aperçu Gratuit (Paiement en attente)";
+    }
+  } else if (currentRole === "TEACHER") {
     roleBadgeLabel = "👨‍🏫 Enseignant (Édition autorisée)";
     roleNoticeHtml = `
       <div class="role-notice-banner role-notice-teacher">
@@ -729,19 +699,29 @@ function renderClassroom() {
         </div>
 
         <nav class="chapter-nav-list">
-          ${courseChapters.map((chap) => {
+          ${courseChapters.map((chap, index) => {
             const isActive = chap.id === activeChapterId;
             const isPending = chap.status === "PENDING_APPROVAL";
+            const isPreview = Boolean(chap.isFreePreview || chap.position === 1 || chap.position === 0 || index === 0);
+            const isStudent = currentRole === "STUDENT";
+            const isLocked = isStudent && !isPaidUser && !isPreview;
+
             let statusIcon = "✓";
             let statusLabel = "";
 
             if (isPending) {
               statusIcon = "⏳";
               statusLabel = `<span style="font-size: 0.72rem; color: #fbbf24; font-weight: 700; background: rgba(245, 158, 11, 0.2); padding: 2px 6px; border-radius: 4px;">À valider</span>`;
+            } else if (isLocked) {
+              statusIcon = "🔒";
+              statusLabel = `<span style="font-size: 0.72rem; color: #94a3b8; font-weight: 600;">Verrouillé</span>`;
+            } else if (isStudent && !isPaidUser && isPreview) {
+              statusIcon = "👁️";
+              statusLabel = `<span style="font-size: 0.72rem; color: #00a85a; font-weight: 700; background: rgba(0, 255, 135, 0.15); padding: 2px 6px; border-radius: 4px;">Aperçu gratuit</span>`;
             }
 
             return `
-              <a class="chapter-nav-item ${isActive ? "active" : ""} ${isPending ? "pending" : ""}" onclick="switchActiveChapter('${chap.id}')">
+              <a class="chapter-nav-item ${isActive ? "active" : ""} ${isPending ? "pending" : ""} ${isLocked ? "locked" : ""}" onclick="switchActiveChapter('${chap.id}')">
                 <div style="display: flex; align-items: center; gap: 0.5rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                   <span>${statusIcon}</span>
                   <span>${escapeHtml(chap.title)}</span>
@@ -770,6 +750,41 @@ function renderClassroom() {
 function renderChapterContent(chapter) {
   if (!chapter) {
     return `<p style="color: #94a3b8; text-align: center;">Aucun contenu disponible pour cette section.</p>`;
+  }
+
+  const currentEnrollment = userEnrollments.find(e => e.courseId === currentCourse.id);
+  const isPaidUser = currentEnrollment && (currentEnrollment.paymentStatus === "PAID" || currentEnrollment.paymentStatus === "PAYÉ");
+  const isStudent = currentRole === "STUDENT";
+  const isPreview = Boolean(chapter.isFreePreview || chapter.position === 1 || chapter.position === 0);
+  const isLocked = isStudent && !isPaidUser && !isPreview;
+
+  if (isLocked || (isStudent && !isPaidUser && !chapter.content)) {
+    return `
+      <div class="chapter-header">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+          <h2 class="chapter-title">${escapeHtml(chapter.title)}</h2>
+          <span style="background: rgba(245, 158, 11, 0.2); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.4); font-size: 0.8rem; font-weight: 700; padding: 4px 10px; border-radius: 999px;">
+            🔒 Section réservée aux membres
+          </span>
+        </div>
+        <div style="font-size: 0.85rem; color: #64748b;">
+          Programme complet NoSeumCode
+        </div>
+      </div>
+
+      <div class="access-gate-card pending" style="margin: 2.5rem auto; max-width: 620px; text-align: center; padding: 2.5rem 1.5rem; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; background: #fff;">
+        <div class="access-gate-icon" style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
+        <h3 class="access-gate-title" style="font-size: 1.8rem; margin-bottom: 0.75rem; color: var(--dark-navy);">Contenu Verrouillé</h3>
+        <p class="access-gate-desc" style="color: #64748b; font-size: 1rem; line-height: 1.6; margin-bottom: 1.5rem;">
+          Cette section nécessite une inscription avec paiement validé. Seule la première section de cette formation est accessible en prévisualisation gratuite.
+        </p>
+        <div style="display:flex; justify-content:center; gap: 1rem; flex-wrap:wrap;">
+          <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.15rem; cursor:pointer;" onclick="location.reload()">
+            🔄 Vérifier le statut de paiement
+          </button>
+        </div>
+      </div>
+    `;
   }
 
   const isPending = chapter.status === "PENDING_APPROVAL";
@@ -1105,18 +1120,23 @@ async function handleEnroll(courseId) {
     return;
   }
 
-  await coursApiFetch("/api/enrollments", {
+  const res = await coursApiFetch("/api/enrollments", {
     method: "POST",
     body: JSON.stringify({ courseId })
   });
 
-  userEnrollments.push({
-    courseId,
-    paymentStatus: (currentUser.paymentStatus && currentUser.paymentStatus.toUpperCase().includes("PAID")) ? "PAID" : "PENDING",
-    progress: 0
-  });
+  if (res && res.ok) {
+    const createdEnrollment = await res.json();
+    userEnrollments.push(createdEnrollment);
+  } else {
+    // Recharger depuis l'API pour resynchroniser
+    const enrollRes = await coursApiFetch("/api/enrollments/my-courses");
+    if (enrollRes && enrollRes.ok) {
+      userEnrollments = await enrollRes.json();
+    }
+  }
 
-  alert("🎉 Inscription confirmée !");
+  alert("🎉 Inscription confirmée ! Vous avez accès à l'aperçu gratuit de la section 1.");
   window.location.href = `cours.html?id=${courseId}`;
 }
 

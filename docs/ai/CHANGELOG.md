@@ -74,81 +74,42 @@ _Chronologique — plus récent en bas_
 
 ---
 
-## 2026-09-21 | Conversation: ac5b5240-0d5c-45c7-b2c2-734ee7676e30
+## 2026-09-24 — Sprint 1 : Sécurité du Paywall Serveur & Webhook Stripe
 
-**Type**: Audit frontend complet + corrections (workflow `frontend-design-development`)
-**Auteur**: Antigravity (Agent IA)
-**Branche**: `task/security-check`
+**Conversation ID**: `4e560375-39fe-44c1-b9cb-7c6fabd79207`  
+**Branche**: `feat/sprint-1-security-paywall`  
+**Objectif**: Bloquer l'accès gratuit frauduleux aux cours, valider cryptographiquement le Webhook Stripe, et purger les failles de contournement côté client (`noseum_payments`).
 
-**Audit réalisé** (9 phases du workflow `@frontend-design-development`):
-- Score global : 6.2/10 avant correction
-- Points forts : identité visuelle homepage, CSS Anchor Positioning, accessibilité de base, Popover API native, animations performantes
-- Points critiques identifiés : CTA hero morts, rupture de couleur de marque (#2ecc71 ≠ #00ff87), styles inline non maintenables, tokens CSS dupliqués, `!important` en cascade
+### Réalisations & Corrections :
+1. **Validation HMAC SHA-256 Webhook Stripe** (`PaymentController.java`, `StripeWebhookValidator.java`) :
+   - Création du validateur cryptographique `StripeWebhookValidator` conforme aux spécifications Stripe (`t=timestamp,v1=signature`).
+   - Protection anti-rejeu (replay attack) avec tolérance maximale de 300 secondes.
+   - Comparaison en temps constant (`MessageDigest.isEqual`) pour neutraliser les attaques temporelles (timing attacks).
+   - Consommation stricte de `application/json` et du payload JSON brut (`@RequestBody String rawPayload`) évitant toute altération de signature lors de la désérialisation.
+   - Intégration de `STRIPE_WEBHOOK_SECRET` dans `application.properties` et `.github/workflows/deploy.yml`.
+   - Résolution définitive de **ISSUE-003** 🔴 et **ISSUE-017** 🟡.
 
-**Corrections appliquées**:
+2. **Paywall Serveur sur Chapitres & Contenus** (`ChapterController.java`, `ContentController.java`, `EnrollmentService.java`, `Chapter.java`) :
+   - Ajout de la méthode `hasPaidAccess(User user, UUID courseId)` dans `EnrollmentService` : accès total garanti pour `ADMIN` et `TEACHER`, et conditionné au statut `PAID` pour les apprenants `STUDENT`.
+   - Définition formelle de la règle d'aperçu libre (`isFreePreview()`) : seule la section 1 (ou racine) d'une formation est accessible sans paiement.
+   - Verrouillage HTTP 403 Forbidden sur `GET /api/chapters/{id}` et `GET /api/contents/{id}` pour toute section payante non validée.
+   - Masquage serveur du corps des leçons (`content = null`) dans la liste des chapitres (`/api/chapters/course/{id}/all`) pour les utilisateurs non payants (seul le sommaire/titres reste consultable).
 
-### `index.html`
-- ✅ **CTA hero "Go coder"** → `onclick="openGlobalAuthModal('register')"` + `aria-haspopup="dialog"`
-- ✅ **CTA hero "Teste et kiffe !"** → `onclick="openGlobalAuthModal('login')"` + `aria-haspopup="dialog"`
-- ✅ **`fetchpriority="high"`** ajouté sur l'image hero above-the-fold (LCP)
-- ✅ **Poppins weights réduits** : 300;400;500;600;700 → 400;600;700 (économie réseau ~20%)
-- ✅ **5 occurrences** `card__textGreen` → `card__text-muted` (nom sémantiquement correct)
+3. **Purge des Failles Côté Client** (`cours.js`, `dashboard.js`) :
+   - Suppression intégrale de la clé vulnérable `noseum_payments` dans le `localStorage` de `dashboard.js` et `cours.js`.
+   - Élimination de la logique d'émulation `isGlobalPaid` qui forçait artificiellement le statut `PAID` dans le navigateur.
+   - Adaptation du Classroom Player (`cours.js`) : affichage d'un badge "Aperçu Gratuit" pour la section 1 et d'une carte d'accès verrouillé élégante ("Contenu Réservé aux Membres Payants") pour les sections suivantes.
+   - Résolution définitive de **ISSUE-018** 🟡.
 
-### `styles/components/popover.css`
-- ✅ **3 couleurs `#2ecc71`** remplacées par `var(--primary-green)` → cohérence de marque
-- ✅ **8 occurrences `!important`** supprimées — spécificité résolue par `[popover].auth-popover-box` (sélecteur attr + class)
+4. **Tests Unitaires & Validation de Sécurité** :
+   - `PaymentWebhookSecurityTest.java` : tests de signature valide, charge utile falsifiée, secret erroné, rejeu expiré et JSON malformé.
+   - `PaywallSecurityTest.java` : tests d'accès preview vs payant pour Admin, Teacher, Étudiant payé et Étudiant non payé sur chapitres et contenus.
+   - Validation 100% au vert : 16 tests exécutés avec succès (`BUILD SUCCESS`) via JDK 21.
 
-### `styles/components/header.css`
-- ✅ **Classes extraites** : `.user-profile-pill`, `.user-avatar-circle`, `.user-profile-name`, `.logout-btn` créées en CSS pur
-
-### `partials/header.html`
-- ✅ **Tous les styles inline** du bloc `.header__actions` supprimés → remplacés par les classes CSS ci-dessus
-- ✅ **`aria-label`** ajouté sur le lien profil
-
-### `styles/pages/dashboard.css`
-- ✅ **Tokens dupliqués supprimés** : `--dash-bg`, `--dash-card-bg`, `--dash-text`, `--dash-text-muted`, `--dash-dark-navy`, `--dash-dark-blue`, `--dash-neon-green`, `--dash-neon-blue` → référencent maintenant les tokens globaux de `reset.css`
-
-### `styles/components/cards.css`
-- ✅ **`.card__text-muted`** ajouté comme alias sémantique de `.card__textGreen` (rétrocompatibilité maintenue)
-
-### `styles/pages/homepage/hero.css`
-- ✅ **`will-change: transform`** ajouté sur `.slider__track` pour optimiser l'animation GPU infinie
-
-### `styles/pages/homepage/footer.css`
-- ✅ **Styles `.footer__link` et `.footer__link:hover`** ajoutés (manquaient)
-- ✅ **`.footer__link--disabled`** créé pour les liens légaux en attente de pages dédiées
-
-### `partials/footer.html`
-- ✅ **Liens légaux morts** (`index.html`) → remplacés par `href="#"` + `aria-disabled="true"` + classe `--disabled` (ne redirigent plus vers la homepage)
-
-**Bundles CSS regénérés** via `node build.js` (homepage, article, thanks, en-construction)
-
-**Résultat** : Score estimé après corrections → 7.8/10
-
----
-
-## 2026-09-24 | Conversation: 67344526-4298-4551-abb3-f061712dca15
-
-**Type**: Cadrage architectural du workflow de développement agentique autonome & gouvernance Git
-**Auteur**: Antigravity (Agent IA)
-**Contexte**: Mise en place d'un cycle de développement automatisé par agents pour NoSeumCode (`noseumcode.fr`).
-
-**Actions réalisées**:
-1. **Audit des workflows CI/CD & Déploiement**:
-   - Analyse de `.github/workflows/deploy.yml` : vérifié que tout push sur la branche `develop` déclenche un déploiement SSH direct en production sur la VM Oracle Cloud (`145.241.165.164`).
-   - Analyse de `.github/workflows/pr-preview.yml` : vérifié que les Pull Requests déclenchent la génération d'un aperçu dédié sur GitHub Pages (`gh-pages`).
-
-2. **Établissement de la règle de protection de branche (ADR-009)**:
-   - **Interdiction formelle de push direct sur `develop`** : empêche les déploiements accidentels sur la VM de production.
-   - **Obligation de Pull Request (PR)** : chaque tâche/fonctionnalité doit s'exécuter sur une branche de travail dédiée (`feat/...`, `fix/...`, `task/...`). Une fois développée et testée de façon itérative, une PR est ouverte comparant la branche de travail à `develop` pour que Cedric puisse l'examiner et la fusionner lui-même.
-   - **Cycle itératif autonome** : discussion et priorisation conjointe de la feature -> conception/planification -> développement -> tests et validation de non-régression -> mise à jour de la mémoire projet (`docs/ai/`) -> ouverture de la PR.
-
-3. **Diagnostic d'environnement local**:
-   - Vérification du repository Git distant (`git@github.com:cedricrgt/noSeumCode.git`).
-   - Détection de l'absence de l'exécutable `git` dans le `PATH` actif du terminal PowerShell Windows (résolu par l'installation de Git 2.55.0 dans `C:\Program Files\Git`).
-
-4. **Modification du workflow de déploiement o2switch (`.github/workflows/ftp.yml`)**:
-   - Déclenchement automatique modifié : la branche cible pour le push est désormais `main` au lieu de `develop`.
-   - Permet de réserver le déploiement FTP o2switch aux versions finalisées et mergées sur `main`.
-
+5. **Ajustements de Routage & Intégration Stripe** :
+   - Câblage multi-routes dans `PaymentController.java` (`/api/payments/webhook` et `/api/payments/webhook/stripe`) et mise à jour de `SecurityConfig.java`.
+   - Autorisation publique du `GET` sur `/api/chapters/**` et `/api/contents/**` pour laisser le paywall serveur évaluer les prévisualisations gratuites.
+   - Création de [`frontend/success.html`](file:///d:/Archive-mac/dev/code-bangers/frontend/success.html) : page post-paiement dédiée aux apprenants, alignée avec la charte NoSeumCode.
+   - Intégration et validation en mode Test du serveur MCP Stripe et de Stripe CLI.
+   - Test d'intégration de bout en bout validé : création d'une session Checkout Stripe réelle de test et simulation de webhook HMAC SHA-256 avec succès (`received: true`).
 

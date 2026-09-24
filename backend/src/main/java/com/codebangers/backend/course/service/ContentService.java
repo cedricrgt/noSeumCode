@@ -34,6 +34,11 @@ public class ContentService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<Content> getContentWithChapterAndCourse(UUID id) {
+        return contentRepository.findByIdWithChapterAndCourse(id);
+    }
+
+    @Transactional(readOnly = true)
     public List<Content> getContentByChapter(UUID chapterId) {
         return contentRepository.findByChapterId(chapterId);
     }
