@@ -1,6 +1,6 @@
 # PROJECT_CONTEXT.md — NoSeumCode
 
-_Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
+_Last updated: 2026-09-24 | Conversation: 67344526-4298-4551-abb3-f061712dca15_
 
 ## Project Overview
 
@@ -41,5 +41,7 @@ frontend/
 ```
 
 ## Active Branch: `task/security-check`
+## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM). Work on dedicated branches (`feat/*`, `fix/*`) and open PRs to `develop` for manual merge (ADR-009).
 
 ## Roles: STUDENT | TEACHER | ADMIN
+

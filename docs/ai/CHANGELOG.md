@@ -71,3 +71,84 @@ _Chronologique — plus récent en bas_
 - Spring Security (`SecurityConfig.corsConfigurationSource()`) ajoute aussi ces headers
 - Risque de **headers dupliqués** → peut bloquer certains navigateurs
 - Solution recommandée : désactiver CORS dans Nginx et laisser uniquement Spring gérer (ou l'inverse)
+
+---
+
+## 2026-09-21 | Conversation: ac5b5240-0d5c-45c7-b2c2-734ee7676e30
+
+**Type**: Audit frontend complet + corrections (workflow `frontend-design-development`)
+**Auteur**: Antigravity (Agent IA)
+**Branche**: `task/security-check`
+
+**Audit réalisé** (9 phases du workflow `@frontend-design-development`):
+- Score global : 6.2/10 avant correction
+- Points forts : identité visuelle homepage, CSS Anchor Positioning, accessibilité de base, Popover API native, animations performantes
+- Points critiques identifiés : CTA hero morts, rupture de couleur de marque (#2ecc71 ≠ #00ff87), styles inline non maintenables, tokens CSS dupliqués, `!important` en cascade
+
+**Corrections appliquées**:
+
+### `index.html`
+- ✅ **CTA hero "Go coder"** → `onclick="openGlobalAuthModal('register')"` + `aria-haspopup="dialog"`
+- ✅ **CTA hero "Teste et kiffe !"** → `onclick="openGlobalAuthModal('login')"` + `aria-haspopup="dialog"`
+- ✅ **`fetchpriority="high"`** ajouté sur l'image hero above-the-fold (LCP)
+- ✅ **Poppins weights réduits** : 300;400;500;600;700 → 400;600;700 (économie réseau ~20%)
+- ✅ **5 occurrences** `card__textGreen` → `card__text-muted` (nom sémantiquement correct)
+
+### `styles/components/popover.css`
+- ✅ **3 couleurs `#2ecc71`** remplacées par `var(--primary-green)` → cohérence de marque
+- ✅ **8 occurrences `!important`** supprimées — spécificité résolue par `[popover].auth-popover-box` (sélecteur attr + class)
+
+### `styles/components/header.css`
+- ✅ **Classes extraites** : `.user-profile-pill`, `.user-avatar-circle`, `.user-profile-name`, `.logout-btn` créées en CSS pur
+
+### `partials/header.html`
+- ✅ **Tous les styles inline** du bloc `.header__actions` supprimés → remplacés par les classes CSS ci-dessus
+- ✅ **`aria-label`** ajouté sur le lien profil
+
+### `styles/pages/dashboard.css`
+- ✅ **Tokens dupliqués supprimés** : `--dash-bg`, `--dash-card-bg`, `--dash-text`, `--dash-text-muted`, `--dash-dark-navy`, `--dash-dark-blue`, `--dash-neon-green`, `--dash-neon-blue` → référencent maintenant les tokens globaux de `reset.css`
+
+### `styles/components/cards.css`
+- ✅ **`.card__text-muted`** ajouté comme alias sémantique de `.card__textGreen` (rétrocompatibilité maintenue)
+
+### `styles/pages/homepage/hero.css`
+- ✅ **`will-change: transform`** ajouté sur `.slider__track` pour optimiser l'animation GPU infinie
+
+### `styles/pages/homepage/footer.css`
+- ✅ **Styles `.footer__link` et `.footer__link:hover`** ajoutés (manquaient)
+- ✅ **`.footer__link--disabled`** créé pour les liens légaux en attente de pages dédiées
+
+### `partials/footer.html`
+- ✅ **Liens légaux morts** (`index.html`) → remplacés par `href="#"` + `aria-disabled="true"` + classe `--disabled` (ne redirigent plus vers la homepage)
+
+**Bundles CSS regénérés** via `node build.js` (homepage, article, thanks, en-construction)
+
+**Résultat** : Score estimé après corrections → 7.8/10
+
+---
+
+## 2026-09-24 | Conversation: 67344526-4298-4551-abb3-f061712dca15
+
+**Type**: Cadrage architectural du workflow de développement agentique autonome & gouvernance Git
+**Auteur**: Antigravity (Agent IA)
+**Contexte**: Mise en place d'un cycle de développement automatisé par agents pour NoSeumCode (`noseumcode.fr`).
+
+**Actions réalisées**:
+1. **Audit des workflows CI/CD & Déploiement**:
+   - Analyse de `.github/workflows/deploy.yml` : vérifié que tout push sur la branche `develop` déclenche un déploiement SSH direct en production sur la VM Oracle Cloud (`145.241.165.164`).
+   - Analyse de `.github/workflows/pr-preview.yml` : vérifié que les Pull Requests déclenchent la génération d'un aperçu dédié sur GitHub Pages (`gh-pages`).
+
+2. **Établissement de la règle de protection de branche (ADR-009)**:
+   - **Interdiction formelle de push direct sur `develop`** : empêche les déploiements accidentels sur la VM de production.
+   - **Obligation de Pull Request (PR)** : chaque tâche/fonctionnalité doit s'exécuter sur une branche de travail dédiée (`feat/...`, `fix/...`, `task/...`). Une fois développée et testée de façon itérative, une PR est ouverte comparant la branche de travail à `develop` pour que Cedric puisse l'examiner et la fusionner lui-même.
+   - **Cycle itératif autonome** : discussion et priorisation conjointe de la feature -> conception/planification -> développement -> tests et validation de non-régression -> mise à jour de la mémoire projet (`docs/ai/`) -> ouverture de la PR.
+
+3. **Diagnostic d'environnement local**:
+   - Vérification du repository Git distant (`git@github.com:cedricrgt/noSeumCode.git`).
+   - Détection de l'absence de l'exécutable `git` dans le `PATH` actif du terminal PowerShell Windows (résolu par l'installation de Git 2.55.0 dans `C:\Program Files\Git`).
+
+4. **Modification du workflow de déploiement o2switch (`.github/workflows/ftp.yml`)**:
+   - Déclenchement automatique modifié : la branche cible pour le push est désormais `main` au lieu de `develop`.
+   - Permet de réserver le déploiement FTP o2switch aux versions finalisées et mergées sur `main`.
+
+
