@@ -23,12 +23,13 @@ jobs:
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           CORS_ALLOWED_ORIGINS: ${{ secrets.CORS_ALLOWED_ORIGINS }}
           FRONTEND_DASHBOARD_URL: ${{ secrets.FRONTEND_DASHBOARD_URL }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
           STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
-          envs: DB_USERNAME,DB_PASSWORD,ADMIN_EMAIL,ADMIN_PASSWORD,JWT_SECRET,JWT_EXPIRY_HOURS,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,CORS_ALLOWED_ORIGINS,FRONTEND_DASHBOARD_URL,STRIPE_WEBHOOK_SECRET
+          envs: DB_USERNAME,DB_PASSWORD,ADMIN_EMAIL,ADMIN_PASSWORD,JWT_SECRET,JWT_EXPIRY_HOURS,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,CORS_ALLOWED_ORIGINS,FRONTEND_DASHBOARD_URL,STRIPE_SECRET_KEY,STRIPE_WEBHOOK_SECRET
           script: |
             set -e
 
@@ -56,7 +57,8 @@ jobs:
             DISCORD_CLIENT_ID=mock-discord-client-id
             DISCORD_CLIENT_SECRET=mock-discord-client-secret
             FRONTEND_DASHBOARD_URL=${FRONTEND_DASHBOARD_URL}
-            CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
+            CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-https://noseumcode.fr,https://www.noseumcode.fr,http://localhost:3000}
+            STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
             STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
             TPLEOF
 
@@ -65,7 +67,14 @@ jobs:
             chmod 600 ~/noSeumCode/backend/.env
             rm ~/noSeumCode/backend/.env.tpl
 
-            # Rebuild et redémarrage du backend
+            # S'assurer que la base de données tourne et redémarrage du backend
             cd ~/noSeumCode/backend
+            docker compose up -d postgres
             docker compose up -d --build --no-deps backend
             docker image prune -f
+
+            # Diagnostic post-démarrage
+            echo "Vérification du statut du backend..."
+            sleep 10
+            docker compose ps
+            docker compose logs --tail=100 backend
