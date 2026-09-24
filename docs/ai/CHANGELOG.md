@@ -104,4 +104,12 @@ _Chronologique — plus récent en bas_
 4. **Tests Unitaires & Validation de Sécurité** :
    - `PaymentWebhookSecurityTest.java` : tests de signature valide, charge utile falsifiée, secret erroné, rejeu expiré et JSON malformé.
    - `PaywallSecurityTest.java` : tests d'accès preview vs payant pour Admin, Teacher, Étudiant payé et Étudiant non payé sur chapitres et contenus.
+   - Validation 100% au vert : 16 tests exécutés avec succès (`BUILD SUCCESS`) via JDK 21.
+
+5. **Ajustements de Routage & Intégration Stripe** :
+   - Câblage multi-routes dans `PaymentController.java` (`/api/payments/webhook` et `/api/payments/webhook/stripe`) et mise à jour de `SecurityConfig.java`.
+   - Autorisation publique du `GET` sur `/api/chapters/**` et `/api/contents/**` pour laisser le paywall serveur évaluer les prévisualisations gratuites.
+   - Création de [`frontend/success.html`](file:///d:/Archive-mac/dev/code-bangers/frontend/success.html) : page post-paiement dédiée aux apprenants, alignée avec la charte NoSeumCode.
+   - Intégration et validation en mode Test du serveur MCP Stripe et de Stripe CLI.
+   - Test d'intégration de bout en bout validé : création d'une session Checkout Stripe réelle de test et simulation de webhook HMAC SHA-256 avec succès (`received: true`).
 
