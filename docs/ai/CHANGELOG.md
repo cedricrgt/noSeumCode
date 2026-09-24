@@ -71,3 +71,37 @@ _Chronologique — plus récent en bas_
 - Spring Security (`SecurityConfig.corsConfigurationSource()`) ajoute aussi ces headers
 - Risque de **headers dupliqués** → peut bloquer certains navigateurs
 - Solution recommandée : désactiver CORS dans Nginx et laisser uniquement Spring gérer (ou l'inverse)
+
+---
+
+## 2026-09-24 — Sprint 1 : Sécurité du Paywall Serveur & Webhook Stripe
+
+**Conversation ID**: `4e560375-39fe-44c1-b9cb-7c6fabd79207`  
+**Branche**: `feat/sprint-1-security-paywall`  
+**Objectif**: Bloquer l'accès gratuit frauduleux aux cours, valider cryptographiquement le Webhook Stripe, et purger les failles de contournement côté client (`noseum_payments`).
+
+### Réalisations & Corrections :
+1. **Validation HMAC SHA-256 Webhook Stripe** (`PaymentController.java`, `StripeWebhookValidator.java`) :
+   - Création du validateur cryptographique `StripeWebhookValidator` conforme aux spécifications Stripe (`t=timestamp,v1=signature`).
+   - Protection anti-rejeu (replay attack) avec tolérance maximale de 300 secondes.
+   - Comparaison en temps constant (`MessageDigest.isEqual`) pour neutraliser les attaques temporelles (timing attacks).
+   - Consommation stricte de `application/json` et du payload JSON brut (`@RequestBody String rawPayload`) évitant toute altération de signature lors de la désérialisation.
+   - Intégration de `STRIPE_WEBHOOK_SECRET` dans `application.properties` et `.github/workflows/deploy.yml`.
+   - Résolution définitive de **ISSUE-003** 🔴 et **ISSUE-017** 🟡.
+
+2. **Paywall Serveur sur Chapitres & Contenus** (`ChapterController.java`, `ContentController.java`, `EnrollmentService.java`, `Chapter.java`) :
+   - Ajout de la méthode `hasPaidAccess(User user, UUID courseId)` dans `EnrollmentService` : accès total garanti pour `ADMIN` et `TEACHER`, et conditionné au statut `PAID` pour les apprenants `STUDENT`.
+   - Définition formelle de la règle d'aperçu libre (`isFreePreview()`) : seule la section 1 (ou racine) d'une formation est accessible sans paiement.
+   - Verrouillage HTTP 403 Forbidden sur `GET /api/chapters/{id}` et `GET /api/contents/{id}` pour toute section payante non validée.
+   - Masquage serveur du corps des leçons (`content = null`) dans la liste des chapitres (`/api/chapters/course/{id}/all`) pour les utilisateurs non payants (seul le sommaire/titres reste consultable).
+
+3. **Purge des Failles Côté Client** (`cours.js`, `dashboard.js`) :
+   - Suppression intégrale de la clé vulnérable `noseum_payments` dans le `localStorage` de `dashboard.js` et `cours.js`.
+   - Élimination de la logique d'émulation `isGlobalPaid` qui forçait artificiellement le statut `PAID` dans le navigateur.
+   - Adaptation du Classroom Player (`cours.js`) : affichage d'un badge "Aperçu Gratuit" pour la section 1 et d'une carte d'accès verrouillé élégante ("Contenu Réservé aux Membres Payants") pour les sections suivantes.
+   - Résolution définitive de **ISSUE-018** 🟡.
+
+4. **Tests Unitaires & Validation de Sécurité** :
+   - `PaymentWebhookSecurityTest.java` : tests de signature valide, charge utile falsifiée, secret erroné, rejeu expiré et JSON malformé.
+   - `PaywallSecurityTest.java` : tests d'accès preview vs payant pour Admin, Teacher, Étudiant payé et Étudiant non payé sur chapitres et contenus.
+

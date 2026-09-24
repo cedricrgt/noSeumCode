@@ -995,15 +995,6 @@ async function loadAdminUsers() {
     ];
   }
 
-  // Appliquer les statuts de paiement synchronisés (noseum_payments)
-  try {
-    const paymentMap = JSON.parse(localStorage.getItem("noseum_payments") || "{}");
-    adminUsersList.forEach(u => {
-      if (paymentMap[u.id]) u.paymentStatus = paymentMap[u.id];
-      if (u.email && paymentMap[u.email]) u.paymentStatus = paymentMap[u.email];
-    });
-  } catch (_) {}
-
   if (statUsers) statUsers.textContent = adminUsersList.length;
   sortAdminUsers(currentSortColumn, false);
 }

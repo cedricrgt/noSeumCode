@@ -192,6 +192,17 @@ public class Chapter {
         this.status = published ? ApprovalStatus.APPROVED : ApprovalStatus.DRAFT;
     }
 
+    /**
+     * Définit si le chapitre est éligible à la prévisualisation gratuite (preview).
+     * Par défaut, le premier chapitre d'un cours (position 1 ou racine) est en accès libre.
+     */
+    public boolean isFreePreview() {
+        if (this.parent != null) {
+            return this.parent.isFreePreview();
+        }
+        return this.position == null || this.position <= 1;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }

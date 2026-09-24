@@ -40,6 +40,9 @@ frontend/
   .htaccess     Apache security headers + HTTPS redirect
 ```
 
-## Active Branch: `task/security-check`
+## Active Branch: `feat/sprint-1-security-paywall`
+## Current State: Sprint 1 (Sécurité & Paywall Serveur) complété et validé par tests unitaires.
+## Next Sprint: Sprint 2 (Tunnel de Vente & Monétisation Stripe Checkout).
+## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM). Work on dedicated branches (`feat/*`, `fix/*`) and open PRs to `develop` for manual merge (ADR-009).
 
 ## Roles: STUDENT | TEACHER | ADMIN
