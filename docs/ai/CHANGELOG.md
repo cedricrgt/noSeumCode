@@ -113,3 +113,22 @@ _Chronologique — plus récent en bas_
    - Intégration et validation en mode Test du serveur MCP Stripe et de Stripe CLI.
    - Test d'intégration de bout en bout validé : création d'une session Checkout Stripe réelle de test et simulation de webhook HMAC SHA-256 avec succès (`received: true`).
 
+
+---
+
+## 2026-09-25 — CI/CD : Déclencheur FTP o2switch & Synchronisation Automatique DB PostgreSQL
+
+**Conversation ID**: `4e560375-39fe-44c1-b9cb-7c6fabd79207`  
+**Branche**: `fix/ci-deploy-db-auth`  
+**Objectif**: Rétablir le déploiement continu du frontend sur o2switch (`ftp.yml`) et éliminer l'erreur 502 Bad Gateway / échec d'authentification PostgreSQL sur la VM Oracle Cloud (`deploy.yml`).
+
+### Réalisations & Corrections :
+1. **Workflow FTP o2switch (`ftp.yml`)** :
+   - Rétablissement du déclenchement automatique sur push vers `develop` en plus de `main`.
+   - Déclenchement manuel (`workflow_dispatch`) exécuté pour publier immédiatement les fichiers frontend à jour (`success.html`, `header.js`, `dashboard.js`, `cours.js`) sur `noseumcode.fr` (HTTP 200).
+
+2. **Workflow Oracle VM (`deploy.yml`)** :
+   - Scoping strict des variables passées à `envsubst` (`VARS_TO_SUBST`) évitant toute corruption de mot de passe ou clé contenant des caractères spéciaux.
+   - Alignement de `DB_URL` sur `jdbc:postgresql://postgres:5432/noseumcode` (nom de service réseau Docker Compose).
+   - Ajout de la synchronisation automatique et idempotente des identifiants PostgreSQL via socket Unix (`docker compose exec -T postgres psql ... ALTER USER ... / CREATE USER ...`).
+   - Ajout d'une vérification de disponibilité HTTP Actuator post-démarrage.

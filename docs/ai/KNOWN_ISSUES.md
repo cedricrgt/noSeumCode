@@ -97,7 +97,14 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Risk**: Empêche les commandes Git automatiques locales (`git checkout`, `git commit`, `git push`, `gh pr create`) tant que le chemin vers Git n'est pas renseigné ou ajouté au `PATH`.
 **Fix needed**: Localiser `git.exe` sur la machine ou l'ajouter au `PATH` système/utilisateur Windows.
 
+### ISSUE-020 🟡 Désynchronisation mot de passe PostgreSQL VM Oracle vs GitHub Secrets
+**Environment**: VM Oracle Cloud / Conteneur Docker `noseumcode_db`
+**Risk**: Si le secret GitHub `DB_PASSWORD` est modifié ou diffère du mot de passe initialisé dans le volume `pgdata`, Spring Boot crashe au démarrage (`FATAL: password authentication failed for user`). Nginx renvoie un 502 sans headers CORS, causant un échec réseau masqué en erreur CORS.
+**Fix applied**: Synchronisation automatique et idempotente dans `deploy.yml` via `ALTER USER` exécuté en socket Unix local.
+
 ## Fausses Hypothèses à Éviter
+- Ne pas supposer qu'une erreur navigateur 'Access-Control-Allow-Origin blocked by CORS policy' sur `api.noseumcode.fr` est toujours un problème de configuration CORS : si le conteneur Spring Boot crashe, Nginx renvoie une page 502 Bad Gateway sans en-tête CORS, ce qui déclenche l'erreur CORS côté navigateur.
+- Ne pas supposer que modifier `POSTGRES_PASSWORD` dans les variables d'environnement d'un conteneur Docker PostgreSQL met à jour le mot de passe d'une base existante : le volume `pgdata` préserve le mot de passe initialisé et nécessite une commande SQL `ALTER USER`.
 
 - Ne pas supposer qu'on peut pousser directement sur la branche `develop` : cela déclenche le déploiement immédiat en production sur la VM Oracle Cloud (`deploy.yml`). Toujours passer par une PR.
 - Ne pas supposer que la désactivation CSRF est sécurisée sans vérification du `state` OAuth2.
