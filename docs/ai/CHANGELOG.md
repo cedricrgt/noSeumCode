@@ -145,6 +145,10 @@ _Chronologique — plus récent en bas_
 
 3. **Diagnostic d'environnement local**:
    - Vérification du repository Git distant (`git@github.com:cedricrgt/noSeumCode.git`).
-   - Détection de l'absence de l'exécutable `git` dans le `PATH` actif du terminal PowerShell Windows (documenté dans `KNOWN_ISSUES.md`).
+   - Détection de l'absence de l'exécutable `git` dans le `PATH` actif du terminal PowerShell Windows (résolu par l'installation de Git 2.55.0 dans `C:\Program Files\Git`).
+
+4. **Modification du workflow de déploiement o2switch (`.github/workflows/ftp.yml`)**:
+   - Déclenchement automatique modifié : la branche cible pour le push est désormais `main` au lieu de `develop`.
+   - Permet de réserver le déploiement FTP o2switch aux versions finalisées et mergées sur `main`.
 
 
