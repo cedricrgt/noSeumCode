@@ -41,7 +41,7 @@ jobs:
             cat > ~/noSeumCode/backend/.env.tpl << 'TPLEOF'
             SPRING_PROFILES_ACTIVE=prod
             SERVER_FORWARD_HEADERS_STRATEGY=framework
-            DB_URL=jdbc:postgresql://noseumcode_db:5432/noseumcode
+            DB_URL=jdbc:postgresql://postgres:5432/noseumcode
             DB_USERNAME=${DB_USERNAME}
             DB_PASSWORD=${DB_PASSWORD}
             ADMIN_EMAIL=${ADMIN_EMAIL}
@@ -62,14 +62,26 @@ jobs:
             STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
             TPLEOF
 
-            # Substitution et nettoyage
-            sed 's/^[[:space:]]*//' ~/noSeumCode/backend/.env.tpl | envsubst > ~/noSeumCode/backend/.env
+            # Substitution sécurisée des variables uniquement
+            VARS_TO_SUBST='$DB_USERNAME $DB_PASSWORD $ADMIN_EMAIL $ADMIN_PASSWORD $JWT_SECRET $JWT_EXPIRY_HOURS $GOOGLE_CLIENT_ID $GOOGLE_CLIENT_SECRET $FRONTEND_DASHBOARD_URL $CORS_ALLOWED_ORIGINS $STRIPE_SECRET_KEY $STRIPE_WEBHOOK_SECRET'
+            sed 's/^[[:space:]]*//' ~/noSeumCode/backend/.env.tpl | envsubst "$VARS_TO_SUBST" > ~/noSeumCode/backend/.env
             chmod 600 ~/noSeumCode/backend/.env
             rm ~/noSeumCode/backend/.env.tpl
 
-            # S'assurer que la base de données tourne et redémarrage du backend
+            # S'assurer que la base de données tourne et synchroniser les identifiants
             cd ~/noSeumCode/backend
             docker compose up -d postgres
+
+            echo "Attente de la disponibilité de PostgreSQL..."
+            docker compose exec -T postgres sh -c 'until pg_isready; do sleep 1; done'
+
+            # Synchronisation idempotente de l'utilisateur et du mot de passe dans PostgreSQL
+            docker compose exec -T postgres psql -U postgres -d postgres -c "CREATE USER \"$DB_USERNAME\" WITH PASSWORD '$DB_PASSWORD' SUPERUSER;" 2>/dev/null || true
+            docker compose exec -T postgres psql -U postgres -d postgres -c "ALTER USER \"$DB_USERNAME\" WITH PASSWORD '$DB_PASSWORD';" 2>/dev/null || \
+            docker compose exec -T postgres psql -U "$DB_USERNAME" -d postgres -c "ALTER USER \"$DB_USERNAME\" WITH PASSWORD '$DB_PASSWORD';" 2>/dev/null || true
+            docker compose exec -T postgres psql -U postgres -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE noseumcode TO \"$DB_USERNAME\";" 2>/dev/null || true
+
+            # Rebuild et redémarrage du backend
             docker compose up -d --build --no-deps backend
             docker image prune -f
 
@@ -77,4 +89,8 @@ jobs:
             echo "Vérification du statut du backend..."
             sleep 10
             docker compose ps
-            docker compose logs --tail=100 backend
+            docker compose logs --tail=50 backend
+
+            # Test de l'endpoint de santé
+            echo "Vérification santé HTTP Actuator..."
+            curl -f http://127.0.0.1:8080/actuator/health || echo "Avertissement: /actuator/health n'a pas encore répondu 200 OK"
