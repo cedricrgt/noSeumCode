@@ -81,6 +81,16 @@ async function loadStoredAuth() {
     return;
   }
 
+  // Si un achat de formation est en attente, basculer immédiatement vers le checkout du cours
+  const pendingCourseId = sessionStorage.getItem("noseum_pending_checkout_course_id");
+  if (pendingCourseId) {
+    sessionStorage.removeItem("noseum_pending_checkout_course_id");
+    sessionStorage.removeItem("noseum_pending_checkout_course_title");
+    sessionStorage.removeItem("noseum_pending_checkout_course_price");
+    window.location.href = `cours.html?id=${encodeURIComponent(pendingCourseId)}&auto_checkout=true`;
+    return;
+  }
+
   currentAuth.token = savedToken;
   try {
     currentAuth.user = JSON.parse(savedUser);

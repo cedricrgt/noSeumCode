@@ -167,6 +167,7 @@ _Chronologique — plus récent en bas_
    - Intégration du bouton "💳 Acheter / Débloquer" sur le catalogue, sur le panneau de cours verrouillé, et sur la bannière de prévisualisation dans la classe virtuelle.
    - Création de la fonction `initiateStripeCheckout(courseId)` avec redirection automatique vers Stripe Checkout et retour vers `success.html` ou `cours.html`.
    - Amélioration de `success.html` avec lecture du paramètre `course_id` pour proposer un bouton direct "Commencer la formation immédiatement 🚀".
+   - Préservation de l'intention d'achat : mémorisation de l'identifiant du cours (`sessionStorage`) lors du clic sur "S'inscrire direct" sur la page d'accueil ou dans la classe virtuelle, permettant une redirection automatique vers la page de paiement Stripe Checkout dès la fin de l'inscription ou de la connexion (éliminant la redirection par défaut vers le dashboard).
 
 5. **Tests & Validation Locale** :
    - Création de `PaymentCheckoutServiceTest.java` (10 tests unitaires couvrant la création de session aux tarifs officiels 579 € et 279 €, cours déjà payé, cours gratuit, cours non publié, webhook ciblé, sécurité JWT).
