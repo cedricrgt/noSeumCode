@@ -455,11 +455,7 @@ async function openStripePaywall(courseId, courseTitle, priceText) {
     }
 
     if (!data.clientSecret) {
-      if (data.sessionUrl) {
-        window.location.href = data.sessionUrl;
-        return;
-      }
-      throw new Error("Clé de session sécurisée (clientSecret) non reçue.");
+      throw new Error("Clé de session sécurisée (clientSecret) non reçue. Assurez-vous que le backend est à jour.");
     }
 
     if (data.amount && priceEl) {

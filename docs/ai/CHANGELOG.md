@@ -160,11 +160,12 @@ _Chronologique — plus récent en bas_
    - Endpoint sécurisé `POST /api/payments/create-checkout-session` (authentifié par JWT) générant une Checkout Session Stripe hébergée avec métadonnées (`userId`, `courseId`, `userEmail`).
    - Gestion des cas limites : blocage des doubles paiements si déjà `PAID`, validation immédiate gratuite si `priceInCents <= 0`, et interdiction d'achat sur cours non publiés ou supprimés.
    - Extension du webhook Stripe : extraction des métadonnées `courseId` et `userId` pour débloquer spécifiquement la formation achetée.
-   - Support de Stripe Embedded Checkout : ajout du mode `uiMode: EMBEDDED` avec `returnUrl`, retour du `clientSecret` et de la `publishableKey` via `CheckoutSessionResponse` pour permettre un affichage 100% in-app sans redirection externe.
+   - Support de Stripe Embedded Checkout : ajout du mode `uiMode: EMBEDDED` avec `setMode(SessionCreateParams.Mode.PAYMENT)` (obligatoire avec l'API Stripe pour les sessions avec tarification), `returnUrl`, retour du `clientSecret` et de la `publishableKey` via `CheckoutSessionResponse` pour permettre un affichage 100% in-app sans redirection externe.
    - Résolution de l'ambiguïté de constructeur Spring Boot : annotation `@Autowired` explicite sur le constructeur multi-arguments de `PaymentController`.
 
 4. **Expérience Apprenant & Paywall In-App Frontend (`index.html`, `cours.js`, `header.js`, `popovers-shared.html`, `success.html`)** :
    - Intégration de la modale Paywall In-App `#stripe-paywall-modal` : montage direct du formulaire Stripe via `stripe.initEmbeddedCheckout({ clientSecret })` dans une modale Cyber Dark élégante sans jamais quitter le site `noseumcode.fr`.
+   - Suppression du fallback de redirection externe vers `checkout.stripe.com` pour garantir la persistance in-app du paywall Stripe.
    - Affichage dynamique du titre de formation, du tarif officiel (579 € pour HTML & CSS et JavaScript, 279 € pour Git & GitHub) et des badges de garantie dans l'en-tête du Paywall.
    - Gestion du cycle de vie du composant : chargement asynchrone sécurisé de Stripe.js v3, skeleton de chargement initial et destruction propre de l'instance (`checkout.destroy()`) à la fermeture.
    - Déclenchement automatique post-connexion : à la validation du login ou du register, la modale d'authentification cède instantanément la place au Paywall in-app du cours ciblé.
@@ -175,3 +176,4 @@ _Chronologique — plus récent en bas_
 5. **Tests & Validation Locale** :
    - Mise à jour et validation de `PaymentCheckoutServiceTest.java` (10 tests unitaires couvrant le mode embedded, `clientSecret`, tarifs officiels 579 € et 279 €, cours déjà payé, cours gratuit, webhook ciblé, sécurité JWT).
    - Exécution complète de la suite de tests : 41 tests réussis (`BUILD SUCCESS`, 0 erreur, 0 échec).
+   - Test réel de création de session Stripe Checkout Embedded validé de bout en bout avec retour de `clientSecret` et `amount=57900`.

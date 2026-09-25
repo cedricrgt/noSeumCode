@@ -64,6 +64,7 @@ public class StripeGatewayImpl implements StripeGateway {
         }
 
         SessionCreateParams.Builder paramsBuilder = SessionCreateParams.builder()
+                .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setCustomerEmail(user.getEmail())
                 .putMetadata("userId", user.getId().toString())
                 .putMetadata("courseId", course.getId().toString())
@@ -111,7 +112,6 @@ public class StripeGatewayImpl implements StripeGateway {
                     : defaultCancelUrl + "?id=" + course.getId() + "&cancelled=true";
 
             paramsBuilder
-                    .setMode(SessionCreateParams.Mode.PAYMENT)
                     .setSuccessUrl(effectiveSuccessUrl)
                     .setCancelUrl(effectiveCancelUrl);
         }
