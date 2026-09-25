@@ -40,6 +40,12 @@
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
+		<!-- JavaMail / Transactional Emails -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
 		<!-- Spring Security & OAuth2 (Resource Server JWT + Social Client) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -7,6 +7,7 @@ import com.codebangers.backend.user.dto.UserRequest;
 import com.codebangers.backend.user.dto.UserResponse;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -49,7 +50,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or #id.toString() == authentication.token.claims['userId']")
-    public ResponseEntity<?> updateUser(@PathVariable UUID id, @RequestBody UserRequest request) {
+    public ResponseEntity<?> updateUser(@PathVariable UUID id, @Valid @RequestBody UserRequest request) {
         try {
             User user = userService.updateUser(id, request);
             return ResponseEntity.ok(mapToResponse(user));

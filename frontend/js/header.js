@@ -96,6 +96,34 @@ window.addEventListener("resize", updateHeaderHeightVar);
 
 // L'URL de base est maintenant définie globalement via window.API_BASE_URL en haut du fichier
 
+async function refreshAuthToken() {
+  const refreshToken = localStorage.getItem("noseum_refresh_token");
+  if (!refreshToken) return false;
+
+  try {
+    const res = await fetch(`${window.API_BASE_URL}/api/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.accessToken) {
+        localStorage.setItem("noseum_token", data.accessToken);
+        if (data.refreshToken) {
+          localStorage.setItem("noseum_refresh_token", data.refreshToken);
+        }
+        return true;
+      }
+    }
+  } catch (err) {
+    console.warn("Échec du rafraîchissement du token:", err);
+  }
+  return false;
+}
+window.refreshAuthToken = refreshAuthToken;
+
 async function checkUserAuthHeader() {
   const token = localStorage.getItem("noseum_token");
   const userStr = localStorage.getItem("noseum_user");
@@ -119,10 +147,21 @@ async function checkUserAuthHeader() {
       // Valider en arrière-plan si le compte existe toujours dans PostgreSQL
       fetch(`${window.API_BASE_URL}/api/auth/me`, {
         headers: { "Authorization": `Bearer ${token}` }
-      }).then(res => {
-        if (res.status === 401 || res.status === 404) {
-          console.warn("Session expirée ou compte supprimé de la base, déconnexion.");
+      }).then(async res => {
+        if (res.status === 401) {
+          const refreshed = await refreshAuthToken();
+          if (!refreshed) {
+            console.warn("Session expirée, déconnexion.");
+            localStorage.removeItem("noseum_token");
+            localStorage.removeItem("noseum_refresh_token");
+            localStorage.removeItem("noseum_user");
+            if (authBtn) authBtn.style.display = "inline-flex";
+            if (userBadge) userBadge.style.display = "none";
+          }
+        } else if (res.status === 404) {
+          console.warn("Compte supprimé de la base, déconnexion.");
           localStorage.removeItem("noseum_token");
+          localStorage.removeItem("noseum_refresh_token");
           localStorage.removeItem("noseum_user");
           if (authBtn) authBtn.style.display = "inline-flex";
           if (userBadge) userBadge.style.display = "none";
@@ -181,6 +220,7 @@ function closeGlobalAuthModal() {
 function switchGlobalAuthTab(tab) {
   const loginView = document.getElementById("global-auth-login-view");
   const regView = document.getElementById("global-auth-register-view");
+  const forgotView = document.getElementById("global-auth-forgot-view");
   const loginBtn = document.getElementById("global-tab-btn-login");
   const regBtn = document.getElementById("global-tab-btn-register");
 
@@ -189,6 +229,7 @@ function switchGlobalAuthTab(tab) {
   if (tab === "login") {
     if (loginView) loginView.style.display = "block";
     if (regView) regView.style.display = "none";
+    if (forgotView) forgotView.style.display = "none";
     if (loginBtn) {
       loginBtn.className = "button button__primary bangers-regular";
       loginBtn.style.background = "";
@@ -199,9 +240,24 @@ function switchGlobalAuthTab(tab) {
       regBtn.style.background = "transparent";
       regBtn.style.color = "#fff";
     }
+  } else if (tab === "forgot") {
+    if (loginView) loginView.style.display = "none";
+    if (regView) regView.style.display = "none";
+    if (forgotView) forgotView.style.display = "block";
+    if (loginBtn) {
+      loginBtn.className = "button button__secondary bangers-regular";
+      loginBtn.style.background = "transparent";
+      loginBtn.style.color = "#fff";
+    }
+    if (regBtn) {
+      regBtn.className = "button button__secondary bangers-regular";
+      regBtn.style.background = "transparent";
+      regBtn.style.color = "#fff";
+    }
   } else {
     if (loginView) loginView.style.display = "none";
     if (regView) regView.style.display = "block";
+    if (forgotView) forgotView.style.display = "none";
     if (regBtn) {
       regBtn.className = "button button__primary bangers-regular";
       regBtn.style.background = "";
@@ -571,6 +627,9 @@ async function handleGlobalEmailLogin(e) {
       };
 
       localStorage.setItem("noseum_token", data.accessToken);
+      if (data.refreshToken) {
+        localStorage.setItem("noseum_refresh_token", data.refreshToken);
+      }
       localStorage.setItem("noseum_user", JSON.stringify(user));
       checkUserAuthHeader();
 
@@ -798,6 +857,9 @@ async function handleGlobalEmailRegister(e) {
       };
 
       localStorage.setItem("noseum_token", data.accessToken);
+      if (data.refreshToken) {
+        localStorage.setItem("noseum_refresh_token", data.refreshToken);
+      }
       localStorage.setItem("noseum_user", JSON.stringify(user));
       checkUserAuthHeader();
 
@@ -840,8 +902,57 @@ async function handleGlobalEmailRegister(e) {
   }
 }
 
-function globalLogout() {
+async function handleGlobalForgotPassword(e) {
+  e.preventDefault();
+  const emailInput = document.getElementById("global-forgot-email");
+  const email = emailInput ? emailInput.value.trim() : "";
+  const submitBtn = document.getElementById("global-forgot-submit-btn");
+
+  if (!email) {
+    showGlobalAuthAlert("Veuillez renseigner votre email.", "error");
+    return;
+  }
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "ENVOI EN COURS...";
+  }
+
+  try {
+    await fetch(`${window.API_BASE_URL}/api/auth/forgot-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+
+    // Message rassurant et sécurisé conforme OWASP
+    showGlobalAuthAlert("✅ Si cette adresse email est associée à un compte, un lien de réinitialisation vous a été envoyé. Vérifiez vos emails.", "success");
+    if (emailInput) emailInput.value = "";
+  } catch (err) {
+    console.error("Forgot password error:", err);
+    showGlobalAuthAlert("❌ Impossible de joindre le serveur. Veuillez réessayer plus tard.", "error");
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "ENVOYER LE LIEN";
+    }
+  }
+}
+window.handleGlobalForgotPassword = handleGlobalForgotPassword;
+
+async function globalLogout() {
+  const refreshToken = localStorage.getItem("noseum_refresh_token");
+  if (refreshToken) {
+    try {
+      fetch(`${window.API_BASE_URL}/api/auth/logout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshToken })
+      }).catch(() => {});
+    } catch (_) {}
+  }
   localStorage.removeItem("noseum_token");
+  localStorage.removeItem("noseum_refresh_token");
   localStorage.removeItem("noseum_user");
   checkUserAuthHeader();
   if (window.location.pathname.includes("dashboard")) {

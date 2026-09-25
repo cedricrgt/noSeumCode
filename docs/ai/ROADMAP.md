@@ -11,8 +11,8 @@
 | :--- | :--- | :--- | :--- |
 | **Sprint 1** | **Sécurité & Paywall Serveur** | Bloquer l'accès gratuit aux cours et sécuriser le webhook Stripe | ✅ **Terminé** |
 | **Sprint 2** | **Tunnel de Vente & Monétisation** | Intégrer Stripe Checkout réel et métadonnées marchandes | ✅ **Terminé** |
-| **Sprint 3** | **Auth, Comptes & E-mails** | Mot de passe oublié, emails transactionnels, sessions stables | 🟡 **Prochain** |
-| **Sprint 4** | **Légal, Facturation & Lancement** | Pages légales (CGV), Portail client factures, SEO dynamique | ⚪ En attente |
+| **Sprint 3** | **Auth, Comptes & E-mails** | Mot de passe oublié, emails transactionnels, sessions stables | ✅ **Terminé** |
+| **Sprint 4** | **Légal, Facturation & Lancement** | Pages légales (CGV), Portail client factures, SEO dynamique | 🟡 **Prochain** |
 
 ---
 

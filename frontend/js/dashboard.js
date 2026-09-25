@@ -52,6 +52,7 @@ function parseAuthFromUrl() {
 
   const params = new URLSearchParams(hash);
   const token = params.get("token");
+  const refreshToken = params.get("refreshToken");
   const role = params.get("role");
   const userName = params.get("userName");
   const firstName = params.get("firstName");
@@ -65,6 +66,9 @@ function parseAuthFromUrl() {
     if (email) currentAuth.user.email = decodeURIComponent(email);
 
     localStorage.setItem("noseum_token", token);
+    if (refreshToken) {
+      localStorage.setItem("noseum_refresh_token", refreshToken);
+    }
     localStorage.setItem("noseum_user", JSON.stringify(currentAuth.user));
 
     // Clear hash without reloading
@@ -227,7 +231,18 @@ async function manuallySwitchDashboardView(targetRole) {
 }
 
 function logout() {
+  const refreshToken = localStorage.getItem("noseum_refresh_token");
+  if (refreshToken) {
+    try {
+      fetch(`${window.API_BASE_URL}/api/auth/logout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshToken })
+      }).catch(() => {});
+    } catch (_) {}
+  }
   localStorage.removeItem("noseum_token");
+  localStorage.removeItem("noseum_refresh_token");
   localStorage.removeItem("noseum_user");
   currentAuth.token = null;
   window.location.href = "index.html";

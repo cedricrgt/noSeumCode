@@ -205,3 +205,42 @@ _Chronologique — plus récent en bas_
    - Ajout de tests unitaires pour `ContentType.TEXT` (`DomainModelTest.java`, `PaywallSecurityTest.java`).
    - Ajout de tests unitaires pour la confirmation de session Stripe (`PaymentCheckoutServiceTest.java`).
    - Suite complète au vert : 44 tests validés (`BUILD SUCCESS`, 0 échec, 0 erreur).
+
+---
+
+## 2026-09-25 — Sprint 3 : Comptes Apprenants, Sécurité de Session & E-mails Transactionnels
+
+**Conversation ID**: `f6e9bae5-b228-429e-84f0-f0081a3ab81b`  
+**Branche**: `feat/sprint-3-auth-emails`  
+**Objectif**: Self-service de mot de passe oublié, pérennité des sessions via Refresh Tokens (RTR), notifications emails transactionnelles, rate limiting et durcissement OWASP.
+
+### Réalisations & Corrections :
+1. **E-mails Transactionnels (`EmailService.java`, `EmailServiceImpl.java`)** :
+   - Abstraction `EmailService` avec intégration de `spring-boot-starter-mail` (JavaMailSender / SMTP / Brevo).
+   - Template HTML responsive de réinitialisation de mot de passe au design Cyber Dark NoSeumCode avec bouton d'action sécurisé et expiration à 30 minutes.
+   - Mode simulation sans échec si SMTP non configuré (environnements dev/tests).
+
+2. **Flux Mot de Passe Oublié (`PasswordResetService.java`, `PasswordResetToken.java`, `AuthController.java`)** :
+   - Migration Flyway `V012__create_password_reset_and_refresh_tokens.sql` créant les tables `password_reset_tokens` et `refresh_tokens`.
+   - Stockage cryptographique sécurisé du token sous forme de hachage SHA-256 (`token_hash`) dans PostgreSQL.
+   - Endpoint `POST /api/auth/forgot-password` conforme OWASP : protection anti-énumération d'adresses (renvoie toujours HTTP 200 avec message générique).
+   - Endpoint `POST /api/auth/reset-password` vérifiant l'intégrité, l'expiration et l'usage unique du jeton, mettant à jour le hash BCrypt (13 rounds), et révoquant automatiquement toutes les sessions actives.
+   - Page dédiée `frontend/reset-password.html` avec vérification de token, confirmation de mot de passe et bascule d'affichage œil.
+   - Lien "Mot de passe oublié ?" et vue dédiée `#global-auth-forgot-view` intégrés dans `frontend/partials/popovers-shared.html`.
+
+3. **Pérennité de Session & Refresh Token (`RefreshTokenService.java`, `RefreshToken.java`, `AuthResponse.java`)** :
+   - Implémentation du pattern Refresh Token Rotation (RTR) conforme OWASP ASVS : chaque utilisation d'un refresh token révoque l'ancien et en émet un nouveau.
+   - Détection proactive des attaques par rejeu : la réutilisation d'un token révoqué déclenche l'invalidation immédiate de toutes les sessions de l'utilisateur.
+   - Endpoints `POST /api/auth/refresh` et `POST /api/auth/logout`.
+   - Frontend (`header.js`, `dashboard.js`) : sauvegarde de `noseum_refresh_token`, actualisation automatique en cas de token expiré (HTTP 401).
+
+4. **Durcissement de Sécurité OWASP (Issues Clôturées)** :
+   - **ISSUE-001** ✅ : Secret JWT obligatoire sans fallback faible dans `JwtConfig.java`.
+   - **ISSUE-002** ✅ : Access token 1h max + Refresh Token 7 jours avec rotation RTR.
+   - **ISSUE-006** ✅ : `AuthRateLimitingFilter` protégeant les endpoints sensibles contre les attaques brute-force (15 requêtes/min par IP, HTTP 429 Too Many Requests).
+   - **ISSUE-007** ✅ : Exigence minimale de 8 caractères pour les mots de passe (`RegisterRequest.java`, `ResetPasswordRequest.java`).
+   - **ISSUE-016** ✅ : Ajout de `@Valid` sur `updateUser` dans `UserController.java`.
+
+5. **Tests & Validation** :
+   - Ajout de suites de tests unitaires dédiées : `PasswordResetServiceTest` (5 tests), `RefreshTokenServiceTest` (4 tests), `AuthRateLimitingFilterTest` (3 tests), `AuthControllerTest` (6 tests), enrichissement de `AuthServiceTest` (5 tests).
+   - 64 tests unitaires au vert (`BUILD SUCCESS`, 0 erreur, 0 échec).
