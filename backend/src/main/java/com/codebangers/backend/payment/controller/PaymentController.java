@@ -194,4 +194,36 @@ public class PaymentController {
                     .body(Map.of("error", "Webhook processing failed: " + e.getMessage()));
         }
     }
+
+    /**
+     * Endpoint sécurisé de confirmation et réconciliation synchrone d'une session Stripe Checkout.
+     * Permet au frontend (success.html ou cours.html) de garantir le déblocage immédiat de la formation.
+     */
+    @GetMapping("/confirm-session")
+    public ResponseEntity<?> confirmCheckoutSession(
+            @RequestParam("session_id") String sessionId,
+            @AuthenticationPrincipal Jwt jwt) {
+        if (jwt == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Authentification requise pour confirmer le paiement."));
+        }
+        String email = jwt.getSubject();
+        User user = userService.getUserByEmail(email)
+                .orElseThrow(() -> new com.codebangers.backend.config.exception.ResourceNotFoundException("User", email));
+
+        try {
+            Enrollment enrollment = paymentService.confirmCheckoutSession(user, sessionId);
+            return ResponseEntity.ok(Map.of(
+                    "confirmed", true,
+                    "courseId", enrollment.getCourse().getId(),
+                    "paymentStatus", enrollment.getPaymentStatus()
+            ));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            log.error("Erreur lors de la confirmation de session Stripe pour {}: {}", email, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Impossible de synchroniser le paiement: " + e.getMessage()));
+        }
+    }
 }

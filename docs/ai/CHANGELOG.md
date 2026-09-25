@@ -177,3 +177,31 @@ _Chronologique — plus récent en bas_
    - Mise à jour et validation de `PaymentCheckoutServiceTest.java` (10 tests unitaires couvrant le mode embedded, `clientSecret`, tarifs officiels 579 € et 279 €, cours déjà payé, cours gratuit, webhook ciblé, sécurité JWT).
    - Exécution complète de la suite de tests : 41 tests réussis (`BUILD SUCCESS`, 0 erreur, 0 échec).
    - Test réel de création de session Stripe Checkout Embedded validé de bout en bout avec retour de `clientSecret` et `amount=57900`.
+
+---
+
+## 2026-09-25 | Conversation: 81fa4873-a589-4692-878b-98cdc85b45b9
+
+**Type**: Correctif de bug (JPA Enum ContentType.TEXT & Déblocage post-paiement Stripe)
+**Auteur**: Antigravity (Agent IA)
+**Branche**: `fix/content-type-enum-text`
+
+**Contexte & Problème**:
+- L'appel API `GET /api/chapters/course/c1000000-0000-0000-0000-000000000001/all` (chargement des chapitres du cours HTML & CSS) échouait avec HTTP 400 Bad Request :
+  `No enum constant com.codebangers.backend.content.model.Content.ContentType.TEXT`.
+- Les migrations Flyway V007 et V011 inséraient des contenus pédagogiques avec la valeur `'TEXT'`, absente de l'énumération Java `Content.ContentType`.
+- En environnement de test Stripe (et en cas de retard/absence du webhook), le déblocage du cours ne se synchronisait pas immédiatement côté client au retour sur `success.html` ou `cours.html`.
+
+**Corrections appliquées**:
+1. **Énumération `Content.ContentType` (`Content.java`)** :
+   - Ajout de la constante `TEXT` dans l'énumération `ContentType`.
+   - Ajout de la méthode annotée `@JsonCreator fromString(String)` pour une désérialisation JSON robuste et insensible à la casse.
+2. **Synchronisation directe Stripe Checkout (`PaymentController.java`, `PaymentService.java`, `StripeGateway.java`, `StripeGatewayImpl.java`)** :
+   - Ajout de l'endpoint sécurisé `GET /api/payments/confirm-session?session_id=...` interrogeant l'API Stripe (`Session.retrieve`) pour valider et basculer l'inscription en `PAID` immédiatement en cas de webhook différé ou non configuré en dev/test.
+3. **Frontend (`success.html`, `cours.js`)** :
+   - Appel automatique de `/api/payments/confirm-session` dès l'arrivée sur `success.html` ou `cours.html` avec le paramètre `session_id`.
+   - Rafraîchissement automatique des inscriptions de l'apprenant pour déverrouiller instantanément le lecteur de cours.
+4. **Tests & Validation** :
+   - Ajout de tests unitaires pour `ContentType.TEXT` (`DomainModelTest.java`, `PaywallSecurityTest.java`).
+   - Ajout de tests unitaires pour la confirmation de session Stripe (`PaymentCheckoutServiceTest.java`).
+   - Suite complète au vert : 44 tests validés (`BUILD SUCCESS`, 0 échec, 0 erreur).

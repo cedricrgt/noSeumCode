@@ -21,9 +21,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.Jwt;
 
+import com.stripe.model.checkout.Session;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -259,5 +261,52 @@ class PaymentCheckoutServiceTest {
         assertEquals("EUR", actual.getCurrency());
         assertEquals("sec_279", actual.getClientSecret());
         verify(stripeGateway).createCheckoutSession(eq(testUser), eq(gitCourse), any(), any(), eq(true), any());
+    }
+
+    @Test
+    void confirmCheckoutSession_shouldUpdateEnrollmentToPaid_whenStripeSessionIsPaid() {
+        UUID courseId = testCourse.getId();
+        when(courseRepository.findById(courseId)).thenReturn(Optional.of(testCourse));
+        when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(new ArrayList<>());
+        when(enrollmentRepository.save(any(Enrollment.class))).thenAnswer(i -> i.getArgument(0));
+
+        Session mockSession = mock(Session.class);
+        when(mockSession.getPaymentStatus()).thenReturn("paid");
+        when(mockSession.getStatus()).thenReturn("complete");
+        when(mockSession.getMetadata()).thenReturn(Map.of("courseId", courseId.toString(), "userId", testUser.getId().toString()));
+
+        when(stripeGateway.retrieveSession("cs_test_valid")).thenReturn(mockSession);
+
+        Enrollment enrollment = paymentService.confirmCheckoutSession(testUser, "cs_test_valid");
+
+        assertNotNull(enrollment);
+        assertEquals(PaymentStatus.PAID, enrollment.getPaymentStatus());
+        assertEquals(testCourse, enrollment.getCourse());
+        verify(enrollmentRepository).save(any(Enrollment.class));
+    }
+
+    @Test
+    void confirmCheckoutSession_controllerEndpoint_shouldReturnConfirmed() {
+        UUID courseId = testCourse.getId();
+        when(userService.getUserByEmail(testUser.getEmail())).thenReturn(Optional.of(testUser));
+        when(courseRepository.findById(courseId)).thenReturn(Optional.of(testCourse));
+        when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(new ArrayList<>());
+
+        Session mockSession = mock(Session.class);
+        when(mockSession.getPaymentStatus()).thenReturn("paid");
+        when(mockSession.getStatus()).thenReturn("complete");
+        when(mockSession.getMetadata()).thenReturn(Map.of("courseId", courseId.toString()));
+        when(stripeGateway.retrieveSession("cs_test_123")).thenReturn(mockSession);
+
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getSubject()).thenReturn(testUser.getEmail());
+
+        ResponseEntity<?> response = paymentController.confirmCheckoutSession("cs_test_123", jwt);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody() instanceof Map);
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        assertEquals(true, body.get("confirmed"));
+        assertEquals(PaymentStatus.PAID, body.get("paymentStatus"));
     }
 }

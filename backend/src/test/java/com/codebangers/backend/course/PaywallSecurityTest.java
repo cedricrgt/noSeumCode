@@ -62,7 +62,7 @@ class PaywallSecurityTest {
         // Chapitre 1 : Preview gratuit
         previewChapter = new Chapter(course, "1. Introduction", 1);
         previewChapter.setId(UUID.randomUUID());
-        Content previewContent = new Content(previewChapter, Content.ContentType.PARAGRAPH, "Introduction libre", 1);
+        Content previewContent = new Content(previewChapter, Content.ContentType.TEXT, "Introduction libre", 1);
         previewChapter.addContent(previewContent);
 
         // Chapitre 2 : Verrouillé / Payant

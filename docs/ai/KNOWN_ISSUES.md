@@ -102,6 +102,10 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Risk**: Si le secret GitHub `DB_PASSWORD` est modifié ou diffère du mot de passe initialisé dans le volume `pgdata`, Spring Boot crashe au démarrage (`FATAL: password authentication failed for user`). Nginx renvoie un 502 sans headers CORS, causant un échec réseau masqué en erreur CORS.
 **Fix applied**: Synchronisation automatique et idempotente dans `deploy.yml` via `ALTER USER` exécuté en socket Unix local.
 
+### ISSUE-021 ✅ Absence de la constante enum TEXT dans `Content.ContentType` [RÉSOLU]
+**Status**: Résolu. Les migrations Flyway V007 et V011 insèrent des enregistrements avec `content_type = 'TEXT'`, alors que l'énumération Java `Content.ContentType` ne contenait que `HEADING`, `PARAGRAPH`, etc. Lors de la récupération d'un cours via `/api/chapters/course/{id}/all`, Hibernate levait une `IllegalArgumentException: No enum constant com.codebangers.backend.content.model.Content.ContentType.TEXT` (HTTP 400).
+**Fix applied**: Ajout de la valeur `TEXT` dans l'énumération `Content.ContentType` avec la méthode d'analyse désensibilisée à la casse `@JsonCreator fromString()`, validé par tests unitaires.
+
 ## Fausses Hypothèses à Éviter
 - Ne pas supposer qu'une erreur navigateur 'Access-Control-Allow-Origin blocked by CORS policy' sur `api.noseumcode.fr` est toujours un problème de configuration CORS : si le conteneur Spring Boot crashe, Nginx renvoie une page 502 Bad Gateway sans en-tête CORS, ce qui déclenche l'erreur CORS côté navigateur.
 - Ne pas supposer que modifier `POSTGRES_PASSWORD` dans les variables d'environnement d'un conteneur Docker PostgreSQL met à jour le mot de passe d'une base existante : le volume `pgdata` préserve le mot de passe initialisé et nécessite une commande SQL `ALTER USER`.

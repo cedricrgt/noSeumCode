@@ -415,6 +415,24 @@ async function loadSingleCourse(courseId, requestedChapterId) {
 
   // 3. Vérification des Droits d'Accès de l'Étudiant (Inscription & Statut de Paiement)
   if (currentRole === "STUDENT") {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("session_id");
+
+    // Si un session_id Stripe est présent et que le paiement n'est pas encore synchronisé
+    if (sessionId && currentUser) {
+      try {
+        const syncRes = await coursApiFetch(`/api/payments/confirm-session?session_id=${encodeURIComponent(sessionId)}`);
+        if (syncRes && syncRes.ok) {
+          const enrollRes = await coursApiFetch("/api/enrollments/my-courses");
+          if (enrollRes && enrollRes.ok) {
+            userEnrollments = await enrollRes.json();
+          }
+        }
+      } catch (e) {
+        console.warn("Vérification session Stripe dans cours.js:", e);
+      }
+    }
+
     let enrollment = userEnrollments.find(e => e.courseId === currentCourse.id);
 
     // Si l'étudiant n'est pas encore inscrit à ce cours, inviter à s'inscrire

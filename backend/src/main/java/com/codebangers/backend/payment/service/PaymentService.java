@@ -205,4 +205,61 @@ public class PaymentService {
         );
         processPaymentStatusUpdate(user.getId().toString(), request);
     }
+
+    /**
+     * Confirme et synchronise le paiement d'une session Stripe Checkout directement depuis l'API Stripe.
+     * Utilisé en fallback synchrone sur la page de succès/retour si le webhook est retardé ou absent.
+     */
+    public Enrollment confirmCheckoutSession(User user, String sessionId) {
+        if (sessionId == null || sessionId.isBlank()) {
+            throw new IllegalArgumentException("L'identifiant de session est requis.");
+        }
+
+        com.stripe.model.checkout.Session session = stripeGateway.retrieveSession(sessionId);
+        if (session == null) {
+            throw new ResourceNotFoundException("Session Stripe introuvable: " + sessionId);
+        }
+
+        String paymentStatus = session.getPaymentStatus();
+        String status = session.getStatus();
+
+        if (!"paid".equalsIgnoreCase(paymentStatus) && !"complete".equalsIgnoreCase(status)) {
+            log.warn("Tentative de validation d'une session non payée: id={}, status={}, paymentStatus={}",
+                    sessionId, status, paymentStatus);
+            throw new IllegalStateException("Le paiement n'a pas été validé par Stripe.");
+        }
+
+        String courseIdStr = session.getMetadata() != null ? session.getMetadata().get("courseId") : null;
+        if (courseIdStr == null || courseIdStr.isBlank()) {
+            throw new IllegalStateException("Métadonnée courseId introuvable dans la session Stripe.");
+        }
+
+        UUID courseId;
+        try {
+            courseId = UUID.fromString(courseIdStr);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException("Métadonnée courseId invalide dans la session Stripe: " + courseIdStr);
+        }
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
+
+        List<Enrollment> existingEnrollments = enrollmentRepository.findByUserId(user.getId());
+        Enrollment enrollment = existingEnrollments.stream()
+                .filter(e -> e.getCourse() != null && e.getCourse().getId().equals(course.getId()))
+                .findFirst()
+                .orElse(null);
+
+        if (enrollment != null) {
+            enrollment.setPaymentStatus(PaymentStatus.PAID);
+            enrollmentRepository.save(enrollment);
+        } else {
+            enrollment = new Enrollment(user, course, PaymentStatus.PAID, 0);
+            enrollmentRepository.save(enrollment);
+        }
+
+        log.info("🎓 Inscription confirmée (synchronisation Stripe directe) pour {} sur le cours {} -> Statut: PAID",
+                user.getEmail(), course.getTitle());
+        return enrollment;
+    }
 }

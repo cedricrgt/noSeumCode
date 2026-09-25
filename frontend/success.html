@@ -98,10 +98,13 @@
 
   <script src="js/header.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
       try {
         const params = new URLSearchParams(window.location.search);
         const courseId = params.get("course_id");
+        const sessionId = params.get("session_id");
+        const token = localStorage.getItem("noseum_token");
+
         if (courseId) {
           const btnCourse = document.getElementById("btn-goto-course");
           if (btnCourse) {
@@ -109,6 +112,22 @@
             btnCourse.textContent = "Commencer la formation immédiatement 🚀";
             btnCourse.classList.remove("button__secondary");
             btnCourse.classList.add("button__primary");
+          }
+        }
+
+        // Synchronisation proactive du paiement si session_id est fourni
+        if (sessionId && token) {
+          const apiBase = window.API_BASE_URL || "";
+          try {
+            const syncRes = await fetch(`${apiBase}/api/payments/confirm-session?session_id=${encodeURIComponent(sessionId)}`, {
+              headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (syncRes.ok) {
+              const syncData = await syncRes.json();
+              console.log("Accès cours débloqué avec succès:", syncData);
+            }
+          } catch (syncErr) {
+            console.warn("Échec de la synchronisation directe Stripe (le webhook prendra le relais):", syncErr);
           }
         }
       } catch (e) {
