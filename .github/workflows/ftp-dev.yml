@@ -1,9 +1,9 @@
-name: Deploy Production to o2switch
+name: Deploy Develop to o2switch
 
 on:
   push:
     branches:
-      - main
+      - develop
   workflow_dispatch:
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
         run: snyk test
 
   web-deploy:
-    name: Deploy to Production (noseumcode.fr)
+    name: Deploy to Develop (develop.noseumcode.fr)
     runs-on: ubuntu-latest
     steps:
       - name: Get latest code
@@ -35,7 +35,7 @@ jobs:
       - name: Sync files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ${{ secrets.FTP_DIR }}
+          server: ${{ secrets.FTP_SERVER_DEV != '' && secrets.FTP_SERVER_DEV || secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME_DEV != '' && secrets.FTP_USERNAME_DEV || secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD_DEV != '' && secrets.FTP_PASSWORD_DEV || secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_DIR_DEV || 'develop.noseumcode.fr/' }}

@@ -40,10 +40,15 @@ frontend/
   .htaccess     Apache security headers + HTTPS redirect
 ```
 
-## Active Branch: `feat/sprint-3-auth-emails`
-## Current State: Sprint 3 finalisé (Flux mot de passe oublié self-service, emails transactionnels HTML, Refresh Token Rotation RTR 7j, Rate Limiting d'authentification, 64 tests au vert).
+## Environments & CI/CD Topology
+- **Production Frontend**: o2switch (`https://noseumcode.fr`) via push on `main` (`ftp.yml` -> `FTP_DIR`).
+- **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp.yml` -> `FTP_DIR_DEV`).
+- **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
+
+## Active Branch: `feat/ci-cd-develop-subdomain-o2switch`
+## Current State: CI/CD multi-environnements configuré pour le sous-domaine `develop.noseumcode.fr` sur o2switch (CORS, CSP, FTP ciblé). Sprint 3 finalisé.
 ## Next Sprint: Sprint 4 (Légal, Facturation & Lancement).
-## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM). Work on dedicated branches (`feat/*`, `fix/*`) and open PRs to `develop` for manual merge (ADR-009).
+## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`) and open PRs to `develop` for manual merge (ADR-009).
 
 ## Roles: STUDENT | TEACHER | ADMIN
 

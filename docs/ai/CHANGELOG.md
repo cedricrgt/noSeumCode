@@ -244,3 +244,26 @@ _Chronologique — plus récent en bas_
 5. **Tests & Validation** :
    - Ajout de suites de tests unitaires dédiées : `PasswordResetServiceTest` (5 tests), `RefreshTokenServiceTest` (4 tests), `AuthRateLimitingFilterTest` (3 tests), `AuthControllerTest` (6 tests), enrichissement de `AuthServiceTest` (5 tests).
    - 64 tests unitaires au vert (`BUILD SUCCESS`, 0 erreur, 0 échec).
+
+---
+
+## 2026-09-25 — Déploiement Frontend Multi-Environnements : Sous-domaine develop.noseumcode.fr sur o2switch
+
+**Conversation ID**: `81fa4873-a589-4692-878b-98cdc85b45b9`  
+**Branche**: `feat/ci-cd-develop-subdomain-o2switch`  
+**Objectif**: Isoler les déploiements du frontend pour que la branche `develop` soit publiée sur le sous-domaine de test `develop.noseumcode.fr` sur o2switch sans impacter la production `noseumcode.fr` (réservée à `main`).
+
+### Réalisations & Configurations :
+1. **Séparation Stricte des Workflows FTP GitHub Actions** :
+   - `.github/workflows/ftp.yml` : Déploiement Production réservé exclusivement aux pushs sur la branche `main` vers `${{ secrets.FTP_DIR }}` (noseumcode.fr).
+   - `.github/workflows/ftp-dev.yml` : Déploiement Dev dédié déclenché sur la branche `develop` vers `${{ secrets.FTP_DIR_DEV }}` (avec repli automatique sur `develop.noseumcode.fr/`).
+   - Isolation totale : aucun risque qu'un commit ou merge sur `develop` ne touche le site de production.
+   - Support optionnel de credentials FTP dédiés pour le dev (`FTP_SERVER_DEV`, `FTP_USERNAME_DEV`, `FTP_PASSWORD_DEV`) avec repli sur les identifiants standards.
+2. **CORS Backend Spring Security (`SecurityConfig.java`, `.github/workflows/deploy.yml`)** :
+   - Ajout explicite de `https://develop.noseumcode.fr` et du pattern `https://*.noseumcode.fr` dans les origines autorisées du backend Spring Boot.
+   - Mise à jour du fallback `CORS_ALLOWED_ORIGINS` dans le script de déploiement VM Oracle Cloud (`deploy.yml`).
+3. **Sécurité Frontend & SEO Apache (`frontend/.htaccess`)** :
+   - Ajout de `https://develop.noseumcode.fr` dans la directive `connect-src` de la Content Security Policy (CSP).
+   - En-tête conditionnel `X-Robots-Tag: noindex, nofollow, noarchive` appliqué sur le sous-domaine `develop.noseumcode.fr` pour prévenir tout risque d'indexation prématurée ou de duplicate content par les moteurs de recherche.
+4. **Validation Locale** :
+   - 64 tests unitaires exécutés et validés avec succès (`BUILD SUCCESS`, 0 échec, 0 erreur).
