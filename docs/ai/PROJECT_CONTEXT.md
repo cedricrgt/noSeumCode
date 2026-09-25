@@ -40,9 +40,9 @@ frontend/
   .htaccess     Apache security headers + HTTPS redirect
 ```
 
-## Active Branch: `fix/ci-deploy-db-auth`
-## Current State: Sprint 1 (Sécurité & Paywall Serveur) complété et mergé dans develop. Correction des pipelines CI/CD (o2switch FTP + Oracle Cloud DB credentials sync).
-## Next Sprint: Sprint 2 (Tunnel de Vente & Monétisation Stripe Checkout).
+## Active Branch: `feat/sprint-2-stripe-checkout`
+## Current State: Sprint 2 (Tunnel de Vente & Monétisation Stripe Checkout) implémenté, testé (39 tests au vert) et prêt pour fusion dans develop.
+## Next Sprint: Sprint 3 (Auth, Comptes & E-mails transactionnels).
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM). Work on dedicated branches (`feat/*`, `fix/*`) and open PRs to `develop` for manual merge (ADR-009).
 
 ## Roles: STUDENT | TEACHER | ADMIN

@@ -48,7 +48,18 @@ public class CourseService {
         return courseRepository.findByTitle(title);
     }
 
+    @Transactional(readOnly = true)
+    public Optional<Course> getCourseBySlug(String slug) {
+        return courseRepository.findBySlug(slug);
+    }
+
     public Course createCourse(String title, String description, User createdBy) {
+        return createCourse(title, description, 4900L, "EUR", null, null, "BEGINNER", true, createdBy);
+    }
+
+    public Course createCourse(String title, String description, Long priceInCents, String currency,
+                               String slug, String thumbnailUrl, String level, Boolean isPublished,
+                               User createdBy) {
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Course title cannot be empty");
         }
@@ -57,12 +68,43 @@ public class CourseService {
             throw new DuplicateResourceException("Course with this title already exists");
         }
 
+        if (slug != null && !slug.isBlank()) {
+            if (courseRepository.findBySlug(slug).isPresent()) {
+                throw new DuplicateResourceException("Course with this slug already exists");
+            }
+        }
+
         Course course = new Course(title, description);
+        if (priceInCents != null) {
+            course.setPriceInCents(priceInCents);
+        }
+        if (currency != null && !currency.isBlank()) {
+            course.setCurrency(currency.toUpperCase());
+        }
+        if (slug != null && !slug.isBlank()) {
+            course.setSlug(slug.toLowerCase().trim());
+        }
+        if (thumbnailUrl != null) {
+            course.setThumbnailUrl(thumbnailUrl);
+        }
+        if (level != null && !level.isBlank()) {
+            course.setLevel(level);
+        }
+        if (isPublished != null) {
+            course.setPublished(isPublished);
+        }
         course.setCreatedBy(createdBy);
         return courseRepository.save(course);
     }
 
     public Course updateCourse(UUID courseId, String title, String description, User updatedBy) {
+        return updateCourse(courseId, title, description, null, null, null, null, null, null, updatedBy);
+    }
+
+    public Course updateCourse(UUID courseId, String title, String description,
+                               Long priceInCents, String currency, String slug,
+                               String thumbnailUrl, String level, Boolean isPublished,
+                               User updatedBy) {
         Course course = courseRepository.findById(courseId)
             .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
 
@@ -76,6 +118,34 @@ public class CourseService {
 
         if (description != null) {
             course.setDescription(description);
+        }
+
+        if (priceInCents != null) {
+            course.setPriceInCents(priceInCents);
+        }
+
+        if (currency != null && !currency.isBlank()) {
+            course.setCurrency(currency.toUpperCase());
+        }
+
+        if (slug != null && !slug.isBlank()) {
+            Optional<Course> existingSlug = courseRepository.findBySlug(slug);
+            if (existingSlug.isPresent() && !existingSlug.get().getId().equals(courseId)) {
+                throw new DuplicateResourceException("Course with this slug already exists");
+            }
+            course.setSlug(slug.toLowerCase().trim());
+        }
+
+        if (thumbnailUrl != null) {
+            course.setThumbnailUrl(thumbnailUrl);
+        }
+
+        if (level != null && !level.isBlank()) {
+            course.setLevel(level);
+        }
+
+        if (isPublished != null) {
+            course.setPublished(isPublished);
         }
 
         course.setUpdatedBy(updatedBy);

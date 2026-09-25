@@ -16,6 +16,9 @@ public interface CourseRepository extends JpaRepository<Course, UUID> {
     @Query("SELECT c FROM Course c WHERE c.title = :title")
     Optional<Course> findByTitle(@Param("title") String title);
 
+    @Query("SELECT c FROM Course c WHERE c.slug = :slug AND c.isDeleted = false")
+    Optional<Course> findBySlug(@Param("slug") String slug);
+
     @Query("SELECT c FROM Course c WHERE c.isDeleted = false ORDER BY c.createdAt DESC")
     List<Course> findAllActive();
 

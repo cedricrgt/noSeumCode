@@ -53,12 +53,29 @@ public class CourseController {
             .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<CourseResponse> getCourseBySlug(@PathVariable String slug) {
+        return courseService.getCourseBySlug(slug)
+            .map(course -> ResponseEntity.ok(mapToResponse(course)))
+            .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
     public ResponseEntity<CourseResponse> createCourse(@Valid @RequestBody CourseRequest request,
                                                        @AuthenticationPrincipal Jwt jwt) {
         User creator = resolveUser(jwt);
-        Course course = courseService.createCourse(request.getTitle(), request.getDescription(), creator);
+        Course course = courseService.createCourse(
+            request.getTitle(),
+            request.getDescription(),
+            request.getPriceInCents(),
+            request.getCurrency(),
+            request.getSlug(),
+            request.getThumbnailUrl(),
+            request.getLevel(),
+            request.getIsPublished(),
+            creator
+        );
         return new ResponseEntity<>(mapToResponse(course), HttpStatus.CREATED);
     }
 
@@ -68,7 +85,18 @@ public class CourseController {
                                                        @Valid @RequestBody CourseRequest request,
                                                        @AuthenticationPrincipal Jwt jwt) {
         User updater = resolveUser(jwt);
-        Course course = courseService.updateCourse(id, request.getTitle(), request.getDescription(), updater);
+        Course course = courseService.updateCourse(
+            id,
+            request.getTitle(),
+            request.getDescription(),
+            request.getPriceInCents(),
+            request.getCurrency(),
+            request.getSlug(),
+            request.getThumbnailUrl(),
+            request.getLevel(),
+            request.getIsPublished(),
+            updater
+        );
         return ResponseEntity.ok(mapToResponse(course));
     }
 
@@ -107,7 +135,13 @@ public class CourseController {
             course.getUpdatedAt(),
             createdByName,
             updatedByName,
-            chaptersCount
+            chaptersCount,
+            course.getPriceInCents(),
+            course.getCurrency(),
+            course.getSlug(),
+            course.getThumbnailUrl(),
+            course.getLevel(),
+            course.isPublished()
         );
     }
 }

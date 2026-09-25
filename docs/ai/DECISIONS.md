@@ -56,3 +56,10 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Alternative rejetée**: Push direct des agents sur la branche `develop` — formellement rejetée car `.github/workflows/deploy.yml` déclenche automatiquement un déploiement SSH en production sur la VM Oracle Cloud à chaque push sur `develop`.
 **Conséquence**: Préservation totale de l'environnement de production, isolation des développements, possibilité de prévisualisation via GitHub Pages (`pr-preview.yml`), et contrôle humain final sur les fusions.
 
+## ADR-010 — Architecture Stripe Checkout & Pattern Ports/Adapters
+**Status**: Actif
+**Décision**: Encapsuler les appels de l'API Stripe derrière un port `StripeGateway` et son adaptateur `StripeGatewayImpl`. Utiliser `com.stripe.net.RequestOptions` pour injecter la clé secrète de manière thread-safe sans dépendre du singleton statique mutable `Stripe.apiKey`.
+**Alternative rejetée**: Appels directs à `com.stripe.model.checkout.Session.create(...)` dans `PaymentService` ou `PaymentController` — rejetée car rendrait les tests unitaires dépendants du réseau externe Stripe et introduirait des risques de concurrence.
+**Conséquence**: Testabilité unitaire 100% déterministe avec mocks, robustesse face aux pannes réseau externes, et découplage strict entre la couche métier Spring Boot et le SDK Stripe.
+
+

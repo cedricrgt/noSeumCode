@@ -221,6 +221,11 @@ function renderCourseCatalog() {
             enrollmentInfo = userEnrollments.find(e => e.courseId === course.id);
           }
 
+          const price = (course.priceInCents && course.priceInCents > 0)
+              ? (course.priceInCents / 100).toFixed(0) + " €"
+              : "49 €";
+          const level = course.level || "TOUS NIVEAUX";
+
           let accessBadge = "";
           let actionBtn = "";
           const courseImg = getCourseImage(course);
@@ -239,12 +244,14 @@ function renderCourseCatalog() {
             if (!enrollmentInfo) {
               accessBadge = `<span style="background: #f1f5f9; color: #64748b; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid #cbd5e1;">🔒 Non inscrit</span>`;
               actionBtn = `
-                <button class="card__link bangers-regular" style="background:none; border:none; cursor:pointer; color: var(--dark-navy); width: 100%; text-align: left; padding: 0;" onclick="handleEnroll('${course.id}')">
-                  S'inscrire à ce cours
-                  <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </button>
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap; width:100%;">
+                  <button class="button button__primary bangers-regular" style="flex:1; padding: 8px 12px; font-size: 1rem; cursor:pointer;" onclick="initiateStripeCheckout('${course.id}')">
+                    💳 Acheter (${price})
+                  </button>
+                  <button class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; cursor:pointer;" onclick="handleEnroll('${course.id}')">
+                    Aperçu
+                  </button>
+                </div>
               `;
             } else {
               const isPaid = (enrollmentInfo.paymentStatus === "PAID" || enrollmentInfo.paymentStatus === "PAYÉ");
@@ -259,14 +266,16 @@ function renderCourseCatalog() {
                   </a>
                 `;
               } else {
-                accessBadge = `<span style="background: rgba(245, 158, 11, 0.15); color: #d97706; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(245, 158, 11, 0.4);">⏳ Aperçu • Paiement en attente</span>`;
+                accessBadge = `<span style="background: rgba(245, 158, 11, 0.15); color: #d97706; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(245, 158, 11, 0.4);">⏳ Aperçu • En attente</span>`;
                 actionBtn = `
-                  <a href="cours.html?id=${course.id}" class="card__link bangers-regular" style="color:#d97706;">
-                    Voir l'aperçu gratuit
-                    <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                      <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </a>
+                  <div style="display:flex; gap:0.5rem; flex-wrap:wrap; width:100%;">
+                    <button class="button button__primary bangers-regular" style="flex:1; padding: 8px 12px; font-size: 1rem; cursor:pointer;" onclick="initiateStripeCheckout('${course.id}')">
+                      💳 Débloquer (${price})
+                    </button>
+                    <a href="cours.html?id=${course.id}" class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; text-decoration:none; display:inline-flex; align-items:center;">
+                      Aperçu
+                    </a>
+                  </div>
                 `;
               }
             }
@@ -274,12 +283,14 @@ function renderCourseCatalog() {
             // GUEST
             accessBadge = `<span style="background: #f1f5f9; color: #64748b; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid #cbd5e1;">🔒 Connexion requise</span>`;
             actionBtn = `
-              <a href="cours.html?id=${course.id}" class="card__link bangers-regular">
-                Découvrir la formation
-                <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </a>
+              <div style="display:flex; gap:0.5rem; flex-wrap:wrap; width:100%;">
+                <button class="button button__primary bangers-regular" style="flex:1; padding: 8px 12px; font-size: 1rem; cursor:pointer;" onclick="initiateStripeCheckout('${course.id}')">
+                  💳 Découvrir (${price})
+                </button>
+                <a href="cours.html?id=${course.id}" class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; text-decoration:none; display:inline-flex; align-items:center;">
+                  Aperçu
+                </a>
+              </div>
             `;
           }
 
@@ -298,8 +309,11 @@ function renderCourseCatalog() {
               </header>
               <main class="card__main">
                 <div class="card__header">
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.25rem;">
-                    <span class="section-tag" style="font-size: 0.75rem; margin-bottom: 0;">📚 FORMATION</span>
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.4rem;">
+                    <div style="display:flex; gap:0.4rem; align-items:center;">
+                      <span class="section-tag" style="font-size: 0.72rem; margin-bottom: 0;">📚 ${escapeHtml(level)}</span>
+                      <span class="price-tag bangers-regular" style="font-size: 1.15rem; color: #008744; background: rgba(0, 255, 135, 0.15); padding: 2px 8px; border-radius: 6px; font-weight: 700;">${price}</span>
+                    </div>
                     ${accessBadge}
                   </div>
                   <h3 class="card__title">${escapeHtml(course.title)}</h3>
@@ -569,27 +583,29 @@ function renderAccessGate(title, description, type, extraStatus = "") {
   } else if (type === "NOT_ENROLLED") {
     icon = "📚";
     cardClass += " not-enrolled";
+    const priceText = (currentCourse && currentCourse.priceInCents) ? (currentCourse.priceInCents / 100).toFixed(0) + " €" : "49 €";
     actionButtons = `
       <div style="display:flex; justify-content:center; gap: 1rem; flex-wrap:wrap;">
-        <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.2rem; cursor:pointer;" onclick="handleEnroll('${currentCourse ? currentCourse.id : ''}')">
-          ✨ S'inscrire à cette formation
+        <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.2rem; cursor:pointer;" onclick="initiateStripeCheckout('${currentCourse ? currentCourse.id : ''}')">
+          💳 Acheter l'accès complet (${priceText})
         </button>
-        <a href="cours.html" class="button button__secondary" style="padding: 12px 20px; text-decoration:none; display:inline-flex; align-items:center;">
-          Voir tout le catalogue
-        </a>
+        <button class="button button__secondary bangers-regular" style="padding: 12px 20px; font-size: 1rem; cursor:pointer;" onclick="handleEnroll('${currentCourse ? currentCourse.id : ''}')">
+          👀 Voir l'aperçu gratuit
+        </button>
       </div>
     `;
   } else if (type === "PAYMENT_PENDING") {
     icon = "⏳";
     cardClass += " pending";
+    const priceText = (currentCourse && currentCourse.priceInCents) ? (currentCourse.priceInCents / 100).toFixed(0) + " €" : "49 €";
     actionButtons = `
       <div style="display:flex; justify-content:center; gap: 1rem; flex-wrap:wrap;">
-        <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.15rem; cursor:pointer;" onclick="location.reload()">
-          🔄 Vérifier mon statut de paiement
+        <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.2rem; cursor:pointer;" onclick="initiateStripeCheckout('${currentCourse ? currentCourse.id : ''}')">
+          💳 Finaliser mon achat (${priceText})
         </button>
-        <a href="cours.html" class="button button__secondary" style="padding: 12px 20px; text-decoration:none; display:inline-flex; align-items:center;">
-          Retour aux formations
-        </a>
+        <button class="button button__secondary bangers-regular" style="padding: 12px 20px; font-size: 1rem; cursor:pointer;" onclick="location.reload()">
+          🔄 Vérifier mon statut
+        </button>
       </div>
     `;
   }
@@ -633,6 +649,18 @@ function renderClassroom() {
       roleBadgeLabel = "✓ Formation Débloquée (Payé)";
     } else {
       roleBadgeLabel = "👁️ Aperçu Gratuit (Paiement en attente)";
+      const coursePrice = (currentCourse && currentCourse.priceInCents) ? (currentCourse.priceInCents / 100).toFixed(0) + " €" : "49 €";
+      roleNoticeHtml = `
+        <div class="role-notice-banner" style="background: linear-gradient(135deg, rgba(0, 255, 135, 0.1) 0%, rgba(96, 239, 255, 0.1) 100%); border: 1px solid rgba(0, 255, 135, 0.35); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+          <div>
+            <span style="font-weight: 700; color: var(--dark-navy); font-size: 1.05rem;">✨ Vous consultez l'aperçu gratuit de la section 1</span>
+            <p style="margin: 0.25rem 0 0 0; color: #475569; font-size: 0.9rem;">Débloquez toutes les vidéos, exercices et l'accès permanent en validant votre inscription.</p>
+          </div>
+          <button class="button button__primary bangers-regular" style="padding: 8px 20px; font-size: 1.15rem; cursor: pointer; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,255,135,0.3);" onclick="initiateStripeCheckout('${currentCourse.id}')">
+            💳 Débloquer tout (${coursePrice})
+          </button>
+        </div>
+      `;
     }
   } else if (currentRole === "TEACHER") {
     roleBadgeLabel = "👨‍🏫 Enseignant (Édition autorisée)";
@@ -776,11 +804,14 @@ function renderChapterContent(chapter) {
         <div class="access-gate-icon" style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
         <h3 class="access-gate-title" style="font-size: 1.8rem; margin-bottom: 0.75rem; color: var(--dark-navy);">Contenu Verrouillé</h3>
         <p class="access-gate-desc" style="color: #64748b; font-size: 1rem; line-height: 1.6; margin-bottom: 1.5rem;">
-          Cette section nécessite une inscription avec paiement validé. Seule la première section de cette formation est accessible en prévisualisation gratuite.
+          Cette section nécessite une inscription avec paiement validé. Débloquez immédiatement l'intégralité du cours pour accéder à toutes les leçons et vidéos.
         </p>
         <div style="display:flex; justify-content:center; gap: 1rem; flex-wrap:wrap;">
-          <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.15rem; cursor:pointer;" onclick="location.reload()">
-            🔄 Vérifier le statut de paiement
+          <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.25rem; cursor:pointer; box-shadow: 0 4px 15px rgba(0, 255, 135, 0.4);" onclick="initiateStripeCheckout('${currentCourse ? currentCourse.id : ''}')">
+            💳 Débloquer toute la formation (${(currentCourse && currentCourse.priceInCents) ? (currentCourse.priceInCents / 100).toFixed(0) + " €" : "49 €"})
+          </button>
+          <button class="button button__secondary bangers-regular" style="padding: 12px 20px; font-size: 1rem; cursor:pointer;" onclick="location.reload()">
+            🔄 Vérifier mon paiement
           </button>
         </div>
       </div>
@@ -1108,6 +1139,82 @@ async function handleDeleteCourse(courseId) {
 
   alert("🗑️ Formation supprimée.");
   window.location.href = "cours.html";
+}
+
+/**
+ * Déclenche la création d'une Stripe Checkout Session sécurisée et redirige l'apprenant.
+ */
+async function initiateStripeCheckout(courseId) {
+  if (!courseId) {
+    if (currentCourse && currentCourse.id) {
+      courseId = currentCourse.id;
+    } else {
+      alert("Identifiant de formation introuvable.");
+      return;
+    }
+  }
+
+  if (!currentUser) {
+    if (typeof openGlobalAuthModal === "function") {
+      openGlobalAuthModal("login");
+    } else if (typeof openAuthModal === "function") {
+      openAuthModal("login");
+    } else {
+      alert("Veuillez vous connecter ou créer un compte pour acheter cette formation.");
+    }
+    return;
+  }
+
+  // Visual feedback on button
+  let clickedBtn = null;
+  let originalHtml = "";
+  if (typeof window !== "undefined" && window.event && window.event.target) {
+    clickedBtn = window.event.target.closest("button");
+    if (clickedBtn) {
+      originalHtml = clickedBtn.innerHTML;
+      clickedBtn.disabled = true;
+      clickedBtn.innerHTML = `<span>⏳ Redirection vers Stripe...</span>`;
+    }
+  }
+
+  try {
+    const successUrl = `${window.location.origin}/success.html?course_id=${encodeURIComponent(courseId)}&session_id={CHECKOUT_SESSION_ID}`;
+    const cancelUrl = `${window.location.origin}/cours.html?id=${encodeURIComponent(courseId)}&cancelled=true`;
+
+    const res = await coursApiFetch("/api/payments/create-checkout-session", {
+      method: "POST",
+      body: JSON.stringify({
+        courseId: courseId,
+        successUrl: successUrl,
+        cancelUrl: cancelUrl
+      })
+    });
+
+    if (!res) {
+      throw new Error("Impossible de contacter le serveur de paiement.");
+    }
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || err.error || "Erreur lors de l'initialisation du paiement Stripe.");
+    }
+
+    const data = await res.json();
+    if (data.sessionUrl) {
+      window.location.href = data.sessionUrl;
+    } else if (data.sessionId === "free_course") {
+      alert("🎉 Félicitations ! Votre accès gratuit a été validé.");
+      window.location.href = `cours.html?id=${courseId}`;
+    } else {
+      throw new Error("L'URL de paiement Stripe n'a pas été renvoyée par le serveur.");
+    }
+  } catch (err) {
+    alert("❌ " + err.message);
+    if (clickedBtn) {
+      clickedBtn.disabled = false;
+      clickedBtn.innerHTML = originalHtml;
+    }
+  }
 }
 
 async function handleEnroll(courseId) {
