@@ -62,4 +62,11 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Alternative rejetée**: Appels directs à `com.stripe.model.checkout.Session.create(...)` dans `PaymentService` ou `PaymentController` — rejetée car rendrait les tests unitaires dépendants du réseau externe Stripe et introduirait des risques de concurrence.
 **Conséquence**: Testabilité unitaire 100% déterministe avec mocks, robustesse face aux pannes réseau externes, et découplage strict entre la couche métier Spring Boot et le SDK Stripe.
 
+## ADR-011 — Rotation de Refresh Token & Jeton de Réinitialisation par Hachage Cryptographique
+**Status**: Actif
+**Décision**: Stocker les jetons de rafraîchissement (Refresh Tokens) et les jetons de réinitialisation de mot de passe (Password Reset Tokens) sous forme de condensat SHA-256 (`token_hash`) dans PostgreSQL, tout en ne transmettant le jeton brut qu'au client final. Appliquer la rotation systématique des refresh tokens (Refresh Token Rotation - RTR) à chaque renouvellement d'access token, et révoquer l'ensemble des sessions actives en cas de réinitialisation de mot de passe ou de détection de rejeu.
+**Alternative rejetée**: Stockage en clair des tokens en base de données — rejetée car une fuite ou un dump de la base compromettrait l'ensemble des sessions actives et permettrait la prise de contrôle non autorisée des comptes.
+**Conséquence**: Protection optimale contre le vol de sessions (OWASP ASVS), détection immédiate de réutilisation de refresh tokens, et persistance sécurisée de la session utilisateur sur 7 jours.
+
+
 

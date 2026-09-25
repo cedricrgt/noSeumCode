@@ -13,6 +13,8 @@ public class AuthResponse {
     private String avatarUrl;
     private String message;
     private String accessToken;
+    private String refreshToken;
+    private Long expiresIn;
 
     public AuthResponse() {
     }
@@ -27,6 +29,20 @@ public class AuthResponse {
         this.avatarUrl = avatarUrl;
         this.message = message;
         this.accessToken = accessToken;
+    }
+
+    public AuthResponse(UUID userId, String userName, String firstName, String lastName, String email, String role, String avatarUrl, String message, String accessToken, String refreshToken, Long expiresIn) {
+        this.userId = userId;
+        this.userName = userName;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.role = role;
+        this.avatarUrl = avatarUrl;
+        this.message = message;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.expiresIn = expiresIn;
     }
 
     public UUID getUserId() {
@@ -99,5 +115,21 @@ public class AuthResponse {
 
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public Long getExpiresIn() {
+        return expiresIn;
+    }
+
+    public void setExpiresIn(Long expiresIn) {
+        this.expiresIn = expiresIn;
     }
 }

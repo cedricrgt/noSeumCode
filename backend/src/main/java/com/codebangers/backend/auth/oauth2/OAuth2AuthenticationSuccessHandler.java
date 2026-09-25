@@ -1,10 +1,12 @@
 package com.codebangers.backend.auth.oauth2;
 
+import com.codebangers.backend.auth.service.RefreshTokenService;
 import com.codebangers.backend.config.JwtService;
 import com.codebangers.backend.user.model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -19,12 +21,15 @@ import java.nio.charset.StandardCharsets;
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
     private final String redirectUri;
 
     public OAuth2AuthenticationSuccessHandler(
             JwtService jwtService,
+            @Autowired(required = false) RefreshTokenService refreshTokenService,
             @Value("${app.oauth2.authorized-redirect-uri:http://localhost:3000/dashboard.html}") String redirectUri) {
         this.jwtService = jwtService;
+        this.refreshTokenService = refreshTokenService;
         this.redirectUri = redirectUri;
     }
 
@@ -38,9 +43,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         User user = oAuth2User.getUser();
         String token = jwtService.generateToken(user);
+        String refreshToken = (refreshTokenService != null) ? refreshTokenService.createRefreshToken(user) : "";
 
         String targetUrl = UriComponentsBuilder.fromUriString(redirectUri)
                 .fragment("token=" + token +
+                        "&refreshToken=" + URLEncoder.encode(refreshToken, StandardCharsets.UTF_8) +
                         "&role=" + user.getRole().name() +
                         "&userName=" + URLEncoder.encode(user.getUserName(), StandardCharsets.UTF_8) +
                         "&firstName=" + URLEncoder.encode(user.getFirstName(), StandardCharsets.UTF_8))

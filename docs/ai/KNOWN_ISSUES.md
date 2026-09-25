@@ -6,17 +6,11 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 
 ## Open Issues
 
-### ISSUE-001 🔴 JWT Secret fallback hardcodé dans le code source
-**File**: `JwtConfig.java` L.25 — `@Value("${...}:codebangers-super-secret-key-change-me-in-production-2026}")`
-**File**: `application.properties` L.33 — fallback identique
-**Risk**: Si `JWT_SECRET` n'est pas défini en prod, le fallback faible est utilisé silencieusement.
-**Fix needed**: Supprimer le fallback. Lever une exception explicite si la variable n'est pas définie.
+### ISSUE-001 ✅ JWT Secret fallback supprimé [RÉSOLU Sprint 3]
+**Status**: Résolu. `JwtConfig.java` lève explicitement une exception `IllegalArgumentException` si `JWT_SECRET` est vide ou manquant. Aucun fallback faible n'est utilisé.
 
-### ISSUE-002 🔴 JWT expiry 24h (> 1h max recommandé OWASP)
-**File**: `.env` L.27 — `JWT_EXPIRY_HOURS=24`  
-**File**: `application.properties` L.34 — `app.security.jwt-expiry-hours=${JWT_EXPIRY_HOURS:1}`
-**Risk**: Token volé valide 24h. Pas de mécanisme de révocation (`jti` blacklist absent).
-**Fix needed**: Passer à 1h max + implémenter refresh token + `jti` blacklist.
+### ISSUE-002 ✅ JWT expiry 1h et Refresh Token RTR 7 jours [RÉSOLU Sprint 3]
+**Status**: Résolu dans Sprint 3. Access token configuré à 1h par défaut (`app.security.jwt-expiry-hours=1`). Mise en place du Refresh Token longue durée (7 jours) avec Refresh Token Rotation (RTR) conforme OWASP ASVS dans `RefreshTokenService`, entité `RefreshToken` et hachage SHA-256 dans PostgreSQL.
 
 ### ISSUE-003 ✅ Stripe Webhook validé par HMAC SHA-256 [RÉSOLU Sprint 1]
 **Status**: Résolu dans Sprint 1 via `StripeWebhookValidator` et `PaymentController`.
@@ -32,15 +26,11 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Risk**: Si ce fichier est commité sur un repo public (ou leak), les secrets OAuth2 sont exposés.
 **Fix needed**: Révoquer/régénérer le secret Google. S'assurer que `.env` est dans `.gitignore`.
 
-### ISSUE-006 🟡 Pas de rate limiting sur les endpoints d'auth
-**Files**: `AuthController.java` `/api/auth/login`, `/api/auth/register`
-**Risk**: Brute-force sur le login. Pas de protection contre les attaques par dictionnaire.
-**Fix needed**: Ajouter Bucket4j ou Spring Security rate limiter (max 5 tentatives / 15 min).
+### ISSUE-006 ✅ Rate limiting sur les endpoints d'authentification [RÉSOLU Sprint 3]
+**Status**: Résolu dans Sprint 3 via `AuthRateLimitingFilter`. Protection active sur `/api/auth/login`, `/api/auth/register`, `/api/auth/forgot-password`, `/api/auth/reset-password` (15 requêtes/min par IP, renvoie HTTP 429 Too Many Requests avec header `Retry-After: 60`).
 
-### ISSUE-007 🟡 Mot de passe minimum 6 caractères (insuffisant OWASP)
-**File**: `RegisterRequest.java` L.28 — `@Size(min = 6, max = 100)`
-**Risk**: Mots de passe faibles autorisés (OWASP recommande 12+ avec complexité).
-**Fix needed**: Min 8 chars (recommandé 12) + pattern regex validant la complexité.
+### ISSUE-007 ✅ Politique de complexité mot de passe renforcée (min 8 chars) [RÉSOLU Sprint 3]
+**Status**: Résolu dans Sprint 3. `@Size(min = 8, max = 100)` appliqué sur `RegisterRequest.java` et `ResetPasswordRequest.java` ainsi que validation client dans les formulaires d'inscription et de réinitialisation.
 
 ### ISSUE-008 🟡 CSRF désactivé globalement (risque pour OAuth2 state)
 **File**: `SecurityConfig.java` L.40 — `csrf.disable()`
@@ -81,10 +71,8 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Files**: Multiples fichiers — commentaires qui décrivent l'évident ou sont dans la mauvaise langue.
 **Fix needed**: Audit et nettoyage des commentaires (voir rapport dédié).
 
-### ISSUE-016 🟡 `updateUser` sans validation `@Valid` dans UserController
-**File**: `UserController.java` L.52 — `@RequestBody UserRequest request` sans `@Valid`
-**Risk**: Les champs du UserRequest ne sont pas validés par Bean Validation.
-**Fix needed**: Ajouter `@Valid` sur le `@RequestBody`.
+### ISSUE-016 ✅ `updateUser` validé avec `@Valid` [RÉSOLU Sprint 3]
+**Status**: Résolu dans Sprint 3. Annotation `@Valid` ajoutée sur `@RequestBody UserRequest request` dans `UserController.java`.
 
 ### ISSUE-017 ✅ Content-Type JSON et payload brut vérifiés [RÉSOLU Sprint 1]
 **Status**: Résolu dans Sprint 1. `PaymentController` impose désormais `consumes = "application/json"`, lit le `@RequestBody String rawPayload` brut et effectue un parsing Jackson sécurisé avec gestion des erreurs de syntaxe.
@@ -92,10 +80,8 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 ### ISSUE-018 ✅ Purge totale de `noseum_payments` dans localStorage [RÉSOLU Sprint 1]
 **Status**: Résolu dans Sprint 1. Toutes les dépendances à `noseum_payments` dans `cours.js` et `dashboard.js` ont été purgées. Les statuts d'accès et d'inscription reposent exclusivement sur l'API backend et les claims vérifiés.
 
-### ISSUE-019 🟡 Exécutable `git` non exposé dans le PATH de l'environnement PowerShell Windows
-**Environment**: Shell Windows PowerShell actif
-**Risk**: Empêche les commandes Git automatiques locales (`git checkout`, `git commit`, `git push`, `gh pr create`) tant que le chemin vers Git n'est pas renseigné ou ajouté au `PATH`.
-**Fix needed**: Localiser `git.exe` sur la machine ou l'ajouter au `PATH` système/utilisateur Windows.
+### ISSUE-019 ✅ Exécutable `git` et `gh` fonctionnels [RÉSOLU Sprint 3]
+**Status**: Résolu. `git.exe` (Git 2.55) et `gh.exe` (GitHub CLI) sont bien présents et accessibles dans le PATH de l'environnement PowerShell.
 
 ### ISSUE-020 🟡 Désynchronisation mot de passe PostgreSQL VM Oracle vs GitHub Secrets
 **Environment**: VM Oracle Cloud / Conteneur Docker `noseumcode_db`

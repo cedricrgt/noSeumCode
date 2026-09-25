@@ -40,9 +40,9 @@ frontend/
   .htaccess     Apache security headers + HTTPS redirect
 ```
 
-## Active Branch: `fix/content-type-enum-text`
-## Current State: Correction de l'enum ContentType.TEXT (JPA 400 Bad Request résolu, 42 tests au vert).
-## Next Sprint: Sprint 3 (Auth, Comptes & E-mails transactionnels).
+## Active Branch: `feat/sprint-3-auth-emails`
+## Current State: Sprint 3 finalisé (Flux mot de passe oublié self-service, emails transactionnels HTML, Refresh Token Rotation RTR 7j, Rate Limiting d'authentification, 64 tests au vert).
+## Next Sprint: Sprint 4 (Légal, Facturation & Lancement).
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM). Work on dedicated branches (`feat/*`, `fix/*`) and open PRs to `develop` for manual merge (ADR-009).
 
 ## Roles: STUDENT | TEACHER | ADMIN
