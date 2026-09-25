@@ -62,11 +62,17 @@ async function initCoursPage() {
   const params = new URLSearchParams(window.location.search);
   let courseId = params.get("id");
   let requestedChapterId = params.get("chap");
+  const autoCheckout = params.get("auto_checkout") === "true" || params.get("checkout") === "true";
 
   await loadInitialData();
 
   if (courseId) {
     await loadSingleCourse(courseId, requestedChapterId);
+    if (autoCheckout && currentUser) {
+      setTimeout(() => {
+        initiateStripeCheckout(courseId);
+      }, 300);
+    }
   } else {
     renderCourseCatalog();
   }
@@ -93,6 +99,16 @@ function getCourseImage(course) {
   return "images/courses/html.webp";
 }
 
+function formatCoursePrice(course) {
+  if (course && course.priceInCents && course.priceInCents > 0) {
+    return (course.priceInCents / 100).toFixed(0) + " €";
+  }
+  if (course && (course.slug === "git-github" || (course.title && course.title.toLowerCase().includes("git")))) {
+    return "279 €";
+  }
+  return "579 €";
+}
+
 async function loadInitialData() {
   // 1. Charger tous les cours
   const coursesRes = await coursApiFetch("/api/courses");
@@ -102,40 +118,56 @@ async function loadInitialData() {
     // Fallback seed courses complets
     allCourses = [
       {
-        id: "html-css-starter-id",
-        title: "HTML & CSS – Les Fondations du Web",
+        id: "c1000000-0000-0000-0000-000000000001",
+        slug: "html-css",
+        title: "HTML & CSS – Les Fondations indispensables au Web",
         description: "Apprends à structurer tes pages en HTML5 sémantique et à créer des designs modernes, responsives et accessibles avec CSS3, Flexbox et CSS Grid.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
         createdByName: "Admin CodeBangers",
         updatedByName: "Admin CodeBangers",
         imageUrl: "images/courses/html.webp",
-        chaptersCount: 5
+        priceInCents: 57900,
+        currency: "EUR",
+        level: "DEBUTANT",
+        isPublished: true,
+        chaptersCount: 3
       },
       {
-        id: "javascript-pro-starter-id",
-        title: "JavaScript Moderne & DOM Interactif",
+        id: "c2000000-0000-0000-0000-000000000002",
+        slug: "javascript",
+        title: "JavaScript – L'interactivité au bout des doigts",
         description: "Donne vie à tes créations web : manipulation du DOM, requêtes API asynchrones, animations dynamiques et logique applicative complète.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 25).toISOString(),
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
         createdByName: "Admin CodeBangers",
         updatedByName: "Admin CodeBangers",
         imageUrl: "images/courses/javascript.webp",
-        chaptersCount: 6
+        priceInCents: 57900,
+        currency: "EUR",
+        level: "INTERMEDIAIRE",
+        isPublished: true,
+        chaptersCount: 3
       },
       {
-        id: "git-github-starter-id",
-        title: "Git & GitHub – L'Outil n°1 des Devs Pros",
-        description: "Maîtrise le versioning de code, les branches de fonctionnalités, les Pull Requests collaboratives et crée un portfolio GitHub prêt pour l'embauche.",
+        id: "c3000000-0000-0000-0000-000000000003",
+        slug: "git-github",
+        title: "Git & GitHub – L'outil n°1 des devs pro",
+        description: "Ne perds plus jamais ton code et apprends à bosser à plusieurs sur le même projet sans tout casser. Versionne comme un expert !",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 20).toISOString(),
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4).toISOString(),
         createdByName: "Admin CodeBangers",
         updatedByName: "Admin CodeBangers",
-        imageUrl: "images/courses/git.webp",
-        chaptersCount: 4
+        imageUrl: "images/logos/Git_Logo_full.svg",
+        priceInCents: 27900,
+        currency: "EUR",
+        level: "DEBUTANT",
+        isPublished: true,
+        chaptersCount: 3
       },
       {
         id: "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+        slug: "fullstack-java-21-spring-boot-3",
         title: "Fullstack Java 21 & Spring Boot 3.4+",
         description: "Apprenez à concevoir des architectures backend robustes et performantes avec Java 21 (Virtual Threads, Records), Spring Boot 3, Spring Security, JWT RBAC et PostgreSQL.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15).toISOString(),
@@ -143,10 +175,15 @@ async function loadInitialData() {
         createdByName: "Admin CodeBangers",
         updatedByName: "Cédric Ragot (Enseignant)",
         imageUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=400&fit=crop",
+        priceInCents: 4900,
+        currency: "EUR",
+        level: "INTERMEDIAIRE",
+        isPublished: true,
         chaptersCount: 4
       },
       {
         id: "b2c3d4e5-f6a7-4b5c-9d0e-1f2a3b4c5d6e",
+        slug: "clean-architecture-ddd-en-pratique",
         title: "Clean Architecture & DDD en Pratique",
         description: "Maîtrisez le découplage métier absolu, l'architecture hexagonale (Ports & Adapters) et le Domain-Driven Design pour concevoir des applications modulaires, testables et scalables.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(),
@@ -154,6 +191,10 @@ async function loadInitialData() {
         createdByName: "Cédric Ragot (Enseignant)",
         updatedByName: "Cédric Ragot (Enseignant)",
         imageUrl: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop",
+        priceInCents: 6900,
+        currency: "EUR",
+        level: "AVANCE",
+        isPublished: true,
         chaptersCount: 3
       }
     ];
@@ -221,6 +262,9 @@ function renderCourseCatalog() {
             enrollmentInfo = userEnrollments.find(e => e.courseId === course.id);
           }
 
+          const price = formatCoursePrice(course);
+          const level = course.level || "TOUS NIVEAUX";
+
           let accessBadge = "";
           let actionBtn = "";
           const courseImg = getCourseImage(course);
@@ -239,12 +283,14 @@ function renderCourseCatalog() {
             if (!enrollmentInfo) {
               accessBadge = `<span style="background: #f1f5f9; color: #64748b; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid #cbd5e1;">🔒 Non inscrit</span>`;
               actionBtn = `
-                <button class="card__link bangers-regular" style="background:none; border:none; cursor:pointer; color: var(--dark-navy); width: 100%; text-align: left; padding: 0;" onclick="handleEnroll('${course.id}')">
-                  S'inscrire à ce cours
-                  <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </button>
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap; width:100%;">
+                  <button class="button button__primary bangers-regular" style="flex:1; padding: 8px 12px; font-size: 1rem; cursor:pointer;" onclick="initiateStripeCheckout('${course.id}')">
+                    💳 Acheter (${price})
+                  </button>
+                  <button class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; cursor:pointer;" onclick="handleEnroll('${course.id}')">
+                    Aperçu
+                  </button>
+                </div>
               `;
             } else {
               const isPaid = (enrollmentInfo.paymentStatus === "PAID" || enrollmentInfo.paymentStatus === "PAYÉ");
@@ -259,14 +305,16 @@ function renderCourseCatalog() {
                   </a>
                 `;
               } else {
-                accessBadge = `<span style="background: rgba(245, 158, 11, 0.15); color: #d97706; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(245, 158, 11, 0.4);">⏳ Aperçu • Paiement en attente</span>`;
+                accessBadge = `<span style="background: rgba(245, 158, 11, 0.15); color: #d97706; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(245, 158, 11, 0.4);">⏳ Aperçu • En attente</span>`;
                 actionBtn = `
-                  <a href="cours.html?id=${course.id}" class="card__link bangers-regular" style="color:#d97706;">
-                    Voir l'aperçu gratuit
-                    <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                      <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </a>
+                  <div style="display:flex; gap:0.5rem; flex-wrap:wrap; width:100%;">
+                    <button class="button button__primary bangers-regular" style="flex:1; padding: 8px 12px; font-size: 1rem; cursor:pointer;" onclick="initiateStripeCheckout('${course.id}')">
+                      💳 Débloquer (${price})
+                    </button>
+                    <a href="cours.html?id=${course.id}" class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; text-decoration:none; display:inline-flex; align-items:center;">
+                      Aperçu
+                    </a>
+                  </div>
                 `;
               }
             }
@@ -274,12 +322,14 @@ function renderCourseCatalog() {
             // GUEST
             accessBadge = `<span style="background: #f1f5f9; color: #64748b; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid #cbd5e1;">🔒 Connexion requise</span>`;
             actionBtn = `
-              <a href="cours.html?id=${course.id}" class="card__link bangers-regular">
-                Découvrir la formation
-                <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </a>
+              <div style="display:flex; gap:0.5rem; flex-wrap:wrap; width:100%;">
+                <button class="button button__primary bangers-regular" style="flex:1; padding: 8px 12px; font-size: 1rem; cursor:pointer;" onclick="initiateStripeCheckout('${course.id}')">
+                  💳 Découvrir (${price})
+                </button>
+                <a href="cours.html?id=${course.id}" class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; text-decoration:none; display:inline-flex; align-items:center;">
+                  Aperçu
+                </a>
+              </div>
             `;
           }
 
@@ -298,8 +348,11 @@ function renderCourseCatalog() {
               </header>
               <main class="card__main">
                 <div class="card__header">
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.25rem;">
-                    <span class="section-tag" style="font-size: 0.75rem; margin-bottom: 0;">📚 FORMATION</span>
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.4rem;">
+                    <div style="display:flex; gap:0.4rem; align-items:center;">
+                      <span class="section-tag" style="font-size: 0.72rem; margin-bottom: 0;">📚 ${escapeHtml(level)}</span>
+                      <span class="price-tag bangers-regular" style="font-size: 1.15rem; color: #008744; background: rgba(0, 255, 135, 0.15); padding: 2px 8px; border-radius: 6px; font-weight: 700;">${price}</span>
+                    </div>
                     ${accessBadge}
                   </div>
                   <h3 class="card__title">${escapeHtml(course.title)}</h3>
@@ -381,7 +434,97 @@ async function loadSingleCourse(courseId, requestedChapterId) {
     courseChapters = await chapRes.json();
   } else {
     // Fallback chapters
-    if (currentCourse.id === "b2c3d4e5-f6a7-4b5c-9d0e-1f2a3b4c5d6e") {
+    if (currentCourse.id === "c1000000-0000-0000-0000-000000000001" || currentCourse.slug === "html-css") {
+      courseChapters = [
+        {
+          id: "c1000001-0000-0000-0000-000000000001",
+          title: "1. Structure & Sémantique HTML5 (Aperçu Gratuit)",
+          position: 1,
+          status: "APPROVED",
+          createdByName: "Admin CodeBangers",
+          updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(),
+          content: `# 🚀 Structure & Sémantique HTML5\n\nLe HTML5 moderne structure le web de façon accessible et performante.\n\n## Points clés :\n- Balises sémantiques : <header>, <main>, <nav>, <section>, <article>, <footer>.\n- Accessibilité (a11y) dès la conception.\n- SEO technique et référencement optimal.`
+        },
+        {
+          id: "c1000002-0000-0000-0000-000000000002",
+          title: "2. CSS3 Moderne, Flexbox & CSS Grid",
+          position: 2,
+          status: "APPROVED",
+          createdByName: "Admin CodeBangers",
+          updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+          content: `# 🎨 CSS3 Moderne, Flexbox & Grid\n\nDonne du style et structure tes mises en page comme un pro.`
+        },
+        {
+          id: "c1000003-0000-0000-0000-000000000003",
+          title: "3. Responsive Web Design & Animations CSS",
+          position: 3,
+          status: "APPROVED",
+          createdByName: "Admin CodeBangers",
+          updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+          content: `# 📱 Responsive Web Design & Animations\n\nAssure une expérience irréprochable sur mobile, tablette et desktop.`
+        }
+      ];
+    } else if (currentCourse.id === "c2000000-0000-0000-0000-000000000002" || currentCourse.slug === "javascript") {
+      courseChapters = [
+        {
+          id: "c2000001-0000-0000-0000-000000000001",
+          title: "1. Premiers Pas avec JavaScript & ES6+ (Aperçu Gratuit)",
+          position: 1,
+          status: "APPROVED",
+          createdByName: "Admin CodeBangers",
+          updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(),
+          content: `# ⚡ Premiers Pas avec JavaScript\n\nJavaScript est le langage de programmation du navigateur web.\n\n## Les fondamentaux abordés :\n- Variables modernes : const et let.\n- Types de données et fonctions fléchées.\n- Manipulation de base.`
+        },
+        {
+          id: "c2000002-0000-0000-0000-000000000002",
+          title: "2. Manipulation du DOM & Événements",
+          position: 2,
+          status: "APPROVED",
+          createdByName: "Admin CodeBangers",
+          updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+          content: `# 🎮 Manipulation du DOM & Événements\n\nLe DOM te permet de manipuler les éléments HTML en temps réel.`
+        },
+        {
+          id: "c2000003-0000-0000-0000-000000000003",
+          title: "3. API Fetch & Programmation Asynchrone",
+          position: 3,
+          status: "APPROVED",
+          createdByName: "Admin CodeBangers",
+          updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+          content: `# 🌐 API Fetch & Asynchronisme\n\nConnecte ton application à des données externes et des serveurs backend.`
+        }
+      ];
+    } else if (currentCourse.id === "c3000000-0000-0000-0000-000000000003" || currentCourse.slug === "git-github") {
+      courseChapters = [
+        {
+          id: "c3000001-0000-0000-0000-000000000001",
+          title: "1. Installation, Configuration & Premiers Commits (Aperçu Gratuit)",
+          position: 1,
+          status: "APPROVED",
+          createdByName: "Admin CodeBangers",
+          updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(),
+          content: `# 💾 Premiers Pas avec Git\n\nGit est le système de gestion de versions décentralisé le plus populaire au monde.\n\n## Commandes indispensables :\n- git init\n- git add\n- git commit`
+        },
+        {
+          id: "c3000002-0000-0000-0000-000000000002",
+          title: "2. Branches, Merge & Résolution de conflits",
+          position: 2,
+          status: "APPROVED",
+          createdByName: "Admin CodeBangers",
+          updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+          content: `# 🌿 Branches & Stratégies de Merge\n\nIsole tes fonctionnalités sans impacter la branche principale.`
+        },
+        {
+          id: "c3000003-0000-0000-0000-000000000003",
+          title: "3. Collaboration GitHub, Pull Requests & Code Review",
+          position: 3,
+          status: "APPROVED",
+          createdByName: "Admin CodeBangers",
+          updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+          content: `# 🤝 Collaboration GitHub & Pull Requests\n\nTravaille en équipe comme dans les plus grandes entreprises tech.`
+        }
+      ];
+    } else if (currentCourse.id === "b2c3d4e5-f6a7-4b5c-9d0e-1f2a3b4c5d6e") {
       courseChapters = [
         {
           id: "d1111111-1111-1111-1111-111111111111",
@@ -569,27 +712,29 @@ function renderAccessGate(title, description, type, extraStatus = "") {
   } else if (type === "NOT_ENROLLED") {
     icon = "📚";
     cardClass += " not-enrolled";
+    const priceText = formatCoursePrice(currentCourse);
     actionButtons = `
       <div style="display:flex; justify-content:center; gap: 1rem; flex-wrap:wrap;">
-        <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.2rem; cursor:pointer;" onclick="handleEnroll('${currentCourse ? currentCourse.id : ''}')">
-          ✨ S'inscrire à cette formation
+        <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.2rem; cursor:pointer;" onclick="initiateStripeCheckout('${currentCourse ? currentCourse.id : ''}')">
+          💳 Acheter l'accès complet (${priceText})
         </button>
-        <a href="cours.html" class="button button__secondary" style="padding: 12px 20px; text-decoration:none; display:inline-flex; align-items:center;">
-          Voir tout le catalogue
-        </a>
+        <button class="button button__secondary bangers-regular" style="padding: 12px 20px; font-size: 1rem; cursor:pointer;" onclick="handleEnroll('${currentCourse ? currentCourse.id : ''}')">
+          👀 Voir l'aperçu gratuit
+        </button>
       </div>
     `;
   } else if (type === "PAYMENT_PENDING") {
     icon = "⏳";
     cardClass += " pending";
+    const priceText = formatCoursePrice(currentCourse);
     actionButtons = `
       <div style="display:flex; justify-content:center; gap: 1rem; flex-wrap:wrap;">
-        <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.15rem; cursor:pointer;" onclick="location.reload()">
-          🔄 Vérifier mon statut de paiement
+        <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.2rem; cursor:pointer;" onclick="initiateStripeCheckout('${currentCourse ? currentCourse.id : ''}')">
+          💳 Finaliser mon achat (${priceText})
         </button>
-        <a href="cours.html" class="button button__secondary" style="padding: 12px 20px; text-decoration:none; display:inline-flex; align-items:center;">
-          Retour aux formations
-        </a>
+        <button class="button button__secondary bangers-regular" style="padding: 12px 20px; font-size: 1rem; cursor:pointer;" onclick="location.reload()">
+          🔄 Vérifier mon statut
+        </button>
       </div>
     `;
   }
@@ -633,6 +778,18 @@ function renderClassroom() {
       roleBadgeLabel = "✓ Formation Débloquée (Payé)";
     } else {
       roleBadgeLabel = "👁️ Aperçu Gratuit (Paiement en attente)";
+      const coursePrice = formatCoursePrice(currentCourse);
+      roleNoticeHtml = `
+        <div class="role-notice-banner" style="background: linear-gradient(135deg, rgba(0, 255, 135, 0.1) 0%, rgba(96, 239, 255, 0.1) 100%); border: 1px solid rgba(0, 255, 135, 0.35); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+          <div>
+            <span style="font-weight: 700; color: var(--dark-navy); font-size: 1.05rem;">✨ Vous consultez l'aperçu gratuit de la section 1</span>
+            <p style="margin: 0.25rem 0 0 0; color: #475569; font-size: 0.9rem;">Débloquez toutes les vidéos, exercices et l'accès permanent en validant votre inscription.</p>
+          </div>
+          <button class="button button__primary bangers-regular" style="padding: 8px 20px; font-size: 1.15rem; cursor: pointer; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,255,135,0.3);" onclick="initiateStripeCheckout('${currentCourse.id}')">
+            💳 Débloquer tout (${coursePrice})
+          </button>
+        </div>
+      `;
     }
   } else if (currentRole === "TEACHER") {
     roleBadgeLabel = "👨‍🏫 Enseignant (Édition autorisée)";
@@ -776,11 +933,14 @@ function renderChapterContent(chapter) {
         <div class="access-gate-icon" style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
         <h3 class="access-gate-title" style="font-size: 1.8rem; margin-bottom: 0.75rem; color: var(--dark-navy);">Contenu Verrouillé</h3>
         <p class="access-gate-desc" style="color: #64748b; font-size: 1rem; line-height: 1.6; margin-bottom: 1.5rem;">
-          Cette section nécessite une inscription avec paiement validé. Seule la première section de cette formation est accessible en prévisualisation gratuite.
+          Cette section nécessite une inscription avec paiement validé. Débloquez immédiatement l'intégralité du cours pour accéder à toutes les leçons et vidéos.
         </p>
         <div style="display:flex; justify-content:center; gap: 1rem; flex-wrap:wrap;">
-          <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.15rem; cursor:pointer;" onclick="location.reload()">
-            🔄 Vérifier le statut de paiement
+          <button class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.25rem; cursor:pointer; box-shadow: 0 4px 15px rgba(0, 255, 135, 0.4);" onclick="initiateStripeCheckout('${currentCourse ? currentCourse.id : ''}')">
+            💳 Débloquer toute la formation (${formatCoursePrice(currentCourse)})
+          </button>
+          <button class="button button__secondary bangers-regular" style="padding: 12px 20px; font-size: 1rem; cursor:pointer;" onclick="location.reload()">
+            🔄 Vérifier mon paiement
           </button>
         </div>
       </div>
@@ -1108,6 +1268,66 @@ async function handleDeleteCourse(courseId) {
 
   alert("🗑️ Formation supprimée.");
   window.location.href = "cours.html";
+}
+
+/**
+ * Déclenche la création d'une Stripe Checkout Session sécurisée et redirige l'apprenant.
+ */
+async function initiateStripeCheckout(courseId) {
+  if (!courseId) {
+    if (currentCourse && currentCourse.id) {
+      courseId = currentCourse.id;
+    } else {
+      alert("Identifiant de formation introuvable.");
+      return;
+    }
+  }
+
+  if (!currentUser) {
+    sessionStorage.setItem("noseum_pending_checkout_course_id", courseId);
+    if (currentCourse) {
+      sessionStorage.setItem("noseum_pending_checkout_course_title", currentCourse.title || "");
+      sessionStorage.setItem("noseum_pending_checkout_course_price", formatCoursePrice(currentCourse));
+    }
+    if (typeof openGlobalAuthModal === "function") {
+      openGlobalAuthModal("login");
+      if (typeof showGlobalAuthAlert === "function") {
+        const priceLabel = currentCourse ? ` (${formatCoursePrice(currentCourse)})` : "";
+        showGlobalAuthAlert(`🎓 Connectez-vous ou créez votre compte pour acheter cette formation${priceLabel}. Vous serez redirigé automatiquement vers le paiement sécurisé dès validation.`, "info");
+      }
+    } else if (typeof openAuthModal === "function") {
+      openAuthModal("login");
+    } else {
+      alert("Veuillez vous connecter ou créer un compte pour acheter cette formation.");
+    }
+    return;
+  }
+
+  // Visual feedback on button
+  let clickedBtn = null;
+  let originalHtml = "";
+  if (typeof window !== "undefined" && window.event && window.event.target) {
+    clickedBtn = window.event.target.closest("button");
+  }
+
+  // Trouver le cours pour enrichir le paywall
+  const course = (typeof allCourses !== "undefined" && Array.isArray(allCourses))
+    ? allCourses.find(c => c.id === courseId)
+    : (typeof currentCourse !== "undefined" ? currentCourse : null);
+
+  const courseTitle = course ? course.title : "Formation NoSeumCode";
+  let priceText = "579 €";
+  if (course && course.priceInCents) {
+    priceText = `${(course.priceInCents / 100).toFixed(0)} €`;
+  }
+
+  if (typeof window.openStripePaywall === "function") {
+    await window.openStripePaywall(courseId, courseTitle, priceText);
+  } else if (typeof window.openAuthModal === "function" && !currentUser) {
+    window.openAuthModal("login");
+  } else {
+    window.location.href = `cours.html?id=${encodeURIComponent(courseId)}&checkout=true`;
+  }
 }
 
 async function handleEnroll(courseId) {

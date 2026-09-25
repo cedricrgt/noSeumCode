@@ -132,3 +132,48 @@ _Chronologique — plus récent en bas_
    - Alignement de `DB_URL` sur `jdbc:postgresql://postgres:5432/noseumcode` (nom de service réseau Docker Compose).
    - Ajout de la synchronisation automatique et idempotente des identifiants PostgreSQL via socket Unix (`docker compose exec -T postgres psql ... ALTER USER ... / CREATE USER ...`).
    - Ajout d'une vérification de disponibilité HTTP Actuator post-démarrage.
+
+---
+
+## 2026-09-25 — Sprint 2 : Tunnel de Vente & Monétisation Stripe Checkout
+
+**Conversation ID**: `9815351c-ad9c-429a-8a17-f626092e953f`  
+**Branche**: `feat/sprint-2-stripe-checkout`  
+**Objectif**: Intégrer le SDK Stripe officiel, implémenter la création de session Stripe Checkout sécurisée, étendre le catalogue des formations avec prix/niveaux/slugs, et connecter les flux d'achat et webhooks de manière ciblée par formation.
+
+### Réalisations & Corrections :
+1. **Intégration du SDK Stripe Java (`backend/pom.xml`)** :
+   - Ajout de la dépendance officielle `com.stripe:stripe-java` (v26.0.0).
+   - Configuration des propriétés `stripe.secret.key`, `stripe.success.url` et `stripe.cancel.url` dans `application.properties`.
+
+2. **Modèle Économique & Migration Flyway V011 (`Course.java`, `V011__add_course_monetization_fields.sql`)** :
+   - Ajout des attributs de monétisation et de catalogue dans `Course` : `priceInCents` (Long), `currency` (String), `slug` (String, unique), `thumbnailUrl` (String), `level` (String), `isPublished` (boolean).
+   - Configuration du catalogue et des tarifs officiels NoSeumCode :
+     * **HTML & CSS – Les Fondations indispensables au Web** : 579 € (`priceInCents = 57900`)
+     * **JavaScript – L'interactivité au bout des doigts** : 579 € (`priceInCents = 57900`)
+     * **Git & GitHub – L'outil n°1 des devs pro** : 279 € (`priceInCents = 27900`)
+   - Initialisation des chapitres et contenus markdown (Chapitre 1 en aperçu gratuit, Chapitres 2 et 3 verrouillés pour les membres payants).
+   - Mise à jour des DTOs `CourseRequest` et `CourseResponse`, de `CourseRepository` (`findBySlug`) et de `CourseService`.
+
+3. **Tunnel de Vente & Endpoint Stripe Checkout Session (`PaymentController.java`, `PaymentService.java`, `StripeGateway.java`)** :
+   - Implémentation du pattern Ports & Adapters (`StripeGateway` / `StripeGatewayImpl`) utilisant `RequestOptions` pour des appels thread-safe.
+   - Endpoint sécurisé `POST /api/payments/create-checkout-session` (authentifié par JWT) générant une Checkout Session Stripe hébergée avec métadonnées (`userId`, `courseId`, `userEmail`).
+   - Gestion des cas limites : blocage des doubles paiements si déjà `PAID`, validation immédiate gratuite si `priceInCents <= 0`, et interdiction d'achat sur cours non publiés ou supprimés.
+   - Extension du webhook Stripe : extraction des métadonnées `courseId` et `userId` pour débloquer spécifiquement la formation achetée.
+   - Support de Stripe Embedded Checkout : ajout du mode `uiMode: EMBEDDED` avec `setMode(SessionCreateParams.Mode.PAYMENT)` (obligatoire avec l'API Stripe pour les sessions avec tarification), `returnUrl`, retour du `clientSecret` et de la `publishableKey` via `CheckoutSessionResponse` pour permettre un affichage 100% in-app sans redirection externe.
+   - Résolution de l'ambiguïté de constructeur Spring Boot : annotation `@Autowired` explicite sur le constructeur multi-arguments de `PaymentController`.
+
+4. **Expérience Apprenant & Paywall In-App Frontend (`index.html`, `cours.js`, `header.js`, `popovers-shared.html`, `success.html`)** :
+   - Intégration de la modale Paywall In-App `#stripe-paywall-modal` : montage direct du formulaire Stripe via `stripe.initEmbeddedCheckout({ clientSecret })` dans une modale Cyber Dark élégante sans jamais quitter le site `noseumcode.fr`.
+   - Suppression du fallback de redirection externe vers `checkout.stripe.com` pour garantir la persistance in-app du paywall Stripe.
+   - Affichage dynamique du titre de formation, du tarif officiel (579 € pour HTML & CSS et JavaScript, 279 € pour Git & GitHub) et des badges de garantie dans l'en-tête du Paywall.
+   - Gestion du cycle de vie du composant : chargement asynchrone sécurisé de Stripe.js v3, skeleton de chargement initial et destruction propre de l'instance (`checkout.destroy()`) à la fermeture.
+   - Déclenchement automatique post-connexion : à la validation du login ou du register, la modale d'authentification cède instantanément la place au Paywall in-app du cours ciblé.
+   - Sécurisation CSP et Permissions-Policy (`frontend/.htaccess`) : autorisation des scripts, frames et connexions API Stripe (`js.stripe.com`, `hooks.stripe.com`, `api.stripe.com`) et de l'API Payment Request.
+   - Affichage dynamique et badges des tarifs officiels sur la page d'accueil (`index.html`), dans les cartes et dans les modales popover avec CTA d'inscription/achat.
+   - Intégration du bouton "💳 Acheter / Débloquer" sur le catalogue, sur le panneau de cours verrouillé, et sur la bannière de prévisualisation dans la classe virtuelle.
+
+5. **Tests & Validation Locale** :
+   - Mise à jour et validation de `PaymentCheckoutServiceTest.java` (10 tests unitaires couvrant le mode embedded, `clientSecret`, tarifs officiels 579 € et 279 €, cours déjà payé, cours gratuit, webhook ciblé, sécurité JWT).
+   - Exécution complète de la suite de tests : 41 tests réussis (`BUILD SUCCESS`, 0 erreur, 0 échec).
+   - Test réel de création de session Stripe Checkout Embedded validé de bout en bout avec retour de `clientSecret` et `amount=57900`.

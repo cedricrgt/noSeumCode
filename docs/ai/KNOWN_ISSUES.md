@@ -107,6 +107,7 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 - Ne pas supposer que modifier `POSTGRES_PASSWORD` dans les variables d'environnement d'un conteneur Docker PostgreSQL met à jour le mot de passe d'une base existante : le volume `pgdata` préserve le mot de passe initialisé et nécessite une commande SQL `ALTER USER`.
 
 - Ne pas supposer qu'on peut pousser directement sur la branche `develop` : cela déclenche le déploiement immédiat en production sur la VM Oracle Cloud (`deploy.yml`). Toujours passer par une PR.
+- Ne pas supposer qu'en mode Stripe Embedded Checkout (`uiMode: EMBEDDED`), le paramètre `mode: 'payment'` est optionnel : l'API Stripe exige impérativement `mode: 'payment'` dès lors que des `line_items` / prix unitaires sont passés.
 - Ne pas supposer que la désactivation CSRF est sécurisée sans vérification du `state` OAuth2.
 - Ne pas supposer que `sanitizePartialHTML()` couvre tous les vecteurs XSS.
 - Ne pas supposer que le profil `prod` est activé par défaut (dépend de la variable env `SPRING_PROFILES_ACTIVE`).
