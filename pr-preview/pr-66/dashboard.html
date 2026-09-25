@@ -411,6 +411,16 @@
 
         // Nettoie le fragment de l'URL (le token ne doit pas rester visible)
         history.replaceState(null, '', window.location.pathname + window.location.search);
+
+        // Si une intention d'achat était en attente, redirige directement vers le paiement du cours
+        const pendingCourseId = sessionStorage.getItem("noseum_pending_checkout_course_id");
+        if (pendingCourseId) {
+          sessionStorage.removeItem("noseum_pending_checkout_course_id");
+          sessionStorage.removeItem("noseum_pending_checkout_course_title");
+          sessionStorage.removeItem("noseum_pending_checkout_course_price");
+          window.location.href = `cours.html?id=${encodeURIComponent(pendingCourseId)}&auto_checkout=true`;
+          return;
+        }
       }
     })();
   </script>

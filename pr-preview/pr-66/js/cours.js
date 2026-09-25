@@ -62,11 +62,17 @@ async function initCoursPage() {
   const params = new URLSearchParams(window.location.search);
   let courseId = params.get("id");
   let requestedChapterId = params.get("chap");
+  const autoCheckout = params.get("auto_checkout") === "true" || params.get("checkout") === "true";
 
   await loadInitialData();
 
   if (courseId) {
     await loadSingleCourse(courseId, requestedChapterId);
+    if (autoCheckout && currentUser) {
+      setTimeout(() => {
+        initiateStripeCheckout(courseId);
+      }, 300);
+    }
   } else {
     renderCourseCatalog();
   }
@@ -1278,8 +1284,17 @@ async function initiateStripeCheckout(courseId) {
   }
 
   if (!currentUser) {
+    sessionStorage.setItem("noseum_pending_checkout_course_id", courseId);
+    if (currentCourse) {
+      sessionStorage.setItem("noseum_pending_checkout_course_title", currentCourse.title || "");
+      sessionStorage.setItem("noseum_pending_checkout_course_price", formatCoursePrice(currentCourse));
+    }
     if (typeof openGlobalAuthModal === "function") {
       openGlobalAuthModal("login");
+      if (typeof showGlobalAuthAlert === "function") {
+        const priceLabel = currentCourse ? ` (${formatCoursePrice(currentCourse)})` : "";
+        showGlobalAuthAlert(`🎓 Connectez-vous ou créez votre compte pour acheter cette formation${priceLabel}. Vous serez redirigé automatiquement vers le paiement sécurisé dès validation.`, "info");
+      }
     } else if (typeof openAuthModal === "function") {
       openAuthModal("login");
     } else {
