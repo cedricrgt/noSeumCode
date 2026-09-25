@@ -160,6 +160,7 @@ _Chronologique — plus récent en bas_
    - Endpoint sécurisé `POST /api/payments/create-checkout-session` (authentifié par JWT) générant une Checkout Session Stripe hébergée avec métadonnées (`userId`, `courseId`, `userEmail`).
    - Gestion des cas limites : blocage des doubles paiements si déjà `PAID`, validation immédiate gratuite si `priceInCents <= 0`, et interdiction d'achat sur cours non publiés ou supprimés.
    - Extension du webhook Stripe : extraction des métadonnées `courseId` et `userId` pour débloquer spécifiquement la formation achetée.
+   - Résolution de l'ambiguïté de constructeur Spring Boot : annotation `@Autowired` explicite sur le constructeur multi-arguments de `PaymentController`.
 
 4. **Expérience Apprenant & Boutons d'Achat Frontend (`index.html`, `cours.js`, `success.html`)** :
    - Affichage dynamique et badges des tarifs officiels (579 € pour HTML & CSS, 579 € pour JavaScript, 279 € pour Git & GitHub) sur la page d'accueil (`index.html`), dans les cartes et dans les modales popover avec CTA d'inscription/achat.
