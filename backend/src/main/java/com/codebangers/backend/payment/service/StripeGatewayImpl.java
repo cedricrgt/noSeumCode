@@ -140,4 +140,20 @@ public class StripeGatewayImpl implements StripeGateway {
             throw new RuntimeException("Échec de la création de session Stripe Checkout : " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public Session retrieveSession(String sessionId) {
+        if (sessionId == null || sessionId.isBlank()) {
+            throw new IllegalArgumentException("L'identifiant de session Stripe est requis.");
+        }
+        try {
+            RequestOptions options = RequestOptions.builder()
+                    .setApiKey(stripeSecretKey)
+                    .build();
+            return Session.retrieve(sessionId, options);
+        } catch (StripeException e) {
+            log.error("Erreur lors de la récupération de la session Stripe {}: {}", sessionId, e.getMessage());
+            throw new RuntimeException("Erreur Stripe lors de la récupération de la session : " + e.getMessage(), e);
+        }
+    }
 }

@@ -29,4 +29,12 @@ public interface StripeGateway {
      * @return Les détails de la session créée
      */
     CheckoutSessionResponse createCheckoutSession(User user, Course course, String successUrl, String cancelUrl, boolean embedded, String returnUrl);
+
+    /**
+     * Récupère une Checkout Session Stripe par son identifiant.
+     *
+     * @param sessionId L'identifiant de la session Stripe
+     * @return L'objet Session Stripe
+     */
+    com.stripe.model.checkout.Session retrieveSession(String sessionId);
 }
