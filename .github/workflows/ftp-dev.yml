@@ -39,3 +39,4 @@ jobs:
           username: ${{ secrets.FTP_USERNAME_DEV != '' && secrets.FTP_USERNAME_DEV || secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD_DEV != '' && secrets.FTP_PASSWORD_DEV || secrets.FTP_PASSWORD }}
           server-dir: ${{ secrets.FTP_DIR_DEV || 'develop.noseumcode.fr/' }}
+          local-dir: ./frontend/
