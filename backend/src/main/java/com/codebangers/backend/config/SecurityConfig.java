@@ -31,7 +31,7 @@ public class SecurityConfig {
         public SecurityConfig(CustomOAuth2UserService customOAuth2UserService,
                         CustomOidcUserService customOidcUserService,
                         OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler,
-                        @Value("${app.cors.allowed-origins:http://localhost:3000,https://noseumcode.fr,https://www.noseumcode.fr}") String corsOrigins) {
+                        @Value("${app.cors.allowed-origins:http://localhost:3000,https://noseumcode.fr,https://www.noseumcode.fr,https://develop.noseumcode.fr}") String corsOrigins) {
                 this.customOAuth2UserService = customOAuth2UserService;
                 this.customOidcUserService = customOidcUserService;
                 this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
@@ -42,6 +42,8 @@ public class SecurityConfig {
                                 .collect(java.util.stream.Collectors.toSet());
                 origins.add("https://noseumcode.fr");
                 origins.add("https://www.noseumcode.fr");
+                origins.add("https://develop.noseumcode.fr");
+                origins.add("https://*.noseumcode.fr");
                 origins.add("http://localhost:3000");
                 origins.add("http://localhost:8080");
                 this.allowedOrigins = new java.util.ArrayList<>(origins);

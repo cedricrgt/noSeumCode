@@ -33,10 +33,25 @@ jobs:
       - name: Build CSS bundles
         run: bash ./frontend/build.sh
 
-      - name:  Sync files
+      - name: Determine FTP target directory
+        id: ftp-target
+        env:
+          REF_NAME: ${{ github.ref_name }}
+          FTP_DIR_PROD: ${{ secrets.FTP_DIR }}
+          FTP_DIR_DEV: ${{ secrets.FTP_DIR_DEV }}
+        run: |
+          if [ "$REF_NAME" = "main" ]; then
+            TARGET_DIR="$FTP_DIR_PROD"
+          else
+            TARGET_DIR="${FTP_DIR_DEV:-develop.noseumcode.fr/}"
+          fi
+          echo "Deploying branch '$REF_NAME' to directory: $TARGET_DIR"
+          echo "target_dir=$TARGET_DIR" >> "$GITHUB_OUTPUT"
+
+      - name: Sync files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ${{ secrets.FTP_DIR }}
+          server: ${{ secrets.FTP_SERVER_DEV != '' && github.ref_name != 'main' && secrets.FTP_SERVER_DEV || secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME_DEV != '' && github.ref_name != 'main' && secrets.FTP_USERNAME_DEV || secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD_DEV != '' && github.ref_name != 'main' && secrets.FTP_PASSWORD_DEV || secrets.FTP_PASSWORD }}
+          server-dir: ${{ steps.ftp-target.outputs.target_dir }}

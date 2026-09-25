@@ -57,7 +57,7 @@ jobs:
             DISCORD_CLIENT_ID=mock-discord-client-id
             DISCORD_CLIENT_SECRET=mock-discord-client-secret
             FRONTEND_DASHBOARD_URL=${FRONTEND_DASHBOARD_URL}
-            CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-https://noseumcode.fr,https://www.noseumcode.fr,http://localhost:3000}
+            CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-https://noseumcode.fr,https://www.noseumcode.fr,https://develop.noseumcode.fr,http://localhost:3000}
             STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
             STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
             TPLEOF
