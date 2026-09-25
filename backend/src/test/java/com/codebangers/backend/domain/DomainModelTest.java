@@ -32,4 +32,13 @@ class DomainModelTest {
         assertEquals("Spring Boot Bootcamp", workshop.getTitle());
         assertEquals(true, userWorkshop.isAttended());
     }
+
+    @Test
+    void shouldSupportTextContentTypeAndJsonParsing() {
+        assertEquals(ContentType.TEXT, ContentType.valueOf("TEXT"));
+        assertEquals(ContentType.TEXT, ContentType.fromString("text"));
+        assertEquals(ContentType.TEXT, ContentType.fromString("TEXT"));
+        assertEquals(ContentType.MARKDOWN, ContentType.fromString("markdown"));
+        assertEquals(ContentType.PARAGRAPH, ContentType.fromString("PARAGRAPH"));
+    }
 }

@@ -1,6 +1,6 @@
 # PROJECT_CONTEXT.md — NoSeumCode
 
-_Last updated: 2026-09-24 | Conversation: 67344526-4298-4551-abb3-f061712dca15_
+_Last updated: 2026-09-25 | Conversation: 81fa4873-a589-4692-878b-98cdc85b45b9_
 
 ## Project Overview
 
@@ -40,8 +40,8 @@ frontend/
   .htaccess     Apache security headers + HTTPS redirect
 ```
 
-## Active Branch: `feat/sprint-2-stripe-checkout`
-## Current State: Sprint 2 (Tunnel de Vente & Monétisation Stripe Checkout) implémenté, testé (39 tests au vert) et prêt pour fusion dans develop.
+## Active Branch: `fix/content-type-enum-text`
+## Current State: Correction de l'enum ContentType.TEXT (JPA 400 Bad Request résolu, 42 tests au vert).
 ## Next Sprint: Sprint 3 (Auth, Comptes & E-mails transactionnels).
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM). Work on dedicated branches (`feat/*`, `fix/*`) and open PRs to `develop` for manual merge (ADR-009).
 

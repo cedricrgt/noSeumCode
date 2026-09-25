@@ -3,6 +3,7 @@ package com.codebangers.backend.content.model;
 import com.codebangers.backend.chapter.model.Chapter;
 import com.codebangers.backend.course.model.ApprovalStatus;
 import com.codebangers.backend.user.model.User;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -222,6 +223,7 @@ public class Content {
     // =========================
 
     public enum ContentType {
+        TEXT,
         HEADING,
         PARAGRAPH,
         VIDEO,
@@ -230,6 +232,18 @@ public class Content {
         LIST,
         CODE,
         QUIZ,
-        MARKDOWN
+        MARKDOWN;
+
+        @JsonCreator
+        public static ContentType fromString(String value) {
+            if (value == null || value.isBlank()) {
+                return null;
+            }
+            try {
+                return ContentType.valueOf(value.trim().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Type de contenu non supporté: " + value);
+            }
+        }
     }
 }

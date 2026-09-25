@@ -177,3 +177,24 @@ _Chronologique — plus récent en bas_
    - Mise à jour et validation de `PaymentCheckoutServiceTest.java` (10 tests unitaires couvrant le mode embedded, `clientSecret`, tarifs officiels 579 € et 279 €, cours déjà payé, cours gratuit, webhook ciblé, sécurité JWT).
    - Exécution complète de la suite de tests : 41 tests réussis (`BUILD SUCCESS`, 0 erreur, 0 échec).
    - Test réel de création de session Stripe Checkout Embedded validé de bout en bout avec retour de `clientSecret` et `amount=57900`.
+
+---
+
+## 2026-09-25 | Conversation: 81fa4873-a589-4692-878b-98cdc85b45b9
+
+**Type**: Correctif de bug (JPA Enum ContentType.TEXT)
+**Auteur**: Antigravity (Agent IA)
+**Branche**: `fix/content-type-enum-text`
+
+**Contexte & Problème**:
+- L'appel API `GET /api/chapters/course/c1000000-0000-0000-0000-000000000001/all` (chargement des chapitres du cours HTML & CSS) échouait avec HTTP 400 Bad Request :
+  `No enum constant com.codebangers.backend.content.model.Content.ContentType.TEXT`.
+- Les migrations Flyway V007 et V011 inséraient des contenus pédagogiques avec la valeur `'TEXT'`, absente de l'énumération Java `Content.ContentType`.
+
+**Corrections appliquées**:
+- `Content.java` :
+  - Ajout de la constante `TEXT` dans l'énumération `ContentType`.
+  - Ajout de la méthode annotée `@JsonCreator fromString(String)` pour une désérialisation JSON robuste et insensible à la casse.
+- `DomainModelTest.java` & `PaywallSecurityTest.java` :
+  - Ajout de tests unitaires vérifiant la prise en charge de `ContentType.TEXT` et sa compatibilité avec le parsing JSON et le paywall.
+- Suite de tests validée : 42 tests réussis (`BUILD SUCCESS`, 0 erreur, 0 échec).
