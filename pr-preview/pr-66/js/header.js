@@ -267,22 +267,146 @@ function resolveCourseId(idOrSlug) {
   return COURSE_SLUG_MAP[idOrSlug] || idOrSlug;
 }
 
+let currentStripeEmbeddedInstance = null;
+
 /**
- * Crée une session Stripe Checkout et redirige vers la page de paiement sécurisée.
+ * Charge dynamiquement le SDK Stripe.js s'il n'est pas encore présent sur la page.
  */
-async function redirectToStripeCheckout(courseId) {
+function ensureStripeJsLoaded() {
+  if (typeof window.Stripe === "function") {
+    return Promise.resolve(window.Stripe);
+  }
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[src*="js.stripe.com"]');
+    if (existing) {
+      if (typeof window.Stripe === "function") {
+        resolve(window.Stripe);
+      } else {
+        existing.addEventListener("load", () => resolve(window.Stripe));
+        existing.addEventListener("error", () => reject(new Error("Échec du chargement de Stripe.js")));
+      }
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://js.stripe.com/v3/";
+    script.async = true;
+    script.onload = () => resolve(window.Stripe);
+    script.onerror = () => reject(new Error("Impossible de charger le SDK Stripe.js"));
+    document.head.appendChild(script);
+  });
+}
+window.ensureStripeJsLoaded = ensureStripeJsLoaded;
+
+/**
+ * Ferme le Paywall intégré et détruit proprement l'instance Stripe Embedded Checkout.
+ */
+function closeStripePaywall() {
+  const modal = document.getElementById("stripe-paywall-modal");
+  if (modal) {
+    if (typeof modal.hidePopover === "function" && modal.matches && modal.matches(":popover-open")) {
+      try { modal.hidePopover(); } catch (_) {}
+    } else {
+      modal.style.display = "none";
+    }
+  }
+
+  if (currentStripeEmbeddedInstance) {
+    try {
+      currentStripeEmbeddedInstance.destroy();
+    } catch (err) {
+      console.warn("Erreur lors de la destruction de l'instance Stripe Embedded:", err);
+    }
+    currentStripeEmbeddedInstance = null;
+  }
+
+  const container = document.getElementById("stripe-checkout");
+  if (container) {
+    container.innerHTML = "";
+  }
+  const loading = document.getElementById("paywall-loading");
+  if (loading) {
+    loading.style.display = "flex";
+  }
+  const alertEl = document.getElementById("paywall-error-alert");
+  if (alertEl) {
+    alertEl.style.display = "none";
+    alertEl.textContent = "";
+  }
+}
+window.closeStripePaywall = closeStripePaywall;
+
+/**
+ * Ouvre le Paywall NoSeumCode intégré directement dans la page.
+ * Utilise Stripe Embedded Checkout pour garder l'utilisateur sur le site noseumcode.fr.
+ */
+async function openStripePaywall(courseId, courseTitle, priceText) {
   courseId = resolveCourseId(courseId);
+
+  // Fermer les popovers de cours et d'authentification
+  document.querySelectorAll("[popover]").forEach(p => {
+    if (p.id && (p.id.startsWith("course-") || p.id === "auth-popover") && p.matches && p.matches(":popover-open")) {
+      try { p.hidePopover(); } catch (_) { }
+    }
+  });
+
   const token = localStorage.getItem("noseum_token");
-  if (!token) {
+  const userStr = localStorage.getItem("noseum_user");
+
+  // Si non connecté : mémoriser et ouvrir la modale d'inscription
+  if (!token || !userStr) {
+    sessionStorage.setItem("noseum_pending_checkout_course_id", courseId);
+    sessionStorage.setItem("noseum_pending_checkout_course_title", courseTitle || "");
+    sessionStorage.setItem("noseum_pending_checkout_course_price", priceText || "");
+
+    openGlobalAuthModal("register");
+    showGlobalAuthAlert(`🎓 Créez votre compte pour débloquer "${courseTitle || "votre formation"}" (${priceText || ""}). Le terminal de paiement sécurisé s'affichera directement après connexion.`, "info");
+    return;
+  }
+
+  const modal = document.getElementById("stripe-paywall-modal");
+  if (!modal) {
+    console.warn("Modale paywall #stripe-paywall-modal introuvable, redirection classique.");
     window.location.href = `cours.html?id=${encodeURIComponent(courseId)}&checkout=true`;
     return;
   }
 
-  const apiBase = window.API_BASE_URL || "";
-  const successUrl = `${window.location.origin}/success.html?course_id=${encodeURIComponent(courseId)}&session_id={CHECKOUT_SESSION_ID}`;
-  const cancelUrl = `${window.location.origin}/cours.html?id=${encodeURIComponent(courseId)}&cancelled=true`;
+  // Mettre à jour les informations du cours dans la modale
+  const titleEl = document.getElementById("paywall-course-title");
+  if (titleEl) {
+    titleEl.textContent = courseTitle || "Débloquer la Formation";
+  }
+  const priceEl = document.getElementById("paywall-course-price");
+  if (priceEl && priceText) {
+    priceEl.textContent = priceText;
+  }
+
+  const loadingEl = document.getElementById("paywall-loading");
+  if (loadingEl) loadingEl.style.display = "flex";
+
+  const alertEl = document.getElementById("paywall-error-alert");
+  if (alertEl) {
+    alertEl.style.display = "none";
+    alertEl.textContent = "";
+  }
+
+  const container = document.getElementById("stripe-checkout");
+  if (container) container.innerHTML = "";
+
+  // Afficher la modale
+  if (typeof modal.showPopover === "function" && !modal.matches(":popover-open")) {
+    try { modal.showPopover(); } catch (_) { modal.style.display = "flex"; }
+  } else {
+    modal.style.display = "flex";
+  }
 
   try {
+    // 1. S'assurer que le SDK Stripe.js est prêt
+    const StripeObj = await ensureStripeJsLoaded();
+
+    // 2. Appeler l'API backend pour créer la session Stripe Embedded
+    const apiBase = window.API_BASE_URL || "";
+    const returnUrl = `${window.location.origin}/success.html?course_id=${encodeURIComponent(courseId)}&session_id={CHECKOUT_SESSION_ID}`;
+
     const res = await fetch(`${apiBase}/api/payments/create-checkout-session`, {
       method: "POST",
       headers: {
@@ -291,73 +415,102 @@ async function redirectToStripeCheckout(courseId) {
       },
       body: JSON.stringify({
         courseId: courseId,
-        successUrl: successUrl,
-        cancelUrl: cancelUrl
+        embedded: true,
+        returnUrl: returnUrl,
+        successUrl: returnUrl
       })
     });
 
-    if (res && res.ok) {
-      const data = await res.json();
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      if (errData.message && errData.message.includes("déjà acheté")) {
+        if (alertEl) {
+          alertEl.style.display = "block";
+          alertEl.textContent = "Vous avez déjà accès à cette formation ! Redirection vers vos cours...";
+        }
+        setTimeout(() => {
+          closeStripePaywall();
+          window.location.href = `cours.html?id=${encodeURIComponent(courseId)}`;
+        }, 1500);
+        return;
+      }
+      throw new Error(errData.message || errData.error || "Impossible d'initialiser le paiement sécurisé.");
+    }
+
+    const data = await res.json();
+
+    if (data.sessionId === "free_course") {
+      if (alertEl) {
+        alertEl.style.display = "block";
+        alertEl.style.background = "rgba(0, 255, 135, 0.15)";
+        alertEl.style.border = "1px solid #00ff87";
+        alertEl.style.color = "#00ff87";
+        alertEl.textContent = "🎉 Formation gratuite validée avec succès ! Redirection...";
+      }
+      setTimeout(() => {
+        closeStripePaywall();
+        window.location.href = `cours.html?id=${encodeURIComponent(courseId)}`;
+      }, 1200);
+      return;
+    }
+
+    if (!data.clientSecret) {
       if (data.sessionUrl) {
         window.location.href = data.sessionUrl;
         return;
-      } else if (data.sessionId === "free_course") {
-        window.location.href = `cours.html?id=${encodeURIComponent(courseId)}`;
-        return;
       }
-    } else if (res) {
-      const err = await res.json().catch(() => ({}));
-      if (err.message && err.message.includes("déjà acheté")) {
-        alert("Vous avez déjà accès à cette formation ! Redirection vers votre cours...");
-        window.location.href = `cours.html?id=${encodeURIComponent(courseId)}`;
-        return;
-      }
+      throw new Error("Clé de session sécurisée (clientSecret) non reçue.");
     }
-  } catch (err) {
-    console.warn("Échec appel Stripe Checkout direct, redirection cours:", err);
-  }
 
-  window.location.href = `cours.html?id=${encodeURIComponent(courseId)}&checkout=true`;
+    if (data.amount && priceEl) {
+      priceEl.textContent = `${(data.amount / 100).toFixed(0)} €`;
+    }
+
+    // Nettoyer toute instance précédente
+    if (currentStripeEmbeddedInstance) {
+      try { currentStripeEmbeddedInstance.destroy(); } catch (_) {}
+      currentStripeEmbeddedInstance = null;
+    }
+
+    // 3. Initialiser Stripe Embedded Checkout et le monter dans la modale
+    const publishableKey = data.publishableKey || "pk_test_2BsFfeoXfXOvjtOnGf24JH6E00S9sVcIEG";
+    const stripe = StripeObj(publishableKey);
+
+    const checkout = await stripe.initEmbeddedCheckout({
+      clientSecret: data.clientSecret
+    });
+
+    currentStripeEmbeddedInstance = checkout;
+
+    if (loadingEl) loadingEl.style.display = "none";
+    checkout.mount("#stripe-checkout");
+
+  } catch (err) {
+    console.error("Erreur lors de l'initialisation du paywall Stripe:", err);
+    if (loadingEl) loadingEl.style.display = "none";
+    if (alertEl) {
+      alertEl.style.display = "block";
+      alertEl.textContent = "❌ " + (err.message || "Erreur lors de l'ouverture du terminal de paiement.");
+    }
+  }
+}
+window.openStripePaywall = openStripePaywall;
+
+/**
+ * Fonction de compatibilité appelant le paywall in-app
+ */
+async function redirectToStripeCheckout(courseId) {
+  await openStripePaywall(courseId);
 }
 window.redirectToStripeCheckout = redirectToStripeCheckout;
 
 /**
  * Déclenche l'inscription ou l'achat d'un cours depuis les popovers et boutons du site.
- * Si non connecté : mémorise l'intention d'achat et ouvre la modale d'inscription.
- * Si connecté : redirige directement vers Stripe Checkout.
+ * Ouvre le Paywall NoSeumCode intégré directement dans la page.
  */
 async function initiateCourseEnrollment(courseId, courseTitle, priceText) {
   courseId = resolveCourseId(courseId);
-
-  // Fermer les popovers de cours ouverts
-  document.querySelectorAll("[popover]").forEach(p => {
-    if (p.id && p.id.startsWith("course-") && p.matches && p.matches(":popover-open")) {
-      try { p.hidePopover(); } catch (_) { }
-    }
-  });
-
-  const token = localStorage.getItem("noseum_token");
-  const userStr = localStorage.getItem("noseum_user");
-
-  if (!token || !userStr) {
-    sessionStorage.setItem("noseum_pending_checkout_course_id", courseId);
-    sessionStorage.setItem("noseum_pending_checkout_course_title", courseTitle || "");
-    sessionStorage.setItem("noseum_pending_checkout_course_price", priceText || "");
-
-    openGlobalAuthModal("register");
-    showGlobalAuthAlert(`🎓 Créez votre compte pour débloquer "${courseTitle || "votre formation"}" (${priceText || ""}). Vous serez redirigé automatiquement vers le paiement sécurisé dès validation.`, "info");
-    return;
-  }
-
-  // Utilisateur déjà authentifié : redirection directe vers Stripe Checkout
-  if (typeof window !== "undefined" && window.event && window.event.target) {
-    const btn = window.event.target.closest("button");
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = `<span>⏳ Redirection vers Stripe...</span>`;
-    }
-  }
-  await redirectToStripeCheckout(courseId);
+  await openStripePaywall(courseId, courseTitle, priceText);
 }
 window.initiateCourseEnrollment = initiateCourseEnrollment;
 
@@ -427,15 +580,17 @@ async function handleGlobalEmailLogin(e) {
 
       const pendingCourseId = sessionStorage.getItem("noseum_pending_checkout_course_id");
       if (pendingCourseId) {
+        const pendingTitle = sessionStorage.getItem("noseum_pending_checkout_course_title") || "";
+        const pendingPrice = sessionStorage.getItem("noseum_pending_checkout_course_price") || "";
         sessionStorage.removeItem("noseum_pending_checkout_course_id");
         sessionStorage.removeItem("noseum_pending_checkout_course_title");
         sessionStorage.removeItem("noseum_pending_checkout_course_price");
 
-        showGlobalAuthAlert("💳 Connexion réussie ! Redirection vers la page de paiement sécurisée Stripe...", "success");
+        showGlobalAuthAlert("💳 Connexion réussie ! Ouverture du terminal de paiement sécurisé...", "success");
         setTimeout(async () => {
           closeGlobalAuthModal();
-          await redirectToStripeCheckout(pendingCourseId);
-        }, 500);
+          await openStripePaywall(pendingCourseId, pendingTitle, pendingPrice);
+        }, 400);
       } else {
         showGlobalAuthAlert("✅ Connexion réussie ! Redirection vers votre espace...", "success");
         setTimeout(() => {
@@ -652,15 +807,17 @@ async function handleGlobalEmailRegister(e) {
 
       const pendingCourseId = sessionStorage.getItem("noseum_pending_checkout_course_id");
       if (pendingCourseId) {
+        const pendingTitle = sessionStorage.getItem("noseum_pending_checkout_course_title") || "";
+        const pendingPrice = sessionStorage.getItem("noseum_pending_checkout_course_price") || "";
         sessionStorage.removeItem("noseum_pending_checkout_course_id");
         sessionStorage.removeItem("noseum_pending_checkout_course_title");
         sessionStorage.removeItem("noseum_pending_checkout_course_price");
 
-        showGlobalAuthAlert("🎉 Compte créé ! Redirection vers la page de paiement sécurisée Stripe...", "success");
+        showGlobalAuthAlert("🎉 Compte créé ! Ouverture du terminal de paiement sécurisé...", "success");
         setTimeout(async () => {
           closeGlobalAuthModal();
-          await redirectToStripeCheckout(pendingCourseId);
-        }, 500);
+          await openStripePaywall(pendingCourseId, pendingTitle, pendingPrice);
+        }, 400);
       } else {
         showGlobalAuthAlert("🎉 Compte créé avec succès ! Bienvenue sur NoSeumCode.", "success");
         setTimeout(() => {
