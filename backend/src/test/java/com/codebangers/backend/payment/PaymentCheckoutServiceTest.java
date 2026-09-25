@@ -81,8 +81,8 @@ class PaymentCheckoutServiceTest {
         when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(new ArrayList<>());
 
         CheckoutSessionResponse expectedResponse = new CheckoutSessionResponse(
-                "cs_test_123", "https://checkout.stripe.com/pay/cs_test_123", courseId, 4900L, "EUR");
-        when(stripeGateway.createCheckoutSession(eq(testUser), eq(testCourse), any(), any()))
+                "cs_test_123", "https://checkout.stripe.com/pay/cs_test_123", courseId, 4900L, "EUR", "cs_test_123_secret_xyz", "pk_test_123");
+        when(stripeGateway.createCheckoutSession(eq(testUser), eq(testCourse), any(), any(), anyBoolean(), any()))
                 .thenReturn(expectedResponse);
 
         CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest(courseId);
@@ -91,7 +91,9 @@ class PaymentCheckoutServiceTest {
         assertNotNull(actual);
         assertEquals("cs_test_123", actual.getSessionId());
         assertEquals("https://checkout.stripe.com/pay/cs_test_123", actual.getSessionUrl());
-        verify(stripeGateway).createCheckoutSession(eq(testUser), eq(testCourse), any(), any());
+        assertEquals("cs_test_123_secret_xyz", actual.getClientSecret());
+        assertEquals("pk_test_123", actual.getPublishableKey());
+        verify(stripeGateway).createCheckoutSession(eq(testUser), eq(testCourse), any(), any(), eq(true), any());
     }
 
     @Test
@@ -186,8 +188,8 @@ class PaymentCheckoutServiceTest {
         when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(new ArrayList<>());
 
         CheckoutSessionResponse expected = new CheckoutSessionResponse(
-                "cs_abc", "https://checkout.stripe.com/pay/cs_abc", courseId, 4900L, "EUR");
-        when(stripeGateway.createCheckoutSession(eq(testUser), eq(testCourse), any(), any()))
+                "cs_abc", "https://checkout.stripe.com/pay/cs_abc", courseId, 4900L, "EUR", "cs_abc_secret", "pk_test_123");
+        when(stripeGateway.createCheckoutSession(eq(testUser), eq(testCourse), any(), any(), anyBoolean(), any()))
                 .thenReturn(expected);
 
         ResponseEntity<?> response = paymentController.createCheckoutSession(request, jwt);
@@ -196,6 +198,7 @@ class PaymentCheckoutServiceTest {
         assertTrue(response.getBody() instanceof CheckoutSessionResponse);
         CheckoutSessionResponse res = (CheckoutSessionResponse) response.getBody();
         assertEquals("cs_abc", res.getSessionId());
+        assertEquals("cs_abc_secret", res.getClientSecret());
     }
 
     @Test
@@ -218,8 +221,8 @@ class PaymentCheckoutServiceTest {
         when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(new ArrayList<>());
 
         CheckoutSessionResponse expectedResponse = new CheckoutSessionResponse(
-                "cs_test_579", "https://checkout.stripe.com/pay/cs_test_579", htmlCourse.getId(), 57900L, "EUR");
-        when(stripeGateway.createCheckoutSession(eq(testUser), eq(htmlCourse), any(), any()))
+                "cs_test_579", "https://checkout.stripe.com/pay/cs_test_579", htmlCourse.getId(), 57900L, "EUR", "sec_579", "pk_test");
+        when(stripeGateway.createCheckoutSession(eq(testUser), eq(htmlCourse), any(), any(), anyBoolean(), any()))
                 .thenReturn(expectedResponse);
 
         CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest(htmlCourse.getId());
@@ -228,7 +231,8 @@ class PaymentCheckoutServiceTest {
         assertNotNull(actual);
         assertEquals(57900L, actual.getAmount());
         assertEquals("EUR", actual.getCurrency());
-        verify(stripeGateway).createCheckoutSession(eq(testUser), eq(htmlCourse), any(), any());
+        assertEquals("sec_579", actual.getClientSecret());
+        verify(stripeGateway).createCheckoutSession(eq(testUser), eq(htmlCourse), any(), any(), eq(true), any());
     }
 
     @Test
@@ -243,8 +247,8 @@ class PaymentCheckoutServiceTest {
         when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(new ArrayList<>());
 
         CheckoutSessionResponse expectedResponse = new CheckoutSessionResponse(
-                "cs_test_279", "https://checkout.stripe.com/pay/cs_test_279", gitCourse.getId(), 27900L, "EUR");
-        when(stripeGateway.createCheckoutSession(eq(testUser), eq(gitCourse), any(), any()))
+                "cs_test_279", "https://checkout.stripe.com/pay/cs_test_279", gitCourse.getId(), 27900L, "EUR", "sec_279", "pk_test");
+        when(stripeGateway.createCheckoutSession(eq(testUser), eq(gitCourse), any(), any(), anyBoolean(), any()))
                 .thenReturn(expectedResponse);
 
         CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest(gitCourse.getId());
@@ -253,6 +257,7 @@ class PaymentCheckoutServiceTest {
         assertNotNull(actual);
         assertEquals(27900L, actual.getAmount());
         assertEquals("EUR", actual.getCurrency());
-        verify(stripeGateway).createCheckoutSession(eq(testUser), eq(gitCourse), any(), any());
+        assertEquals("sec_279", actual.getClientSecret());
+        verify(stripeGateway).createCheckoutSession(eq(testUser), eq(gitCourse), any(), any(), eq(true), any());
     }
 }

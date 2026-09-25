@@ -1308,50 +1308,25 @@ async function initiateStripeCheckout(courseId) {
   let originalHtml = "";
   if (typeof window !== "undefined" && window.event && window.event.target) {
     clickedBtn = window.event.target.closest("button");
-    if (clickedBtn) {
-      originalHtml = clickedBtn.innerHTML;
-      clickedBtn.disabled = true;
-      clickedBtn.innerHTML = `<span>⏳ Redirection vers Stripe...</span>`;
-    }
   }
 
-  try {
-    const successUrl = `${window.location.origin}/success.html?course_id=${encodeURIComponent(courseId)}&session_id={CHECKOUT_SESSION_ID}`;
-    const cancelUrl = `${window.location.origin}/cours.html?id=${encodeURIComponent(courseId)}&cancelled=true`;
+  // Trouver le cours pour enrichir le paywall
+  const course = (typeof allCourses !== "undefined" && Array.isArray(allCourses))
+    ? allCourses.find(c => c.id === courseId)
+    : (typeof currentCourse !== "undefined" ? currentCourse : null);
 
-    const res = await coursApiFetch("/api/payments/create-checkout-session", {
-      method: "POST",
-      body: JSON.stringify({
-        courseId: courseId,
-        successUrl: successUrl,
-        cancelUrl: cancelUrl
-      })
-    });
+  const courseTitle = course ? course.title : "Formation NoSeumCode";
+  let priceText = "579 €";
+  if (course && course.priceInCents) {
+    priceText = `${(course.priceInCents / 100).toFixed(0)} €`;
+  }
 
-    if (!res) {
-      throw new Error("Impossible de contacter le serveur de paiement.");
-    }
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || err.error || "Erreur lors de l'initialisation du paiement Stripe.");
-    }
-
-    const data = await res.json();
-    if (data.sessionUrl) {
-      window.location.href = data.sessionUrl;
-    } else if (data.sessionId === "free_course") {
-      alert("🎉 Félicitations ! Votre accès gratuit a été validé.");
-      window.location.href = `cours.html?id=${courseId}`;
-    } else {
-      throw new Error("L'URL de paiement Stripe n'a pas été renvoyée par le serveur.");
-    }
-  } catch (err) {
-    alert("❌ " + err.message);
-    if (clickedBtn) {
-      clickedBtn.disabled = false;
-      clickedBtn.innerHTML = originalHtml;
-    }
+  if (typeof window.openStripePaywall === "function") {
+    await window.openStripePaywall(courseId, courseTitle, priceText);
+  } else if (typeof window.openAuthModal === "function" && !currentUser) {
+    window.openAuthModal("login");
+  } else {
+    window.location.href = `cours.html?id=${encodeURIComponent(courseId)}&checkout=true`;
   }
 }
 

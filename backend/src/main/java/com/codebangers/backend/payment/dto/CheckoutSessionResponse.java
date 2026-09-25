@@ -9,16 +9,24 @@ public class CheckoutSessionResponse {
     private UUID courseId;
     private Long amount;
     private String currency;
+    private String clientSecret;
+    private String publishableKey;
 
     public CheckoutSessionResponse() {
     }
 
     public CheckoutSessionResponse(String sessionId, String sessionUrl, UUID courseId, Long amount, String currency) {
+        this(sessionId, sessionUrl, courseId, amount, currency, null, null);
+    }
+
+    public CheckoutSessionResponse(String sessionId, String sessionUrl, UUID courseId, Long amount, String currency, String clientSecret, String publishableKey) {
         this.sessionId = sessionId;
         this.sessionUrl = sessionUrl;
         this.courseId = courseId;
         this.amount = amount;
         this.currency = currency;
+        this.clientSecret = clientSecret;
+        this.publishableKey = publishableKey;
     }
 
     public String getSessionId() {
@@ -59,5 +67,21 @@ public class CheckoutSessionResponse {
 
     public void setCurrency(String currency) {
         this.currency = currency;
+    }
+
+    public String getClientSecret() {
+        return clientSecret;
+    }
+
+    public void setClientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
+    }
+
+    public String getPublishableKey() {
+        return publishableKey;
+    }
+
+    public void setPublishableKey(String publishableKey) {
+        this.publishableKey = publishableKey;
     }
 }

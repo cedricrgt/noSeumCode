@@ -123,7 +123,8 @@ public class PaymentService {
             return new CheckoutSessionResponse("free_course", "/cours.html?id=" + course.getId(), course.getId(), 0L, course.getCurrency());
         }
 
-        return stripeGateway.createCheckoutSession(user, course, request.getSuccessUrl(), request.getCancelUrl());
+        boolean embedded = request.getEmbedded() == null || request.getEmbedded();
+        return stripeGateway.createCheckoutSession(user, course, request.getSuccessUrl(), request.getCancelUrl(), embedded, request.getReturnUrl());
     }
 
     /**

@@ -160,16 +160,18 @@ _Chronologique — plus récent en bas_
    - Endpoint sécurisé `POST /api/payments/create-checkout-session` (authentifié par JWT) générant une Checkout Session Stripe hébergée avec métadonnées (`userId`, `courseId`, `userEmail`).
    - Gestion des cas limites : blocage des doubles paiements si déjà `PAID`, validation immédiate gratuite si `priceInCents <= 0`, et interdiction d'achat sur cours non publiés ou supprimés.
    - Extension du webhook Stripe : extraction des métadonnées `courseId` et `userId` pour débloquer spécifiquement la formation achetée.
+   - Support de Stripe Embedded Checkout : ajout du mode `uiMode: EMBEDDED` avec `returnUrl`, retour du `clientSecret` et de la `publishableKey` via `CheckoutSessionResponse` pour permettre un affichage 100% in-app sans redirection externe.
    - Résolution de l'ambiguïté de constructeur Spring Boot : annotation `@Autowired` explicite sur le constructeur multi-arguments de `PaymentController`.
 
-4. **Expérience Apprenant & Boutons d'Achat Frontend (`index.html`, `cours.js`, `success.html`)** :
-   - Affichage dynamique et badges des tarifs officiels (579 € pour HTML & CSS, 579 € pour JavaScript, 279 € pour Git & GitHub) sur la page d'accueil (`index.html`), dans les cartes et dans les modales popover avec CTA d'inscription/achat.
-   - Affichage dynamique du prix et du niveau sur chaque carte du catalogue de cours (`cours.js`).
+4. **Expérience Apprenant & Paywall In-App Frontend (`index.html`, `cours.js`, `header.js`, `popovers-shared.html`, `success.html`)** :
+   - Intégration de la modale Paywall In-App `#stripe-paywall-modal` : montage direct du formulaire Stripe via `stripe.initEmbeddedCheckout({ clientSecret })` dans une modale Cyber Dark élégante sans jamais quitter le site `noseumcode.fr`.
+   - Affichage dynamique du titre de formation, du tarif officiel (579 € pour HTML & CSS et JavaScript, 279 € pour Git & GitHub) et des badges de garantie dans l'en-tête du Paywall.
+   - Gestion du cycle de vie du composant : chargement asynchrone sécurisé de Stripe.js v3, skeleton de chargement initial et destruction propre de l'instance (`checkout.destroy()`) à la fermeture.
+   - Déclenchement automatique post-connexion : à la validation du login ou du register, la modale d'authentification cède instantanément la place au Paywall in-app du cours ciblé.
+   - Sécurisation CSP et Permissions-Policy (`frontend/.htaccess`) : autorisation des scripts, frames et connexions API Stripe (`js.stripe.com`, `hooks.stripe.com`, `api.stripe.com`) et de l'API Payment Request.
+   - Affichage dynamique et badges des tarifs officiels sur la page d'accueil (`index.html`), dans les cartes et dans les modales popover avec CTA d'inscription/achat.
    - Intégration du bouton "💳 Acheter / Débloquer" sur le catalogue, sur le panneau de cours verrouillé, et sur la bannière de prévisualisation dans la classe virtuelle.
-   - Création de la fonction `initiateStripeCheckout(courseId)` avec redirection automatique vers Stripe Checkout et retour vers `success.html` ou `cours.html`.
-   - Amélioration de `success.html` avec lecture du paramètre `course_id` pour proposer un bouton direct "Commencer la formation immédiatement 🚀".
-   - Préservation de l'intention d'achat : mémorisation de l'identifiant du cours (`sessionStorage`) lors du clic sur "S'inscrire direct" sur la page d'accueil ou dans la classe virtuelle, permettant une redirection automatique vers la page de paiement Stripe Checkout dès la fin de l'inscription ou de la connexion (éliminant la redirection par défaut vers le dashboard).
 
 5. **Tests & Validation Locale** :
-   - Création de `PaymentCheckoutServiceTest.java` (10 tests unitaires couvrant la création de session aux tarifs officiels 579 € et 279 €, cours déjà payé, cours gratuit, cours non publié, webhook ciblé, sécurité JWT).
+   - Mise à jour et validation de `PaymentCheckoutServiceTest.java` (10 tests unitaires couvrant le mode embedded, `clientSecret`, tarifs officiels 579 € et 279 €, cours déjà payé, cours gratuit, webhook ciblé, sécurité JWT).
    - Exécution complète de la suite de tests : 41 tests réussis (`BUILD SUCCESS`, 0 erreur, 0 échec).

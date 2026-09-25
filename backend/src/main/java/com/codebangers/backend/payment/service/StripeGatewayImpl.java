@@ -18,20 +18,31 @@ public class StripeGatewayImpl implements StripeGateway {
     private static final Logger log = LoggerFactory.getLogger(StripeGatewayImpl.class);
 
     private final String stripeSecretKey;
+    private final String stripePublishableKey;
     private final String defaultSuccessUrl;
     private final String defaultCancelUrl;
+    private final String defaultReturnUrl;
 
     public StripeGatewayImpl(
             @Value("${stripe.secret.key:${STRIPE_SECRET_KEY:}}") String stripeSecretKey,
+            @Value("${stripe.publishable.key:${STRIPE_PUBLISHABLE_KEY:pk_test_2BsFfeoXfXOvjtOnGf24JH6E00S9sVcIEG}}") String stripePublishableKey,
             @Value("${stripe.success.url:${STRIPE_SUCCESS_URL:http://localhost:3000/success.html}}") String defaultSuccessUrl,
-            @Value("${stripe.cancel.url:${STRIPE_CANCEL_URL:${app.frontend.url:http://localhost:3000}/cours.html}}") String defaultCancelUrl) {
+            @Value("${stripe.cancel.url:${STRIPE_CANCEL_URL:${app.frontend.url:http://localhost:3000}/cours.html}}") String defaultCancelUrl,
+            @Value("${stripe.return.url:${STRIPE_RETURN_URL:${app.frontend.url:http://localhost:3000}/success.html}}") String defaultReturnUrl) {
         this.stripeSecretKey = stripeSecretKey;
+        this.stripePublishableKey = stripePublishableKey;
         this.defaultSuccessUrl = defaultSuccessUrl;
         this.defaultCancelUrl = defaultCancelUrl;
+        this.defaultReturnUrl = defaultReturnUrl;
     }
 
     @Override
     public CheckoutSessionResponse createCheckoutSession(User user, Course course, String successUrl, String cancelUrl) {
+        return createCheckoutSession(user, course, successUrl, cancelUrl, true, null);
+    }
+
+    @Override
+    public CheckoutSessionResponse createCheckoutSession(User user, Course course, String successUrl, String cancelUrl, boolean embedded, String returnUrl) {
         if (stripeSecretKey == null || stripeSecretKey.isBlank()) {
             throw new IllegalStateException("Stripe Secret Key non configurée. Impossible de créer une Checkout Session.");
         }
@@ -44,14 +55,6 @@ public class StripeGatewayImpl implements StripeGateway {
                 ? course.getCurrency().toLowerCase()
                 : "eur";
 
-        String effectiveSuccessUrl = (successUrl != null && !successUrl.isBlank())
-                ? successUrl
-                : defaultSuccessUrl + "?session_id={CHECKOUT_SESSION_ID}&course_id=" + course.getId();
-
-        String effectiveCancelUrl = (cancelUrl != null && !cancelUrl.isBlank())
-                ? cancelUrl
-                : defaultCancelUrl + "?id=" + course.getId() + "&cancelled=true";
-
         String description = course.getDescription();
         if (description != null && description.length() > 250) {
             description = description.substring(0, 247) + "...";
@@ -61,10 +64,7 @@ public class StripeGatewayImpl implements StripeGateway {
         }
 
         SessionCreateParams.Builder paramsBuilder = SessionCreateParams.builder()
-                .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setCustomerEmail(user.getEmail())
-                .setSuccessUrl(effectiveSuccessUrl)
-                .setCancelUrl(effectiveCancelUrl)
                 .putMetadata("userId", user.getId().toString())
                 .putMetadata("courseId", course.getId().toString())
                 .putMetadata("userEmail", user.getEmail())
@@ -86,6 +86,36 @@ public class StripeGatewayImpl implements StripeGateway {
                                 .build()
                 );
 
+        if (embedded) {
+            String effectiveReturnUrl = (returnUrl != null && !returnUrl.isBlank())
+                    ? returnUrl
+                    : ((successUrl != null && !successUrl.isBlank()) ? successUrl : defaultReturnUrl);
+
+            if (!effectiveReturnUrl.contains("{CHECKOUT_SESSION_ID}")) {
+                effectiveReturnUrl += (effectiveReturnUrl.contains("?") ? "&" : "?") + "session_id={CHECKOUT_SESSION_ID}";
+            }
+            if (!effectiveReturnUrl.contains("course_id=") && course.getId() != null) {
+                effectiveReturnUrl += "&course_id=" + course.getId();
+            }
+
+            paramsBuilder
+                    .setUiMode(SessionCreateParams.UiMode.EMBEDDED)
+                    .setReturnUrl(effectiveReturnUrl);
+        } else {
+            String effectiveSuccessUrl = (successUrl != null && !successUrl.isBlank())
+                    ? successUrl
+                    : defaultSuccessUrl + "?session_id={CHECKOUT_SESSION_ID}&course_id=" + course.getId();
+
+            String effectiveCancelUrl = (cancelUrl != null && !cancelUrl.isBlank())
+                    ? cancelUrl
+                    : defaultCancelUrl + "?id=" + course.getId() + "&cancelled=true";
+
+            paramsBuilder
+                    .setMode(SessionCreateParams.Mode.PAYMENT)
+                    .setSuccessUrl(effectiveSuccessUrl)
+                    .setCancelUrl(effectiveCancelUrl);
+        }
+
         try {
             RequestOptions options = RequestOptions.builder()
                     .setApiKey(stripeSecretKey)
@@ -93,15 +123,17 @@ public class StripeGatewayImpl implements StripeGateway {
 
             Session session = Session.create(paramsBuilder.build(), options);
 
-            log.info("🛒 Session Stripe Checkout créée avec succès : ID={}, URL={}, Course={}, User={}",
-                    session.getId(), session.getUrl(), course.getId(), user.getEmail());
+            log.info("🛒 Session Stripe Checkout créée avec succès : ID={}, Mode={}, Course={}, User={}",
+                    session.getId(), (embedded ? "EMBEDDED" : "HOSTED"), course.getId(), user.getEmail());
 
             return new CheckoutSessionResponse(
                     session.getId(),
                     session.getUrl(),
                     course.getId(),
                     unitAmount,
-                    currency
+                    currency,
+                    session.getClientSecret(),
+                    stripePublishableKey
             );
         } catch (StripeException e) {
             log.error("Erreur lors de la création de la session Stripe: {}", e.getMessage(), e);
