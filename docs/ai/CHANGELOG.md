@@ -254,11 +254,11 @@ _Chronologique — plus récent en bas_
 **Objectif**: Isoler les déploiements du frontend pour que la branche `develop` soit publiée sur le sous-domaine de test `develop.noseumcode.fr` sur o2switch sans impacter la production `noseumcode.fr` (réservée à `main`).
 
 ### Réalisations & Configurations :
-1. **GitHub Actions Workflow FTP (`.github/workflows/ftp.yml`)** :
-   - Étape dynamique de sélection du répertoire cible FTP :
-     * Branche `main` : répertoire de production `${{ secrets.FTP_DIR }}`.
-     * Branche `develop` (ou autre branche de dev) : répertoire de dev `${{ secrets.FTP_DIR_DEV }}` (avec fallback à `develop.noseumcode.fr/`).
-   - Support optionnel de credentials FTP dédiés pour l'environnement dev via secrets GitHub (`FTP_SERVER_DEV`, `FTP_USERNAME_DEV`, `FTP_PASSWORD_DEV`), avec repli transparent sur les identifiants standards.
+1. **Séparation Stricte des Workflows FTP GitHub Actions** :
+   - `.github/workflows/ftp.yml` : Déploiement Production réservé exclusivement aux pushs sur la branche `main` vers `${{ secrets.FTP_DIR }}` (noseumcode.fr).
+   - `.github/workflows/ftp-dev.yml` : Déploiement Dev dédié déclenché sur la branche `develop` vers `${{ secrets.FTP_DIR_DEV }}` (avec repli automatique sur `develop.noseumcode.fr/`).
+   - Isolation totale : aucun risque qu'un commit ou merge sur `develop` ne touche le site de production.
+   - Support optionnel de credentials FTP dédiés pour le dev (`FTP_SERVER_DEV`, `FTP_USERNAME_DEV`, `FTP_PASSWORD_DEV`) avec repli sur les identifiants standards.
 2. **CORS Backend Spring Security (`SecurityConfig.java`, `.github/workflows/deploy.yml`)** :
    - Ajout explicite de `https://develop.noseumcode.fr` et du pattern `https://*.noseumcode.fr` dans les origines autorisées du backend Spring Boot.
    - Mise à jour du fallback `CORS_ALLOWED_ORIGINS` dans le script de déploiement VM Oracle Cloud (`deploy.yml`).
