@@ -267,3 +267,18 @@ _Chronologique — plus récent en bas_
    - En-tête conditionnel `X-Robots-Tag: noindex, nofollow, noarchive` appliqué sur le sous-domaine `develop.noseumcode.fr` pour prévenir tout risque d'indexation prématurée ou de duplicate content par les moteurs de recherche.
 4. **Validation Locale** :
    - 64 tests unitaires exécutés et validés avec succès (`BUILD SUCCESS`, 0 échec, 0 erreur).
+
+---
+
+## 2026-09-25 — Déploiement Dev o2switch (local-dir frontend) & Synchronisation .env Oracle
+
+**Conversation ID**: `81fa4873-a589-4692-878b-98cdc85b45b9`  
+**Branche**: `fix/ftp-dev-workflow-and-oracle-env`  
+**Objectif**: Déployer uniquement les fichiers du site (`frontend/`) à la racine du sous-domaine develop, et propager les variables FTP de développement dans le `.env` de la VM Oracle lors du déploiement.
+
+### Réalisations & Configurations :
+1. **Optimisation Workflow FTP Dev (`.github/workflows/ftp-dev.yml`)** :
+   - Ajout de `local-dir: ./frontend/` pour publier directement les fichiers web (`index.html`, `js`, `styles`, `.htaccess`) à la racine du sous-domaine o2switch.
+   - Évite le téléversement du backend Java et des documents internes, réduisant le temps de déploiement à une quinzaine de secondes.
+2. **Synchronisation .env sur la VM Oracle (`.github/workflows/deploy.yml`)** :
+   - Propagation des secrets `FTP_USERNAME_DEV`, `FTP_PASSWORD_DEV` et `FTP_DIR_DEV` dans l'étape SSH et génération automatique dans `~/noSeumCode/backend/.env`.
