@@ -148,7 +148,11 @@ _Chronologique — plus récent en bas_
 
 2. **Modèle Économique & Migration Flyway V011 (`Course.java`, `V011__add_course_monetization_fields.sql`)** :
    - Ajout des attributs de monétisation et de catalogue dans `Course` : `priceInCents` (Long), `currency` (String), `slug` (String, unique), `thumbnailUrl` (String), `level` (String), `isPublished` (boolean).
-   - Création de la migration idempotente `V011` initialisant les prix des formations existantes (49 € pour Fullstack Java 21, 69 € pour Clean Architecture & DDD) avec index unique sur `slug`.
+   - Configuration du catalogue et des tarifs officiels NoSeumCode :
+     * **HTML & CSS – Les Fondations indispensables au Web** : 579 € (`priceInCents = 57900`)
+     * **JavaScript – L'interactivité au bout des doigts** : 579 € (`priceInCents = 57900`)
+     * **Git & GitHub – L'outil n°1 des devs pro** : 279 € (`priceInCents = 27900`)
+   - Initialisation des chapitres et contenus markdown (Chapitre 1 en aperçu gratuit, Chapitres 2 et 3 verrouillés pour les membres payants).
    - Mise à jour des DTOs `CourseRequest` et `CourseResponse`, de `CourseRepository` (`findBySlug`) et de `CourseService`.
 
 3. **Tunnel de Vente & Endpoint Stripe Checkout Session (`PaymentController.java`, `PaymentService.java`, `StripeGateway.java`)** :
@@ -157,12 +161,13 @@ _Chronologique — plus récent en bas_
    - Gestion des cas limites : blocage des doubles paiements si déjà `PAID`, validation immédiate gratuite si `priceInCents <= 0`, et interdiction d'achat sur cours non publiés ou supprimés.
    - Extension du webhook Stripe : extraction des métadonnées `courseId` et `userId` pour débloquer spécifiquement la formation achetée.
 
-4. **Expérience Apprenant & Boutons d'Achat Frontend (`cours.js`, `success.html`)** :
-   - Affichage dynamique du prix et du niveau sur chaque carte du catalogue de cours.
+4. **Expérience Apprenant & Boutons d'Achat Frontend (`index.html`, `cours.js`, `success.html`)** :
+   - Affichage dynamique et badges des tarifs officiels (579 € pour HTML & CSS, 579 € pour JavaScript, 279 € pour Git & GitHub) sur la page d'accueil (`index.html`), dans les cartes et dans les modales popover avec CTA d'inscription/achat.
+   - Affichage dynamique du prix et du niveau sur chaque carte du catalogue de cours (`cours.js`).
    - Intégration du bouton "💳 Acheter / Débloquer" sur le catalogue, sur le panneau de cours verrouillé, et sur la bannière de prévisualisation dans la classe virtuelle.
    - Création de la fonction `initiateStripeCheckout(courseId)` avec redirection automatique vers Stripe Checkout et retour vers `success.html` ou `cours.html`.
    - Amélioration de `success.html` avec lecture du paramètre `course_id` pour proposer un bouton direct "Commencer la formation immédiatement 🚀".
 
 5. **Tests & Validation Locale** :
-   - Création de `PaymentCheckoutServiceTest.java` (8 tests unitaires couvrant la création de session, cours déjà payé, cours gratuit, cours non publié, webhook ciblé, sécurité JWT).
-   - Exécution complète de la suite de tests : 39 tests réussis (`BUILD SUCCESS`, 0 erreur, 0 échec).
+   - Création de `PaymentCheckoutServiceTest.java` (10 tests unitaires couvrant la création de session aux tarifs officiels 579 € et 279 €, cours déjà payé, cours gratuit, cours non publié, webhook ciblé, sécurité JWT).
+   - Exécution complète de la suite de tests : 41 tests réussis (`BUILD SUCCESS`, 0 erreur, 0 échec).

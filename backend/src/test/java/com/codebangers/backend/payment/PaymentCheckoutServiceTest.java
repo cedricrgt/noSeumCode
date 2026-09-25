@@ -205,4 +205,54 @@ class PaymentCheckoutServiceTest {
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
+
+    @Test
+    void createCheckoutSession_shouldSupportHtmlCssAndJsPricing_579EUR() {
+        Course htmlCourse = new Course("HTML & CSS", "Fondations du web");
+        htmlCourse.setId(UUID.randomUUID());
+        htmlCourse.setPriceInCents(57900L);
+        htmlCourse.setCurrency("EUR");
+        htmlCourse.setPublished(true);
+
+        when(courseRepository.findById(htmlCourse.getId())).thenReturn(Optional.of(htmlCourse));
+        when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(new ArrayList<>());
+
+        CheckoutSessionResponse expectedResponse = new CheckoutSessionResponse(
+                "cs_test_579", "https://checkout.stripe.com/pay/cs_test_579", htmlCourse.getId(), 57900L, "EUR");
+        when(stripeGateway.createCheckoutSession(eq(testUser), eq(htmlCourse), any(), any()))
+                .thenReturn(expectedResponse);
+
+        CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest(htmlCourse.getId());
+        CheckoutSessionResponse actual = paymentService.createCheckoutSession(testUser, request);
+
+        assertNotNull(actual);
+        assertEquals(57900L, actual.getAmount());
+        assertEquals("EUR", actual.getCurrency());
+        verify(stripeGateway).createCheckoutSession(eq(testUser), eq(htmlCourse), any(), any());
+    }
+
+    @Test
+    void createCheckoutSession_shouldSupportGitPricing_279EUR() {
+        Course gitCourse = new Course("Git & GitHub", "Versioning pro");
+        gitCourse.setId(UUID.randomUUID());
+        gitCourse.setPriceInCents(27900L);
+        gitCourse.setCurrency("EUR");
+        gitCourse.setPublished(true);
+
+        when(courseRepository.findById(gitCourse.getId())).thenReturn(Optional.of(gitCourse));
+        when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(new ArrayList<>());
+
+        CheckoutSessionResponse expectedResponse = new CheckoutSessionResponse(
+                "cs_test_279", "https://checkout.stripe.com/pay/cs_test_279", gitCourse.getId(), 27900L, "EUR");
+        when(stripeGateway.createCheckoutSession(eq(testUser), eq(gitCourse), any(), any()))
+                .thenReturn(expectedResponse);
+
+        CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest(gitCourse.getId());
+        CheckoutSessionResponse actual = paymentService.createCheckoutSession(testUser, request);
+
+        assertNotNull(actual);
+        assertEquals(27900L, actual.getAmount());
+        assertEquals("EUR", actual.getCurrency());
+        verify(stripeGateway).createCheckoutSession(eq(testUser), eq(gitCourse), any(), any());
+    }
 }
