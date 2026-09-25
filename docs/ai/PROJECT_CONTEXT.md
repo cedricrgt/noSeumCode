@@ -41,14 +41,14 @@ frontend/
 ```
 
 ## Environments & CI/CD Topology
-- **Production Frontend**: o2switch (`https://noseumcode.fr`) via push on `main` (`ftp.yml` -> `FTP_DIR`).
-- **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp.yml` -> `FTP_DIR_DEV`).
+- **Production Frontend**: o2switch (`https://noseumcode.fr`) via push on `main` (`ftp.yml` -> `FTP_DIR`). Document Root cPanel: `noseumcode.fr/yefa3951/public_html` (ou `public_html`).
+- **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `feat/ci-cd-develop-subdomain-o2switch`
-## Current State: CI/CD multi-environnements configuré pour le sous-domaine `develop.noseumcode.fr` sur o2switch (CORS, CSP, FTP ciblé). Sprint 3 finalisé.
+## Active Branch: `develop`
+## Current State: Sous-domaine staging `develop.noseumcode.fr` opérationnel et validé en production (HTTP 200 OK). CI/CD scindé et sécurisé : `main` pour la prod o2switch, `develop` pour le sous-domaine o2switch et le backend Oracle VM. Sprint 3 finalisé.
 ## Next Sprint: Sprint 4 (Légal, Facturation & Lancement).
-## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`) and open PRs to `develop` for manual merge (ADR-009).
+## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009).
 
 ## Roles: STUDENT | TEACHER | ADMIN
 

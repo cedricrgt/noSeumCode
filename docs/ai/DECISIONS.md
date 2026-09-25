@@ -68,5 +68,11 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Alternative rejetée**: Stockage en clair des tokens en base de données — rejetée car une fuite ou un dump de la base compromettrait l'ensemble des sessions actives et permettrait la prise de contrôle non autorisée des comptes.
 **Conséquence**: Protection optimale contre le vol de sessions (OWASP ASVS), détection immédiate de réutilisation de refresh tokens, et persistance sécurisée de la session utilisateur sur 7 jours.
 
+## ADR-012 — Séparation des Déploiements Frontend o2switch (Production vs Staging)
+**Status**: Actif
+**Décision**: Séparer strictement le déploiement du frontend en deux workflows GitHub Actions distincts : `.github/workflows/ftp.yml` déclenché uniquement sur `main` vers la production `noseumcode.fr`, et `.github/workflows/ftp-dev.yml` déclenché uniquement sur `develop` vers le sous-domaine de test `develop.noseumcode.fr/`. Utiliser `local-dir: ./frontend/` pour ne déployer que les fichiers statiques web à la racine de la cible sans exposer le backend Java ni la documentation.
+**Alternative rejetée**: Workflow unique avec conditionnel bash complexe — rejetée pour éliminer tout risque d'écrasement accidentel de la production lors d'un push sur `develop` et garantir une visibilité claire dans l'interface GitHub Actions.
+**Conséquence**: Isolation stricte entre les environnements de test et de production, réduction du temps de transfert FTP de 6m30s à ~15s, et protection du code source backend.
+
 
 

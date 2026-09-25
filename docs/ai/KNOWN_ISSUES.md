@@ -16,10 +16,8 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Status**: Résolu dans Sprint 1 via `StripeWebhookValidator` et `PaymentController`.
 **Validation**: HMAC SHA-256 cryptographique avec protection anti-rejeu (tolérance 300s) et comparaison en temps constant contre les attaques temporelles.
 
-### ISSUE-004 🔴 CORS hardcodé dans SecurityConfig (mauvais domaine)
-**File**: `SecurityConfig.java` L.66 — Pattern `https://*.codebangers.com` mais le domaine prod est `noseumcode.fr`.
-**Risk**: CORS bloqué en prod pour les vrais utilisateurs ou trop permissif si wildcard.
-**Fix needed**: Utiliser `${app.cors.allowed-origins}` injecté depuis l'env.
+### ISSUE-004 ✅ CORS configuré via app.cors.allowed-origins et multi-environnements [RÉSOLU]
+**Status**: Résolu. `SecurityConfig.java` injecte `${app.cors.allowed-origins}` avec fallback dynamique et autorise explicitement `https://noseumcode.fr`, `https://www.noseumcode.fr`, `https://develop.noseumcode.fr` et `https://*.noseumcode.fr` via `setAllowedOriginPatterns`. Fallback synchronisé dans `deploy.yml`.
 
 ### ISSUE-005 🔴 Credentials Google OAuth2 réels dans le .env commité
 **File**: `backend/.env` L.30-31 — `GOOGLE_CLIENT_ID` et `GOOGLE_CLIENT_SECRET` réels.
@@ -96,7 +94,9 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 - Ne pas supposer qu'une erreur navigateur 'Access-Control-Allow-Origin blocked by CORS policy' sur `api.noseumcode.fr` est toujours un problème de configuration CORS : si le conteneur Spring Boot crashe, Nginx renvoie une page 502 Bad Gateway sans en-tête CORS, ce qui déclenche l'erreur CORS côté navigateur.
 - Ne pas supposer que modifier `POSTGRES_PASSWORD` dans les variables d'environnement d'un conteneur Docker PostgreSQL met à jour le mot de passe d'une base existante : le volume `pgdata` préserve le mot de passe initialisé et nécessite une commande SQL `ALTER USER`.
 
-- Ne pas supposer qu'on peut pousser directement sur la branche `develop` : cela déclenche le déploiement immédiat en production sur la VM Oracle Cloud (`deploy.yml`). Toujours passer par une PR.
+- Ne pas supposer que le compte FTP principal cPanel dépose les fichiers à la racine du sous-domaine `/home/yefa3951/develop.noseumcode.fr` : le compte FTP principal est confiné dans `noseumcode.fr/yefa3951/`. Le sous-domaine `develop.noseumcode.fr` dans cPanel doit avoir pour racine de document (Document Root) : `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
+- Ne pas supposer que le workflow FTP déploie uniquement le frontend sans le paramètre `local-dir: ./frontend/` : par défaut, SamKirkland/FTP-Deploy-Action déploie l'intégralité du repository (y compris backend Java, docs et fichiers de config) à la racine de la cible.
+- Ne pas supposer qu'on peut pousser directement sur la branche `develop` : cela déclenche le déploiement immédiat en production sur la VM Oracle Cloud (`deploy.yml`) et sur le sous-domaine o2switch (`ftp-dev.yml`). Toujours passer par une PR.
 - Ne pas supposer qu'en mode Stripe Embedded Checkout (`uiMode: EMBEDDED`), le paramètre `mode: 'payment'` est optionnel : l'API Stripe exige impérativement `mode: 'payment'` dès lors que des `line_items` / prix unitaires sont passés.
 - Ne pas supposer que la désactivation CSRF est sécurisée sans vérification du `state` OAuth2.
 - Ne pas supposer que `sanitizePartialHTML()` couvre tous les vecteurs XSS.
