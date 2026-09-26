@@ -101,4 +101,14 @@ concatFiles(enConstDist, [
 ]);
 minifyFile(enConstDist);
 
+// 5. Workshops
+console.log('📦 Construction du bundle workshops.css…');
+const workshopsDist = path.join(distDir, 'workshops.css');
+concatFiles(workshopsDist, [
+  ...BASE_FILES,
+  path.join(stylesDir, 'pages', 'workshops.css'),
+  path.join(stylesDir, 'pages', 'homepage', 'footer.css')
+]);
+minifyFile(workshopsDist);
+
 console.log('\n✅ Bundles CSS générés avec succès dans frontend/styles/dist/ !');

@@ -45,11 +45,10 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `feat/sprint-5-stripe-customer-portal` (en cours de PR vers `develop`)
-## Current State: Sprints 1, 2, 3, 4, 5 finalisés et validés (Sécurité HMAC Stripe, Embedded Checkout, Auth Brevo/RTR, Quick Wins & Légal, Portail Client Stripe pour Factures & Reçus).
-## Next Sprint: Sprint 6 — Workshops Gratuits Toussaint (Acquisition & Preuves Vidéos, bandeau header déroulant, workshops.html, jauge 6 élèves max).
+## Active Branch: `feat/sprint-workshops-toussaint` (en cours de PR vers `develop`)
+## Current State: Sprints 1 à 6 finalisés et validés (Sécurité HMAC Stripe, Embedded Checkout, Auth Brevo/RTR, Quick Wins & Légal, Portail Client Stripe, Workshops Gratuits Toussaint avec jauge 6 élèves).
+## Next Sprint: Sprint 7 — Nouvelle Gamme & Accès Cohortes (Starter avec replays à vie, Web, VIP & Klarna).
 ## Sprints Suivants:
-- Sprint 7 : Nouvelle Gamme & Accès Cohortes (Starter avec replays à vie, Web, VIP & Klarna).
 - Sprint 8 : Performance Web & SEO Technique (Images <800Ko, SSG Statique, CLS).
 - Sprint 9 : Refonte Copywriting & Rassurance Parents/Jeunes (Mentor & Analytics Plausible/Umami).
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009).

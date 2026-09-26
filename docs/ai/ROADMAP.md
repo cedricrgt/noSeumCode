@@ -14,8 +14,8 @@
 | **Sprint 3** | **Auth, Comptes & E-mails** | Mot de passe oublié, emails transactionnels Brevo, sessions RTR 7 jours | ✅ **Terminé** |
 | **Sprint 4** | **Quick Wins Conversion, Leads & Légal** | Réparer les CTA Hero, débloquer CSP HubSpot, sécuriser `thanks.html`, pages légales | ✅ **Terminé** |
 | **Sprint 5** | **Portail Client Stripe** | Factures PDF, reçus d'achat et gestion des moyens de paiement apprenant | ✅ **Terminé** |
-| **Sprint 6** | **Workshops Gratuits Toussaint** | Bandeau header réactivé, page dédiée `workshops.html`, jauge stricte 6 élèves max | 🟡 **Prêt / Prochain** |
-| **Sprint 7** | **Nouvelle Gamme & Accès Cohortes** | Pack Starter (accès replays à vie), Pack Web, option VIP, Klarna BNPL via Stripe | ⚪ **Planifié** |
+| **Sprint 6** | **Workshops Gratuits Toussaint** | Bandeau header réactivé, page dédiée `workshops.html`, jauge stricte 6 élèves max | ✅ **Terminé** |
+| **Sprint 7** | **Nouvelle Gamme & Accès Cohortes** | Pack Starter (accès replays à vie), Pack Web, option VIP, Klarna BNPL via Stripe | 🟡 **Prêt / Prochain** |
 | **Sprint 8** | **Performance Web & SEO Technique** | Compression images (<800 Ko), rendu statique dédié formations, fix CLS, cache Apache | ⚪ **Planifié** |
 | **Sprint 9** | **Copywriting & Rassurance Parents/Jeunes** | Refonte Hero, section Ton Mentor, rassurance parents, Analytics RGPD cookieless | ⚪ **Planifié** |
 
@@ -59,9 +59,9 @@ gantt
     Espace Factures & Reçus Apprenant(5.3):done, s5_3, 2026-09-26, 2026-09-26
 
     section Sprint 6 : Workshops Toussaint
-    Bandeau Header Déroulant (6.1)       :active, s6_1, 2026-09-26, 1d
-    Page dédiée workshops.html (6.2)     :s6_2, after s6_1, 2d
-    Jauge 6 inscrits & Dashboard (6.3)   :s6_3, after s6_2, 1d
+    Bandeau Header Déroulant (6.1)       :done, s6_1, 2026-09-26, 2026-09-26
+    Page dédiée workshops.html (6.2)     :done, s6_2, 2026-09-26, 2026-09-26
+    Jauge 6 inscrits & Dashboard (6.3)   :done, s6_3, 2026-09-26, 2026-09-26
 
     section Sprint 7 : Nouvelle Gamme & Cohortes
     Modélisation Cohortes & Plans (7.1)  :s7_1, after s6_3, 2d

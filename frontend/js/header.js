@@ -629,8 +629,20 @@ async function handleGlobalEmailLogin(e) {
       localStorage.setItem("noseum_user", JSON.stringify(user));
       checkUserAuthHeader();
 
+      const pendingWorkshopId = localStorage.getItem("noseum_pending_workshop_id") || sessionStorage.getItem("noseum_pending_workshop_id");
       const pendingCourseId = sessionStorage.getItem("noseum_pending_checkout_course_id");
-      if (pendingCourseId) {
+
+      if (pendingWorkshopId) {
+        showGlobalAuthAlert("🎉 Connexion réussie ! Réservation de ton atelier en cours...", "success");
+        setTimeout(async () => {
+          closeGlobalAuthModal();
+          if (typeof window.registerToWorkshop === "function") {
+            await window.registerToWorkshop(pendingWorkshopId);
+          } else {
+            window.location.href = "dashboard.html";
+          }
+        }, 400);
+      } else if (pendingCourseId) {
         const pendingTitle = sessionStorage.getItem("noseum_pending_checkout_course_title") || "";
         const pendingPrice = sessionStorage.getItem("noseum_pending_checkout_course_price") || "";
         sessionStorage.removeItem("noseum_pending_checkout_course_id");
@@ -859,8 +871,20 @@ async function handleGlobalEmailRegister(e) {
       localStorage.setItem("noseum_user", JSON.stringify(user));
       checkUserAuthHeader();
 
+      const pendingWorkshopId = localStorage.getItem("noseum_pending_workshop_id") || sessionStorage.getItem("noseum_pending_workshop_id");
       const pendingCourseId = sessionStorage.getItem("noseum_pending_checkout_course_id");
-      if (pendingCourseId) {
+
+      if (pendingWorkshopId) {
+        showGlobalAuthAlert("🎉 Compte créé avec succès ! Confirmation de ton atelier en cours...", "success");
+        setTimeout(async () => {
+          closeGlobalAuthModal();
+          if (typeof window.registerToWorkshop === "function") {
+            await window.registerToWorkshop(pendingWorkshopId);
+          } else {
+            window.location.href = "dashboard.html";
+          }
+        }, 400);
+      } else if (pendingCourseId) {
         const pendingTitle = sessionStorage.getItem("noseum_pending_checkout_course_title") || "";
         const pendingPrice = sessionStorage.getItem("noseum_pending_checkout_course_price") || "";
         sessionStorage.removeItem("noseum_pending_checkout_course_id");
@@ -1043,11 +1067,11 @@ async function updatePromoBanner() {
       const textNode = document.createTextNode(`${emoji} ${titleText} : ${topics} ! `);
       span.appendChild(textNode);
 
-      const btn = document.createElement("button");
-      btn.setAttribute("popovertarget", "promo-popup");
-      btn.className = "promo-banner__cta bangers-regular";
-      btn.textContent = "VOIR LE PLANNING";
-      span.appendChild(btn);
+      const link = document.createElement("a");
+      link.href = "workshops.html";
+      link.className = "promo-banner__cta bangers-regular";
+      link.textContent = "DÉCOUVRIR LES ATELIERS (6 PLACES MAX)";
+      span.appendChild(link);
 
       return span;
     };
@@ -1079,6 +1103,10 @@ function setActiveNavLink() {
     if (isHomePage && (href === "index.html" || href === "/")) {
       link.classList.add("active");
     } else if (currentPath.includes("dashboard") && href && href.includes("dashboard")) {
+      link.classList.add("active");
+    } else if (currentPath.includes("cours") && href && href.includes("cours")) {
+      link.classList.add("active");
+    } else if (currentPath.includes("workshops") && href && href.includes("workshops")) {
       link.classList.add("active");
     }
   });
