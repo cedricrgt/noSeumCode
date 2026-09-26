@@ -223,6 +223,7 @@ async function manuallySwitchDashboardView(targetRole) {
 
   if (targetRole === "STUDENT") {
     await loadStudentCourses();
+    await loadStudentWorkshops();
   } else if (targetRole === "TEACHER") {
     await loadTeacherData();
   } else if (targetRole === "ADMIN") {
@@ -287,6 +288,7 @@ async function refreshDashboardData() {
     await loadTeacherData();
   } else {
     await loadStudentCourses();
+    await loadStudentWorkshops();
   }
 }
 
@@ -534,7 +536,132 @@ function openCourseViewer(courseId, title) {
 }
 
 // ==========================================
-// 4b. Portail Client Stripe (Factures & Abonnements)
+// 4b. Ateliers Découvertes Toussaint (Student Workshops)
+// ==========================================
+
+let enrolledWorkshops = [];
+
+function formatWorkshopDate(isoString) {
+  if (!isoString) return "";
+  try {
+    const d = new Date(isoString);
+    const days = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+    const months = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
+    const dayName = days[d.getDay()];
+    const dayNum = String(d.getDate()).padStart(2, "0");
+    const monthName = months[d.getMonth()];
+    const hours = String(d.getHours()).padStart(2, "0");
+    const mins = String(d.getMinutes()).padStart(2, "0");
+    return `${dayName} ${dayNum} ${monthName} • ${hours}h${mins === "00" ? "" : mins}`;
+  } catch (_) {
+    return isoString;
+  }
+}
+
+async function loadStudentWorkshops() {
+  const grid = document.getElementById("student-workshops-grid");
+  if (!grid) return;
+
+  try {
+    const res = await apiFetch("/api/user-workshops/me");
+    if (res && res.ok) {
+      enrolledWorkshops = await res.json();
+    } else {
+      enrolledWorkshops = [];
+    }
+  } catch (err) {
+    console.error("Erreur chargement ateliers apprenant:", err);
+    enrolledWorkshops = [];
+  }
+
+  renderStudentWorkshops();
+}
+
+function renderStudentWorkshops() {
+  const grid = document.getElementById("student-workshops-grid");
+  if (!grid) return;
+
+  grid.innerHTML = "";
+
+  if (enrolledWorkshops.length === 0) {
+    grid.innerHTML = `
+      <div style="text-align: center; padding: 2.5rem 2rem; background: #ffffff; border-radius: 20px; border: 2px dashed #cbd5e1; grid-column: 1 / -1;">
+        <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🍁</div>
+        <h3 style="font-size: 1.15rem; color: var(--dash-dark-navy); margin-bottom: 0.5rem;">Aucun atelier découverte réservé</h3>
+        <p style="color: var(--dash-text-muted); font-size: 0.95rem; margin-bottom: 1.25rem;">
+          Profitez des vacances de Toussaint pour coder en direct pendant 2h avec votre mentor (ateliers 100% gratuits, jauge stricte de 6 élèves max).
+        </p>
+        <a href="workshops.html" class="button button__primary bangers-regular" style="text-decoration: none; padding: 10px 22px; font-size: 1.1rem; display: inline-block;">
+          Réserver ma place gratuite →
+        </a>
+      </div>
+    `;
+    return;
+  }
+
+  enrolledWorkshops.forEach(reg => {
+    const card = document.createElement("article");
+    card.className = "dash-course-card";
+    card.style.display = "flex";
+    card.style.flexDirection = "column";
+    card.style.justifyContent = "space-between";
+    card.style.padding = "1.5rem";
+
+    const dateStr = reg.startDate ? formatWorkshopDate(reg.startDate) : "Session Toussaint";
+
+    card.innerHTML = `
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <span style="background: rgba(0, 217, 255, 0.12); color: #0099b8; font-weight: 700; font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 6px; text-transform: uppercase;">
+            ${escapeHtml(reg.workshopTheme || "Atelier Découverte")}
+          </span>
+          <span style="font-size: 0.85rem; color: var(--dash-text-muted); font-weight: 600;">
+            📅 ${escapeHtml(dateStr)}
+          </span>
+        </div>
+        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--dash-dark-navy); margin-bottom: 0.5rem; line-height: 1.3;">
+          ${escapeHtml(reg.workshopTitle || "Atelier NoSeumCode")}
+        </h3>
+        <p style="font-size: 0.9rem; color: var(--dash-text-muted); line-height: 1.5; margin-bottom: 1.25rem;">
+          ${escapeHtml(reg.workshopDescription || "Session live interactive de 2h sur Google Meet.")}
+        </p>
+      </div>
+
+      <div style="border-top: 1px solid #e2e8f0; padding-top: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+        <span style="font-size: 0.85rem; color: #059669; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;">
+          <span>✅</span> Place confirmée (6 max)
+        </span>
+        <button type="button" onclick="cancelStudentWorkshop('${reg.workshopId}')" class="button button__secondary" style="font-size: 0.8rem; padding: 0.4rem 0.8rem; color: #e11d48; border-color: rgba(225,29,72,0.3); background: rgba(225,29,72,0.05); cursor: pointer;">
+          Libérer ma place
+        </button>
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+}
+
+async function cancelStudentWorkshop(workshopId) {
+  if (!confirm("Voulez-vous vraiment annuler votre inscription à cet atelier ? Cela permettra de libérer votre place pour un autre élève.")) {
+    return;
+  }
+
+  try {
+    const res = await apiFetch(`/api/user-workshops/workshop/${workshopId}`, { method: "DELETE" });
+    if (res && (res.ok || res.status === 204)) {
+      alert("Votre place a été libérée avec succès.");
+      await loadStudentWorkshops();
+    } else {
+      alert("Impossible d'annuler votre inscription pour le moment.");
+    }
+  } catch (err) {
+    console.error("Erreur annulation atelier:", err);
+    alert("Erreur de connexion au serveur.");
+  }
+}
+
+// ==========================================
+// 4c. Portail Client Stripe (Factures & Abonnements)
 // ==========================================
 
 async function openStripeCustomerPortal() {

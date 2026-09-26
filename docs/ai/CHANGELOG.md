@@ -356,3 +356,29 @@ _Chronologique — plus récent en bas_
 3. **Validation & Tests** :
    - Recompilation des bundles CSS dist (`node frontend/build.js`).
    - 66 tests unitaires et d'intégration Maven exécutés avec succès (`BUILD SUCCESS`, 0 erreur, 0 échec).
+
+---
+
+## 2026-09-26 — Sprint 6 : Workshops Gratuits Toussaint (Jauge 6 Élèves, Acquisition & Synchronisation Apprenant)
+
+**Conversation ID**: `4e2adcdb-309a-40f9-9c4d-715b084694af`  
+**Branche**: `feat/sprint-workshops-toussaint`  
+**Objectif**: Mettre en place les ateliers découvertes gratuits de la Toussaint (26 au 29 octobre 2026) avec limitation stricte à 6 places par session côté backend, bandeau promo animé, page dédiée `workshops.html` et synchronisation dans le tableau de bord apprenant.
+
+### Réalisations & Livrables :
+1. **Backend & Modèle de Données (`backend/`)** :
+   - Enrichissement de l'entité `Workshop` avec `theme` et `maxParticipants` (défaut à 6).
+   - Migration Flyway `V013__seed_toussaint_workshops.sql` initialisant les 4 sessions Toussaint 2026 (Web & IA, Algorithmie, Cyber, Fullstack).
+   - DTOs `WorkshopRequest`, `WorkshopResponse` et `UserWorkshopResponse` enrichis avec calcul dynamique des places (`registeredCount`, `remainingSeats`, `isFull`, `isUserRegistered`).
+   - Contrôle strict de jauge dans `UserWorkshopService` : rejet avec exception métier (`IllegalStateException` -> HTTP 400 Bad Request) dès que 6 élèves sont inscrits.
+   - Protection contre les doublons (`DuplicateResourceException`) et suppression sécurisée anti-IDOR avec `DELETE /api/user-workshops/workshop/{workshopId}`.
+   - 14 nouveaux tests unitaires (`UserWorkshopServiceTest` et `WorkshopServiceTest`).
+2. **Frontend & Expérience Utilisateur (`frontend/`)** :
+   - Réactivation du bandeau promotionnel header avec animation gradient et compte à rebours vers la Toussaint.
+   - Création de la page dédiée `frontend/workshops.html` et de sa feuille de style responsive `frontend/styles/pages/workshops.css` (bundle minifié `workshops.min.css`).
+   - Client dynamique `frontend/js/workshops.js` : interrogation de `/api/workshops`, jauge visuelle de 6 places, synchronisation de l'état d'inscription, fallback élégant si déconnecté.
+   - Inscription automatique post-connexion/inscription via `localStorage` (`noseum_pending_workshop_id`) dans `header.js`.
+   - Intégration dans `dashboard.html` et `dashboard.js` de la section « Mes Ateliers Découvertes » avec désinscription en 1 clic.
+3. **Validation & Tests** :
+   - Recompilation des bundles CSS dist (`node frontend/build.js`).
+   - 80 tests unitaires et d'intégration Maven exécutés avec succès (`BUILD SUCCESS`, 0 erreur, 0 échec).
