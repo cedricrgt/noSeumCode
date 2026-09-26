@@ -1,6 +1,6 @@
 # ROADMAP.md — Feuille de Route Commerciale NoSeumCode
 
-> _Dernière mise à jour : 2026-09-24_  
+> _Dernière mise à jour : 2026-09-26_  
 > _Objectif : Transformer le MVP NoSeumCode en produit final, sécurisé, commercialisable et prêt pour la production._
 
 ---
@@ -15,6 +15,42 @@
 | **Sprint 4** | **Légal, Facturation & Lancement** | Pages légales (CGV), Portail client factures, SEO dynamique | 🟡 **Prochain** |
 
 ---
+
+## 📊 Diagramme de Gantt (Rendu Visuel GitHub & Git)
+
+```mermaid
+gantt
+    title Feuille de Route Commerciale NoSeumCode
+    dateFormat  YYYY-MM-DD
+    axisFormat  %d/%m
+
+    section Sprint 1 : Sécurité & Paywall
+    HMAC Webhook Stripe (1.1)            :done, s1_1, 2026-09-24, 2026-09-25
+    Paywall Serveur Chapitres (1.2)      :done, s1_2, 2026-09-24, 2026-09-25
+    Purge faille localStorage (1.3)      :done, s1_3, 2026-09-24, 2026-09-25
+
+    section Sprint 2 : Monétisation & Stripe
+    SDK stripe-java (2.1)                :done, s2_1, 2026-09-25, 2026-09-25
+    Catalogue & Flyway V011 (2.3)        :done, s2_2, 2026-09-25, 2026-09-25
+    Stripe Checkout Embedded (2.2)       :done, s2_3, 2026-09-25, 2026-09-25
+    Tunnel Achat & Paywall In-App (2.4)  :done, s2_4, 2026-09-25, 2026-09-25
+    Confirmation Session Stripe API      :done, s2_5, 2026-09-25, 2026-09-26
+
+    section Sprint 3 : Auth & E-mails
+    EmailService & Templates Brevo (3.1) :done, s3_1, 2026-09-25, 2026-09-26
+    Mot de passe oublié & Flyway V012(3.2):done, s3_2, 2026-09-25, 2026-09-26
+    Refresh Tokens Rotation RTR (3.3)    :done, s3_3, 2026-09-25, 2026-09-26
+    Rate Limiting OWASP (3.4)            :done, s3_4, 2026-09-25, 2026-09-26
+
+    section Sprint 4 : Légal & Lancement
+    Pages Légales CGV / CGU / RGPD (4.1) :active, s4_1, 2026-09-26, 2d
+    Stripe Customer Portal Factures (4.2):s4_2, after s4_1, 2d
+    SEO dynamique & Balises OpenGraph(4.3):s4_3, after s4_2, 2d
+    Revue de Sécurité & Mise en Prod (4.4):s4_4, after s4_3, 1d
+```
+
+---
+
 
 ## 📋 Détail des Sprints
 
