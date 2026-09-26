@@ -46,10 +46,9 @@ frontend/
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
 ## Active Branch: `develop`
-## Current State: Sprints 1, 2, 3 finalisés et validés (Sécurité HMAC Stripe, Embedded Checkout, Auth Brevo/RTR). Restructuration complète de la feuille de route post-audit : Sprints 4 à 8 planifiés. Kanban GitHub Projects synchronisé (Projet #1).
-## Next Sprint: Sprint 4 — Quick Wins Conversion, Déblocage Leads & Légal (Réparation CTA Hero, CSP HubSpot, sécurisation thanks.html, pages légales).
+## Current State: Sprints 1, 2, 3, 4 finalisés et validés (Sécurité HMAC Stripe, Embedded Checkout, Auth Brevo/RTR, Quick Wins Conversion, Déblocage Leads & Légal). Kanban GitHub Projects synchronisé (Projet #1).
+## Next Sprint: Sprint 5 — Workshops Gratuits Toussaint (Acquisition & Preuves Vidéos, bandeau header déroulant, workshops.html, jauge 6 élèves max).
 ## Sprints Suivants:
-- Sprint 5 : Workshops Gratuits Toussaint (Acquisition & Preuves Vidéos).
 - Sprint 6 : Nouvelle Gamme & Accès Cohortes (Starter avec replays à vie, Web, VIP & Klarna).
 - Sprint 7 : Performance Web & SEO Technique (Images <800Ko, SSG Statique, CLS).
 - Sprint 8 : Refonte Copywriting & Rassurance Parents/Jeunes (Mentor & Analytics Plausible/Umami).

@@ -1,4 +1,8 @@
 User-agent: *
+Disallow: /dashboard.html
+Disallow: /thanks.html
+Disallow: /reset-password.html
+Disallow: /success.html
 Allow: /
 
 # Sitemap
