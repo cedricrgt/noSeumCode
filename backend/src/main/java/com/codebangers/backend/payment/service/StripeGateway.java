@@ -37,4 +37,13 @@ public interface StripeGateway {
      * @return L'objet Session Stripe
      */
     com.stripe.model.checkout.Session retrieveSession(String sessionId);
+
+    /**
+     * Crée une session sécurisée Stripe Customer Portal pour permettre à l'apprenant de consulter ses factures et moyens de paiement.
+     *
+     * @param user L'utilisateur apprenant
+     * @param returnUrl L'URL de retour après consultation du portail
+     * @return L'URL sécurisée du portail de facturation Stripe
+     */
+    String createCustomerPortalSession(User user, String returnUrl);
 }

@@ -156,4 +156,55 @@ public class StripeGatewayImpl implements StripeGateway {
             throw new RuntimeException("Erreur Stripe lors de la récupération de la session : " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public String createCustomerPortalSession(User user, String returnUrl) {
+        if (stripeSecretKey == null || stripeSecretKey.isBlank()) {
+            throw new IllegalStateException("Stripe Secret Key non configurée. Impossible d'ouvrir le portail client.");
+        }
+
+        RequestOptions options = RequestOptions.builder()
+                .setApiKey(stripeSecretKey)
+                .build();
+
+        try {
+            com.stripe.param.CustomerListParams listParams = com.stripe.param.CustomerListParams.builder()
+                    .setEmail(user.getEmail())
+                    .setLimit(1L)
+                    .build();
+
+            com.stripe.model.CustomerCollection customers = com.stripe.model.Customer.list(listParams, options);
+            String customerId;
+
+            if (customers.getData() != null && !customers.getData().isEmpty()) {
+                customerId = customers.getData().get(0).getId();
+            } else {
+                com.stripe.param.CustomerCreateParams createParams = com.stripe.param.CustomerCreateParams.builder()
+                        .setEmail(user.getEmail())
+                        .setName(user.getFirstName() + " " + user.getLastName())
+                        .putMetadata("userId", user.getId().toString())
+                        .build();
+                com.stripe.model.Customer newCustomer = com.stripe.model.Customer.create(createParams, options);
+                customerId = newCustomer.getId();
+            }
+
+            String effectiveReturnUrl = (returnUrl != null && !returnUrl.isBlank())
+                    ? returnUrl
+                    : defaultReturnUrl.replace("success.html", "dashboard.html");
+
+            com.stripe.param.billingportal.SessionCreateParams portalParams =
+                    com.stripe.param.billingportal.SessionCreateParams.builder()
+                            .setCustomer(customerId)
+                            .setReturnUrl(effectiveReturnUrl)
+                            .build();
+
+            com.stripe.model.billingportal.Session portalSession =
+                    com.stripe.model.billingportal.Session.create(portalParams, options);
+
+            return portalSession.getUrl();
+        } catch (StripeException e) {
+            log.error("Erreur lors de la création de la session Customer Portal pour user {}: {}", user.getEmail(), e.getMessage());
+            throw new RuntimeException("Erreur Stripe lors de l'accès au portail de facturation : " + e.getMessage(), e);
+        }
+    }
 }

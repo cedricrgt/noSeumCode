@@ -309,4 +309,26 @@ class PaymentCheckoutServiceTest {
         assertEquals(true, body.get("confirmed"));
         assertEquals(PaymentStatus.PAID, body.get("paymentStatus"));
     }
+
+    @Test
+    void createCustomerPortalSession_shouldReturnPortalUrl() {
+        when(userService.getUserByEmail(testUser.getEmail())).thenReturn(Optional.of(testUser));
+        when(stripeGateway.createCustomerPortalSession(eq(testUser), any())).thenReturn("https://billing.stripe.com/session/test_123");
+
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getSubject()).thenReturn(testUser.getEmail());
+
+        ResponseEntity<?> response = paymentController.createCustomerPortalSession(Map.of("returnUrl", "https://noseumcode.fr/dashboard.html"), jwt);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody() instanceof Map);
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        assertEquals("https://billing.stripe.com/session/test_123", body.get("portalUrl"));
+    }
+
+    @Test
+    void createCustomerPortalSession_unauthenticated_shouldReturn401() {
+        ResponseEntity<?> response = paymentController.createCustomerPortalSession(Map.of(), null);
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
 }

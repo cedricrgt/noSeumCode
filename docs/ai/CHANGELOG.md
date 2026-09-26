@@ -334,3 +334,25 @@ _Chronologique — plus récent en bas_
 5. **Validation & Tests** :
    - Recompilation complète des bundles CSS (`node frontend/build.js`).
    - 64 tests unitaires et d'intégration Spring Boot validés avec succès (`BUILD SUCCESS`, 0 échec).
+
+---
+
+## 2026-09-26 — Sprint 5 : Portail Client Stripe (Factures & Abonnements Apprenant)
+
+**Conversation ID**: `ff966115-1f67-4e85-9d6d-2cc844285723`  
+**Branche**: `feat/sprint-5-stripe-customer-portal`  
+**Objectif**: Permettre à chaque élève de télécharger en toute autonomie ses factures certifiées PDF, consulter ses reçus d'achat et administrer ses moyens de paiement en toute sécurité via le Portail Client officiel Stripe.
+
+### Réalisations & Livrables :
+1. **Intégration Stripe Billing Portal API (`backend/`)** :
+   - Interface `StripeGateway` enrichie avec `createCustomerPortalSession(User user, String returnUrl)`.
+   - Implémentation `StripeGatewayImpl` avec résolution dynamique du Customer Stripe par email (`Customer.list`), création instantanée si inexistant, et génération thread-safe de session `com.stripe.model.billingportal.Session` via `RequestOptions`.
+   - Service applicatif `PaymentService` & contrôleur REST `PaymentController` exposant l'endpoint sécurisé `POST /api/payments/create-customer-portal-session` sous authentification JWT (`@AuthenticationPrincipal Jwt jwt`).
+   - Couverture par tests unitaires dans `PaymentCheckoutServiceTest` (scénarios passant avec mock Stripe et non-authentifié HTTP 401).
+2. **Interface Tableau de Bord (`frontend/`)** :
+   - Ajout d'un bouton d'accès rapide « Factures » avec icône SVG dans la barre d'outils supérieure de `dashboard.html`.
+   - Ajout d'une section dédiée « Facturation & Abonnements » avec carte descriptive dans la vue Apprenant de `dashboard.html`.
+   - Implémentation de la fonction cliente `openStripeCustomerPortal()` dans `frontend/js/dashboard.js` avec état de chargement visuel, gestion des erreurs et redirection fluide vers Stripe.
+3. **Validation & Tests** :
+   - Recompilation des bundles CSS dist (`node frontend/build.js`).
+   - 66 tests unitaires et d'intégration Maven exécutés avec succès (`BUILD SUCCESS`, 0 erreur, 0 échec).

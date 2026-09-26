@@ -70,6 +70,18 @@
           </ul>
         </div>
 
+        <!-- Bouton Portail Factures Stripe -->
+        <button id="btn-stripe-portal-header" class="dash-btn-portal" onclick="openStripeCustomerPortal()" title="Accéder à vos factures et reçus" aria-label="Gérer mes factures et moyens de paiement" style="background: rgba(0, 255, 135, 0.08); border: 1px solid rgba(0, 255, 135, 0.3); color: var(--primary-green); padding: 0.5rem 0.9rem; border-radius: 10px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; transition: background 0.2s, transform 0.2s;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span>Factures</span>
+        </button>
+
         <!-- Bouton Déconnexion -->
         <button class="dash-btn-logout" onclick="logout()" title="Se déconnecter" aria-label="Se déconnecter de la session">
           <span>Déconnexion</span>
@@ -145,6 +157,36 @@
       </div>
       <div id="student-courses-grid" class="courses-grid">
         <!-- Populated by JS -->
+      </div>
+
+      <!-- Facturation & Reçus Stripe -->
+      <div class="dash-section-header" style="margin-top: 3rem;">
+        <h2 class="dash-section-title">💳 Facturation & Abonnements</h2>
+      </div>
+      <div class="dash-course-card" style="padding: 2rem; margin-top: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+        <div style="max-width: 680px;">
+          <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;">
+            <span style="font-size: 1.4rem;">🧾</span>
+            <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--dash-dark-navy);">
+              Vos factures et moyens de paiement Stripe
+            </h3>
+          </div>
+          <p style="margin: 0; color: var(--dash-text-muted); font-size: 0.95rem; line-height: 1.6;">
+            Accédez en un clic à votre espace sécurisé <strong>Stripe Customer Portal</strong> pour télécharger vos factures certifiées en PDF, mettre à jour votre carte bancaire ou consulter l'historique complet de vos règlements.
+          </p>
+        </div>
+        <div>
+          <button id="btn-open-stripe-portal" class="button button__primary bangers-regular" onclick="openStripeCustomerPortal()" style="display: inline-flex; align-items: center; gap: 0.6rem; min-height: 48px; padding: 0.75rem 1.6rem; font-size: 1rem; cursor: pointer;" aria-label="Ouvrir le portail client Stripe pour consulter les factures">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <span>Accéder à mes factures ➔</span>
+          </button>
+        </div>
       </div>
     </div>
 
