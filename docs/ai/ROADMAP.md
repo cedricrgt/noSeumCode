@@ -13,10 +13,11 @@
 | **Sprint 2** | **Tunnel de Vente & Monétisation** | Intégrer Stripe Embedded Checkout réel et métadonnées marchandes | ✅ **Terminé** |
 | **Sprint 3** | **Auth, Comptes & E-mails** | Mot de passe oublié, emails transactionnels Brevo, sessions RTR 7 jours | ✅ **Terminé** |
 | **Sprint 4** | **Quick Wins Conversion, Leads & Légal** | Réparer les CTA Hero, débloquer CSP HubSpot, sécuriser `thanks.html`, pages légales | ✅ **Terminé** |
-| **Sprint 5** | **Workshops Gratuits Toussaint** | Bandeau header réactivé, page dédiée `workshops.html`, jauge stricte 6 élèves max | 🟡 **En cours / Prêt** |
-| **Sprint 6** | **Nouvelle Gamme & Accès Cohortes** | Pack Starter (accès replays à vie), Pack Web, option VIP, Klarna BNPL via Stripe | ⚪ **Planifié** |
-| **Sprint 7** | **Performance Web & SEO Technique** | Compression images (<800 Ko), rendu statique dédié formations, fix CLS, cache Apache | ⚪ **Planifié** |
-| **Sprint 8** | **Copywriting & Rassurance Parents/Jeunes** | Refonte Hero, section Ton Mentor, rassurance parents, Analytics RGPD cookieless | ⚪ **Planifié** |
+| **Sprint 5** | **Portail Client Stripe** | Factures PDF, reçus d'achat et gestion des moyens de paiement apprenant | ✅ **Terminé** |
+| **Sprint 6** | **Workshops Gratuits Toussaint** | Bandeau header réactivé, page dédiée `workshops.html`, jauge stricte 6 élèves max | 🟡 **Prêt / Prochain** |
+| **Sprint 7** | **Nouvelle Gamme & Accès Cohortes** | Pack Starter (accès replays à vie), Pack Web, option VIP, Klarna BNPL via Stripe | ⚪ **Planifié** |
+| **Sprint 8** | **Performance Web & SEO Technique** | Compression images (<800 Ko), rendu statique dédié formations, fix CLS, cache Apache | ⚪ **Planifié** |
+| **Sprint 9** | **Copywriting & Rassurance Parents/Jeunes** | Refonte Hero, section Ton Mentor, rassurance parents, Analytics RGPD cookieless | ⚪ **Planifié** |
 
 ---
 
@@ -52,25 +53,30 @@ gantt
     Sécurisation thanks.html (4.3)       :done, s4_3, 2026-09-26, 2026-09-26
     Pages Légales CGV / Mentions (4.4)   :done, s4_4, 2026-09-26, 2026-09-26
 
-    section Sprint 5 : Workshops Toussaint
-    Bandeau Header Déroulant (5.1)       :active, s5_1, 2026-09-26, 1d
-    Page dédiée workshops.html (5.2)     :s5_2, after s5_1, 2d
-    Jauge 6 inscrits & Dashboard (5.3)   :s5_3, after s5_2, 1d
+    section Sprint 5 : Portail Factures Stripe
+    Stripe Billing Portal API (5.1)      :done, s5_1, 2026-09-26, 2026-09-26
+    Dashboard Header Factures CTA (5.2)  :done, s5_2, 2026-09-26, 2026-09-26
+    Espace Factures & Reçus Apprenant(5.3):done, s5_3, 2026-09-26, 2026-09-26
 
-    section Sprint 6 : Nouvelle Gamme & Cohortes
-    Modélisation Cohortes & Plans (6.1)  :s6_1, after s5_3, 2d
-    Contrôle accès Replays & Live (6.2)  :s6_2, after s6_1, 2d
-    Klarna BNPL & Stripe Checkout (6.3)  :s6_3, after s6_2, 1d
+    section Sprint 6 : Workshops Toussaint
+    Bandeau Header Déroulant (6.1)       :active, s6_1, 2026-09-26, 1d
+    Page dédiée workshops.html (6.2)     :s6_2, after s6_1, 2d
+    Jauge 6 inscrits & Dashboard (6.3)   :s6_3, after s6_2, 1d
 
-    section Sprint 7 : Performance & SEO
-    Compression Images <800Ko (7.1)      :s7_1, after s6_3, 1d
-    Pages Statiques Formations & OG (7.2):s7_2, after s7_1, 2d
-    Fix CLS Header & Cache Apache (7.3)  :s7_3, after s7_2, 1d
+    section Sprint 7 : Nouvelle Gamme & Cohortes
+    Modélisation Cohortes & Plans (7.1)  :s7_1, after s6_3, 2d
+    Contrôle accès Replays & Live (7.2)  :s7_2, after s7_1, 2d
+    Klarna BNPL & Stripe Checkout (7.3)  :s7_3, after s7_2, 1d
 
-    section Sprint 8 : Copywriting & Analytics
-    Hero & Rassurance Parents/Jeunes(8.1):s8_1, after s7_3, 2d
-    Section Ton Mentor (8.2)             :s8_2, after s8_1, 1d
-    Analytics Cookieless RGPD (8.3)      :s8_3, after s8_2, 1d
+    section Sprint 8 : Performance & SEO
+    Compression Images <800Ko (8.1)      :s8_1, after s7_3, 1d
+    Pages Statiques Formations & OG (8.2):s8_2, after s8_1, 2d
+    Fix CLS Header & Cache Apache (8.3)  :s8_3, after s8_2, 1d
+
+    section Sprint 9 : Copywriting & Analytics
+    Hero & Rassurance Parents/Jeunes(9.1):s9_1, after s8_3, 2d
+    Section Ton Mentor (9.2)             :s9_2, after s9_1, 1d
+    Analytics Cookieless RGPD (9.3)      :s9_3, after s9_2, 1d
 ```
 
 ---
@@ -102,7 +108,7 @@ gantt
 ### Sprint 4 : Quick Wins Conversion, Déblocage Leads & Légal (Terminé)
 - **4.1 Réparation des CTA du Hero** (`frontend/index.html`) :
   - Bouton 1 : *"Go coder"* ➔ Redirection fluide vers `cours.html`.
-  - Bouton 2 : *"Teste et kiffe !"* ➔ Redirection vers la future page des ateliers gratuits (`workshops.html` ou modale programme).
+  - Bouton 2 : *"Teste et kiffe !"* ➔ Ouverture directe de la modale des sessions découvertes pour réserver sa place.
 - **4.2 Déblocage CSP HubSpot & Stratégie Lead Magnet** (`frontend/.htaccess`, `popover-hubspot.js`) :
   - Autoriser `https://js-eu1.hsforms.net` et `https://forms-eu1.hsforms.com` dans `script-src`, `connect-src`, `frame-src`.
   - Configuration de l'envoi du programme de formation par e-mail automatique pour forcer des e-mails qualifiés.
@@ -117,50 +123,63 @@ gantt
 
 ---
 
-### Sprint 5 : Workshops Gratuits Toussaint (Acquisition & Preuves Vidéos)
-- **5.1 Bandeau Header Déroulant** (`frontend/partials/header.html`) :
+### Sprint 5 : Portail Client Stripe (Factures & Abonnements) (Terminé)
+- **5.1 API Backend Stripe Customer Portal** (`PaymentController.java`, `PaymentService.java`, `StripeGatewayImpl.java`) :
+  - Endpoint sécurisé `POST /api/payments/create-customer-portal-session` protégé par JWT.
+  - Résolution automatique du Customer Stripe par email (création à la volée si inexistant).
+  - Génération de session `com.stripe.model.billingportal.Session` avec URL de retour vers le tableau de bord NoSeumCode.
+- **5.2 Accès Rapide Header Apprenant** (`frontend/dashboard.html`) :
+  - Bouton interactif « Factures » avec icône SVG dans la barre d'outils utilisateur.
+- **5.3 Carte Facturation Espace Apprenant** (`frontend/dashboard.html`, `frontend/js/dashboard.js`) :
+  - Section dédiée « Facturation & Abonnements » intégrée dans la vue Apprenant.
+  - Bouton de redirection vers le portail officiel Stripe avec gestion du loading state et feedback en cas d'erreur.
+
+---
+
+### Sprint 6 : Workshops Gratuits Toussaint (Acquisition & Preuves Vidéos)
+- **6.1 Bandeau Header Déroulant** (`frontend/partials/header.html`) :
   - Décommenter et réactiver le bandeau supérieur de promotion des ateliers découvertes gratuits.
-- **5.2 Page dédiée Workshops** (`frontend/workshops.html`) :
+- **6.2 Page dédiée Workshops** (`frontend/workshops.html`) :
   - Présentation des ateliers live découvertes (HTML/CSS & JavaScript) de 2h pendant les vacances.
-- **5.3 Gestion de la Jauge & Inscription** :
+- **6.3 Gestion de la Jauge & Inscription** :
   - Limite stricte de 6 participants maximum par session d'atelier.
   - Réservation rattachée au compte étudiant et synchronisée avec le dashboard.
 
 ---
 
-### Sprint 6 : Nouvelle Gamme & Accès Cohortes (Starter, Web, VIP & Klarna)
-- **6.1 Nettoyage Catalogue & Modèle Économique** :
+### Sprint 7 : Nouvelle Gamme & Accès Cohortes (Starter, Web, VIP & Klarna)
+- **7.1 Nettoyage Catalogue & Modèle Économique** :
   - Suppression définitive des faux cours d'essai (Java 21 à 49 € et Clean Architecture à 69 €).
   - Création de la gamme : **Pack Starter** (Découverte & Fondations - 6 semaines) et **Pack Web** (Parcours complet interactif).
   - Option **Mentorat VIP** : Pack Web + 4 sessions individuelles d'1h planifiées avec le formateur.
-- **6.2 Modélisation Backend & Règle des Replays** :
+- **7.2 Modélisation Backend & Règle des Replays** :
   - Entité `Cohort` et type de souscription dans `Enrollment`.
   - **Les élèves Starter conservent l'accès à vie aux replays de leur tronc commun (HTML/CSS/Git)**.
   - Verrouillage automatique côté backend des sessions live et des replays des modules avancés (JavaScript, API, CI/CD) pour les élèves Starter.
-- **6.3 Intégration Klarna (BNPL)** :
+- **7.3 Intégration Klarna (BNPL)** :
   - Activation de Klarna via Stripe Checkout pour le paiement fractionné en 3x/4x sans risque d'impayé (fonds garantis par Klarna).
 
 ---
 
-### Sprint 7 : Performance Web & SEO Technique
-- **7.1 Compression Drastique des Images** :
+### Sprint 8 : Performance Web & SEO Technique
+- **8.1 Compression Drastique des Images** :
   - Remplacement du faux `git.webp` (2,73 Mo) par un vrai WebP compressé (<100 Ko).
   - Optimisation des logos PNG (`logo-css`, `logo-react`, `logo-js`) et du favicon (passage de 10 Mo au total à <800 Ko).
-- **7.2 Pages Statiques Formations & Métadonnées Dynamiques** :
+- **8.2 Pages Statiques Formations & Métadonnées Dynamiques** :
   - Fichiers HTML statiques dédiés pour chaque offre (`/formations/starter.html`, `/formations/pack-web.html`).
   - Balises Open Graph réelles (1200x630 px) et données structurées Schema.org `Course`.
-- **7.3 Optimisation Core Web Vitals & Cache Apache** :
+- **8.3 Optimisation Core Web Vitals & Cache Apache** :
   - Hauteur réservée au conteneur `#header-placeholder` pour éliminer le CLS.
   - Directives de compression `mod_deflate` / Brotli et expiration de cache pour WebP/AVIF/fonts dans `.htaccess`.
 
 ---
 
-### Sprint 8 : Refonte Copywriting & Rassurance Parents/Jeunes
-- **8.1 Repositionnement du Message & Hero** :
+### Sprint 9 : Refonte Copywriting & Rassurance Parents/Jeunes
+- **9.1 Repositionnement du Message & Hero** :
   - Titre : *"Apprendre à coder en construisant de vrais projets"*.
   - Double discours : cool et valorisant pour les 16-25 ans, structuré et rassurant pour les parents (cours en direct, petits groupes de 6, 2h cours + 2h atelier projet par semaine).
-- **8.2 Section "Ton Mentor"** :
+- **9.2 Section "Ton Mentor"** :
   - Présentation de Cédric, son parcours technique, sa pédagogie active et humaine.
-- **8.3 Analytics Conforme RGPD & Cookieless** :
+- **9.3 Analytics Conforme RGPD & Cookieless** :
   - Intégration de Plausible ou Umami (léger, respectueux de la vie privée, sans bandeau cookie intrusif).
   - Mesure des conversions (clics CTA, soumissions HubSpot, checkouts Stripe).

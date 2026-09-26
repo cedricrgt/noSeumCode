@@ -226,4 +226,39 @@ public class PaymentController {
                     .body(Map.of("message", "Impossible de synchroniser le paiement: " + e.getMessage()));
         }
     }
+
+    /**
+     * Création d'une session Stripe Customer Portal pour consultation et téléchargement des factures.
+     * Endpoint sécurisé réservé aux utilisateurs authentifiés avec JWT.
+     */
+    @PostMapping("/create-customer-portal-session")
+    public ResponseEntity<?> createCustomerPortalSession(
+            @RequestBody(required = false) Map<String, String> body,
+            @AuthenticationPrincipal Jwt jwt) {
+        if (jwt == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Authentification requise pour accéder au portail de facturation."));
+        }
+
+        if (userService == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Service utilisateur non disponible."));
+        }
+
+        String email = jwt.getSubject();
+        User user = userService.getUserByEmail(email)
+                .orElseThrow(() -> new com.codebangers.backend.config.exception.ResourceNotFoundException("User", email));
+
+        try {
+            String returnUrl = (body != null) ? body.get("returnUrl") : null;
+            String portalUrl = paymentService.createCustomerPortalSession(user, returnUrl);
+            return ResponseEntity.ok(Map.of("portalUrl", portalUrl));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            log.error("Erreur lors de la création de session Customer Portal pour {}: {}", email, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Échec de l'accès au portail de facturation: " + e.getMessage()));
+        }
+    }
 }

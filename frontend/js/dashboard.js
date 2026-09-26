@@ -534,6 +534,75 @@ function openCourseViewer(courseId, title) {
 }
 
 // ==========================================
+// 4b. Portail Client Stripe (Factures & Abonnements)
+// ==========================================
+
+async function openStripeCustomerPortal() {
+  const token = localStorage.getItem("noseum_token") || currentAuth.token;
+  if (!token) {
+    alert("Veuillez vous connecter pour accéder à vos factures.");
+    return;
+  }
+
+  const btnHeader = document.querySelector(".dash-btn-notifications");
+  const btnCard = document.getElementById("btn-open-stripe-portal");
+  const originalHeaderHtml = btnHeader ? btnHeader.innerHTML : null;
+  const originalCardHtml = btnCard ? btnCard.innerHTML : null;
+
+  try {
+    if (btnHeader) {
+      btnHeader.disabled = true;
+      btnHeader.style.opacity = "0.7";
+      btnHeader.innerHTML = `<span>Chargement...</span>`;
+    }
+    if (btnCard) {
+      btnCard.disabled = true;
+      btnCard.style.opacity = "0.7";
+      btnCard.innerHTML = `<span>Ouverture Stripe...</span>`;
+    }
+
+    const response = await apiFetch("/api/payments/create-customer-portal-session", {
+      method: "POST"
+    });
+
+    if (!response) {
+      throw new Error("Impossible de joindre le serveur.");
+    }
+
+    if (response.status === 401) {
+      alert("Votre session a expiré. Veuillez vous reconnecter.");
+      logout();
+      return;
+    }
+
+    const data = await response.json();
+
+    if (response.ok && data.portalUrl) {
+      window.location.href = data.portalUrl;
+    } else {
+      const errorMsg = data.error || "Impossible d'accéder au portail Stripe pour le moment.";
+      alert(`Erreur portail : ${errorMsg}`);
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'accès au portail Stripe:", error);
+    alert("Une erreur est survenue lors de l'accès à vos factures Stripe. Veuillez réessayer ultérieurement.");
+  } finally {
+    if (btnHeader && originalHeaderHtml) {
+      btnHeader.disabled = false;
+      btnHeader.style.opacity = "1";
+      btnHeader.innerHTML = originalHeaderHtml;
+    }
+    if (btnCard && originalCardHtml) {
+      btnCard.disabled = false;
+      btnCard.style.opacity = "1";
+      btnCard.innerHTML = originalCardHtml;
+    }
+  }
+}
+
+window.openStripeCustomerPortal = openStripeCustomerPortal;
+
+// ==========================================
 // 5. Teacher View (Course & Section Editing)
 // ==========================================
 

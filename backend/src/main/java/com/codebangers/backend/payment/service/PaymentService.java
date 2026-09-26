@@ -262,4 +262,11 @@ public class PaymentService {
                 user.getEmail(), course.getTitle());
         return enrollment;
     }
+
+    /**
+     * Crée une session pour le portail client Stripe (factures et règlements).
+     */
+    public String createCustomerPortalSession(User user, String returnUrl) {
+        return stripeGateway.createCustomerPortalSession(user, returnUrl);
+    }
 }
