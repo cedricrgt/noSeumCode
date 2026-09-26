@@ -268,10 +268,11 @@
     const token = localStorage.getItem("noseum_token");
 
     if (!token) {
+      localStorage.setItem("noseum_pending_workshop_id", workshopId);
       sessionStorage.setItem("noseum_pending_workshop_id", workshopId);
       showToast("👋 Connecte-toi ou crée ton compte pour confirmer ta place gratuite !", "info");
       if (typeof window.openGlobalAuthModal === "function") {
-        window.openGlobalAuthModal("register", true);
+        window.openGlobalAuthModal("register", false);
       }
       return;
     }
@@ -282,8 +283,10 @@
         headers: getAuthHeaders()
       });
 
-      if (response.ok) {
-        showToast("🎉 Félicitations ! Ta place est réservée. Retrouve ton atelier dans ton espace.", "success");
+      if (response.ok || response.status === 201) {
+        localStorage.removeItem("noseum_pending_workshop_id");
+        sessionStorage.removeItem("noseum_pending_workshop_id");
+        showToast('🎉 Félicitations ! Ta place est réservée. <a href="dashboard.html" style="color: #00ff87; text-decoration: underline; margin-left: 8px; font-weight: 700;">Voir mon espace ➔</a>', "success");
         await fetchWorkshops();
       } else {
         const errData = await response.json().catch(() => ({}));
@@ -332,22 +335,101 @@
 
   // Vérification de réservation différée après connexion
   async function checkPendingWorkshopRegistration() {
-    const pendingId = sessionStorage.getItem("noseum_pending_workshop_id");
+    const pendingId = localStorage.getItem("noseum_pending_workshop_id") || sessionStorage.getItem("noseum_pending_workshop_id");
     const token = localStorage.getItem("noseum_token");
 
     if (pendingId && token) {
-      sessionStorage.removeItem("noseum_pending_workshop_id");
       showToast("⏳ Validation de ta réservation en cours...", "info");
       await registerToWorkshop(pendingId);
     }
+  }
+
+  async function downloadHubspotCsv(workshopId = null) {
+    const token = localStorage.getItem("noseum_token");
+    if (!token) {
+      showToast("⚠️ Veuillez vous connecter avec un compte administrateur.", "error");
+      return;
+    }
+    try {
+      showToast("⏳ Génération de l'export CSV HubSpot en cours...", "info");
+      const url = workshopId
+        ? `${window.API_BASE_URL}/api/user-workshops/export/hubspot-csv?workshopId=${encodeURIComponent(workshopId)}`
+        : `${window.API_BASE_URL}/api/user-workshops/export/hubspot-csv`;
+
+      const res = await fetch(url, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+
+      if (!res.ok) {
+        showToast("❌ Erreur lors de l'exportation (droits administrateur requis).", "error");
+        return;
+      }
+
+      const blob = await res.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = downloadUrl;
+      const now = new Date().toISOString().slice(0, 10);
+      a.download = `hubspot_inscrits_workshops_${now}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(downloadUrl);
+      showToast("✅ Fichier CSV HubSpot téléchargé avec succès !", "success");
+    } catch (err) {
+      console.error("Erreur téléchargement CSV HubSpot:", err);
+      showToast("❌ Impossible de télécharger le fichier CSV.", "error");
+    }
+  }
+
+  function checkAdminBar() {
+    try {
+      const userStr = localStorage.getItem("noseum_user");
+      if (!userStr) return;
+      const user = JSON.parse(userStr);
+      if (user && (user.role === "ADMIN" || user.role === "TEACHER")) {
+        const existingBar = document.getElementById("admin-workshops-export-bar");
+        if (existingBar) return;
+
+        const mainContainer = document.querySelector(".workshops-container");
+        if (!mainContainer) return;
+
+        const bar = document.createElement("div");
+        bar.id = "admin-workshops-export-bar";
+        bar.style.cssText = "background: rgba(255, 122, 0, 0.12); border: 1px solid rgba(255, 122, 0, 0.4); border-radius: 14px; padding: 0.9rem 1.4rem; margin-bottom: 2.2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;";
+        bar.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 0.6rem; color: #ffaa00; font-size: 0.95rem; font-weight: 600;">
+            <span>🛡️ Espace Staff (${user.role}) :</span>
+            <span style="color: #cbd5e1; font-weight: 400;">Supervisez les sessions et téléchargez les inscrits pour votre CRM</span>
+          </div>
+          <div>
+            <button id="btn-export-hubspot-workshops" class="button button__primary bangers-regular" style="padding: 0.55rem 1.3rem; font-size: 0.95rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;">
+              📥 Exporter pour HubSpot (CSV)
+            </button>
+          </div>
+        `;
+        const hero = document.querySelector(".workshops-hero");
+        if (hero && hero.nextSibling) {
+          mainContainer.insertBefore(bar, hero.nextSibling);
+        } else {
+          mainContainer.prepend(bar);
+        }
+
+        document.getElementById("btn-export-hubspot-workshops")?.addEventListener("click", () => {
+          downloadHubspotCsv();
+        });
+      }
+    } catch (_) {}
   }
 
   // Expose global methods
   window.registerToWorkshop = registerToWorkshop;
   window.unregisterFromWorkshop = unregisterFromWorkshop;
   window.refreshWorkshops = fetchWorkshops;
+  window.downloadHubspotCsv = downloadHubspotCsv;
 
   document.addEventListener("DOMContentLoaded", async () => {
+    checkAdminBar();
     await fetchWorkshops();
     await checkPendingWorkshopRegistration();
   });

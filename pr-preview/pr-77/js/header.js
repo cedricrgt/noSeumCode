@@ -629,18 +629,19 @@ async function handleGlobalEmailLogin(e) {
       localStorage.setItem("noseum_user", JSON.stringify(user));
       checkUserAuthHeader();
 
-      const pendingWorkshopId = sessionStorage.getItem("noseum_pending_workshop_id");
+      const pendingWorkshopId = localStorage.getItem("noseum_pending_workshop_id") || sessionStorage.getItem("noseum_pending_workshop_id");
+      const pendingCourseId = sessionStorage.getItem("noseum_pending_checkout_course_id");
+
       if (pendingWorkshopId) {
-        sessionStorage.removeItem("noseum_pending_workshop_id");
         showGlobalAuthAlert("🎉 Connexion réussie ! Réservation de ton atelier en cours...", "success");
         setTimeout(async () => {
           closeGlobalAuthModal();
           if (typeof window.registerToWorkshop === "function") {
             await window.registerToWorkshop(pendingWorkshopId);
           } else {
-            window.location.href = "workshops.html";
+            window.location.href = "dashboard.html";
           }
-        }, 500);
+        }, 400);
       } else if (pendingCourseId) {
         const pendingTitle = sessionStorage.getItem("noseum_pending_checkout_course_title") || "";
         const pendingPrice = sessionStorage.getItem("noseum_pending_checkout_course_price") || "";
@@ -870,18 +871,19 @@ async function handleGlobalEmailRegister(e) {
       localStorage.setItem("noseum_user", JSON.stringify(user));
       checkUserAuthHeader();
 
-      const pendingWorkshopId = sessionStorage.getItem("noseum_pending_workshop_id");
+      const pendingWorkshopId = localStorage.getItem("noseum_pending_workshop_id") || sessionStorage.getItem("noseum_pending_workshop_id");
+      const pendingCourseId = sessionStorage.getItem("noseum_pending_checkout_course_id");
+
       if (pendingWorkshopId) {
-        sessionStorage.removeItem("noseum_pending_workshop_id");
         showGlobalAuthAlert("🎉 Compte créé avec succès ! Confirmation de ton atelier en cours...", "success");
         setTimeout(async () => {
           closeGlobalAuthModal();
           if (typeof window.registerToWorkshop === "function") {
             await window.registerToWorkshop(pendingWorkshopId);
           } else {
-            window.location.href = "workshops.html";
+            window.location.href = "dashboard.html";
           }
-        }, 500);
+        }, 400);
       } else if (pendingCourseId) {
         const pendingTitle = sessionStorage.getItem("noseum_pending_checkout_course_title") || "";
         const pendingPrice = sessionStorage.getItem("noseum_pending_checkout_course_price") || "";
