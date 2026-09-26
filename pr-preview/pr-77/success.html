@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paiement Réussi ! - NoSeumCode</title>
+  <meta name="description" content="Confirmation de paiement et accès à vos cours NoSeumCode." />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="canonical" href="https://noseumcode.fr/success.html" />
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Bangers&display=swap"
+    onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Bangers&display=swap" />
+  </noscript>
+  <link rel="stylesheet" href="styles/dist/thanks.min.css" />
+  <style>
+    .success-summary {
+      background: rgba(0, 255, 135, 0.05);
+      border: 1px solid rgba(0, 255, 135, 0.2);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin: 2rem auto;
+      max-width: 600px;
+      text-align: left;
+    }
+    .success-summary h3 {
+      color: var(--primary-green);
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+      letter-spacing: 1px;
+    }
+    .success-summary ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .success-summary li {
+      padding: 0.4rem 0;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+    }
+    .success-actions {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 2.5rem;
+    }
+  </style>
+</head>
+
+<body class="thanks-page poppins-regular">
+  <a href="#success-content" class="skip-link">Aller au contenu principal</a>
+
+  <div id="header-placeholder"></div>
+
+  <main id="success-content" class="thanks-container">
+    <span class="thanks__icon" aria-hidden="true">🎉</span>
+    <h1 class="thanks__title bangers-regular">Paiement Validé&nbsp;!</h1>
+    <p class="thanks__message poppins-regular">
+      Félicitations ! Ton inscription a bien été enregistrée et ton accès complet est désormais actif.
+    </p>
+
+    <div class="success-summary">
+      <h3 class="bangers-regular">Ce qui est maintenant débloqué :</h3>
+      <ul>
+        <li>✅ Accès illimité à tous les chapitres et vidéos du cours</li>
+        <li>✅ Exercices pratiques et ressources de formation</li>
+        <li>✅ Suivi de progression en temps réel sur ton tableau de bord</li>
+        <li>✅ Accès permanent aux futures mises à jour du cours</li>
+      </ul>
+    </div>
+
+    <div class="success-actions">
+      <a href="dashboard.html" class="button button__primary bangers-regular" id="btn-goto-dashboard">
+        Accéder à mon Espace Étudiant 🚀
+      </a>
+      <a href="cours.html" class="button button__secondary bangers-regular" id="btn-goto-course">
+        Voir mes cours
+      </a>
+    </div>
+
+    <a href="index.html" class="back-home bangers-regular">
+      ← Retour à l'accueil
+    </a>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="js/header.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const courseId = params.get("course_id");
+        const sessionId = params.get("session_id");
+        const token = localStorage.getItem("noseum_token");
+
+        if (courseId) {
+          const btnCourse = document.getElementById("btn-goto-course");
+          if (btnCourse) {
+            btnCourse.href = `cours.html?id=${encodeURIComponent(courseId)}`;
+            btnCourse.textContent = "Commencer la formation immédiatement 🚀";
+            btnCourse.classList.remove("button__secondary");
+            btnCourse.classList.add("button__primary");
+          }
+        }
+
+        // Synchronisation proactive du paiement si session_id est fourni
+        if (sessionId && token) {
+          const apiBase = window.API_BASE_URL || "";
+          try {
+            const syncRes = await fetch(`${apiBase}/api/payments/confirm-session?session_id=${encodeURIComponent(sessionId)}`, {
+              headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (syncRes.ok) {
+              const syncData = await syncRes.json();
+              console.log("Accès cours débloqué avec succès:", syncData);
+            }
+          } catch (syncErr) {
+            console.warn("Échec de la synchronisation directe Stripe (le webhook prendra le relais):", syncErr);
+          }
+        }
+      } catch (e) {
+        console.error("Erreur lecture URL params:", e);
+      }
+    });
+  </script>
+
+  <div id="popovers-placeholder"></div>
+</body>
+
+</html>
