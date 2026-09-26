@@ -46,8 +46,13 @@ frontend/
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
 ## Active Branch: `develop`
-## Current State: Sous-domaine staging `develop.noseumcode.fr` opérationnel et validé en production (HTTP 200 OK). CI/CD scindé et sécurisé : `main` pour la prod o2switch, `develop` pour le sous-domaine o2switch et le backend Oracle VM. Sprint 3 finalisé.
-## Next Sprint: Sprint 4 (Légal, Facturation & Lancement).
+## Current State: Sprints 1, 2, 3 finalisés et validés (Sécurité HMAC Stripe, Embedded Checkout, Auth Brevo/RTR). Restructuration complète de la feuille de route post-audit : Sprints 4 à 8 planifiés. Kanban GitHub Projects synchronisé (Projet #1).
+## Next Sprint: Sprint 4 — Quick Wins Conversion, Déblocage Leads & Légal (Réparation CTA Hero, CSP HubSpot, sécurisation thanks.html, pages légales).
+## Sprints Suivants:
+- Sprint 5 : Workshops Gratuits Toussaint (Acquisition & Preuves Vidéos).
+- Sprint 6 : Nouvelle Gamme & Accès Cohortes (Starter avec replays à vie, Web, VIP & Klarna).
+- Sprint 7 : Performance Web & SEO Technique (Images <800Ko, SSG Statique, CLS).
+- Sprint 8 : Refonte Copywriting & Rassurance Parents/Jeunes (Mentor & Analytics Plausible/Umami).
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009).
 
 ## Roles: STUDENT | TEACHER | ADMIN

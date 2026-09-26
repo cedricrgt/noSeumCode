@@ -74,5 +74,23 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Alternative rejetée**: Workflow unique avec conditionnel bash complexe — rejetée pour éliminer tout risque d'écrasement accidentel de la production lors d'un push sur `develop` et garantir une visibilité claire dans l'interface GitHub Actions.
 **Conséquence**: Isolation stricte entre les environnements de test et de production, réduction du temps de transfert FTP de 6m30s à ~15s, et protection du code source backend.
 
+## ADR-013 — Gamme Produits par Cohortes & Gestion des Droits aux Replays
+**Status**: Actif
+**Décision**: Structurer l'offre pédagogique en deux parcours principaux par cohortes (petits groupes de 6 élèves max) : **Pack Starter** (Fondations Web, 6 semaines) et **Pack Web** (Parcours complet interactif), complété par une option **Mentorat VIP** (Pack Web + 4h one-to-one). Tous les élèves d'une même cohorte démarrent ensemble. **Les élèves du Pack Starter conservent un accès à vie illimité aux replays des sessions live de leur tronc commun (HTML/CSS/Git)**. En revanche, l'accès aux sessions live et aux replays des modules avancés (JavaScript, API, CI/CD) est strictement verrouillé côté backend (`Enrollment.tier`) à l'issue des semaines de tronc commun.
+**Alternative rejetée**: Vente de modules isolés par langage sans synergie de groupe, ou révocation totale des replays pour le Starter (rejetée car contraire à la promesse de formation et néfaste pour la satisfaction apprenant).
+**Conséquence**: Modélisation simplifiée (`Cohort`, `Enrollment.tier`), upsell naturel fluide vers le Pack Web dans le dashboard, et pérennité de la valeur perçue pour l'élève Starter.
+
+## ADR-014 — Paiement Fractionné BNPL sans Risque via Klarna / Stripe Checkout
+**Status**: Actif
+**Décision**: Activer le moyen de paiement Buy Now Pay Later (BNPL) **Klarna** directement dans Stripe Checkout pour proposer le paiement en 3x ou 4x sans frais aux familles. Klarna verse l'intégralité des fonds dès la souscription et assume 100% du risque d'impayé ou de défaut sur les mensualités futures.
+**Alternative rejetée**: Échéancier manuel via Stripe Subscriptions (rejeté car en cas de carte bancaire bloquée ou expirée au mois 2, le risque financier et le recouvrement incombent entièrement à l'entreprise) ou création d'un compte marchand Klarna séparé (rejeté car inutile, Stripe gère l'agrégation nativement).
+**Conséquence**: Levée du frein tarifaire pour les 16-25 ans sans aucun risque de trésorerie ni coût de gestion d'impayés pour NoSeumCode.
+
+## ADR-015 — Système Analytics Cookieless & Privacy-First (Plausible / Umami)
+**Status**: Actif
+**Décision**: Adopter une solution d'analytics légère, respectueuse de la vie privée et conforme par défaut au RGPD (Plausible ou Umami) pour le suivi des tunnels de conversion (clics CTA, soumissions HubSpot, checkouts Stripe).
+**Alternative rejetée**: Google Analytics 4 (GA4) / Google Tag Manager avec bandeau de cookies (rejeté car alourdit la page, dégrade le score Web Vitals, nécessite une bannière intrusive de consentement et fait fuir l'audience jeune).
+**Conséquence**: Script de tracking < 2 Ko, respect strict de la confidentialité sans bandeau de cookies bloquant, et données fiables sur les conversions réelles.
+
 
 

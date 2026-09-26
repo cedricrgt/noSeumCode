@@ -282,3 +282,25 @@ _Chronologique — plus récent en bas_
    - Évite le téléversement du backend Java et des documents internes, réduisant le temps de déploiement à une quinzaine de secondes.
 2. **Synchronisation .env sur la VM Oracle (`.github/workflows/deploy.yml`)** :
    - Propagation des secrets `FTP_USERNAME_DEV`, `FTP_PASSWORD_DEV` et `FTP_DIR_DEV` dans l'étape SSH et génération automatique dans `~/noSeumCode/backend/.env`.
+
+---
+
+## 2026-09-26 — Restructuration Stratégique, Audit Externe & Nouveaux Sprints 4 à 8
+
+**Conversation ID**: `67344526-4298-4551-abb3-f061712dca15`  
+**Branche**: `docs/update-roadmap-and-sprints`  
+**Objectif**: Intégrer l'audit consolidé SEO/Marketing/Tech, restructurer le Kanban GitHub Projects et préparer le démarrage du Sprint 4 dans une conversation dédiée.
+
+### Réalisations & Arbitrages :
+1. **Création et Synchronisation du Kanban GitHub Projects** :
+   - Création du projet GitHub Projects v2 : `NoSeumCode — Roadmap & Sprints Live` (Projet #1, lié au dépôt `cedricrgt/noSeumCode`).
+   - Sprints 1, 2, 3 marqués comme terminés (`Done`).
+   - Sprints 4 à 8 réorganisés et alimentés en draft issues / items (`In Progress` pour le Sprint 4, `Todo` pour les suivants).
+2. **Décisions Métier & Architecturales (ADR-013, ADR-014, ADR-015)** :
+   - **ADR-013** : Gamme par cohortes (petits groupes de 6 max). Pack Starter (6 semaines) avec **accès à vie illimité aux replays du tronc commun** conservé, et verrouillage des modules avancés (JavaScript, API, CI/CD) réservés au Pack Web.
+   - **ADR-014** : Paiement fractionné BNPL via Klarna intégré nativement dans Stripe Checkout (fonds garantis immédiatement, zéro risque d'impayé).
+   - **ADR-015** : Choix d'un système d'analytics cookieless privacy-first conforme RGPD (Plausible / Umami).
+3. **Mise à Jour de la Documentation Persistante (`docs/ai/`)** :
+   - `docs/ai/ROADMAP.md` : Diagramme de Gantt Mermaid natif mis à jour avec les 8 sprints et détail des livrables.
+   - `docs/ai/PROJECT_CONTEXT.md` : Mise à jour de l'état actuel et cadrage du Sprint 4 (Quick Wins Conversion & Légal).
+   - `docs/ai/DECISIONS.md` : Formalisation des ADR-013, ADR-014 et ADR-015.
