@@ -304,3 +304,33 @@ _Chronologique — plus récent en bas_
    - `docs/ai/ROADMAP.md` : Diagramme de Gantt Mermaid natif mis à jour avec les 8 sprints et détail des livrables.
    - `docs/ai/PROJECT_CONTEXT.md` : Mise à jour de l'état actuel et cadrage du Sprint 4 (Quick Wins Conversion & Légal).
    - `docs/ai/DECISIONS.md` : Formalisation des ADR-013, ADR-014 et ADR-015.
+
+---
+
+## 2026-09-26 — Sprint 4 : Quick Wins Conversion, Déblocage Leads & Conformité Légale
+
+**Conversation ID**: `ff966115-1f67-4e85-9d6d-2cc844285723`  
+**Branche**: `feat/sprint-4-conversion-leads-legal`  
+**Objectif**: Réparer les CTA orphelins du Hero, débloquer l'intégration CSP HubSpot, sécuriser les pages privées/PDFs et instaurer les pages légales complètes conformes au droit français et RGPD.
+
+### Réalisations & Livrables :
+1. **CTA du Hero (`frontend/index.html`, `frontend/styles/components/buttons.css`)** :
+   - Bouton « Go coder » câblé avec redirection fluide vers `cours.html`.
+   - Bouton « Teste et kiffe ! » configuré avec `popovertarget="promo-popup"` pour ouvrir directement la modale des sessions découvertes et réserver sa place.
+   - Ajout de `text-decoration: none;` sur `.button` pour un rendu parfait des balises `<a>`.
+2. **Déblocage CSP HubSpot & Lead Magnet (`frontend/.htaccess`, `frontend/js/popover-hubspot.js`)** :
+   - Whitelist CSP dans `.htaccess` des domaines HubSpot (`js-eu1.hsforms.net`, `js.hsforms.net`, `forms-eu1.hsforms.com`, `forms.hsforms.com`, `api-eu1.hubspot.com`, `api.hubspot.com`) pour `script-src`, `frame-src`, `connect-src`, `form-action` et `img-src`.
+   - `popover-hubspot.js` amélioré : indicateur de chargement animé, callback `onFormSubmitted` confirmant la réception du programme par e-mail, et messages d'erreur gracieux.
+3. **Sécurisation de `thanks.html`, `robots.txt` et `sitemap.xml`** :
+   - Ajout de `<meta name="robots" content="noindex, nofollow" />` sur `thanks.html`, `dashboard.html`, `reset-password.html` et `success.html`.
+   - Suppression du tableau de bord privé (`dashboard.html`) de `sitemap.xml` et ajout des règles `Disallow` dans `robots.txt`.
+   - Correction du bouton Git & GitHub dans `thanks.html` qui téléchargeait le PDF JavaScript par erreur (désormais lié à `documents/git&github.pdf`).
+4. **Pages Légales & Conformité RGPD** :
+   - Création de `frontend/mentions-legales.html` (LCEN, éditeur Cédric Ragot, hébergeurs o2switch et Oracle Cloud).
+   - Création de `frontend/cgv.html` (modalités de vente, Klarna BNPL, droit de rétractation et règles des replays ADR-013).
+   - Création de `frontend/politique-confidentialite.html` (conformité RGPD, conservation, sous-traitants Stripe/Brevo/HubSpot, politique de cookies privacy-first).
+   - Mise à jour du footer (`partials/footer.html`) avec les liens légaux fonctionnels.
+   - Retrait des boutons sociaux non implémentés (Facebook, GitHub) dans les vues de connexion et d'inscription (`popovers-shared.html`, `header.js`), et alignement de la longueur minimale du mot de passe à 8 caractères.
+5. **Validation & Tests** :
+   - Recompilation complète des bundles CSS (`node frontend/build.js`).
+   - 64 tests unitaires et d'intégration Spring Boot validés avec succès (`BUILD SUCCESS`, 0 échec).

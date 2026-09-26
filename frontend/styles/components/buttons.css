@@ -12,6 +12,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
+  text-decoration: none;
 }
 
 .button:focus-visible {

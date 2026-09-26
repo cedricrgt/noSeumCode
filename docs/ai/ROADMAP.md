@@ -12,8 +12,8 @@
 | **Sprint 1** | **Sécurité & Paywall Serveur** | Bloquer l'accès gratuit aux cours et sécuriser le webhook Stripe (HMAC SHA-256) | ✅ **Terminé** |
 | **Sprint 2** | **Tunnel de Vente & Monétisation** | Intégrer Stripe Embedded Checkout réel et métadonnées marchandes | ✅ **Terminé** |
 | **Sprint 3** | **Auth, Comptes & E-mails** | Mot de passe oublié, emails transactionnels Brevo, sessions RTR 7 jours | ✅ **Terminé** |
-| **Sprint 4** | **Quick Wins Conversion, Leads & Légal** | Réparer les CTA Hero, débloquer CSP HubSpot, sécuriser `thanks.html`, pages légales | 🟡 **En cours / Prêt** |
-| **Sprint 5** | **Workshops Gratuits Toussaint** | Bandeau header réactivé, page dédiée `workshops.html`, jauge stricte 6 élèves max | ⚪ **Planifié** |
+| **Sprint 4** | **Quick Wins Conversion, Leads & Légal** | Réparer les CTA Hero, débloquer CSP HubSpot, sécuriser `thanks.html`, pages légales | ✅ **Terminé** |
+| **Sprint 5** | **Workshops Gratuits Toussaint** | Bandeau header réactivé, page dédiée `workshops.html`, jauge stricte 6 élèves max | 🟡 **En cours / Prêt** |
 | **Sprint 6** | **Nouvelle Gamme & Accès Cohortes** | Pack Starter (accès replays à vie), Pack Web, option VIP, Klarna BNPL via Stripe | ⚪ **Planifié** |
 | **Sprint 7** | **Performance Web & SEO Technique** | Compression images (<800 Ko), rendu statique dédié formations, fix CLS, cache Apache | ⚪ **Planifié** |
 | **Sprint 8** | **Copywriting & Rassurance Parents/Jeunes** | Refonte Hero, section Ton Mentor, rassurance parents, Analytics RGPD cookieless | ⚪ **Planifié** |
@@ -47,13 +47,13 @@ gantt
     Rate Limiting OWASP (3.4)            :done, s3_4, 2026-09-25, 2026-09-26
 
     section Sprint 4 : Quick Wins & Légal
-    Réparation CTA Hero & Liens (4.1)    :active, s4_1, 2026-09-26, 1d
-    Déblocage CSP HubSpot & Mail PDF(4.2):s4_2, after s4_1, 1d
-    Sécurisation thanks.html (4.3)       :s4_3, after s4_2, 1d
-    Pages Légales CGV / Mentions (4.4)   :s4_4, after s4_3, 2d
+    Réparation CTA Hero & Liens (4.1)    :done, s4_1, 2026-09-26, 2026-09-26
+    Déblocage CSP HubSpot & Mail PDF(4.2):done, s4_2, 2026-09-26, 2026-09-26
+    Sécurisation thanks.html (4.3)       :done, s4_3, 2026-09-26, 2026-09-26
+    Pages Légales CGV / Mentions (4.4)   :done, s4_4, 2026-09-26, 2026-09-26
 
     section Sprint 5 : Workshops Toussaint
-    Bandeau Header Déroulant (5.1)       :s5_1, after s4_4, 1d
+    Bandeau Header Déroulant (5.1)       :active, s5_1, 2026-09-26, 1d
     Page dédiée workshops.html (5.2)     :s5_2, after s5_1, 2d
     Jauge 6 inscrits & Dashboard (5.3)   :s5_3, after s5_2, 1d
 
@@ -99,7 +99,7 @@ gantt
 
 ---
 
-### Sprint 4 : Quick Wins Conversion, Déblocage Leads & Légal (En cours / Prochain)
+### Sprint 4 : Quick Wins Conversion, Déblocage Leads & Légal (Terminé)
 - **4.1 Réparation des CTA du Hero** (`frontend/index.html`) :
   - Bouton 1 : *"Go coder"* ➔ Redirection fluide vers `cours.html`.
   - Bouton 2 : *"Teste et kiffe !"* ➔ Redirection vers la future page des ateliers gratuits (`workshops.html` ou modale programme).
