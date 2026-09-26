@@ -35,4 +35,10 @@ public interface UserWorkshopRepository extends JpaRepository<UserWorkshop, UUID
     @Modifying
     @Query("DELETE FROM UserWorkshop uw WHERE uw.user.id = :userId AND uw.workshop.id = :workshopId")
     void deleteByUserIdAndWorkshopId(@Param("userId") UUID userId, @Param("workshopId") UUID workshopId);
+
+    @Query("SELECT uw FROM UserWorkshop uw JOIN FETCH uw.user u JOIN FETCH uw.workshop w WHERE w.isDeleted = false ORDER BY w.startDate ASC, uw.registeredAt ASC")
+    List<UserWorkshop> findAllWithUserAndWorkshop();
+
+    @Query("SELECT uw FROM UserWorkshop uw JOIN FETCH uw.user u JOIN FETCH uw.workshop w WHERE w.id = :workshopId AND w.isDeleted = false ORDER BY uw.registeredAt ASC")
+    List<UserWorkshop> findByWorkshopIdWithUserAndWorkshop(@Param("workshopId") UUID workshopId);
 }

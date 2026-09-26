@@ -12,6 +12,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -107,5 +109,49 @@ public class UserWorkshopService {
 
     public void unregisterUserFromWorkshop(UUID registrationId) {
         userWorkshopRepository.deleteById(registrationId);
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] generateHubspotCsv(UUID workshopId) {
+        List<UserWorkshop> list = (workshopId != null)
+            ? userWorkshopRepository.findByWorkshopIdWithUserAndWorkshop(workshopId)
+            : userWorkshopRepository.findAllWithUserAndWorkshop();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append('\uFEFF'); // UTF-8 BOM pour compatibilité Excel & HubSpot
+        sb.append("Email,First Name,Last Name,Lifecycle Stage,Atelier,Thématique,Date Atelier,Date Inscription\n");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+        for (UserWorkshop uw : list) {
+            User u = uw.getUser();
+            Workshop w = uw.getWorkshop();
+
+            String email = (u != null && u.getEmail() != null) ? u.getEmail() : "";
+            String firstName = (u != null && u.getFirstName() != null) ? u.getFirstName() : "";
+            String lastName = (u != null && u.getLastName() != null) ? u.getLastName() : "";
+            String lifecycleStage = "lead";
+            String workshopTitle = (w != null && w.getTitle() != null) ? w.getTitle() : "";
+            String theme = (w != null && w.getTheme() != null) ? w.getTheme() : "";
+            String workshopDate = (w != null && w.getStartDate() != null) ? w.getStartDate().format(dtf) : "";
+            String regDate = (uw.getRegisteredAt() != null) ? uw.getRegisteredAt().format(dtf) : "";
+
+            sb.append(escapeCsv(email)).append(",")
+              .append(escapeCsv(firstName)).append(",")
+              .append(escapeCsv(lastName)).append(",")
+              .append(escapeCsv(lifecycleStage)).append(",")
+              .append(escapeCsv(workshopTitle)).append(",")
+              .append(escapeCsv(theme)).append(",")
+              .append(escapeCsv(workshopDate)).append(",")
+              .append(escapeCsv(regDate)).append("\n");
+        }
+        return sb.toString().getBytes(StandardCharsets.UTF_8);
+    }
+
+    private String escapeCsv(String value) {
+        if (value == null) return "";
+        if (value.contains(",") || value.contains("\"") || value.contains("\n") || value.contains("\r")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
     }
 }

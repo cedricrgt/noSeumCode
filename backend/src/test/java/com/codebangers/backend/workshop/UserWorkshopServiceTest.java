@@ -199,4 +199,36 @@ class UserWorkshopServiceTest {
         assertThat(list).hasSize(1);
         assertThat(list.get(0).getWorkshop().getTitle()).isEqualTo("HTML & CSS Live");
     }
+
+    @Test
+    @DisplayName("Devrait générer un fichier CSV conforme HubSpot avec BOM UTF-8 et en-têtes corrects pour tous les ateliers")
+    void generateHubspotCsv_allWorkshops_success() {
+        student.setFirstName("Cédric");
+        student.setLastName("Dev");
+        UserWorkshop registration = new UserWorkshop(student, workshop);
+        when(userWorkshopRepository.findAllWithUserAndWorkshop()).thenReturn(List.of(registration));
+
+        byte[] csvBytes = userWorkshopService.generateHubspotCsv(null);
+        String csv = new String(csvBytes, java.nio.charset.StandardCharsets.UTF_8);
+
+        assertThat(csv).startsWith("\uFEFFEmail,First Name,Last Name,Lifecycle Stage,Atelier,Thématique,Date Atelier,Date Inscription");
+        assertThat(csv).contains("student@codebangers.fr,Cédric,Dev,lead,HTML & CSS Live,HTML & CSS");
+        verify(userWorkshopRepository).findAllWithUserAndWorkshop();
+        verify(userWorkshopRepository, never()).findByWorkshopIdWithUserAndWorkshop(any());
+    }
+
+    @Test
+    @DisplayName("Devrait générer un fichier CSV filtré par workshopId avec échappement des virgules")
+    void generateHubspotCsv_filteredByWorkshopId_success() {
+        workshop.setTitle("Workshop, avec virgule et \"guillemets\"");
+        UserWorkshop registration = new UserWorkshop(student, workshop);
+        when(userWorkshopRepository.findByWorkshopIdWithUserAndWorkshop(workshopId)).thenReturn(List.of(registration));
+
+        byte[] csvBytes = userWorkshopService.generateHubspotCsv(workshopId);
+        String csv = new String(csvBytes, java.nio.charset.StandardCharsets.UTF_8);
+
+        assertThat(csv).contains("\"Workshop, avec virgule et \"\"guillemets\"\"\"");
+        verify(userWorkshopRepository).findByWorkshopIdWithUserAndWorkshop(workshopId);
+        verify(userWorkshopRepository, never()).findAllWithUserAndWorkshop();
+    }
 }

@@ -7,7 +7,9 @@ import com.codebangers.backend.workshop.dto.UserWorkshopResponse;
 import com.codebangers.backend.workshop.model.UserWorkshop;
 import com.codebangers.backend.workshop.model.Workshop;
 import com.codebangers.backend.workshop.service.UserWorkshopService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -46,6 +48,18 @@ public class UserWorkshopController {
             .map(this::mapToResponse)
             .toList();
         return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping(value = "/export/hubspot-csv", produces = "text/csv; charset=UTF-8")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    public ResponseEntity<byte[]> exportHubspotCsv(
+            @RequestParam(required = false) UUID workshopId) {
+        byte[] csvData = userWorkshopService.generateHubspotCsv(workshopId);
+        String filename = "hubspot_workshop_contacts.csv";
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+            .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+            .body(csvData);
     }
 
     @GetMapping("/me")

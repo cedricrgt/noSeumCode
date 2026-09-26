@@ -377,8 +377,12 @@ _Chronologique — plus récent en bas_
    - Réactivation du bandeau promotionnel header avec animation gradient et compte à rebours vers la Toussaint.
    - Création de la page dédiée `frontend/workshops.html` et de sa feuille de style responsive `frontend/styles/pages/workshops.css` (bundle minifié `workshops.min.css`).
    - Client dynamique `frontend/js/workshops.js` : interrogation de `/api/workshops`, jauge visuelle de 6 places, synchronisation de l'état d'inscription, fallback élégant si déconnecté.
-   - Inscription automatique post-connexion/inscription via `localStorage` (`noseum_pending_workshop_id`) dans `header.js`.
+   - Inscription automatique post-connexion/inscription via double stockage (`localStorage` et `sessionStorage` : `noseum_pending_workshop_id`) dans `header.js`, `workshops.js` et finalisation automatique avec toast dans `dashboard.js`.
    - Intégration dans `dashboard.html` et `dashboard.js` de la section « Mes Ateliers Découvertes » avec désinscription en 1 clic.
-3. **Validation & Tests** :
+3. **Export CRM HubSpot pour les Inscrits aux Ateliers** :
+   - Ajout de l'endpoint sécurisé `GET /api/user-workshops/export/hubspot-csv` sous contrôle de rôle (`ADMIN`, `TEACHER`).
+   - Formatage conforme aux exigences techniques HubSpot : fichier `.csv`, encodage UTF-8 avec BOM (`\uFEFF`), en-têtes standard (`Email`, `First Name`, `Last Name`, `Lifecycle Stage`, `Atelier`, `Thématique`, `Date Atelier`, `Date Inscription`).
+   - Bouton de téléchargement 1-clic intégré dans l'espace administrateur de `dashboard.html` et barre d'actions admin dynamique sur `workshops.html`.
+4. **Validation & Tests** :
    - Recompilation des bundles CSS dist (`node frontend/build.js`).
-   - 80 tests unitaires et d'intégration Maven exécutés avec succès (`BUILD SUCCESS`, 0 erreur, 0 échec).
+   - 82 tests unitaires et d'intégration Maven exécutés avec succès (`BUILD SUCCESS`, 0 erreur, 0 échec).

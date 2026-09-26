@@ -95,6 +95,24 @@ async function loadStoredAuth() {
     return;
   }
 
+  // Si une inscription à un atelier découverte Toussaint est en attente (ex: redirection post-auth ou OAuth)
+  const pendingWorkshopId = localStorage.getItem("noseum_pending_workshop_id") || sessionStorage.getItem("noseum_pending_workshop_id");
+  if (pendingWorkshopId) {
+    localStorage.removeItem("noseum_pending_workshop_id");
+    sessionStorage.removeItem("noseum_pending_workshop_id");
+    try {
+      const regRes = await apiFetch(`/api/user-workshops/${pendingWorkshopId}`, { method: "POST" });
+      if (regRes && (regRes.ok || regRes.status === 201 || regRes.status === 409)) {
+        showGlobalDashboardToast("🎉 Félicitations ! Votre place pour l'atelier découverte a été confirmée.", "success");
+      } else {
+        const errJson = await regRes.json().catch(() => ({}));
+        showGlobalDashboardToast(errJson.message || "Impossible de réserver cet atelier (jauge complète).", "error");
+      }
+    } catch (e) {
+      console.error("Erreur auto-inscription workshop:", e);
+    }
+  }
+
   currentAuth.token = savedToken;
   try {
     currentAuth.user = JSON.parse(savedUser);
@@ -728,6 +746,80 @@ async function openStripeCustomerPortal() {
 }
 
 window.openStripeCustomerPortal = openStripeCustomerPortal;
+
+// ==========================================
+// 4d. Export HubSpot CRM (Ateliers Découvertes) & Notifications
+// ==========================================
+
+function showGlobalDashboardToast(message, type = "success") {
+  let toast = document.getElementById("dash-floating-toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "dash-floating-toast";
+    toast.style.cssText = "position: fixed; top: 24px; right: 24px; z-index: 99999; max-width: 450px; padding: 1rem 1.25rem; border-radius: 12px; font-weight: 600; font-size: 0.95rem; box-shadow: 0 10px 25px rgba(0,0,0,0.15); transition: all 0.3s ease; display: none;";
+    document.body.appendChild(toast);
+  }
+
+  if (type === "success") {
+    toast.style.background = "#ecfdf5";
+    toast.style.color = "#065f46";
+    toast.style.border = "1px solid #10b981";
+  } else {
+    toast.style.background = "#fef2f2";
+    toast.style.color = "#991b1b";
+    toast.style.border = "1px solid #ef4444";
+  }
+
+  toast.innerHTML = message;
+  toast.style.display = "block";
+  toast.style.opacity = "1";
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    setTimeout(() => { toast.style.display = "none"; }, 300);
+  }, 5000);
+}
+window.showGlobalDashboardToast = showGlobalDashboardToast;
+
+async function downloadHubspotCsv(workshopId = null) {
+  const token = localStorage.getItem("noseum_token") || currentAuth.token;
+  if (!token) {
+    alert("Veuillez vous connecter avec un compte administrateur.");
+    return;
+  }
+
+  try {
+    showGlobalDashboardToast("⏳ Génération du fichier CSV HubSpot en cours...", "success");
+    const url = workshopId
+      ? `${API_BASE}/api/user-workshops/export/hubspot-csv?workshopId=${encodeURIComponent(workshopId)}`
+      : `${API_BASE}/api/user-workshops/export/hubspot-csv`;
+
+    const res = await fetch(url, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+
+    if (!res.ok) {
+      alert("Erreur lors de l'exportation des inscrits (accès administrateur requis).");
+      return;
+    }
+
+    const blob = await res.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    const now = new Date().toISOString().slice(0, 10);
+    a.download = `hubspot_inscrits_workshops_${now}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(downloadUrl);
+    showGlobalDashboardToast("✅ Export CSV HubSpot téléchargé avec succès !", "success");
+  } catch (err) {
+    console.error("Erreur téléchargement CSV HubSpot:", err);
+    alert("Impossible de télécharger le fichier d'export CSV.");
+  }
+}
+window.downloadHubspotCsv = downloadHubspotCsv;
 
 // ==========================================
 // 5. Teacher View (Course & Section Editing)
