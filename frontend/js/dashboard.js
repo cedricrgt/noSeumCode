@@ -85,34 +85,6 @@ async function loadStoredAuth() {
     return;
   }
 
-  // Si un achat de formation est en attente, basculer immédiatement vers le checkout du cours
-  const pendingCourseId = sessionStorage.getItem("noseum_pending_checkout_course_id");
-  if (pendingCourseId) {
-    sessionStorage.removeItem("noseum_pending_checkout_course_id");
-    sessionStorage.removeItem("noseum_pending_checkout_course_title");
-    sessionStorage.removeItem("noseum_pending_checkout_course_price");
-    window.location.href = `cours.html?id=${encodeURIComponent(pendingCourseId)}&auto_checkout=true`;
-    return;
-  }
-
-  // Si une inscription à un atelier découverte Toussaint est en attente (ex: redirection post-auth ou OAuth)
-  const pendingWorkshopId = localStorage.getItem("noseum_pending_workshop_id") || sessionStorage.getItem("noseum_pending_workshop_id");
-  if (pendingWorkshopId) {
-    localStorage.removeItem("noseum_pending_workshop_id");
-    sessionStorage.removeItem("noseum_pending_workshop_id");
-    try {
-      const regRes = await apiFetch(`/api/user-workshops/${pendingWorkshopId}`, { method: "POST" });
-      if (regRes && (regRes.ok || regRes.status === 201 || regRes.status === 409)) {
-        showGlobalDashboardToast("🎉 Félicitations ! Votre place pour l'atelier découverte a été confirmée.", "success");
-      } else {
-        const errJson = await regRes.json().catch(() => ({}));
-        showGlobalDashboardToast(errJson.message || "Impossible de réserver cet atelier (jauge complète).", "error");
-      }
-    } catch (e) {
-      console.error("Erreur auto-inscription workshop:", e);
-    }
-  }
-
   currentAuth.token = savedToken;
   try {
     currentAuth.user = JSON.parse(savedUser);
@@ -124,6 +96,44 @@ async function loadStoredAuth() {
   }
 
   updateUserUI();
+
+  // Notification de confirmation après réservation directe ou redirection post-auth
+  if (sessionStorage.getItem("noseum_workshop_just_registered") === "true") {
+    sessionStorage.removeItem("noseum_workshop_just_registered");
+    setTimeout(() => {
+      showGlobalDashboardToast("🎉 Félicitations ! Votre place pour l'atelier découverte a été confirmée.", "success");
+    }, 200);
+  }
+
+  // Si un achat de formation est en attente, basculer immédiatement vers le checkout du cours
+  const pendingCourseId = sessionStorage.getItem("noseum_pending_checkout_course_id");
+  if (pendingCourseId) {
+    sessionStorage.removeItem("noseum_pending_checkout_course_id");
+    sessionStorage.removeItem("noseum_pending_checkout_course_title");
+    sessionStorage.removeItem("noseum_pending_checkout_course_price");
+    window.location.href = `cours.html?id=${encodeURIComponent(pendingCourseId)}&auto_checkout=true`;
+    return;
+  }
+
+  // Si une inscription à un atelier découverte Toussaint est encore en attente (ex: redirection post-auth ou OAuth)
+  const pendingWorkshopId = localStorage.getItem("noseum_pending_workshop_id") || sessionStorage.getItem("noseum_pending_workshop_id");
+  if (pendingWorkshopId) {
+    localStorage.removeItem("noseum_pending_workshop_id");
+    sessionStorage.removeItem("noseum_pending_workshop_id");
+    try {
+      const regRes = await apiFetch(`/api/user-workshops/${pendingWorkshopId}`, { method: "POST" });
+      if (regRes && (regRes.ok || regRes.status === 201 || regRes.status === 409)) {
+        setTimeout(() => {
+          showGlobalDashboardToast("🎉 Félicitations ! Votre place pour l'atelier découverte a été confirmée.", "success");
+        }, 200);
+      } else {
+        const errJson = await regRes.json().catch(() => ({}));
+        showGlobalDashboardToast(errJson.message || "Impossible de réserver cet atelier (jauge complète).", "error");
+      }
+    } catch (e) {
+      console.error("Erreur auto-inscription workshop:", e);
+    }
+  }
 
   // Valider si le compte existe réellement en base de données PostgreSQL
   try {
@@ -764,6 +774,10 @@ function showGlobalDashboardToast(message, type = "success") {
     toast.style.background = "#ecfdf5";
     toast.style.color = "#065f46";
     toast.style.border = "1px solid #10b981";
+  } else if (type === "info") {
+    toast.style.background = "#eff6ff";
+    toast.style.color = "#1e40af";
+    toast.style.border = "1px solid #3b82f6";
   } else {
     toast.style.background = "#fef2f2";
     toast.style.color = "#991b1b";

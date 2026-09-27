@@ -288,6 +288,11 @@
         sessionStorage.removeItem("noseum_pending_workshop_id");
         showToast('🎉 Félicitations ! Ta place est réservée. <a href="dashboard.html" style="color: #00ff87; text-decoration: underline; margin-left: 8px; font-weight: 700;">Voir mon espace ➔</a>', "success");
         await fetchWorkshops();
+      } else if (response.status === 409) {
+        localStorage.removeItem("noseum_pending_workshop_id");
+        sessionStorage.removeItem("noseum_pending_workshop_id");
+        showToast('ℹ️ Tu es déjà inscrit(e) à cet atelier ! <a href="dashboard.html" style="color: #00e5ff; text-decoration: underline; margin-left: 8px; font-weight: 700;">Voir mon espace ➔</a>', "info");
+        await fetchWorkshops();
       } else {
         const errData = await response.json().catch(() => ({}));
         const msg = errData.message || "Impossible de réserver cette place.";

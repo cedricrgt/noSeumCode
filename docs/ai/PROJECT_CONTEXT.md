@@ -45,8 +45,8 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `fix/oracle-flyway-uuid-syntax` (en cours de PR vers `develop`)
-## Current State: Sprints 1 à 6 finalisés et validés (Sécurité HMAC Stripe, Embedded Checkout, Auth Brevo/RTR, Quick Wins & Légal, Portail Client Stripe, Workshops Gratuits Toussaint avec jauge 6 élèves). Correctif UUID PostgreSQL & auto-clean Flyway appliqué.
+## Active Branch: `fix/workshop-registration-post-login` (en cours de PR vers `develop`)
+## Current State: Sprints 1 à 6 finalisés et validés (Sécurité HMAC Stripe, Embedded Checkout, Auth Brevo/RTR, Quick Wins & Légal, Portail Client Stripe, Workshops Gratuits Toussaint avec jauge 6 élèves). Correctifs UUID PostgreSQL Flyway et Inscription Workshop post-auth appliqués.
 ## Next Sprint: Sprint 7 — Nouvelle Gamme & Accès Cohortes (Starter avec replays à vie, Web, VIP & Klarna).
 ## Sprints Suivants:
 - Sprint 8 : Performance Web & SEO Technique (Images <800Ko, SSG Statique, CLS).
