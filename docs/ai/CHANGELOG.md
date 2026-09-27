@@ -508,3 +508,30 @@ _Chronologique — plus récent en bas_
 5. **Validation & Tests** :
    - Recompilation complète des bundles CSS dist via `node frontend/build.js`.
    - 112 tests unitaires et d'intégration validés avec succès sous Maven (`BUILD SUCCESS`, 0 échec).
+
+---
+
+## 2026-09-27 — Correctif : Résolution Avertissement Google Safe Browsing / Lookalike (develop.noseumcode.fr)
+
+**Conversation ID**: `5eff324b-9634-487e-a43d-fbc635b0c995`  
+**Branche**: `fix/google-safe-browsing-deceptive-warning`  
+**Objectif**: Supprimer l'avertissement de sécurité Google Chrome (« Site dangereux / Site trompeur » ou Lookalike « Attention : faux site ») sur `https://develop.noseumcode.fr` en déclarant officiellement l'association des domaines NoSeumCode, en isolant le sous-domaine de dev des crawlers et en durcissant la sécurité HTTP.
+
+### Réalisations & Livrables :
+1. **Digital Asset Links (`frontend/.well-known/assetlinks.json`)** :
+   - Création de la déclaration officielle Google Digital Asset Links associant bidirectionnellement `noseumcode.fr`, `www.noseumcode.fr` et `develop.noseumcode.fr` pour les permissions `get_login_creds` et `handle_all_urls`.
+   - Permet à Chrome et aux algorithmes Safe Browsing de valider formellement la légitimité du sous-domaine et de supprimer les alertes heuristiques d'hameçonnage / lookalike.
+2. **Isolation Robots & Staging (`frontend/robots-dev.txt`, `frontend/.htaccess`)** :
+   - Création de `robots-dev.txt` (`User-agent: * \n Disallow: /`).
+   - Règle de réécriture Apache transparente servant `robots-dev.txt` sur `develop.noseumcode.fr`, interdisant ainsi formellement à Googlebot et autres robots l'exploration du site de pré-production.
+3. **Durcissement Sécurité Apache (`frontend/.htaccess`)** :
+   - Règle d'exemption dédiée pour `/.well-known/` évitant tout conflit de redirection.
+   - En-tête MIME `Content-Type: application/json; charset=utf-8` et en-tête `Access-Control-Allow-Origin: *` garantis pour `assetlinks.json`.
+   - Blocage HTTP strict (403 Forbidden) des scripts de build (`*.sh`, `*.ps1`, `build.js`), manifestes npm (`package.json`, `package-lock.json`), documentation (`README.md`), fichiers `.env*` et dotfiles résiduels.
+4. **Filtrage Workflows CI/CD FTP (`.github/workflows/ftp-dev.yml` et `ftp.yml`)** :
+   - Configuration d'un filtre `exclude:` exhaustif pour empêcher l'envoi vers le serveur FTP de tous les fichiers internes hors production (`.git`, `node_modules`, `*.sh`, `*.ps1`, `build.js`, `package*.json`, `README.md`, `.env*`).
+5. **Indicateur Visuel de Pré-production (`frontend/js/header.js`)** :
+   - Injection dynamique d'un bandeau subtil et mobile-friendly en haut de page lorsque le domaine est `develop.noseumcode.fr` (« 🛠️ Environnement de test NoSeumCode — Espace réservé à la pré-production ») assurant une transparence totale pour les visiteurs et les auditeurs de sécurité Google.
+6. **Validation Locale & Tests** :
+   - Recompilation complète des bundles CSS dist (`node frontend/build.js`).
+   - Exécution intégrale de la suite de 112 tests unitaires et d'intégration Spring Boot (`BUILD SUCCESS`, 0 erreur, 0 échec).

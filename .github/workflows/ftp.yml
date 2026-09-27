@@ -39,3 +39,14 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: ${{ secrets.FTP_DIR }}
+          local-dir: ./frontend/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.env*
+            **/*.sh
+            **/*.ps1
+            **/build.js
+            **/package*.json
+            **/README.md

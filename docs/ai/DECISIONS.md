@@ -52,7 +52,7 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 
 ## ADR-009 — Workflow de Développement Agentique & Protection de la branche develop
 **Status**: Actif
-**Décision**: Les agents autonomes opèrent exclusivement sur des branches dédiées (`feat/*`, `fix/*`, `task/*`), exécutent le cycle itératif de développement et de tests, mettent à jour la mémoire projet (`docs/ai/`), puis ouvrent une Pull Request (PR) comparant la branche de travail à `develop`. Cedric valide et fusionne manuellement la PR.
+**Décision**: Les agents autonomes opèrent exclusivement sur des branches dédiées (`feat/*`, `fix/*`, `task/*`), exécutent le cycle itératif de développement et de tests, mettent à jour la mémoire projet (`docs/ai/`), puis ouvrent une Pull Request (PR) comparant la branche de travail à `develop`. Tous les messages de commit (titre et corps) ainsi que les descriptions de PR sont rédigés impérativement en anglais, selon la convention Conventional Commits, sans emojis ni boilerplate. Cedric valide et fusionne manuellement la PR.
 **Alternative rejetée**: Push direct des agents sur la branche `develop` — formellement rejetée car `.github/workflows/deploy.yml` déclenche automatiquement un déploiement SSH en production sur la VM Oracle Cloud à chaque push sur `develop`.
 **Conséquence**: Préservation totale de l'environnement de production, isolation des développements, possibilité de prévisualisation via GitHub Pages (`pr-preview.yml`), et contrôle humain final sur les fusions.
 
