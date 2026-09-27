@@ -6,6 +6,19 @@ RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # ----------------------------------------------------------------------
+# Clean URLs & Route Rewrites (Sprint 6 / ADR-013 & ADR-014)
+# ----------------------------------------------------------------------
+# 1. Redirection 301 de l'ancienne route /cours et /cours.html vers /parcours
+RewriteRule ^cours/?$ /parcours [R=301,L,QSA]
+RewriteRule ^cours\.html$ /parcours [R=301,L,QSA]
+
+# 2. Réécriture propre de l'endpoint /parcours vers parcours.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^parcours/?$ parcours.html [L,QSA]
+
+
+# ----------------------------------------------------------------------
 # Redirection "En construction" (supprimer ce bloc quand le site est prêt)
 # ----------------------------------------------------------------------
 # RewriteCond %{REMOTE_ADDR} !^12\.34\.56\.78$
