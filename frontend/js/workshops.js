@@ -9,7 +9,7 @@
 
   const FALLBACK_WORKSHOPS = [
     {
-      id: "w1000000-0000-0000-0000-000000000001",
+      id: "b1000000-0000-0000-0000-000000000001",
       title: "HTML & CSS — Crée ta première page Web en direct",
       theme: "HTML & CSS",
       description: "Découvre les balises sémantiques, le style moderne avec Flexbox, et construis ta première page web responsive guidé pas à pas par ton mentor. Zéro prérequis.",
@@ -22,7 +22,7 @@
       endDate: "2026-10-26T12:00:00"
     },
     {
-      id: "w1000000-0000-0000-0000-000000000002",
+      id: "b1000000-0000-0000-0000-000000000002",
       title: "JavaScript — Donne vie à ton code & anime le DOM",
       theme: "JavaScript",
       description: "Passe à l'action avec JavaScript : variables, fonctions, événements et manipulation dynamique du DOM pour créer une application interactive et réactive.",
@@ -35,7 +35,7 @@
       endDate: "2026-10-27T12:00:00"
     },
     {
-      id: "w1000000-0000-0000-0000-000000000003",
+      id: "b1000000-0000-0000-0000-000000000003",
       title: "Git & GitHub — Maîtrise le versioning comme un pro",
       theme: "Git & GitHub",
       description: "Apprends à utiliser Git comme les développeurs en entreprise : commits propres, branches, gestion des conflits et hébergement de ton code sur GitHub.",
@@ -48,7 +48,7 @@
       endDate: "2026-10-28T12:00:00"
     },
     {
-      id: "w1000000-0000-0000-0000-000000000004",
+      id: "b1000000-0000-0000-0000-000000000004",
       title: "Mini-Projet Guidé — Code ton premier portfolio interactif",
       theme: "Mini-Projet Guidé",
       description: "Mets en pratique toutes les compétences acquises lors d'un atelier immersif de 2h : construis et personnalise ton portfolio en direct avec retours instantanés du mentor.",

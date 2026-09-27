@@ -89,6 +89,9 @@ jobs:
             docker compose exec -T postgres psql -U "$DB_USERNAME" -d postgres -c "ALTER USER \"$DB_USERNAME\" WITH PASSWORD '$DB_PASSWORD';" 2>/dev/null || true
             docker compose exec -T postgres psql -U postgres -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE noseumcode TO \"$DB_USERNAME\";" 2>/dev/null || true
 
+            # Nettoyage automatique des migrations Flyway échouées pour permettre le rejeu
+            docker compose exec -T postgres psql -U postgres -d noseumcode -c "DELETE FROM flyway_schema_history WHERE success = false;" 2>/dev/null || true
+
             # Rebuild et redémarrage du backend
             docker compose up -d --build --no-deps backend
             docker image prune -f

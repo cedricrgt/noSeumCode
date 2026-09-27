@@ -386,3 +386,21 @@ _Chronologique — plus récent en bas_
 4. **Validation & Tests** :
    - Recompilation des bundles CSS dist (`node frontend/build.js`).
    - 82 tests unitaires et d'intégration Maven exécutés avec succès (`BUILD SUCCESS`, 0 erreur, 0 échec).
+
+---
+
+## 2026-09-27 — Correctif : Syntaxe UUID PostgreSQL Flyway V013 & Auto-Clean Déploiement Oracle VM
+
+**Conversation ID**: `4e2adcdb-309a-40f9-9c4d-715b084694af`  
+**Branche**: `fix/oracle-flyway-uuid-syntax`  
+**Objectif**: Corriger l'échec de démarrage du conteneur Spring Boot sur la VM Oracle Cloud suite à l'erreur PostgreSQL 22P02 (`invalid input syntax for type uuid: "w1000000-0000-0000-0000-000000000001"`) et fiabiliser les déploiements continus.
+
+### Réalisations & Corrections :
+1. **Migration Flyway V013 (`backend/src/main/resources/db/migration/V013__seed_toussaint_workshops.sql`)** :
+   - Remplacement des identifiants avec préfixe non hexadécimal `w1000000-...` par des UUIDs hexadécimaux valides `b1000000-0000-0000-0000-000000000001` à `...0004` strictement conformes à la norme UUID de PostgreSQL.
+2. **Synchronisation Frontend (`frontend/js/workshops.js`)** :
+   - Mise à jour des identifiants des ateliers de secours (`FALLBACK_WORKSHOPS`) avec les nouveaux UUIDs hexadécimaux `b1000000-...`.
+3. **Auto-Clean Flyway dans le Workflow CI/CD (`.github/workflows/deploy.yml`)** :
+   - Ajout d'une commande de purge automatique et idempotente des migrations échouées (`DELETE FROM flyway_schema_history WHERE success = false;`) avant le redémarrage du conteneur backend, permettant le rejeu immédiat et évitant le blocage `Detected failed migration`.
+4. **Validation & Tests** :
+   - 82 tests unitaires et d'intégration Spring Boot validés avec succès (`BUILD SUCCESS`, 0 erreur, 0 échec).
