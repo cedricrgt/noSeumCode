@@ -4,7 +4,7 @@
 INSERT INTO workshop (id, title, theme, description, max_participants, start_date, end_date, created_at, updated_at, is_deleted)
 VALUES
 (
-    'w1000000-0000-0000-0000-000000000001',
+    'b1000000-0000-0000-0000-000000000001',
     'HTML & CSS — Crée ta première page Web en direct',
     'HTML & CSS',
     'Découvre les balises sémantiques, le style moderne avec Flexbox, et construis ta première page web responsive guidé pas à pas par ton mentor. Zéro prérequis.',
@@ -16,7 +16,7 @@ VALUES
     false
 ),
 (
-    'w1000000-0000-0000-0000-000000000002',
+    'b1000000-0000-0000-0000-000000000002',
     'JavaScript — Donne vie à ton code & anime le DOM',
     'JavaScript',
     'Passe à l''action avec JavaScript : variables, fonctions, événements et manipulation dynamique du DOM pour créer une application interactive et réactive.',
@@ -28,7 +28,7 @@ VALUES
     false
 ),
 (
-    'w1000000-0000-0000-0000-000000000003',
+    'b1000000-0000-0000-0000-000000000003',
     'Git & GitHub — Maîtrise le versioning comme un pro',
     'Git & GitHub',
     'Apprends à utiliser Git comme les développeurs en entreprise : commits propres, branches, gestion des conflits et hébergement de ton code sur GitHub.',
@@ -40,7 +40,7 @@ VALUES
     false
 ),
 (
-    'w1000000-0000-0000-0000-000000000004',
+    'b1000000-0000-0000-0000-000000000004',
     'Mini-Projet Guidé — Code ton premier portfolio interactif',
     'Mini-Projet Guidé',
     'Mets en pratique toutes les compétences acquises lors d''un atelier immersif de 2h : construis et personnalise ton portfolio en direct avec retours instantanés du mentor.',
