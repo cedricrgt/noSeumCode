@@ -487,7 +487,7 @@ function renderStudentCourses() {
   enrolledCourses.forEach(course => {
     const imgUrl = getCourseImageForTitle(course.courseTitle, course.courseDescription);
     const tier = (course.tier || "STARTER").toUpperCase();
-    const tierLabel = tier === "STARTER" ? "Pack Starter" : (tier === "VIP" ? "Mentorat VIP" : "Pack Web");
+    const tierLabel = tier === "STARTER" ? "Pack Fondations" : (tier === "VIP" ? "Pack Mentorat VIP" : "Pack Dynamique");
     const tierColor = tier === "STARTER" ? "#2563eb" : (tier === "VIP" ? "#d97706" : "#7c3aed");
     const tierBg = tier === "STARTER" ? "rgba(37, 99, 235, 0.12)" : (tier === "VIP" ? "rgba(217, 119, 6, 0.12)" : "rgba(124, 58, 237, 0.12)");
     const cohortBadge = course.cohortName ? `<span style="font-size: 0.72rem; color: #0284c7; background: rgba(2, 132, 199, 0.12); padding: 2px 7px; border-radius: 4px; font-weight: 600;">👥 ${escapeHtml(course.cohortName)}</span>` : "";

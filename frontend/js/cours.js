@@ -124,7 +124,7 @@ async function loadInitialData() {
       {
         id: "c1000000-0000-0000-0000-000000000001",
         slug: "html-css",
-        title: "HTML & CSS – Les Fondations indispensables au Web",
+        title: "Pack Fondations – HTML5, CSS3 & Git",
         description: "Apprends à structurer tes pages en HTML5 sémantique et à créer des designs modernes, responsives et accessibles avec CSS3, Flexbox et CSS Grid.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
@@ -141,7 +141,7 @@ async function loadInitialData() {
       {
         id: "c2000000-0000-0000-0000-000000000002",
         slug: "javascript",
-        title: "JavaScript – L'interactivité au bout des doigts",
+        title: "Pack Dynamique – JavaScript ES6+ & APIs REST",
         description: "Donne vie à tes créations web : manipulation du DOM, requêtes API asynchrones, animations dynamiques et logique applicative complète.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 25).toISOString(),
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
@@ -194,11 +194,11 @@ function renderCourseCatalog() {
   const contentArea = document.getElementById("cours-content");
   if (!contentArea) return;
 
-  document.title = "Espace Formations - NoSeumCode";
+  document.title = "Nos Parcours de Formation - NoSeumCode";
 
   let roleHeaderTag = "";
   if (currentRole === "STUDENT") {
-    roleHeaderTag = `<span class="course-badge-role">🎓 Mes Formations Inscrites</span>`;
+    roleHeaderTag = `<span class="course-badge-role">🎓 Mes Parcours Inscrits</span>`;
   } else if (currentRole === "TEACHER") {
     roleHeaderTag = `<span class="course-badge-role">👨‍🏫 Espace Enseignant (Édition)</span>`;
   } else if (currentRole === "ADMIN") {
@@ -217,8 +217,8 @@ function renderCourseCatalog() {
             </svg>
             Retour à l'accueil
           </a>
-          <h1 class="course-title" style="font-size: 2.8rem; margin: 0.5rem 0; color: var(--dark-navy);">Catalogue des Formations</h1>
-          <p style="color: #64748b; font-size: 1.05rem; margin: 0;">Sélectionnez une formation pour accéder à votre espace de cours interactif.</p>
+          <h1 class="course-title" style="font-size: 2.8rem; margin: 0.5rem 0; color: var(--dark-navy);">Nos Parcours de Formation</h1>
+          <p style="color: #64748b; font-size: 1.05rem; margin: 0;">Rejoins une promotion de 6 élèves max et choisis le pack adapté à tes ambitions.</p>
         </div>
         <div>
           ${roleHeaderTag}
@@ -236,7 +236,7 @@ function renderCourseCatalog() {
           <span style="font-size: 1.5rem;">🔥</span>
           <div>
             <strong style="color: var(--dark-navy); font-size: 1.05rem;">Nouvelle Promotion : Cohortes limitées à 6 étudiants max (ADR-013)</strong>
-            <p style="margin: 0; font-size: 0.88rem; color: #475569;">Paiement fractionné 3x ou 4x sans frais disponible avec <strong>Klarna</strong> • Replay à vie garanti sur le Pack Starter.</p>
+            <p style="margin: 0; font-size: 0.88rem; color: #475569;">Paiement fractionné 3x ou 4x sans frais disponible avec <strong>Klarna</strong> • Replay à vie garanti sur le Pack Fondations.</p>
           </div>
         </div>
         <span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">Paiement Klarna 3x/4x</span>
@@ -252,7 +252,7 @@ function renderCourseCatalog() {
           const price = formatCoursePrice(course);
           const level = course.level || "TOUS NIVEAUX";
           const tier = (course.requiredTier || (course.slug === "javascript" ? "WEB" : "STARTER")).toUpperCase();
-          const tierLabel = tier === "STARTER" ? "Pack Starter" : (tier === "VIP" ? "Mentorat VIP" : "Pack Web");
+          const tierLabel = tier === "STARTER" ? "Pack Fondations" : (tier === "VIP" ? "Pack Mentorat VIP" : "Pack Dynamique");
           const tierColor = tier === "STARTER" ? "#2563eb" : (tier === "VIP" ? "#d97706" : "#7c3aed");
           const tierBg = tier === "STARTER" ? "rgba(37, 99, 235, 0.12)" : (tier === "VIP" ? "rgba(217, 119, 6, 0.12)" : "rgba(124, 58, 237, 0.12)");
 

@@ -470,10 +470,12 @@ _Chronologique — plus récent en bas_
    - Contrôle d'accès et paywall serveur (`EnrollmentService.hasPaidAccess`) : vérification du palier souscrit. Les élèves Starter conservent l'accès perpétuel aux replays/cours de fondation (HTML/CSS, Git) et sont rejetés (HTTP 403 Forbidden) sur les modules avancés (JavaScript, APIs). Les élèves Web et VIP disposent de l'accès intégral.
    - Intégration Stripe & Klarna BNPL (`StripeGatewayImpl`, `PaymentService`, `PaymentController`) : support des modes `card`, `klarna`, `link` dans `payment_method_types`, transmission des métadonnées `tier` et `cohortId` lors de la session Stripe Checkout, synchronisation automatique de la cohorte et du plan dans `Enrollment` à la réception du webhook `checkout.session.completed`.
 3. **Frontend & Expérience Apprenant (`frontend/`)** :
-   - `cours.html` : remplacement des placeholders Java 21 par les modules HTML/CSS et Git.
-   - `cours.js` : mise à jour du fallback catalogue, nouveaux tarifs dynamiques (279 €, 579 €, 879 €), badges visuels de palier, bandeau d'alerte promotions 6 élèves et badge Klarna 3x/4x sans frais.
-   - `dashboard.js` : nettoyage des mocks résiduels, affichage dynamique de la cohorte et du palier de l'élève, badge explicite `♾️ Replay à vie` pour les modules du tronc commun Starter.
-   - Recompilation des bundles CSS dist (`node frontend/build.js`).
+   - `header.html` & `footer.html` : remplacement de « Formations » par « Parcours » dans le menu de navigation principal (Navbar) et de pied de page.
+   - `index.html` : remplacement du titre de section « Nos Cours » par « Choisis ton Pack » et substitution des 3 cartes de cours isolés par les 3 offres phares : **Pack Fondations** (Niveau 1, 279 €), **Pack Dynamique** (Niveau 2, 579 €) et **Pack Mentorat VIP** (Niveau 3, 879 €) avec descriptifs orientés bénéfices et rassurance (promotions 6 élèves max, replay à vie garanti).
+   - Modales popovers immersives : refonte exhaustive au clic sur « Plonge dans le design web » (Pack Fondations) avec programme complet détaillé (HTML5 sémantique, CSS3 Flexbox/Grid, Git/GitHub, projet fil rouge, Discord promo) et CTA d'inscription direct. Enrichissement identique des modales Pack Dynamique et Pack Mentorat VIP (4h de coaching one-to-one avec Cédric).
+   - `cours.html` & `cours.js` : titre mis à jour en « Nos Parcours de Formation - NoSeumCode », harmonisation des libellés de paliers (`Pack Fondations`, `Pack Dynamique`, `Pack Mentorat VIP`).
+   - `dashboard.js` : synchronisation des badges de paliers et affichage de la mention `♾️ Replay à vie` pour le tronc commun Fondations.
+   - Recompilation complète des bundles CSS dist (`node frontend/build.js`).
 4. **Tests & Validation Qualité** :
    - Ajout des suites de tests unitaires `CohortServiceTest` (9 tests) et `CohortControllerTest` (6 tests).
    - Enrichissement de `PaywallSecurityTest` (11 tests validant l'accès à vie Starter et le verrouillage Web) et `PaymentCheckoutServiceTest` (16 tests validant Klarna et la synchronisation des métadonnées cohorte/tier).
