@@ -6,8 +6,11 @@ import com.codebangers.backend.course.controller.ChapterController;
 import com.codebangers.backend.course.controller.ContentController;
 import com.codebangers.backend.course.dto.ChapterResponse;
 import com.codebangers.backend.course.model.Course;
+import com.codebangers.backend.course.model.CourseTier;
 import com.codebangers.backend.course.model.Enrollment;
 import com.codebangers.backend.course.model.Enrollment.PaymentStatus;
+import com.codebangers.backend.course.model.EnrollmentTier;
+import com.codebangers.backend.course.repository.CourseRepository;
 import com.codebangers.backend.course.repository.EnrollmentRepository;
 import com.codebangers.backend.course.service.ChapterService;
 import com.codebangers.backend.course.service.ContentService;
@@ -17,6 +20,7 @@ import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.repository.UserRepository;
 import com.codebangers.backend.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +35,7 @@ import static org.mockito.Mockito.*;
 
 class PaywallSecurityTest {
 
+    private CourseRepository courseRepository;
     private EnrollmentRepository enrollmentRepository;
     private EnrollmentService enrollmentService;
     private ChapterService chapterService;
@@ -49,15 +54,18 @@ class PaywallSecurityTest {
 
     @BeforeEach
     void setUp() {
+        courseRepository = mock(CourseRepository.class);
         enrollmentRepository = mock(EnrollmentRepository.class);
-        enrollmentService = new EnrollmentService(enrollmentRepository, null, null);
+        userRepository = mock(UserRepository.class);
+        enrollmentService = new EnrollmentService(enrollmentRepository, courseRepository, userRepository);
         chapterService = mock(ChapterService.class);
         contentService = mock(ContentService.class);
-        userRepository = mock(UserRepository.class);
         userService = mock(UserService.class);
 
         course = new Course("Java 21 Mastery", "Description");
         course.setId(UUID.randomUUID());
+        course.setRequiredTier(CourseTier.STARTER);
+        when(courseRepository.findById(course.getId())).thenReturn(Optional.of(course));
 
         // Chapitre 1 : Preview gratuit
         previewChapter = new Chapter(course, "1. Introduction", 1);
@@ -216,5 +224,92 @@ class PaywallSecurityTest {
         ResponseEntity<?> response = contentController.getActiveContentByChapter(previewChapter.getId(), jwt);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Starter student has lifetime access to Starter courses but is blocked from Web courses (ADR-013)")
+    void starterStudentHasAccessToStarterCourseLifetimeReplaysButBlockedFromWeb() {
+        Course starterCourse = new Course("HTML & CSS", "Fondations");
+        starterCourse.setId(UUID.randomUUID());
+        starterCourse.setRequiredTier(CourseTier.STARTER);
+
+        Course webCourse = new Course("JavaScript & APIs", "Avancé");
+        webCourse.setId(UUID.randomUUID());
+        webCourse.setRequiredTier(CourseTier.WEB);
+
+        User starterStudent = new User("starter_student", "Bob", "Starter", "starter@codebangers.fr", "hash", Role.STUDENT);
+        starterStudent.setId(UUID.randomUUID());
+
+        Enrollment starterEnrollment = new Enrollment(starterStudent, starterCourse, PaymentStatus.PAID, 0, EnrollmentTier.STARTER, null);
+
+        when(courseRepository.findById(starterCourse.getId())).thenReturn(Optional.of(starterCourse));
+        when(courseRepository.findById(webCourse.getId())).thenReturn(Optional.of(webCourse));
+        when(enrollmentRepository.findByUserIdAndCourseId(starterStudent.getId(), starterCourse.getId()))
+                .thenReturn(Optional.of(starterEnrollment));
+        when(enrollmentRepository.findByUserIdAndCourseId(starterStudent.getId(), webCourse.getId()))
+                .thenReturn(Optional.empty());
+        when(enrollmentRepository.findByUserId(starterStudent.getId()))
+                .thenReturn(List.of(starterEnrollment));
+
+        assertTrue(enrollmentService.hasPaidAccess(starterStudent, starterCourse.getId()),
+                "L'étudiant Starter doit avoir accès illimité/à vie au cours Starter et à ses replays.");
+        assertFalse(enrollmentService.hasPaidAccess(starterStudent, webCourse.getId()),
+                "L'étudiant Starter ne doit PAS avoir accès aux cours Web.");
+    }
+
+    @Test
+    @DisplayName("Web student can access both Starter and Web tier courses")
+    void webStudentCanAccessBothStarterAndWebCourses() {
+        Course starterCourse = new Course("HTML & CSS", "Fondations");
+        starterCourse.setId(UUID.randomUUID());
+        starterCourse.setRequiredTier(CourseTier.STARTER);
+
+        Course webCourse = new Course("JavaScript & APIs", "Avancé");
+        webCourse.setId(UUID.randomUUID());
+        webCourse.setRequiredTier(CourseTier.WEB);
+
+        User webStudent = new User("web_student", "Charlie", "Web", "web@codebangers.fr", "hash", Role.STUDENT);
+        webStudent.setId(UUID.randomUUID());
+
+        Enrollment webEnrollment = new Enrollment(webStudent, webCourse, PaymentStatus.PAID, 0, EnrollmentTier.WEB, null);
+
+        when(courseRepository.findById(starterCourse.getId())).thenReturn(Optional.of(starterCourse));
+        when(courseRepository.findById(webCourse.getId())).thenReturn(Optional.of(webCourse));
+        when(enrollmentRepository.findByUserIdAndCourseId(webStudent.getId(), webCourse.getId()))
+                .thenReturn(Optional.of(webEnrollment));
+        when(enrollmentRepository.findByUserId(webStudent.getId()))
+                .thenReturn(List.of(webEnrollment));
+
+        assertTrue(enrollmentService.hasPaidAccess(webStudent, starterCourse.getId()),
+                "L'étudiant Web doit avoir accès aux cours Starter.");
+        assertTrue(enrollmentService.hasPaidAccess(webStudent, webCourse.getId()),
+                "L'étudiant Web doit avoir accès aux cours Web.");
+    }
+
+    @Test
+    @DisplayName("VIP student can access all courses and mentoring")
+    void vipStudentCanAccessAllCourses() {
+        Course starterCourse = new Course("Git & GitHub", "Outil dev");
+        starterCourse.setId(UUID.randomUUID());
+        starterCourse.setRequiredTier(CourseTier.STARTER);
+
+        Course webCourse = new Course("JavaScript", "Interactif");
+        webCourse.setId(UUID.randomUUID());
+        webCourse.setRequiredTier(CourseTier.WEB);
+
+        User vipStudent = new User("vip_student", "Diana", "VIP", "vip@codebangers.fr", "hash", Role.STUDENT);
+        vipStudent.setId(UUID.randomUUID());
+
+        Enrollment vipEnrollment = new Enrollment(vipStudent, webCourse, PaymentStatus.PAID, 0, EnrollmentTier.VIP, null);
+
+        when(courseRepository.findById(starterCourse.getId())).thenReturn(Optional.of(starterCourse));
+        when(courseRepository.findById(webCourse.getId())).thenReturn(Optional.of(webCourse));
+        when(enrollmentRepository.findByUserId(vipStudent.getId()))
+                .thenReturn(List.of(vipEnrollment));
+
+        assertTrue(enrollmentService.hasPaidAccess(vipStudent, starterCourse.getId()),
+                "L'étudiant VIP doit avoir accès aux cours Starter.");
+        assertTrue(enrollmentService.hasPaidAccess(vipStudent, webCourse.getId()),
+                "L'étudiant VIP doit avoir accès aux cours Web.");
     }
 }

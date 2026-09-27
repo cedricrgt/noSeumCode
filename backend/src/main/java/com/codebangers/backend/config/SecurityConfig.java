@@ -62,8 +62,9 @@ public class SecurityConfig {
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/api/auth/**").permitAll()
-                                                .requestMatchers("/api/courses", "/api/courses/**").permitAll()
+                                                .requestMatchers("/api/courses", "/api/courses/**", "/api/parcours", "/api/parcours/**").permitAll()
                                                 .requestMatchers("/api/workshops/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/cohorts", "/api/cohorts/**").permitAll()
                                                 .requestMatchers("/login/oauth2/**", "/oauth2/**").permitAll()
                                                 .requestMatchers("/actuator/health").permitAll()
                                                 .requestMatchers("/api/payments/webhook", "/api/payments/webhook/**").permitAll()

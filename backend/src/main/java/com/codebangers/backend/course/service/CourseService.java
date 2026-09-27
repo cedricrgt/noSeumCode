@@ -3,6 +3,7 @@ package com.codebangers.backend.course.service;
 import com.codebangers.backend.config.exception.DuplicateResourceException;
 import com.codebangers.backend.config.exception.ResourceNotFoundException;
 import com.codebangers.backend.course.model.Course;
+import com.codebangers.backend.course.model.CourseTier;
 import com.codebangers.backend.course.repository.CourseRepository;
 import com.codebangers.backend.user.model.User;
 import org.springframework.stereotype.Service;
@@ -60,6 +61,12 @@ public class CourseService {
     public Course createCourse(String title, String description, Long priceInCents, String currency,
                                String slug, String thumbnailUrl, String level, Boolean isPublished,
                                User createdBy) {
+        return createCourse(title, description, priceInCents, currency, slug, thumbnailUrl, level, isPublished, CourseTier.STARTER, createdBy);
+    }
+
+    public Course createCourse(String title, String description, Long priceInCents, String currency,
+                               String slug, String thumbnailUrl, String level, Boolean isPublished,
+                               CourseTier requiredTier, User createdBy) {
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Course title cannot be empty");
         }
@@ -93,18 +100,28 @@ public class CourseService {
         if (isPublished != null) {
             course.setPublished(isPublished);
         }
+        if (requiredTier != null) {
+            course.setRequiredTier(requiredTier);
+        }
         course.setCreatedBy(createdBy);
         return courseRepository.save(course);
     }
 
     public Course updateCourse(UUID courseId, String title, String description, User updatedBy) {
-        return updateCourse(courseId, title, description, null, null, null, null, null, null, updatedBy);
+        return updateCourse(courseId, title, description, null, null, null, null, null, null, null, updatedBy);
     }
 
     public Course updateCourse(UUID courseId, String title, String description,
                                Long priceInCents, String currency, String slug,
                                String thumbnailUrl, String level, Boolean isPublished,
                                User updatedBy) {
+        return updateCourse(courseId, title, description, priceInCents, currency, slug, thumbnailUrl, level, isPublished, null, updatedBy);
+    }
+
+    public Course updateCourse(UUID courseId, String title, String description,
+                               Long priceInCents, String currency, String slug,
+                               String thumbnailUrl, String level, Boolean isPublished,
+                               CourseTier requiredTier, User updatedBy) {
         Course course = courseRepository.findById(courseId)
             .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
 

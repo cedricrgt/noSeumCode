@@ -41,6 +41,10 @@ public class Course {
     @Column(name = "level", nullable = false, length = 50)
     private String level = "BEGINNER";
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "required_tier", nullable = false, length = 30)
+    private CourseTier requiredTier = CourseTier.STARTER;
+
     @Column(name = "is_published", nullable = false)
     private boolean isPublished = true;
 
@@ -231,5 +235,13 @@ public class Course {
 
     public void setPublished(boolean published) {
         isPublished = published;
+    }
+
+    public CourseTier getRequiredTier() {
+        return requiredTier;
+    }
+
+    public void setRequiredTier(CourseTier requiredTier) {
+        this.requiredTier = requiredTier;
     }
 }

@@ -1,9 +1,12 @@
 package com.codebangers.backend.payment.service;
 
+import com.codebangers.backend.cohort.model.Cohort;
+import com.codebangers.backend.cohort.repository.CohortRepository;
 import com.codebangers.backend.config.exception.ResourceNotFoundException;
 import com.codebangers.backend.course.model.Course;
 import com.codebangers.backend.course.model.Enrollment;
 import com.codebangers.backend.course.model.Enrollment.PaymentStatus;
+import com.codebangers.backend.course.model.EnrollmentTier;
 import com.codebangers.backend.course.repository.CourseRepository;
 import com.codebangers.backend.course.repository.EnrollmentRepository;
 import com.codebangers.backend.payment.dto.CheckoutSessionResponse;
@@ -13,6 +16,7 @@ import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,15 +33,26 @@ public class PaymentService {
     private final EnrollmentRepository enrollmentRepository;
     private final CourseRepository courseRepository;
     private final StripeGateway stripeGateway;
+    private final CohortRepository cohortRepository;
 
     public PaymentService(UserRepository userRepository,
                           EnrollmentRepository enrollmentRepository,
                           CourseRepository courseRepository,
                           StripeGateway stripeGateway) {
+        this(userRepository, enrollmentRepository, courseRepository, stripeGateway, null);
+    }
+
+    @Autowired
+    public PaymentService(UserRepository userRepository,
+                          EnrollmentRepository enrollmentRepository,
+                          CourseRepository courseRepository,
+                          StripeGateway stripeGateway,
+                          @Autowired(required = false) CohortRepository cohortRepository) {
         this.userRepository = userRepository;
         this.enrollmentRepository = enrollmentRepository;
         this.courseRepository = courseRepository;
         this.stripeGateway = stripeGateway;
+        this.cohortRepository = cohortRepository;
     }
 
     /**
@@ -124,7 +139,10 @@ public class PaymentService {
         }
 
         boolean embedded = request.getEmbedded() == null || request.getEmbedded();
-        return stripeGateway.createCheckoutSession(user, course, request.getSuccessUrl(), request.getCancelUrl(), embedded, request.getReturnUrl());
+        if (request.getTier() == null && request.getCohortId() == null) {
+            return stripeGateway.createCheckoutSession(user, course, request.getSuccessUrl(), request.getCancelUrl(), embedded, request.getReturnUrl());
+        }
+        return stripeGateway.createCheckoutSession(user, course, request.getSuccessUrl(), request.getCancelUrl(), embedded, request.getReturnUrl(), request.getTier(), request.getCohortId());
     }
 
     /**
@@ -138,6 +156,14 @@ public class PaymentService {
      * Traitement d'un événement Stripe avec ciblage précis du cours et de l'utilisateur par métadonnées.
      */
     public void processStripeWebhookEvent(String customerEmail, String stripeEventType, String transactionId, String courseIdStr, String userIdStr) {
+        processStripeWebhookEvent(customerEmail, stripeEventType, transactionId, courseIdStr, userIdStr, null, null);
+    }
+
+    /**
+     * Traitement complet d'un événement Stripe avec gestion du plan (Starter, Web, VIP) et de la cohorte (ADR-013, ADR-014).
+     */
+    public void processStripeWebhookEvent(String customerEmail, String stripeEventType, String transactionId,
+                                          String courseIdStr, String userIdStr, String tierStr, String cohortIdStr) {
         User user = null;
         if (userIdStr != null && !userIdStr.isBlank()) {
             try {
@@ -169,6 +195,14 @@ public class PaymentService {
                 break;
         }
 
+        EnrollmentTier tier = tierStr != null ? EnrollmentTier.fromString(tierStr) : EnrollmentTier.WEB;
+        Cohort cohort = null;
+        if (cohortIdStr != null && !cohortIdStr.isBlank() && cohortRepository != null) {
+            try {
+                cohort = cohortRepository.findById(UUID.fromString(cohortIdStr)).orElse(null);
+            } catch (Exception ignored) {}
+        }
+
         if (courseIdStr != null && !courseIdStr.isBlank()) {
             try {
                 UUID courseId = UUID.fromString(courseIdStr);
@@ -182,13 +216,15 @@ public class PaymentService {
 
                     if (enrollment != null) {
                         enrollment.setPaymentStatus(status);
+                        if (tier != null) enrollment.setTier(tier);
+                        if (cohort != null) enrollment.setCohort(cohort);
                         enrollmentRepository.save(enrollment);
                     } else if (status != null) {
-                        Enrollment newEnrollment = new Enrollment(user, course, status, 0);
+                        Enrollment newEnrollment = new Enrollment(user, course, status, 0, tier, cohort);
                         enrollmentRepository.save(newEnrollment);
                     }
-                    log.info("🎓 Inscription mise à jour suite à webhook Stripe (cours spécifique) pour {} sur le cours {} -> Statut: {}",
-                            user.getEmail(), course.getTitle(), status);
+                    log.info("🎓 Inscription mise à jour suite à webhook Stripe pour {} sur le cours {} (Tier: {}, Cohorte: {}) -> Statut: {}",
+                            user.getEmail(), course.getTitle(), tier, (cohort != null ? cohort.getName() : "Aucune"), status);
                     return;
                 }
             } catch (IllegalArgumentException e) {
@@ -244,6 +280,16 @@ public class PaymentService {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
 
+        String tierStr = session.getMetadata() != null ? session.getMetadata().get("tier") : null;
+        EnrollmentTier tier = tierStr != null ? EnrollmentTier.fromString(tierStr) : EnrollmentTier.WEB;
+        String cohortIdStr = session.getMetadata() != null ? session.getMetadata().get("cohortId") : null;
+        Cohort cohort = null;
+        if (cohortIdStr != null && !cohortIdStr.isBlank() && cohortRepository != null) {
+            try {
+                cohort = cohortRepository.findById(UUID.fromString(cohortIdStr)).orElse(null);
+            } catch (Exception ignored) {}
+        }
+
         List<Enrollment> existingEnrollments = enrollmentRepository.findByUserId(user.getId());
         Enrollment enrollment = existingEnrollments.stream()
                 .filter(e -> e.getCourse() != null && e.getCourse().getId().equals(course.getId()))
@@ -252,14 +298,16 @@ public class PaymentService {
 
         if (enrollment != null) {
             enrollment.setPaymentStatus(PaymentStatus.PAID);
+            if (tier != null) enrollment.setTier(tier);
+            if (cohort != null) enrollment.setCohort(cohort);
             enrollmentRepository.save(enrollment);
         } else {
-            enrollment = new Enrollment(user, course, PaymentStatus.PAID, 0);
+            enrollment = new Enrollment(user, course, PaymentStatus.PAID, 0, tier, cohort);
             enrollmentRepository.save(enrollment);
         }
 
-        log.info("🎓 Inscription confirmée (synchronisation Stripe directe) pour {} sur le cours {} -> Statut: PAID",
-                user.getEmail(), course.getTitle());
+        log.info("🎓 Inscription confirmée (synchronisation Stripe directe) pour {} sur le cours {} (Tier: {}, Cohorte: {}) -> Statut: PAID",
+                user.getEmail(), course.getTitle(), tier, (cohort != null ? cohort.getName() : "Aucune"));
         return enrollment;
     }
 

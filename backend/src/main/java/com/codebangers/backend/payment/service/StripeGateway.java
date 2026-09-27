@@ -31,6 +31,11 @@ public interface StripeGateway {
     CheckoutSessionResponse createCheckoutSession(User user, Course course, String successUrl, String cancelUrl, boolean embedded, String returnUrl);
 
     /**
+     * Crée une session de paiement Stripe Checkout avec sélection du tier (Starter, Web, VIP) et cohorte (ADR-013, ADR-014).
+     */
+    CheckoutSessionResponse createCheckoutSession(User user, Course course, String successUrl, String cancelUrl, boolean embedded, String returnUrl, com.codebangers.backend.course.model.EnrollmentTier tier, java.util.UUID cohortId);
+
+    /**
      * Récupère une Checkout Session Stripe par son identifiant.
      *
      * @param sessionId L'identifiant de la session Stripe

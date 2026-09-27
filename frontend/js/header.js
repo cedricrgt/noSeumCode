@@ -311,8 +311,17 @@ function clearGlobalAuthAlert() {
 
 const COURSE_SLUG_MAP = {
   "html-css": "c1000000-0000-0000-0000-000000000001",
+  "fondations": "c1000000-0000-0000-0000-000000000001",
+  "pack-fondations": "c1000000-0000-0000-0000-000000000001",
+  "starter": "c1000000-0000-0000-0000-000000000001",
   "javascript": "c2000000-0000-0000-0000-000000000002",
-  "git-github": "c3000000-0000-0000-0000-000000000003"
+  "dynamique": "c2000000-0000-0000-0000-000000000002",
+  "pack-dynamique": "c2000000-0000-0000-0000-000000000002",
+  "web": "c2000000-0000-0000-0000-000000000002",
+  "git-github": "c3000000-0000-0000-0000-000000000003",
+  "vip": "c2000000-0000-0000-0000-000000000002",
+  "pack-vip": "c2000000-0000-0000-0000-000000000002",
+  "goat": "c2000000-0000-0000-0000-000000000002"
 };
 
 function resolveCourseId(idOrSlug) {
@@ -392,8 +401,113 @@ window.closeStripePaywall = closeStripePaywall;
  * Ouvre le Paywall NoSeumCode intégré directement dans la page.
  * Utilise Stripe Embedded Checkout pour garder l'utilisateur sur le site noseumcode.fr.
  */
-async function openStripePaywall(courseId, courseTitle, priceText) {
+
+function getPaywallSyllabusHtml(tier) {
+  if (tier === "STARTER") {
+    return `
+      <div style="margin-bottom: 0.85rem; font-weight: 600; color: #60a5fa; font-size: 0.95rem;">
+        🧱 Cursus Complet : Starter Pack Fondations (HTML5, CSS3 & Git)
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Module 1 : HTML5 Sémantique & Structure Web Professionnelle</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">Comprendre l'architecture du Web et les standards W3C. Maîtrise des balises sémantiques modernes (&lt;header&gt;, &lt;main&gt;, &lt;section&gt;, &lt;article&gt;, &lt;nav&gt;, &lt;footer&gt;). Accessibilité web native (a11y) et optimisation SEO dès la conception.</span>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Module 2 : CSS3 Moderne, Flexbox & CSS Grid</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">Cascade, spécificité et Custom Properties (variables CSS). Conception d'interfaces élégantes avec Flexbox pour l'alignement et CSS Grid pour les layouts complexes. Maîtrise du responsive design mobile-first (smartphones, tablettes, 4K).</span>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Module 3 : Git & GitHub – Le Workflow du Développeur Pro</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">Dépôts locaux, commits atomiques conventionnels, branches, merge et résolution de conflits. Sauvegarde et travail collaboratif sur GitHub. Déploiement automatisé d'un premier site en ligne avec GitHub Pages.</span>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Module 4 : Projet Fil Rouge & Revue de Code Bienveillante</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">Création complète d'une landing page responsive professionnelle de A à Z. Débriefing collectif et revue de code ligne par ligne en direct avec ton formateur Cédric.</span>
+        </div>
+      </div>
+      <div style="margin-top: 0.85rem; padding: 0.65rem 0.85rem; background: rgba(37, 99, 235, 0.12); border: 1px solid rgba(37, 99, 235, 0.3); border-radius: 8px; font-size: 0.82rem; color: #93c5fd;">
+        ✨ <strong>Inclus :</strong> 6 semaines de cours en direct (promo de 6 élèves max) • Replay à vie garanti • Discord privé 7j/7 • Éligible Klarna 3x ou 4x sans frais.
+      </div>
+    `;
+  } else if (tier === "VIP") {
+    return `
+      <div style="margin-bottom: 0.85rem; font-weight: 600; color: #fbbf24; font-size: 0.95rem;">
+        👑 Accompagnement d'Excellence : Pack Mentorat VIP (Pack Dynamique + 4h Coaching 1-to-1)
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Tronc Commun Complet Fondations & Dynamique</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">HTML5 sémantique, CSS3 moderne (Flexbox/Grid), Git/GitHub, JavaScript moderne (ES6+), manipulation du DOM, asynchronisme et consommation d'APIs REST avec projets réels déployés.</span>
+        </div>
+        <div style="background: rgba(217, 119, 6, 0.1); border: 1px solid rgba(217, 119, 6, 0.35); border-radius: 8px; padding: 0.75rem 0.9rem;">
+          <strong style="color: #fbbf24; display: block; margin-bottom: 0.25rem;">4 Heures de Coaching Individuel One-to-One avec Cédric</strong>
+          <ul style="margin: 0.25rem 0 0 0; padding-left: 1.1rem; color: #e2e8f0; font-size: 0.82rem;">
+            <li><strong>Session 1 (1h) :</strong> Diagnostic de tes compétences & élaboration d'une feuille de route technique sur-mesure.</li>
+            <li><strong>Session 2 (1h) :</strong> Revue approfondie de ton code, refactoring et conseils d'architecture logicielle pro.</li>
+            <li><strong>Session 3 (1h) :</strong> Déblocage technique en direct sur tes projets personnels ou professionnels complexes.</li>
+            <li><strong>Session 4 (1h) :</strong> Préparation aux entretiens d'embauche, optimisation de ton CV et mise en valeur de ton GitHub.</li>
+          </ul>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Canal Privé Prioritaire & Audit de Portfolio</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">Accès direct 7j/7 avec ton mentor sur Discord sans attente, audit complet de ton portfolio et lettre de recommandation professionnelle Lead Developer.</span>
+        </div>
+      </div>
+      <div style="margin-top: 0.85rem; padding: 0.65rem 0.85rem; background: rgba(217, 119, 6, 0.15); border: 1px solid rgba(217, 119, 6, 0.4); border-radius: 8px; font-size: 0.82rem; color: #fde68a;">
+        ✨ <strong>Inclus :</strong> Promotion de 6 élèves max • 4 sessions privées individuelles • Replays à vie illimités • Éligible Klarna 3x ou 4x sans frais.
+      </div>
+    `;
+  } else {
+    // WEB (Pack Dynamique)
+    return `
+      <div style="margin-bottom: 0.85rem; font-weight: 600; color: #a78bfa; font-size: 0.95rem;">
+        ⚡ Cursus Complet : Pack Dynamique (Fondations + JavaScript ES6+ & APIs REST)
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Tronc Commun Fondations Intégral</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">Tout le contenu du Pack Fondations : HTML5 sémantique, CSS3 moderne (Flexbox, Grid) et Git & GitHub professionnel.</span>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">JavaScript Moderne (ES6+) & Algorithmique</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">Variables (const, let), structures conditionnelles, boucles, fonctions fléchées, manipulation avancée des tableaux (map, filter, reduce, find).</span>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Interactivité & Manipulation Dynamique du DOM</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">Sélection d'éléments, gestion des événements (clics, formulaires, frappes clavier), modification du contenu en temps réel, validation côté client.</span>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">APIs REST, Asynchronisme & Données Réelles</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">Protocole HTTP, Promesses et async/await. Consommation d'APIs externes avec fetch, gestion du chargement et affichage dynamique des données.</span>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Persistance & Web App Complète</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">Sauvegarde d'état dans le navigateur via localStorage. Réalisation et déploiement d'une application dynamique complète prête pour ton portfolio.</span>
+        </div>
+      </div>
+      <div style="margin-top: 0.85rem; padding: 0.65rem 0.85rem; background: rgba(124, 58, 237, 0.12); border: 1px solid rgba(124, 58, 237, 0.3); border-radius: 8px; font-size: 0.82rem; color: #c4b5fd;">
+        ✨ <strong>Inclus :</strong> Cursus complet Fondations + JS en promotion de 6 élèves max • Replay à vie • Discord dédié • Éligible Klarna 3x ou 4x sans frais.
+      </div>
+    `;
+  }
+}
+window.getPaywallSyllabusHtml = getPaywallSyllabusHtml;
+
+async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortId) {
   courseId = resolveCourseId(courseId);
+
+  if (!tier) {
+    const t = (courseTitle || "").toLowerCase();
+    const p = (priceText || "").toLowerCase();
+    if (t.includes("vip") || t.includes("goat") || p.includes("879")) {
+      tier = "VIP";
+    } else if (t.includes("fondation") || t.includes("starter") || p.includes("279")) {
+      tier = "STARTER";
+    } else {
+      tier = "WEB";
+    }
+  }
 
   // Fermer les popovers de cours et d'authentification
   document.querySelectorAll("[popover]").forEach(p => {
@@ -410,6 +524,7 @@ async function openStripePaywall(courseId, courseTitle, priceText) {
     sessionStorage.setItem("noseum_pending_checkout_course_id", courseId);
     sessionStorage.setItem("noseum_pending_checkout_course_title", courseTitle || "");
     sessionStorage.setItem("noseum_pending_checkout_course_price", priceText || "");
+    sessionStorage.setItem("noseum_pending_checkout_tier", tier || "");
 
     openGlobalAuthModal("register");
     showGlobalAuthAlert(`🎓 Créez votre compte pour débloquer "${courseTitle || "votre formation"}" (${priceText || ""}). Le terminal de paiement sécurisé s'affichera directement après connexion.`, "info");
@@ -419,7 +534,7 @@ async function openStripePaywall(courseId, courseTitle, priceText) {
   const modal = document.getElementById("stripe-paywall-modal");
   if (!modal) {
     console.warn("Modale paywall #stripe-paywall-modal introuvable, redirection classique.");
-    window.location.href = `cours.html?id=${encodeURIComponent(courseId)}&checkout=true`;
+    window.location.href = `parcours.html?id=${encodeURIComponent(courseId)}&checkout=true`;
     return;
   }
 
@@ -468,6 +583,8 @@ async function openStripePaywall(courseId, courseTitle, priceText) {
       },
       body: JSON.stringify({
         courseId: courseId,
+        tier: tier || undefined,
+        cohortId: cohortId || undefined,
         embedded: true,
         returnUrl: returnUrl,
         successUrl: returnUrl
@@ -483,7 +600,7 @@ async function openStripePaywall(courseId, courseTitle, priceText) {
         }
         setTimeout(() => {
           closeStripePaywall();
-          window.location.href = `cours.html?id=${encodeURIComponent(courseId)}`;
+          window.location.href = `parcours.html?id=${encodeURIComponent(courseId)}`;
         }, 1500);
         return;
       }
@@ -502,7 +619,7 @@ async function openStripePaywall(courseId, courseTitle, priceText) {
       }
       setTimeout(() => {
         closeStripePaywall();
-        window.location.href = `cours.html?id=${encodeURIComponent(courseId)}`;
+        window.location.href = `parcours.html?id=${encodeURIComponent(courseId)}`;
       }, 1200);
       return;
     }
@@ -557,9 +674,9 @@ window.redirectToStripeCheckout = redirectToStripeCheckout;
  * Déclenche l'inscription ou l'achat d'un cours depuis les popovers et boutons du site.
  * Ouvre le Paywall NoSeumCode intégré directement dans la page.
  */
-async function initiateCourseEnrollment(courseId, courseTitle, priceText) {
+async function initiateCourseEnrollment(courseId, courseTitle, priceText, tier, cohortId) {
   courseId = resolveCourseId(courseId);
-  await openStripePaywall(courseId, courseTitle, priceText);
+  await openStripePaywall(courseId, courseTitle, priceText, tier, cohortId);
 }
 window.initiateCourseEnrollment = initiateCourseEnrollment;
 
@@ -656,14 +773,16 @@ async function handleGlobalEmailLogin(e) {
       } else if (pendingCourseId) {
         const pendingTitle = sessionStorage.getItem("noseum_pending_checkout_course_title") || "";
         const pendingPrice = sessionStorage.getItem("noseum_pending_checkout_course_price") || "";
+        const pendingTier = sessionStorage.getItem("noseum_pending_checkout_tier") || "";
         sessionStorage.removeItem("noseum_pending_checkout_course_id");
         sessionStorage.removeItem("noseum_pending_checkout_course_title");
         sessionStorage.removeItem("noseum_pending_checkout_course_price");
+        sessionStorage.removeItem("noseum_pending_checkout_tier");
 
         showGlobalAuthAlert("💳 Connexion réussie ! Ouverture du terminal de paiement sécurisé...", "success");
         setTimeout(async () => {
           closeGlobalAuthModal();
-          await openStripePaywall(pendingCourseId, pendingTitle, pendingPrice);
+          await openStripePaywall(pendingCourseId, pendingTitle, pendingPrice, pendingTier);
         }, 400);
       } else {
         showGlobalAuthAlert("✅ Connexion réussie ! Redirection vers votre espace...", "success");
@@ -908,14 +1027,16 @@ async function handleGlobalEmailRegister(e) {
       } else if (pendingCourseId) {
         const pendingTitle = sessionStorage.getItem("noseum_pending_checkout_course_title") || "";
         const pendingPrice = sessionStorage.getItem("noseum_pending_checkout_course_price") || "";
+        const pendingTier = sessionStorage.getItem("noseum_pending_checkout_tier") || "";
         sessionStorage.removeItem("noseum_pending_checkout_course_id");
         sessionStorage.removeItem("noseum_pending_checkout_course_title");
         sessionStorage.removeItem("noseum_pending_checkout_course_price");
+        sessionStorage.removeItem("noseum_pending_checkout_tier");
 
         showGlobalAuthAlert("🎉 Compte créé ! Ouverture du terminal de paiement sécurisé...", "success");
         setTimeout(async () => {
           closeGlobalAuthModal();
-          await openStripePaywall(pendingCourseId, pendingTitle, pendingPrice);
+          await openStripePaywall(pendingCourseId, pendingTitle, pendingPrice, pendingTier);
         }, 400);
       } else {
         showGlobalAuthAlert("🎉 Compte créé avec succès ! Bienvenue sur NoSeumCode.", "success");

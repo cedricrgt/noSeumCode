@@ -81,14 +81,17 @@ async function initCoursPage() {
 function getCourseImage(course) {
   if (course.imageUrl) return course.imageUrl;
   const title = ((course.title || "") + " " + (course.description || "")).toLowerCase();
-  if (title.includes("html") || title.includes("css")) {
+  if (title.includes("vip") || title.includes("goat") || title.includes("mentorat")) {
+    return "images/courses/javascript.webp";
+  }
+  if (title.includes("html") || title.includes("css") || title.includes("fondation")) {
     return "images/courses/html.webp";
   }
-  if (title.includes("javascript") || title.includes("js")) {
+  if (title.includes("javascript") || title.includes("js") || title.includes("dynamique")) {
     return "images/courses/javascript.webp";
   }
   if (title.includes("git") || title.includes("github")) {
-    return "images/courses/git.webp";
+    return "images/courses/html.webp";
   }
   if (title.includes("java") || title.includes("spring")) {
     return "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=400&fit=crop";
@@ -103,7 +106,11 @@ function formatCoursePrice(course) {
   if (course && course.priceInCents && course.priceInCents > 0) {
     return (course.priceInCents / 100).toFixed(0) + " €";
   }
-  if (course && (course.slug === "git-github" || (course.title && course.title.toLowerCase().includes("git")))) {
+  const tier = course && (course.requiredTier || "").toUpperCase();
+  if (tier === "VIP" || (course && (course.slug === "pack-mentorat-vip" || (course.title && (course.title.toLowerCase().includes("vip") || course.title.toLowerCase().includes("goat")))))) {
+    return "879 €";
+  }
+  if (tier === "STARTER" || (course && (course.slug === "html-css" || (course.title && course.title.toLowerCase().includes("fondation"))))) {
     return "279 €";
   }
   return "579 €";
@@ -113,31 +120,50 @@ async function loadInitialData() {
   // 1. Charger tous les cours
   const coursesRes = await coursApiFetch("/api/courses");
   if (coursesRes && coursesRes.ok) {
-    allCourses = await coursesRes.json();
+    const rawCourses = await coursesRes.json();
+    // Aligner le 3ème pack sur le Pack Mentorat VIP (ADR-013 & ADR-014)
+    allCourses = rawCourses.map(course => {
+      const slug = (course.slug || "").toLowerCase();
+      const title = (course.title || "").toLowerCase();
+      if (slug === "git-github" || (title.includes("git & github") && !title.includes("fondation"))) {
+        return {
+          ...course,
+          slug: "pack-mentorat-vip",
+          title: "Pack Mentorat VIP – Coaching Individuel & Accompagnement Sur Mesure",
+          description: "L'excellence NoSeumCode : Tout le Pack Dynamique (HTML/CSS, JS, APIs) plus 4 heures de coaching individuel 1-to-1 avec Cédric, revues de code dédiées et préparation aux entretiens techniques.",
+          priceInCents: 87900,
+          requiredTier: "VIP",
+          level: "AVANCÉ",
+          imageUrl: course.imageUrl || "images/courses/javascript.webp"
+        };
+      }
+      return course;
+    });
   } else {
-    // Fallback seed courses complets
+    // Fallback seed packs officiels (Fondations 279 €, Dynamique 579 €, Mentorat VIP 879 €)
     allCourses = [
       {
         id: "c1000000-0000-0000-0000-000000000001",
         slug: "html-css",
-        title: "HTML & CSS – Les Fondations indispensables au Web",
-        description: "Apprends à structurer tes pages en HTML5 sémantique et à créer des designs modernes, responsives et accessibles avec CSS3, Flexbox et CSS Grid.",
+        title: "Starter Pack Fondations – HTML5, CSS3 & Git",
+        description: "Apprends à structurer tes pages en HTML5 sémantique et à créer des designs modernes, responsives et accessibles avec CSS3, Flexbox, Grid et la maîtrise de Git.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
         createdByName: "Admin CodeBangers",
         updatedByName: "Admin CodeBangers",
         imageUrl: "images/courses/html.webp",
-        priceInCents: 57900,
+        priceInCents: 27900,
         currency: "EUR",
         level: "DEBUTANT",
+        requiredTier: "STARTER",
         isPublished: true,
         chaptersCount: 3
       },
       {
         id: "c2000000-0000-0000-0000-000000000002",
         slug: "javascript",
-        title: "JavaScript – L'interactivité au bout des doigts",
-        description: "Donne vie à tes créations web : manipulation du DOM, requêtes API asynchrones, animations dynamiques et logique applicative complète.",
+        title: "Pack Dynamique – JavaScript ES6+ & APIs REST",
+        description: "Donne vie à tes créations web : manipulation du DOM, requêtes API asynchrones, animations dynamiques et logique applicative complète en cohortes de 6 élèves max.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 25).toISOString(),
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
         createdByName: "Admin CodeBangers",
@@ -146,54 +172,24 @@ async function loadInitialData() {
         priceInCents: 57900,
         currency: "EUR",
         level: "INTERMEDIAIRE",
+        requiredTier: "WEB",
         isPublished: true,
         chaptersCount: 3
       },
       {
         id: "c3000000-0000-0000-0000-000000000003",
-        slug: "git-github",
-        title: "Git & GitHub – L'outil n°1 des devs pro",
-        description: "Ne perds plus jamais ton code et apprends à bosser à plusieurs sur le même projet sans tout casser. Versionne comme un expert !",
+        slug: "pack-mentorat-vip",
+        title: "Pack Mentorat VIP – Coaching Individuel & Accompagnement Sur Mesure",
+        description: "L'excellence NoSeumCode : Tout le Pack Dynamique plus 4 heures de coaching individuel 1-to-1 avec Cédric, revues de code dédiées et préparation aux entretiens techniques.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 20).toISOString(),
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4).toISOString(),
-        createdByName: "Admin CodeBangers",
-        updatedByName: "Admin CodeBangers",
-        imageUrl: "images/logos/Git_Logo_full.svg",
-        priceInCents: 27900,
+        createdByName: "Cédric Ragot",
+        updatedByName: "Cédric Ragot",
+        imageUrl: "images/courses/javascript.webp",
+        priceInCents: 87900,
         currency: "EUR",
-        level: "DEBUTANT",
-        isPublished: true,
-        chaptersCount: 3
-      },
-      {
-        id: "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
-        slug: "fullstack-java-21-spring-boot-3",
-        title: "Fullstack Java 21 & Spring Boot 3.4+",
-        description: "Apprenez à concevoir des architectures backend robustes et performantes avec Java 21 (Virtual Threads, Records), Spring Boot 3, Spring Security, JWT RBAC et PostgreSQL.",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15).toISOString(),
-        updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-        createdByName: "Admin CodeBangers",
-        updatedByName: "Cédric Ragot (Enseignant)",
-        imageUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=400&fit=crop",
-        priceInCents: 4900,
-        currency: "EUR",
-        level: "INTERMEDIAIRE",
-        isPublished: true,
-        chaptersCount: 4
-      },
-      {
-        id: "b2c3d4e5-f6a7-4b5c-9d0e-1f2a3b4c5d6e",
-        slug: "clean-architecture-ddd-en-pratique",
-        title: "Clean Architecture & DDD en Pratique",
-        description: "Maîtrisez le découplage métier absolu, l'architecture hexagonale (Ports & Adapters) et le Domain-Driven Design pour concevoir des applications modulaires, testables et scalables.",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(),
-        updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 18).toISOString(),
-        createdByName: "Cédric Ragot (Enseignant)",
-        updatedByName: "Cédric Ragot (Enseignant)",
-        imageUrl: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop",
-        priceInCents: 6900,
-        currency: "EUR",
-        level: "AVANCE",
+        level: "AVANCÉ",
+        requiredTier: "VIP",
         isPublished: true,
         chaptersCount: 3
       }
@@ -219,11 +215,11 @@ function renderCourseCatalog() {
   const contentArea = document.getElementById("cours-content");
   if (!contentArea) return;
 
-  document.title = "Espace Formations - NoSeumCode";
+  document.title = "Nos Parcours de Formation - NoSeumCode";
 
   let roleHeaderTag = "";
   if (currentRole === "STUDENT") {
-    roleHeaderTag = `<span class="course-badge-role">🎓 Mes Formations Inscrites</span>`;
+    roleHeaderTag = `<span class="course-badge-role">🎓 Mes Parcours Inscrits</span>`;
   } else if (currentRole === "TEACHER") {
     roleHeaderTag = `<span class="course-badge-role">👨‍🏫 Espace Enseignant (Édition)</span>`;
   } else if (currentRole === "ADMIN") {
@@ -242,8 +238,8 @@ function renderCourseCatalog() {
             </svg>
             Retour à l'accueil
           </a>
-          <h1 class="course-title" style="font-size: 2.8rem; margin: 0.5rem 0; color: var(--dark-navy);">Catalogue des Formations</h1>
-          <p style="color: #64748b; font-size: 1.05rem; margin: 0;">Sélectionnez une formation pour accéder à votre espace de cours interactif.</p>
+          <h1 class="course-title" style="font-size: 2.8rem; margin: 0.5rem 0; color: var(--dark-navy);">Nos Parcours de Formation</h1>
+          <p style="color: #64748b; font-size: 1.05rem; margin: 0;">Rejoins une promotion de 6 élèves max et choisis le pack adapté à tes ambitions.</p>
         </div>
         <div>
           ${roleHeaderTag}
@@ -255,6 +251,18 @@ function renderCourseCatalog() {
         </div>
       </div>
 
+      <!-- Bannière Cohortes & Klarna BNPL -->
+      <div style="background: rgba(0, 255, 135, 0.08); border: 1px solid rgba(0, 255, 135, 0.3); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span style="font-size: 1.5rem;">🔥</span>
+          <div>
+            <strong style="color: var(--dark-navy); font-size: 1.05rem;">Nouvelle Promotion : Cohortes limitées à 6 étudiants max (ADR-013)</strong>
+            <p style="margin: 0; font-size: 0.88rem; color: #475569;">Paiement fractionné 3x ou 4x sans frais disponible avec <strong>Klarna</strong> • Replay à vie garanti sur le Pack Fondations.</p>
+          </div>
+        </div>
+        <span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">Paiement Klarna 3x/4x</span>
+      </div>
+
       <div class="card-grid">
         ${filteredCourses.map(course => {
           let enrollmentInfo = null;
@@ -264,6 +272,10 @@ function renderCourseCatalog() {
 
           const price = formatCoursePrice(course);
           const level = course.level || "TOUS NIVEAUX";
+          const tier = (course.requiredTier || (course.slug === "javascript" ? "WEB" : "STARTER")).toUpperCase();
+          const tierLabel = tier === "STARTER" ? "Pack Fondations" : (tier === "VIP" ? "Pack Mentorat VIP" : "Pack Dynamique");
+          const tierColor = tier === "STARTER" ? "#2563eb" : (tier === "VIP" ? "#d97706" : "#7c3aed");
+          const tierBg = tier === "STARTER" ? "rgba(37, 99, 235, 0.12)" : (tier === "VIP" ? "rgba(217, 119, 6, 0.12)" : "rgba(124, 58, 237, 0.12)");
 
           let accessBadge = "";
           let actionBtn = "";
@@ -272,7 +284,7 @@ function renderCourseCatalog() {
           if (currentRole === "ADMIN" || currentRole === "TEACHER") {
             accessBadge = `<span style="background: rgba(0, 255, 135, 0.15); color: #00a85a; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(0, 255, 135, 0.4);">✓ Accès Édition</span>`;
             actionBtn = `
-              <a href="cours.html?id=${course.id}" class="card__link bangers-regular">
+              <a href="parcours.html?id=${course.id}" class="card__link bangers-regular">
                 Gérer le cours
                 <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -297,7 +309,7 @@ function renderCourseCatalog() {
               if (isPaid) {
                 accessBadge = `<span style="background: rgba(0, 255, 135, 0.15); color: #00a85a; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(0, 255, 135, 0.4);">✓ Inscrit • Payé</span>`;
                 actionBtn = `
-                  <a href="cours.html?id=${course.id}" class="card__link bangers-regular">
+                  <a href="parcours.html?id=${course.id}" class="card__link bangers-regular">
                     Continuer la formation
                     <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -311,7 +323,7 @@ function renderCourseCatalog() {
                     <button class="button button__primary bangers-regular" style="flex:1; padding: 8px 12px; font-size: 1rem; cursor:pointer;" onclick="initiateStripeCheckout('${course.id}')">
                       💳 Débloquer (${price})
                     </button>
-                    <a href="cours.html?id=${course.id}" class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; text-decoration:none; display:inline-flex; align-items:center;">
+                    <a href="parcours.html?id=${course.id}" class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; text-decoration:none; display:inline-flex; align-items:center;">
                       Aperçu
                     </a>
                   </div>
@@ -326,7 +338,7 @@ function renderCourseCatalog() {
                 <button class="button button__primary bangers-regular" style="flex:1; padding: 8px 12px; font-size: 1rem; cursor:pointer;" onclick="initiateStripeCheckout('${course.id}')">
                   💳 Découvrir (${price})
                 </button>
-                <a href="cours.html?id=${course.id}" class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; text-decoration:none; display:inline-flex; align-items:center;">
+                <a href="parcours.html?id=${course.id}" class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; text-decoration:none; display:inline-flex; align-items:center;">
                   Aperçu
                 </a>
               </div>
@@ -349,8 +361,9 @@ function renderCourseCatalog() {
               <main class="card__main">
                 <div class="card__header">
                   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.4rem;">
-                    <div style="display:flex; gap:0.4rem; align-items:center;">
+                    <div style="display:flex; gap:0.4rem; align-items:center; flex-wrap:wrap;">
                       <span class="section-tag" style="font-size: 0.72rem; margin-bottom: 0;">📚 ${escapeHtml(level)}</span>
+                      <span style="background: ${tierBg}; color: ${tierColor}; font-size: 0.72rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">${tierLabel}</span>
                       <span class="price-tag bangers-regular" style="font-size: 1.15rem; color: #008744; background: rgba(0, 255, 135, 0.15); padding: 2px 8px; border-radius: 6px; font-weight: 700;">${price}</span>
                     </div>
                     ${accessBadge}
@@ -360,6 +373,9 @@ function renderCourseCatalog() {
                 <p class="card__paragraphe card__textGreen poppins-regular">
                   ${escapeHtml(course.description)}
                 </p>
+                <div style="font-size: 0.78rem; color: #475569; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem;">
+                  <span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.68rem; padding: 1px 5px; border-radius: 3px;">Klarna</span> 3x ou 4x sans frais disponible
+                </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; font-size: 0.82rem; color: #64748b; margin-top: auto; padding-top: 0.75rem; border-top: 1px solid rgba(0,0,0,0.06);">
                   <span>👤 ${escapeHtml(course.createdByName || "Admin")}</span>
                   <span>📅 ${new Date(course.updatedAt || Date.now()).toLocaleDateString("fr-FR")}</span>
@@ -407,7 +423,7 @@ async function loadSingleCourse(courseId, requestedChapterId) {
       <div class="access-gate-card">
         <h2 class="access-gate-title">Formation introuvable</h2>
         <p class="access-gate-desc">Le cours demandé n'existe pas ou a été supprimé.</p>
-        <a href="cours.html" class="button button__primary bangers-regular" style="padding: 10px 24px; font-size: 1.1rem; text-decoration:none;">Retour au catalogue</a>
+        <a href="parcours.html" class="button button__primary bangers-regular" style="padding: 10px 24px; font-size: 1.1rem; text-decoration:none;">Retour au catalogue</a>
       </div>
     `;
     return;
@@ -542,156 +558,35 @@ async function loadSingleCourse(courseId, requestedChapterId) {
           content: `# 🤝 Collaboration GitHub & Pull Requests\n\nTravaille en équipe comme dans les plus grandes entreprises tech.`
         }
       ];
-    } else if (currentCourse.id === "b2c3d4e5-f6a7-4b5c-9d0e-1f2a3b4c5d6e") {
-      courseChapters = [
-        {
-          id: "d1111111-1111-1111-1111-111111111111",
-          title: "1. Fondamentaux du Domain-Driven Design (DDD)",
-          position: 1,
-          status: "APPROVED",
-          createdByName: "Cédric Ragot (Enseignant)",
-          updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 9).toISOString(),
-          content: `# 🧠 Fondamentaux du Domain-Driven Design (DDD)
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Le Domain-Driven Design replace le **Cœur Métier** au centre de toutes les décisions d'architecture logicielle.
-
-### 🧩 Les briques tactiques fondamentales :
-- **Entities** : Objets possédant une identité unique immuable.
-- **Value Objects** : Objets immuables définis uniquement par leurs attributs (sans identifiant).
-- **Aggregates & Root** : Frontières de consistance transactionnelle.
-
-\`\`\`java
-public record Money(BigDecimal amount, Currency currency) {
-    public Money {
-        if (amount.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Le montant ne peut être négatif");
-        }
-    }
-}
-\`\`\``
-        },
-        {
-          id: "d2222222-2222-2222-2222-222222222222",
-          title: "2. Architecture Hexagonale : Ports & Adaptateurs",
-          position: 2,
-          status: "PENDING_APPROVAL",
-          createdByName: "Cédric Ragot (Enseignant)",
-          updatedAt: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
-          content: `# 🔌 Architecture Hexagonale : Ports & Adaptateurs
-
-*Note : Cette section a été modifiée par l'enseignant et est en cours de révision par un administrateur.*
-
-L'architecture hexagonale garantit que le domaine métier ne dépend d'aucun framework (ni Spring, ni Hibernate, ni aucune base de données).
-
-### 🔄 Les deux types de Ports :
-1. **Inbound Ports (Drivers)** : Interfaces définissant les cas d'usage métiers (Use Cases).
-2. **Outbound Ports (Driven)** : Interfaces requises par le domaine pour persister ou communiquer (ex: Repository interface).
-
-\`\`\`java
-// Port d'entrée (Use Case)
-public interface RegisterUserUseCase {
-    User execute(RegisterUserCommand command);
-}
-
-// Port de sortie (Port persistance)
-public interface UserRepositoryPort {
-    void save(User user);
-    Optional<User> findById(UUID id);
-}
-\`\`\``
-        },
-        {
-          id: "d3333333-3333-3333-3333-333333333333",
-          title: "3. Transactional Outbox Pattern & EDA",
-          position: 3,
-          status: "APPROVED",
-          createdByName: "Admin CodeBangers",
-          updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
-          content: `# ⚡ Transactional Outbox Pattern & EDA
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. L'Outbox Pattern résout le problème de la double écriture entre la base SQL et le broker de messages (Kafka, RabbitMQ).
-
-### 📦 Fonctionnement :
-- Les événements de domaine sont enregistrés dans une table SQL \`outbox_events\` au sein de la **même transaction** que les entités.
-- Un poller ou un connecteur CDC (Change Data Capture / Debezium) publie ensuite les messages de manière asynchrone et garantie.
-
-\`\`\`java
-@Transactional
-public void completeOrder(UUID orderId) {
-    Order order = orderRepository.findById(orderId).orElseThrow();
-    order.complete();
-    orderRepository.save(order);
-    
-    outboxRepository.save(new OutboxMessage("OrderCompleted", order.getId()));
-}
-\`\`\``
-        }
-      ];
     } else {
+      // Fallback par défaut sur les chapitres HTML & CSS
       courseChapters = [
         {
-          id: "c1111111-1111-1111-1111-111111111111",
-          title: "1. Introduction & Écosystème Java 21 LTS",
+          id: "c1000001-0000-0000-0000-000000000001",
+          title: "1. Structure & Sémantique HTML5 (Aperçu Gratuit)",
           position: 1,
           status: "APPROVED",
           createdByName: "Admin CodeBangers",
-          updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14).toISOString(),
-          content: `# 🚀 Bienvenue dans Java 21 LTS
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Java 21 apporte des fonctionnalités majeures dont les **Virtual Threads (Project Loom)**, les **Record Patterns** et les **Sequenced Collections**.
-
-### 🌟 Les points clés du module :
-- **Virtual Threads** : Concurrence à haut débit sans surcharge de threads système.
-- **Pattern Matching** : Simplification des switch et instanceof.
-- **Record classes** : Immutabilité élégante pour vos DTO et Value Objects.
-
-\`\`\`java
-public record UserDto(UUID id, String email, Role role) {}
-
-public void processUser(Object obj) {
-    if (obj instanceof UserDto(var id, var email, var role)) {
-        System.out.println("Utilisateur authentifié : " + email + " avec rôle : " + role);
-    }
-}
-\`\`\``
-        },
-        {
-          id: "c2222222-2222-2222-2222-222222222222",
-          title: "2. Architecture en Couches & Persistance JPA",
-          position: 2,
-          status: "APPROVED",
-          createdByName: "Cédric Ragot (Enseignant)",
           updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(),
-          content: `# 🏛️ Architecture en Couches & Persistance JPA
-
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-### 📐 Structuration recommandée :
-1. **Controller Layer** : Exposition REST, validation des requêtes (\`@Valid\`).
-2. **Service Layer** : Logique métier pure, gestion transactionnelle (\`@Transactional\`).
-3. **Repository Layer** : Interfaces Spring Data JPA pour les opérations en base PostgreSQL.`
+          content: "# 🚀 Structure & Sémantique HTML5\n\nLe HTML5 moderne structure le web de façon accessible et performante.\n\n## Points clés :\n- Balises sémantiques : <header>, <main>, <nav>, <section>, <article>, <footer>.\n- Accessibilité (a11y) dès la conception.\n- SEO technique et référencement optimal."
         },
         {
-          id: "c3333333-3333-3333-3333-333333333333",
-          title: "3. Sécurité Avancée, JWT & RBAC Zero Trust",
-          position: 3,
+          id: "c1000002-0000-0000-0000-000000000002",
+          title: "2. CSS3 Moderne, Flexbox & CSS Grid",
+          position: 2,
           status: "APPROVED",
           createdByName: "Admin CodeBangers",
           updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
-          content: `# 🛡️ Sécurité Avancée : JWT, RBAC & OWASP
-
-Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. La sécurité repose sur le principe **Never Trust the Client**.`
+          content: "# 🎨 CSS3 Moderne, Flexbox & Grid\n\nDonne du style et structure tes mises en page comme un pro."
         },
         {
-          id: "c4444444-4444-4444-4444-444444444444",
-          title: "4. Intégration OAuth2 Social Login",
-          position: 4,
-          status: "PENDING_APPROVAL",
-          createdByName: "Cédric Ragot (Enseignant)",
-          updatedAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-          content: `# 🌐 Intégration OAuth2 Social Login
-
-*Note : Cette section a été modifiée par l'enseignant et est en cours de révision par l'administrateur.*`
+          id: "c1000003-0000-0000-0000-000000000003",
+          title: "3. Responsive Web Design & Animations CSS",
+          position: 3,
+          status: "APPROVED",
+          createdByName: "Admin CodeBangers",
+          updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+          content: "# 📱 Responsive Web Design & Animations\n\nAssure une expérience irréprochable sur mobile, tablette et desktop."
         }
       ];
     }
@@ -759,7 +654,7 @@ function renderAccessGate(title, description, type, extraStatus = "") {
 
   contentArea.innerHTML = `
     <div class="catalog-container">
-      <a href="cours.html" class="back-link bangers-regular">
+      <a href="parcours.html" class="back-link bangers-regular">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
@@ -831,7 +726,7 @@ function renderClassroom() {
     <!-- Header Banner -->
     <div class="course-header-banner">
       <div class="course-header-top">
-        <a href="cours.html" class="back-link bangers-regular" style="margin-bottom: 0;">
+        <a href="parcours.html" class="back-link bangers-regular" style="margin-bottom: 0;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
@@ -1155,7 +1050,7 @@ async function handleSaveCourse(event) {
     allCourses.unshift(newCourse);
     closeCourseManageModal();
     alert("🎉 Formation créée avec succès !");
-    window.location.href = `cours.html?id=${newCourse.id}`;
+    window.location.href = `parcours.html?id=${newCourse.id}`;
   }
 }
 
@@ -1285,7 +1180,7 @@ async function handleDeleteCourse(courseId) {
   });
 
   alert("🗑️ Formation supprimée.");
-  window.location.href = "cours.html";
+  window.location.href = "parcours.html";
 }
 
 /**
@@ -1344,7 +1239,7 @@ async function initiateStripeCheckout(courseId) {
   } else if (typeof window.openAuthModal === "function" && !currentUser) {
     window.openAuthModal("login");
   } else {
-    window.location.href = `cours.html?id=${encodeURIComponent(courseId)}&checkout=true`;
+    window.location.href = `parcours.html?id=${encodeURIComponent(courseId)}&checkout=true`;
   }
 }
 
@@ -1375,7 +1270,7 @@ async function handleEnroll(courseId) {
   }
 
   alert("🎉 Inscription confirmée ! Vous avez accès à l'aperçu gratuit de la section 1.");
-  window.location.href = `cours.html?id=${courseId}`;
+  window.location.href = `parcours.html?id=${courseId}`;
 }
 
 function markChapterComplete(chapId) {
