@@ -311,8 +311,17 @@ function clearGlobalAuthAlert() {
 
 const COURSE_SLUG_MAP = {
   "html-css": "c1000000-0000-0000-0000-000000000001",
+  "fondations": "c1000000-0000-0000-0000-000000000001",
+  "pack-fondations": "c1000000-0000-0000-0000-000000000001",
+  "starter": "c1000000-0000-0000-0000-000000000001",
   "javascript": "c2000000-0000-0000-0000-000000000002",
-  "git-github": "c3000000-0000-0000-0000-000000000003"
+  "dynamique": "c2000000-0000-0000-0000-000000000002",
+  "pack-dynamique": "c2000000-0000-0000-0000-000000000002",
+  "web": "c2000000-0000-0000-0000-000000000002",
+  "git-github": "c3000000-0000-0000-0000-000000000003",
+  "vip": "c2000000-0000-0000-0000-000000000002",
+  "pack-vip": "c2000000-0000-0000-0000-000000000002",
+  "goat": "c2000000-0000-0000-0000-000000000002"
 };
 
 function resolveCourseId(idOrSlug) {
@@ -392,8 +401,20 @@ window.closeStripePaywall = closeStripePaywall;
  * Ouvre le Paywall NoSeumCode intégré directement dans la page.
  * Utilise Stripe Embedded Checkout pour garder l'utilisateur sur le site noseumcode.fr.
  */
-async function openStripePaywall(courseId, courseTitle, priceText) {
+async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortId) {
   courseId = resolveCourseId(courseId);
+
+  if (!tier) {
+    const t = (courseTitle || "").toLowerCase();
+    const p = (priceText || "").toLowerCase();
+    if (t.includes("vip") || t.includes("goat") || p.includes("879")) {
+      tier = "VIP";
+    } else if (t.includes("fondation") || t.includes("starter") || p.includes("279")) {
+      tier = "STARTER";
+    } else {
+      tier = "WEB";
+    }
+  }
 
   // Fermer les popovers de cours et d'authentification
   document.querySelectorAll("[popover]").forEach(p => {
@@ -410,6 +431,7 @@ async function openStripePaywall(courseId, courseTitle, priceText) {
     sessionStorage.setItem("noseum_pending_checkout_course_id", courseId);
     sessionStorage.setItem("noseum_pending_checkout_course_title", courseTitle || "");
     sessionStorage.setItem("noseum_pending_checkout_course_price", priceText || "");
+    sessionStorage.setItem("noseum_pending_checkout_tier", tier || "");
 
     openGlobalAuthModal("register");
     showGlobalAuthAlert(`🎓 Créez votre compte pour débloquer "${courseTitle || "votre formation"}" (${priceText || ""}). Le terminal de paiement sécurisé s'affichera directement après connexion.`, "info");
@@ -468,6 +490,8 @@ async function openStripePaywall(courseId, courseTitle, priceText) {
       },
       body: JSON.stringify({
         courseId: courseId,
+        tier: tier || undefined,
+        cohortId: cohortId || undefined,
         embedded: true,
         returnUrl: returnUrl,
         successUrl: returnUrl
@@ -557,9 +581,9 @@ window.redirectToStripeCheckout = redirectToStripeCheckout;
  * Déclenche l'inscription ou l'achat d'un cours depuis les popovers et boutons du site.
  * Ouvre le Paywall NoSeumCode intégré directement dans la page.
  */
-async function initiateCourseEnrollment(courseId, courseTitle, priceText) {
+async function initiateCourseEnrollment(courseId, courseTitle, priceText, tier, cohortId) {
   courseId = resolveCourseId(courseId);
-  await openStripePaywall(courseId, courseTitle, priceText);
+  await openStripePaywall(courseId, courseTitle, priceText, tier, cohortId);
 }
 window.initiateCourseEnrollment = initiateCourseEnrollment;
 
@@ -656,14 +680,16 @@ async function handleGlobalEmailLogin(e) {
       } else if (pendingCourseId) {
         const pendingTitle = sessionStorage.getItem("noseum_pending_checkout_course_title") || "";
         const pendingPrice = sessionStorage.getItem("noseum_pending_checkout_course_price") || "";
+        const pendingTier = sessionStorage.getItem("noseum_pending_checkout_tier") || "";
         sessionStorage.removeItem("noseum_pending_checkout_course_id");
         sessionStorage.removeItem("noseum_pending_checkout_course_title");
         sessionStorage.removeItem("noseum_pending_checkout_course_price");
+        sessionStorage.removeItem("noseum_pending_checkout_tier");
 
         showGlobalAuthAlert("💳 Connexion réussie ! Ouverture du terminal de paiement sécurisé...", "success");
         setTimeout(async () => {
           closeGlobalAuthModal();
-          await openStripePaywall(pendingCourseId, pendingTitle, pendingPrice);
+          await openStripePaywall(pendingCourseId, pendingTitle, pendingPrice, pendingTier);
         }, 400);
       } else {
         showGlobalAuthAlert("✅ Connexion réussie ! Redirection vers votre espace...", "success");
@@ -908,14 +934,16 @@ async function handleGlobalEmailRegister(e) {
       } else if (pendingCourseId) {
         const pendingTitle = sessionStorage.getItem("noseum_pending_checkout_course_title") || "";
         const pendingPrice = sessionStorage.getItem("noseum_pending_checkout_course_price") || "";
+        const pendingTier = sessionStorage.getItem("noseum_pending_checkout_tier") || "";
         sessionStorage.removeItem("noseum_pending_checkout_course_id");
         sessionStorage.removeItem("noseum_pending_checkout_course_title");
         sessionStorage.removeItem("noseum_pending_checkout_course_price");
+        sessionStorage.removeItem("noseum_pending_checkout_tier");
 
         showGlobalAuthAlert("🎉 Compte créé ! Ouverture du terminal de paiement sécurisé...", "success");
         setTimeout(async () => {
           closeGlobalAuthModal();
-          await openStripePaywall(pendingCourseId, pendingTitle, pendingPrice);
+          await openStripePaywall(pendingCourseId, pendingTitle, pendingPrice, pendingTier);
         }, 400);
       } else {
         showGlobalAuthAlert("🎉 Compte créé avec succès ! Bienvenue sur NoSeumCode.", "success");
