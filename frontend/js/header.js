@@ -636,11 +636,21 @@ async function handleGlobalEmailLogin(e) {
         showGlobalAuthAlert("🎉 Connexion réussie ! Réservation de ton atelier en cours...", "success");
         setTimeout(async () => {
           closeGlobalAuthModal();
-          if (typeof window.registerToWorkshop === "function") {
-            await window.registerToWorkshop(pendingWorkshopId);
-          } else {
-            window.location.href = "dashboard.html";
+          try {
+            await fetch(`${window.API_BASE_URL}/api/user-workshops/${pendingWorkshopId}`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${data.accessToken}`
+              }
+            });
+            localStorage.removeItem("noseum_pending_workshop_id");
+            sessionStorage.removeItem("noseum_pending_workshop_id");
+          } catch (err) {
+            console.warn("Erreur auto-inscription workshop post-login:", err);
           }
+          sessionStorage.setItem("noseum_workshop_just_registered", "true");
+          window.location.href = "dashboard.html";
         }, 400);
       } else if (pendingCourseId) {
         const pendingTitle = sessionStorage.getItem("noseum_pending_checkout_course_title") || "";
@@ -878,11 +888,21 @@ async function handleGlobalEmailRegister(e) {
         showGlobalAuthAlert("🎉 Compte créé avec succès ! Confirmation de ton atelier en cours...", "success");
         setTimeout(async () => {
           closeGlobalAuthModal();
-          if (typeof window.registerToWorkshop === "function") {
-            await window.registerToWorkshop(pendingWorkshopId);
-          } else {
-            window.location.href = "dashboard.html";
+          try {
+            await fetch(`${window.API_BASE_URL}/api/user-workshops/${pendingWorkshopId}`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${data.accessToken}`
+              }
+            });
+            localStorage.removeItem("noseum_pending_workshop_id");
+            sessionStorage.removeItem("noseum_pending_workshop_id");
+          } catch (err) {
+            console.warn("Erreur auto-inscription workshop post-register:", err);
           }
+          sessionStorage.setItem("noseum_workshop_just_registered", "true");
+          window.location.href = "dashboard.html";
         }, 400);
       } else if (pendingCourseId) {
         const pendingTitle = sessionStorage.getItem("noseum_pending_checkout_course_title") || "";

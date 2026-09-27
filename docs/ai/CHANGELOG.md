@@ -404,3 +404,24 @@ _Chronologique — plus récent en bas_
    - Ajout d'une commande de purge automatique et idempotente des migrations échouées (`DELETE FROM flyway_schema_history WHERE success = false;`) avant le redémarrage du conteneur backend, permettant le rejeu immédiat et évitant le blocage `Detected failed migration`.
 4. **Validation & Tests** :
    - 82 tests unitaires et d'intégration Spring Boot validés avec succès (`BUILD SUCCESS`, 0 erreur, 0 échec).
+
+---
+
+## 2026-09-27 — Correctif : Inscription Workshop Post-Connexion & Affichage Dashboard
+
+**Conversation ID**: `4e2adcdb-309a-40f9-9c4d-715b084694af`  
+**Branche**: `fix/workshop-registration-post-login`  
+**Objectif**: Corriger l'absence de confirmation et la non-apparition de l'atelier découverte dans le dashboard après connexion d'un utilisateur existant (ou création de compte).
+
+### Réalisations & Corrections :
+1. **Initialisation Session et Token Dashboard (`frontend/js/dashboard.js`)** :
+   - Correction de l'ordre d'initialisation dans `loadStoredAuth()` : `currentAuth.token` et `currentAuth.user` sont désormais initialisés AVANT tout appel `apiFetch`. Auparavant, l'auto-inscription post-redirection appelait l'API avec un token `null`, provoquant un HTTP 401 Unauthorized silencieux et la perte de l'identifiant d'atelier en attente.
+   - Prise en charge du flag de session `noseum_workshop_just_registered` pour déclencher systématiquement le toast de confirmation de réservation au montage du tableau de bord.
+   - Amélioration de `showGlobalDashboardToast` avec support du type `info`.
+2. **Tunnel d'Authentification Post-Clic Atelier (`frontend/js/header.js`)** :
+   - Dans `handleGlobalEmailLogin` et `handleGlobalEmailRegister`, exécution immédiate de la requête `POST /api/user-workshops/{id}` avec le jeton d'accès tout juste reçu (`data.accessToken`), nettoyage des clés `localStorage` / `sessionStorage`, puis redirection directe vers `dashboard.html` avec le flag de confirmation.
+3. **Gestion des Statuts d'Inscription (`frontend/js/workshops.js`)** :
+   - Prise en charge gracieuse du code HTTP 409 Conflict (`DuplicateResourceException`) dans `registerToWorkshop` pour confirmer à l'utilisateur sa place déjà réservée au lieu d'afficher une erreur rouge générique.
+4. **Validation Locale & Tests** :
+   - Recompilation complète des bundles CSS (`node frontend/build.js`).
+   - 82 tests unitaires et d'intégration Spring Boot validés avec succès (`BUILD SUCCESS`, 0 erreur, 0 échec).
