@@ -26,15 +26,18 @@ public class SecurityConfig {
         private final CustomOAuth2UserService customOAuth2UserService;
         private final CustomOidcUserService customOidcUserService;
         private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+        private final com.codebangers.backend.auth.oauth2.OAuth2RedirectUriFilter oAuth2RedirectUriFilter;
         private final List<String> allowedOrigins;
 
         public SecurityConfig(CustomOAuth2UserService customOAuth2UserService,
                         CustomOidcUserService customOidcUserService,
                         OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler,
+                        com.codebangers.backend.auth.oauth2.OAuth2RedirectUriFilter oAuth2RedirectUriFilter,
                         @Value("${app.cors.allowed-origins:http://localhost:3000,https://noseumcode.fr,https://www.noseumcode.fr,https://develop.noseumcode.fr}") String corsOrigins) {
                 this.customOAuth2UserService = customOAuth2UserService;
                 this.customOidcUserService = customOidcUserService;
                 this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
+                this.oAuth2RedirectUriFilter = oAuth2RedirectUriFilter;
 
                 java.util.Set<String> origins = java.util.Arrays.stream(corsOrigins.split(","))
                                 .map(String::trim)
@@ -54,6 +57,7 @@ public class SecurityConfig {
                 http
                                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .csrf(csrf -> csrf.disable())
+                                .addFilterBefore(oAuth2RedirectUriFilter, org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter.class)
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(auth -> auth
