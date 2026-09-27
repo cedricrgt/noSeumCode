@@ -1,5 +1,6 @@
 package com.codebangers.backend.course.model;
 
+import com.codebangers.backend.cohort.model.Cohort;
 import com.codebangers.backend.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -27,6 +28,14 @@ public class Enrollment {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cohort_id")
+    private Cohort cohort;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tier", nullable = false, length = 30)
+    private EnrollmentTier tier = EnrollmentTier.WEB;
 
     @CreationTimestamp
     @Column(name = "enrolled_at", nullable = false, updatable = false)
@@ -61,6 +70,16 @@ public class Enrollment {
         this.course = course;
         this.paymentStatus = paymentStatus;
         this.progress = progress;
+        this.tier = EnrollmentTier.WEB;
+    }
+
+    public Enrollment(User user, Course course, PaymentStatus paymentStatus, int progress, EnrollmentTier tier, Cohort cohort) {
+        this.user = user;
+        this.course = course;
+        this.paymentStatus = paymentStatus;
+        this.progress = progress;
+        this.tier = tier != null ? tier : EnrollmentTier.WEB;
+        this.cohort = cohort;
     }
 
     // =========================
@@ -89,6 +108,22 @@ public class Enrollment {
 
     public void setCourse(Course course) {
         this.course = course;
+    }
+
+    public Cohort getCohort() {
+        return cohort;
+    }
+
+    public void setCohort(Cohort cohort) {
+        this.cohort = cohort;
+    }
+
+    public EnrollmentTier getTier() {
+        return tier;
+    }
+
+    public void setTier(EnrollmentTier tier) {
+        this.tier = tier;
     }
 
     public LocalDateTime getEnrolledAt() {

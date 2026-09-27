@@ -486,6 +486,13 @@ function renderStudentCourses() {
 
   enrolledCourses.forEach(course => {
     const imgUrl = getCourseImageForTitle(course.courseTitle, course.courseDescription);
+    const tier = (course.tier || "STARTER").toUpperCase();
+    const tierLabel = tier === "STARTER" ? "Pack Starter" : (tier === "VIP" ? "Mentorat VIP" : "Pack Web");
+    const tierColor = tier === "STARTER" ? "#2563eb" : (tier === "VIP" ? "#d97706" : "#7c3aed");
+    const tierBg = tier === "STARTER" ? "rgba(37, 99, 235, 0.12)" : (tier === "VIP" ? "rgba(217, 119, 6, 0.12)" : "rgba(124, 58, 237, 0.12)");
+    const cohortBadge = course.cohortName ? `<span style="font-size: 0.72rem; color: #0284c7; background: rgba(2, 132, 199, 0.12); padding: 2px 7px; border-radius: 4px; font-weight: 600;">👥 ${escapeHtml(course.cohortName)}</span>` : "";
+    const replayBadge = (tier === "STARTER" || course.lifetimeAccess) ? `<span style="font-size: 0.72rem; color: #059669; background: rgba(5, 150, 105, 0.12); padding: 2px 7px; border-radius: 4px; font-weight: 600;">♾️ Replay à vie</span>` : "";
+
     const card = document.createElement("article");
     card.className = "card card-white card-paddingtop";
     card.style.overflow = "hidden";
@@ -503,8 +510,13 @@ function renderStudentCourses() {
       </header>
       <main class="card__main">
         <div class="card__header">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.25rem;">
-            <span class="section-tag" style="font-size: 0.72rem; margin-bottom: 0;">🎓 EN COURS</span>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.35rem; flex-wrap:wrap; gap: 0.4rem;">
+            <div style="display:flex; gap:0.4rem; align-items:center; flex-wrap:wrap;">
+              <span class="section-tag" style="font-size: 0.72rem; margin-bottom: 0;">🎓 EN COURS</span>
+              <span style="background: ${tierBg}; color: ${tierColor}; font-size: 0.72rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">${tierLabel}</span>
+              ${cohortBadge}
+              ${replayBadge}
+            </div>
             <span style="font-size: 0.78rem; font-weight: 700; color: #00a85a; background: rgba(0,255,135,0.15); padding: 2px 8px; border-radius: 999px;">${course.progress || 0}% complété</span>
           </div>
           <h3 class="card__title" style="font-size: 1.35rem;">${escapeHtml(course.courseTitle)}</h3>
@@ -845,45 +857,44 @@ async function loadTeacherData() {
     allAvailableCourses = await res.json();
   } else if (allAvailableCourses.length === 0) {
     allAvailableCourses = [
-      { id: "c-1", title: "Fullstack Java 21 & Spring Boot 3" },
-      { id: "c-2", title: "Clean Architecture & DDD en Pratique" },
-      { id: "c-3", title: "Docker, Kubernetes & Déploiement Cloud" }
+      { id: "c1000000-0000-0000-0000-000000000001", title: "HTML & CSS – Les Fondations du Web" },
+      { id: "c3000000-0000-0000-0000-000000000003", title: "Git & GitHub – L'outil n°1 des devs pro" },
+      { id: "c2000000-0000-0000-0000-000000000002", title: "JavaScript – L'interactivité au bout des doigts" }
     ];
   }
 
-  // Load teacher chapters
   // Load teacher chapters
   if (teacherChapters.length === 0) {
     teacherChapters = [
       {
         id: "chap-101",
-        courseId: "c-1",
-        courseTitle: "Fullstack Java 21 & Spring Boot 3",
-        title: "Introduction aux Records et Pattern Matching Java 21",
+        courseId: "c1000000-0000-0000-0000-000000000001",
+        courseTitle: "HTML & CSS – Les Fondations du Web",
+        title: "Structure Sémantique & Accessibilité Web",
         position: 1,
-        content: "# Introduction aux Records Java 21\n\nLes records permettent de définir des classes de données immuables de manière concise et lisible.\n\n```java\npublic record CourseDto(UUID id, String title, int position) {}\n```\n\n### Points clés :\n- Immuabilité native\n- Génération automatique des accesseurs, equals, hashCode et toString",
+        content: "# Structure Sémantique & Accessibilité Web\n\nApprenez à structurer des pages HTML5 modernes respectant les standards WCAG et le SEO sémantique.",
         status: "APPROVED",
         submittedAt: "2026-08-20T10:00:00"
       },
       {
         id: "chap-102",
-        courseId: "c-1",
-        courseTitle: "Fullstack Java 21 & Spring Boot 3",
-        title: "Mise en place de Spring Security & OAuth2 Social Login",
+        courseId: "c2000000-0000-0000-0000-000000000002",
+        courseTitle: "JavaScript – L'interactivité au bout des doigts",
+        title: "Manipulation du DOM & Gestionnaires d'Événements",
         position: 2,
-        content: "# Spring Security & OAuth2 Social Login\n\nConfiguration de la chaîne de filtres Spring Security 6.x et intégration des fournisseurs OAuth2 (Google, GitHub, Discord).\n\n```java\n@Bean\npublic SecurityFilterChain filterChain(HttpSecurity http) throws Exception {\n    return http\n        .csrf(AbstractHttpConfigurer::disable)\n        .oauth2Login(Customizer.withDefaults())\n        .build();\n}\n```",
+        content: "# Manipulation du DOM\n\nSélection et manipulation dynamique des nœuds DOM en Vanilla JavaScript moderne.",
         status: "PENDING_APPROVAL",
         submittedAt: "2026-08-24T09:30:00"
       },
       {
         id: "chap-103",
-        courseId: "c-2",
-        courseTitle: "Clean Architecture & DDD en Pratique",
-        title: "Gestion des Événements de Domaine avec Kafka",
+        courseId: "c3000000-0000-0000-0000-000000000003",
+        courseTitle: "Git & GitHub – L'outil n°1 des devs pro",
+        title: "Gestion des Branches & Pull Requests",
         position: 3,
-        content: "# Gestion des Événements de Domaine avec Kafka\n\nPublication fiable d'événements métier et mise en place du Transactional Outbox Pattern pour garantir la consistance éventuelle.",
+        content: "# Git & Pull Requests\n\nWorkflow GitHub professionnel avec validation de commits et merge sans conflit.",
         status: "REJECTED",
-        rejectionReason: "Veuillez inclure le schéma architectural du Transactional Outbox Pattern avant de republier.",
+        rejectionReason: "Veuillez détailler les commandes de résolution de conflits (git merge --abort / git checkout).",
         submittedAt: "2026-08-23T14:15:00"
       }
     ];
@@ -1171,20 +1182,20 @@ async function loadAdminPendingChapters() {
     pendingAdminChapters = [
       {
         id: "chap-admin-1",
-        courseTitle: "Fullstack Java 21 & Spring Boot 3",
-        title: "Mise en place de Spring Security & OAuth2 Social Login",
+        courseTitle: "JavaScript – L'interactivité au bout des doigts",
+        title: "Manipulation du DOM & Gestionnaires d'Événements",
         createdByName: "Cedric Ragot (Enseignant)",
         position: 2,
-        content: "# Spring Security & OAuth2 Social Login\n\nConfiguration de la chaîne de filtres Spring Security 6.x et intégration des fournisseurs OAuth2 (Google, GitHub, Discord).\n\n```java\n@Bean\npublic SecurityFilterChain filterChain(HttpSecurity http) throws Exception {\n    return http\n        .csrf(AbstractHttpConfigurer::disable)\n        .oauth2Login(Customizer.withDefaults())\n        .build();\n}\n```",
+        content: "# Manipulation du DOM\n\nSélection et manipulation dynamique des nœuds DOM en Vanilla JavaScript moderne.",
         submittedAt: new Date(Date.now() - 1000 * 60 * 35).toISOString()
       },
       {
         id: "chap-admin-2",
-        courseTitle: "Clean Architecture & DDD en Pratique",
-        title: "Architecture Hexagonale : Ports & Adaptateurs",
-        createdByName: "Jane Doe (Enseignante)",
-        position: 4,
-        content: "# Architecture Hexagonale : Ports & Adaptateurs\n\nDécouplage strict de la couche domaine des frameworks techniques via les ports primaires/secondaires et adaptateurs d'infrastructure.",
+        courseTitle: "HTML & CSS – Les Fondations du Web",
+        title: "Mise en page moderne avec CSS Grid & Flexbox",
+        createdByName: "Ada Lovelace (Enseignante)",
+        position: 2,
+        content: "# CSS Grid & Flexbox\n\nConception de grilles responsives fluides sans framework tiers.",
         submittedAt: new Date(Date.now() - 1000 * 60 * 95).toISOString()
       }
     ];
@@ -1206,31 +1217,31 @@ async function loadAdminCourses() {
   } else if (adminCoursesList.length === 0) {
     adminCoursesList = [
       {
-        id: "course-1",
-        title: "Fullstack Java 21 & Spring Boot 3.4+",
+        id: "c1000000-0000-0000-0000-000000000001",
+        title: "HTML & CSS – Les Fondations du Web",
         createdByName: "Cedric Ragot",
         updatedByName: "Cedric Ragot",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 12).toISOString(),
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString(),
-        chaptersCount: 8
+        chaptersCount: 3
       },
       {
-        id: "course-2",
-        title: "Clean Architecture & Hexagonale avec DDD",
+        id: "c2000000-0000-0000-0000-000000000002",
+        title: "JavaScript – L'interactivité au bout des doigts",
         createdByName: "Ada Lovelace",
         updatedByName: "Ada Lovelace",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 8).toISOString(),
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 18).toISOString(),
-        chaptersCount: 6
+        chaptersCount: 3
       },
       {
-        id: "course-3",
-        title: "Sécurité Avancée : OAuth2, RBAC & OWASP",
+        id: "c3000000-0000-0000-0000-000000000003",
+        title: "Git & GitHub – L'outil n°1 des devs pro",
         createdByName: "Admin CodeBangers",
         updatedByName: "Admin CodeBangers",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
         updatedAt: new Date().toISOString(),
-        chaptersCount: 5
+        chaptersCount: 3
       }
     ];
   }

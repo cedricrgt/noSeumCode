@@ -1,5 +1,6 @@
 package com.codebangers.backend.payment.dto;
 
+import com.codebangers.backend.course.model.EnrollmentTier;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
@@ -7,6 +8,9 @@ public class CreateCheckoutSessionRequest {
 
     @NotNull(message = "L'identifiant du cours (courseId) est obligatoire")
     private UUID courseId;
+
+    private EnrollmentTier tier;
+    private UUID cohortId;
 
     private String successUrl;
     private String cancelUrl;
@@ -73,5 +77,21 @@ public class CreateCheckoutSessionRequest {
 
     public void setReturnUrl(String returnUrl) {
         this.returnUrl = returnUrl;
+    }
+
+    public EnrollmentTier getTier() {
+        return tier;
+    }
+
+    public void setTier(EnrollmentTier tier) {
+        this.tier = tier;
+    }
+
+    public UUID getCohortId() {
+        return cohortId;
+    }
+
+    public void setCohortId(UUID cohortId) {
+        this.cohortId = cohortId;
     }
 }

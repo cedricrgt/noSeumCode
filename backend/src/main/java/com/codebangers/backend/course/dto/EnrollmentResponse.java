@@ -1,6 +1,7 @@
 package com.codebangers.backend.course.dto;
 
 import com.codebangers.backend.course.model.Enrollment.PaymentStatus;
+import com.codebangers.backend.course.model.EnrollmentTier;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -15,6 +16,12 @@ public class EnrollmentResponse {
     private PaymentStatus paymentStatus;
     private Integer progress;
     private LocalDateTime completedAt;
+
+    private EnrollmentTier tier;
+    private UUID cohortId;
+    private String cohortName;
+    private String cohortSlug;
+    private Boolean lifetimeAccess;
 
     public EnrollmentResponse() {
     }
@@ -101,5 +108,45 @@ public class EnrollmentResponse {
 
     public void setCompletedAt(LocalDateTime completedAt) {
         this.completedAt = completedAt;
+    }
+
+    public EnrollmentTier getTier() {
+        return tier;
+    }
+
+    public void setTier(EnrollmentTier tier) {
+        this.tier = tier;
+    }
+
+    public UUID getCohortId() {
+        return cohortId;
+    }
+
+    public void setCohortId(UUID cohortId) {
+        this.cohortId = cohortId;
+    }
+
+    public String getCohortName() {
+        return cohortName;
+    }
+
+    public void setCohortName(String cohortName) {
+        this.cohortName = cohortName;
+    }
+
+    public String getCohortSlug() {
+        return cohortSlug;
+    }
+
+    public void setCohortSlug(String cohortSlug) {
+        this.cohortSlug = cohortSlug;
+    }
+
+    public Boolean getLifetimeAccess() {
+        return lifetimeAccess;
+    }
+
+    public void setLifetimeAccess(Boolean lifetimeAccess) {
+        this.lifetimeAccess = lifetimeAccess;
     }
 }

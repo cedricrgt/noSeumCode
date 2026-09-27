@@ -16,6 +16,7 @@ public class CourseRequest {
     private String thumbnailUrl;
     private String level;
     private Boolean isPublished;
+    private com.codebangers.backend.course.model.CourseTier requiredTier;
 
     // Constructors
 
@@ -102,5 +103,13 @@ public class CourseRequest {
 
     public void setIsPublished(Boolean isPublished) {
         this.isPublished = isPublished;
+    }
+
+    public com.codebangers.backend.course.model.CourseTier getRequiredTier() {
+        return requiredTier;
+    }
+
+    public void setRequiredTier(com.codebangers.backend.course.model.CourseTier requiredTier) {
+        this.requiredTier = requiredTier;
     }
 }

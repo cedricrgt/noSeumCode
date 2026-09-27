@@ -45,11 +45,10 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `fix/oauth2-dynamic-redirect-uri` (en cours de PR vers `develop`)
-## Current State: Sprints 1 à 6 validés. Correctifs UUID PostgreSQL Flyway, Inscription Workshop post-auth et Redirection Dynamique OAuth2 multi-environnements validés avec 92 tests unitaires Spring Boot.
-## Next Sprint: Sprint 7 — Nouvelle Gamme & Accès Cohortes (Starter avec replays à vie, Web, VIP & Klarna).
+## Active Branch: `feat/sprint-6-cohorts-plans-klarna` (en cours de PR vers `develop`)
+## Current State: Sprints 1 à 7 validés (Gamme Starter/Web/VIP, Cohortes jauge 6 max, Replays à vie Starter, Klarna BNPL, Flyway V014) avec 112 tests unitaires et d'intégration Spring Boot réussis (0 échec).
+## Next Sprint: Sprint 8 — Performance Web & SEO Technique (Images <800Ko, Pages statiques formations SSG, Core Web Vitals, Cache Apache).
 ## Sprints Suivants:
-- Sprint 8 : Performance Web & SEO Technique (Images <800Ko, SSG Statique, CLS).
 - Sprint 9 : Refonte Copywriting & Rassurance Parents/Jeunes (Mentor & Analytics Plausible/Umami).
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009).
 

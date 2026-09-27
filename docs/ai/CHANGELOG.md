@@ -449,3 +449,32 @@ _Chronologique — plus récent en bas_
 5. **Tests & Validation** :
    - Ajout des suites de tests unitaires `OAuth2RedirectUriFilterTest` (6 tests) et `OAuth2AuthenticationSuccessHandlerTest` (4 tests).
    - 92 tests unitaires et d'intégration Spring Boot validés avec succès (`BUILD SUCCESS`, 0 erreur, 0 échec).
+
+---
+
+## 2026-09-27 — Sprint 7 : Nouvelle Gamme & Accès Cohortes (Starter Replay à Vie, Pack Web, Mentorat VIP & Klarna BNPL)
+
+**Conversation ID**: `7af84ac3-b5b9-431f-8c77-e4358acf88bf`  
+**Branche**: `feat/sprint-6-cohorts-plans-klarna`  
+**Objectif**: Nettoyage des faux cours d'essai de la base et du frontend, introduction des promotions/cohortes limitées à 6 élèves max (ADR-013), structuration des offres (Starter 279 €, Pack Web 579 €, Mentorat VIP 879 €) avec accès à vie aux replays de fondation pour Starter, et intégration du paiement fractionné Klarna BNPL via Stripe Checkout (ADR-014).
+
+### Réalisations & Livrables :
+1. **Base de Données & Migration Flyway V014 (`V014__clean_dummy_courses_and_create_cohorts_and_tiers.sql`)** :
+   - Soft delete des deux faux cours d'essai Java 21 / Clean Architecture (`is_deleted = true`).
+   - Ajout de la colonne `required_tier` (STARTER / WEB) sur la table `course` avec index dédié.
+   - Création de la table `cohort` avec `max_students` = 6, statut enum (`UPCOMING`, `OPEN`, `FULL`, `IN_PROGRESS`, `COMPLETED`), slugs uniques et seed de cohortes (Novembre 2026 Alpha, Janvier 2027 Beta).
+   - Enrichissement de `enrollment` avec `tier` (STARTER / WEB / VIP) et clé étrangère `cohort_id`.
+2. **Backend & Architecture Métier (`backend/`)** :
+   - Création du package `cohort` avec entité JPA `Cohort`, `CohortRepository`, DTOs `CohortRequest`/`CohortResponse` (calcul dynamique `remainingSeats` et `isFull`), `CohortService` et `CohortController` (`GET /api/cohorts`, `GET /api/cohorts/{slug}`, `GET /api/cohorts/available`).
+   - Enums `CourseTier` et `EnrollmentTier` pour la hiérarchisation des droits.
+   - Contrôle d'accès et paywall serveur (`EnrollmentService.hasPaidAccess`) : vérification du palier souscrit. Les élèves Starter conservent l'accès perpétuel aux replays/cours de fondation (HTML/CSS, Git) et sont rejetés (HTTP 403 Forbidden) sur les modules avancés (JavaScript, APIs). Les élèves Web et VIP disposent de l'accès intégral.
+   - Intégration Stripe & Klarna BNPL (`StripeGatewayImpl`, `PaymentService`, `PaymentController`) : support des modes `card`, `klarna`, `link` dans `payment_method_types`, transmission des métadonnées `tier` et `cohortId` lors de la session Stripe Checkout, synchronisation automatique de la cohorte et du plan dans `Enrollment` à la réception du webhook `checkout.session.completed`.
+3. **Frontend & Expérience Apprenant (`frontend/`)** :
+   - `cours.html` : remplacement des placeholders Java 21 par les modules HTML/CSS et Git.
+   - `cours.js` : mise à jour du fallback catalogue, nouveaux tarifs dynamiques (279 €, 579 €, 879 €), badges visuels de palier, bandeau d'alerte promotions 6 élèves et badge Klarna 3x/4x sans frais.
+   - `dashboard.js` : nettoyage des mocks résiduels, affichage dynamique de la cohorte et du palier de l'élève, badge explicite `♾️ Replay à vie` pour les modules du tronc commun Starter.
+   - Recompilation des bundles CSS dist (`node frontend/build.js`).
+4. **Tests & Validation Qualité** :
+   - Ajout des suites de tests unitaires `CohortServiceTest` (9 tests) et `CohortControllerTest` (6 tests).
+   - Enrichissement de `PaywallSecurityTest` (11 tests validant l'accès à vie Starter et le verrouillage Web) et `PaymentCheckoutServiceTest` (16 tests validant Klarna et la synchronisation des métadonnées cohorte/tier).
+   - 112 tests unitaires et d'intégration Spring Boot validés avec succès (`BUILD SUCCESS`, 0 erreur, 0 échec).

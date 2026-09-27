@@ -1,6 +1,6 @@
 # ROADMAP.md — Feuille de Route Commerciale NoSeumCode
 
-> _Dernière mise à jour : 2026-09-26_  
+> _Dernière mise à jour : 2026-09-27_  
 > _Objectif : Transformer le MVP NoSeumCode en produit final, sécurisé, commercialisable et prêt pour la production._
 
 ---
@@ -15,8 +15,8 @@
 | **Sprint 4** | **Quick Wins Conversion, Leads & Légal** | Réparer les CTA Hero, débloquer CSP HubSpot, sécuriser `thanks.html`, pages légales | ✅ **Terminé** |
 | **Sprint 5** | **Portail Client Stripe** | Factures PDF, reçus d'achat et gestion des moyens de paiement apprenant | ✅ **Terminé** |
 | **Sprint 6** | **Workshops Gratuits Toussaint** | Bandeau header réactivé, page dédiée `workshops.html`, jauge stricte 6 élèves max | ✅ **Terminé** |
-| **Sprint 7** | **Nouvelle Gamme & Accès Cohortes** | Pack Starter (accès replays à vie), Pack Web, option VIP, Klarna BNPL via Stripe | 🟡 **Prêt / Prochain** |
-| **Sprint 8** | **Performance Web & SEO Technique** | Compression images (<800 Ko), rendu statique dédié formations, fix CLS, cache Apache | ⚪ **Planifié** |
+| **Sprint 7** | **Nouvelle Gamme & Accès Cohortes** | Pack Starter (accès replays à vie), Pack Web, option VIP, Klarna BNPL via Stripe | ✅ **Terminé** |
+| **Sprint 8** | **Performance Web & SEO Technique** | Compression images (<800 Ko), rendu statique dédié formations, fix CLS, cache Apache | 🟡 **Prêt / Prochain** |
 | **Sprint 9** | **Copywriting & Rassurance Parents/Jeunes** | Refonte Hero, section Ton Mentor, rassurance parents, Analytics RGPD cookieless | ⚪ **Planifié** |
 
 ---
@@ -64,9 +64,9 @@ gantt
     Jauge 6 inscrits & Dashboard (6.3)   :done, s6_3, 2026-09-26, 2026-09-26
 
     section Sprint 7 : Nouvelle Gamme & Cohortes
-    Modélisation Cohortes & Plans (7.1)  :s7_1, after s6_3, 2d
-    Contrôle accès Replays & Live (7.2)  :s7_2, after s7_1, 2d
-    Klarna BNPL & Stripe Checkout (7.3)  :s7_3, after s7_2, 1d
+    Modélisation Cohortes & Plans (7.1)  :done, s7_1, 2026-09-27, 2026-09-27
+    Contrôle accès Replays & Live (7.2)  :done, s7_2, 2026-09-27, 2026-09-27
+    Klarna BNPL & Stripe Checkout (7.3)  :done, s7_3, 2026-09-27, 2026-09-27
 
     section Sprint 8 : Performance & SEO
     Compression Images <800Ko (8.1)      :s8_1, after s7_3, 1d
@@ -147,7 +147,7 @@ gantt
 
 ---
 
-### Sprint 7 : Nouvelle Gamme & Accès Cohortes (Starter, Web, VIP & Klarna)
+### Sprint 7 : Nouvelle Gamme & Accès Cohortes (Starter, Web, VIP & Klarna) (Terminé)
 - **7.1 Nettoyage Catalogue & Modèle Économique** :
   - Suppression définitive des faux cours d'essai (Java 21 à 49 € et Clean Architecture à 69 €).
   - Création de la gamme : **Pack Starter** (Découverte & Fondations - 6 semaines) et **Pack Web** (Parcours complet interactif).

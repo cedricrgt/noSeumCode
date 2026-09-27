@@ -1,12 +1,15 @@
 package com.codebangers.backend.payment.service;
 
 import com.codebangers.backend.course.model.Course;
+import com.codebangers.backend.course.model.EnrollmentTier;
 import com.codebangers.backend.payment.dto.CheckoutSessionResponse;
 import com.codebangers.backend.user.model.User;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.RequestOptions;
 import com.stripe.param.checkout.SessionCreateParams;
+
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,38 +41,63 @@ public class StripeGatewayImpl implements StripeGateway {
 
     @Override
     public CheckoutSessionResponse createCheckoutSession(User user, Course course, String successUrl, String cancelUrl) {
-        return createCheckoutSession(user, course, successUrl, cancelUrl, true, null);
+        return createCheckoutSession(user, course, successUrl, cancelUrl, true, null, null, null);
     }
 
     @Override
     public CheckoutSessionResponse createCheckoutSession(User user, Course course, String successUrl, String cancelUrl, boolean embedded, String returnUrl) {
+        return createCheckoutSession(user, course, successUrl, cancelUrl, embedded, returnUrl, null, null);
+    }
+
+    @Override
+    public CheckoutSessionResponse createCheckoutSession(User user, Course course, String successUrl, String cancelUrl, boolean embedded, String returnUrl, EnrollmentTier tier, UUID cohortId) {
         if (stripeSecretKey == null || stripeSecretKey.isBlank()) {
             throw new IllegalStateException("Stripe Secret Key non configurée. Impossible de créer une Checkout Session.");
         }
 
-        long unitAmount = (course.getPriceInCents() != null && course.getPriceInCents() > 0)
-                ? course.getPriceInCents()
-                : 4900L;
+        long unitAmount;
+        if (tier == EnrollmentTier.VIP) {
+            unitAmount = 87900L;
+        } else if (course.getPriceInCents() != null && course.getPriceInCents() > 0) {
+            unitAmount = course.getPriceInCents();
+        } else {
+            unitAmount = (tier == EnrollmentTier.STARTER) ? 27900L : 57900L;
+        }
 
         String currency = (course.getCurrency() != null && !course.getCurrency().isBlank())
                 ? course.getCurrency().toLowerCase()
                 : "eur";
+
+        String courseTitle = (tier == EnrollmentTier.VIP)
+                ? course.getTitle() + " + Mentorat VIP (4h)"
+                : course.getTitle();
 
         String description = course.getDescription();
         if (description != null && description.length() > 250) {
             description = description.substring(0, 247) + "...";
         }
         if (description == null || description.isBlank()) {
-            description = "Formation complète NoSeumCode : " + course.getTitle();
+            description = "Formation complète NoSeumCode : " + courseTitle;
         }
 
         SessionCreateParams.Builder paramsBuilder = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setCustomerEmail(user.getEmail())
+                .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
+                .addPaymentMethodType(SessionCreateParams.PaymentMethodType.KLARNA)
+                .addPaymentMethodType(SessionCreateParams.PaymentMethodType.LINK)
                 .putMetadata("userId", user.getId().toString())
                 .putMetadata("courseId", course.getId().toString())
-                .putMetadata("userEmail", user.getEmail())
-                .addLineItem(
+                .putMetadata("userEmail", user.getEmail());
+
+        if (tier != null) {
+            paramsBuilder.putMetadata("tier", tier.name());
+        }
+        if (cohortId != null) {
+            paramsBuilder.putMetadata("cohortId", cohortId.toString());
+        }
+
+        paramsBuilder.addLineItem(
                         SessionCreateParams.LineItem.builder()
                                 .setQuantity(1L)
                                 .setPriceData(

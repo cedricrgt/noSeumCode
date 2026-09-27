@@ -179,6 +179,15 @@ public class EnrollmentController {
             response.setCourseTitle(enrollment.getCourse().getTitle());
             response.setCourseDescription(enrollment.getCourse().getDescription());
         }
+        if (enrollment.getTier() != null) {
+            response.setTier(enrollment.getTier());
+            response.setLifetimeAccess(true);
+        }
+        if (enrollment.getCohort() != null) {
+            response.setCohortId(enrollment.getCohort().getId());
+            response.setCohortName(enrollment.getCohort().getName());
+            response.setCohortSlug(enrollment.getCohort().getSlug());
+        }
         return response;
     }
 }

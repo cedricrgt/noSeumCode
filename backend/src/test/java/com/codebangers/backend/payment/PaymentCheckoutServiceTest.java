@@ -1,5 +1,9 @@
 package com.codebangers.backend.payment;
 
+import com.codebangers.backend.cohort.model.Cohort;
+import com.codebangers.backend.cohort.repository.CohortRepository;
+import com.codebangers.backend.course.model.CourseTier;
+import com.codebangers.backend.course.model.EnrollmentTier;
 import com.codebangers.backend.config.exception.ResourceNotFoundException;
 import com.codebangers.backend.course.model.Course;
 import com.codebangers.backend.course.model.Enrollment;
@@ -40,6 +44,7 @@ class PaymentCheckoutServiceTest {
     private EnrollmentRepository enrollmentRepository;
     private com.codebangers.backend.user.repository.UserRepository userRepository;
     private StripeGateway stripeGateway;
+    private CohortRepository cohortRepository;
     private PaymentService paymentService;
 
     private UserService userService;
@@ -56,11 +61,12 @@ class PaymentCheckoutServiceTest {
         enrollmentRepository = mock(EnrollmentRepository.class);
         userRepository = mock(com.codebangers.backend.user.repository.UserRepository.class);
         stripeGateway = mock(StripeGateway.class);
+        cohortRepository = mock(CohortRepository.class);
         userService = mock(UserService.class);
         webhookValidator = mock(StripeWebhookValidator.class);
         objectMapper = new ObjectMapper();
 
-        paymentService = new PaymentService(userRepository, enrollmentRepository, courseRepository, stripeGateway);
+        paymentService = new PaymentService(userRepository, enrollmentRepository, courseRepository, stripeGateway, cohortRepository);
         paymentController = new PaymentController(paymentService, userService, webhookValidator, objectMapper, "whsec_test");
 
         testUser = new User();
@@ -330,5 +336,58 @@ class PaymentCheckoutServiceTest {
     void createCustomerPortalSession_unauthenticated_shouldReturn401() {
         ResponseEntity<?> response = paymentController.createCustomerPortalSession(Map.of(), null);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    void createCheckoutSession_withCohortAndTier_shouldPassMetadataToGateway() {
+        UUID courseId = testCourse.getId();
+        UUID cohortId = UUID.randomUUID();
+        when(courseRepository.findById(courseId)).thenReturn(Optional.of(testCourse));
+        when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(new ArrayList<>());
+
+        CheckoutSessionResponse expectedResponse = new CheckoutSessionResponse(
+                "cs_test_vip", "https://checkout.stripe.com/pay/cs_test_vip", courseId, 87900L, "EUR", "cs_test_vip_secret", "pk_test_123");
+        when(stripeGateway.createCheckoutSession(eq(testUser), eq(testCourse), any(), any(), eq(true), any(), eq(EnrollmentTier.VIP), eq(cohortId)))
+                .thenReturn(expectedResponse);
+
+        CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest(courseId);
+        request.setTier(EnrollmentTier.VIP);
+        request.setCohortId(cohortId);
+        CheckoutSessionResponse actual = paymentService.createCheckoutSession(testUser, request);
+
+        assertNotNull(actual);
+        assertEquals("cs_test_vip", actual.getSessionId());
+        verify(stripeGateway).createCheckoutSession(eq(testUser), eq(testCourse), any(), any(), eq(true), any(), eq(EnrollmentTier.VIP), eq(cohortId));
+    }
+
+    @Test
+    void confirmCheckoutSession_withCohortAndTier_shouldPersistOnEnrollment() {
+        UUID courseId = testCourse.getId();
+        UUID cohortId = UUID.randomUUID();
+        Cohort mockCohort = new Cohort("Cohorte Alpha", "cohorte-alpha", java.time.LocalDateTime.now(), 6);
+        mockCohort.setTier(EnrollmentTier.WEB);
+        mockCohort.setId(cohortId);
+
+        when(courseRepository.findById(courseId)).thenReturn(Optional.of(testCourse));
+        when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(new ArrayList<>());
+        when(cohortRepository.findById(cohortId)).thenReturn(Optional.of(mockCohort));
+
+        Session mockSession = mock(Session.class);
+        when(mockSession.getPaymentStatus()).thenReturn("paid");
+        when(mockSession.getStatus()).thenReturn("complete");
+        when(mockSession.getMetadata()).thenReturn(Map.of(
+                "courseId", courseId.toString(),
+                "tier", "VIP",
+                "cohortId", cohortId.toString()
+        ));
+        when(stripeGateway.retrieveSession("cs_test_vip")).thenReturn(mockSession);
+
+        Enrollment enrollment = paymentService.confirmCheckoutSession(testUser, "cs_test_vip");
+
+        assertNotNull(enrollment);
+        assertEquals(PaymentStatus.PAID, enrollment.getPaymentStatus());
+        assertEquals(EnrollmentTier.VIP, enrollment.getTier());
+        assertEquals(mockCohort, enrollment.getCohort());
+        verify(enrollmentRepository).save(any(Enrollment.class));
     }
 }

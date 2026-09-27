@@ -154,6 +154,8 @@ public class PaymentController {
             String transactionId = null;
             String courseId = null;
             String userId = null;
+            String tier = null;
+            String cohortId = null;
 
             if (!dataObject.isMissingNode()) {
                 customerEmail = dataObject.path("customer_email").asText(null);
@@ -169,6 +171,8 @@ public class PaymentController {
                 if (!metadata.isMissingNode()) {
                     courseId = metadata.path("courseId").asText(null);
                     userId = metadata.path("userId").asText(null);
+                    tier = metadata.path("tier").asText(null);
+                    cohortId = metadata.path("cohortId").asText(null);
                     if (customerEmail == null) {
                         customerEmail = metadata.path("userEmail").asText(null);
                     }
@@ -177,7 +181,7 @@ public class PaymentController {
 
             if ((customerEmail != null && !customerEmail.isBlank()) || (userId != null && !userId.isBlank())) {
                 if (courseId != null || userId != null) {
-                    paymentService.processStripeWebhookEvent(customerEmail, eventType, transactionId, courseId, userId);
+                    paymentService.processStripeWebhookEvent(customerEmail, eventType, transactionId, courseId, userId, tier, cohortId);
                 } else {
                     paymentService.processStripeWebhookEvent(customerEmail, eventType, transactionId);
                 }

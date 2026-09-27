@@ -127,7 +127,7 @@ public class CourseController {
 
         int chaptersCount = (course.getChapters() != null) ? course.getChapters().size() : 0;
 
-        return new CourseResponse(
+        CourseResponse response = new CourseResponse(
             course.getId(),
             course.getTitle(),
             course.getDescription(),
@@ -143,5 +143,7 @@ public class CourseController {
             course.getLevel(),
             course.isPublished()
         );
+        response.setRequiredTier(course.getRequiredTier() != null ? course.getRequiredTier() : com.codebangers.backend.course.model.CourseTier.STARTER);
+        return response;
     }
 }
