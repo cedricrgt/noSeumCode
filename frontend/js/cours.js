@@ -81,14 +81,17 @@ async function initCoursPage() {
 function getCourseImage(course) {
   if (course.imageUrl) return course.imageUrl;
   const title = ((course.title || "") + " " + (course.description || "")).toLowerCase();
-  if (title.includes("html") || title.includes("css")) {
+  if (title.includes("vip") || title.includes("goat") || title.includes("mentorat")) {
+    return "images/courses/javascript.webp";
+  }
+  if (title.includes("html") || title.includes("css") || title.includes("fondation")) {
     return "images/courses/html.webp";
   }
-  if (title.includes("javascript") || title.includes("js")) {
+  if (title.includes("javascript") || title.includes("js") || title.includes("dynamique")) {
     return "images/courses/javascript.webp";
   }
   if (title.includes("git") || title.includes("github")) {
-    return "images/courses/git.webp";
+    return "images/courses/html.webp";
   }
   if (title.includes("java") || title.includes("spring")) {
     return "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=400&fit=crop";
@@ -104,11 +107,11 @@ function formatCoursePrice(course) {
     return (course.priceInCents / 100).toFixed(0) + " €";
   }
   const tier = course && (course.requiredTier || "").toUpperCase();
-  if (tier === "STARTER" || (course && (course.slug === "git-github" || course.slug === "html-css" || (course.title && (course.title.toLowerCase().includes("git") || course.title.toLowerCase().includes("html")))))) {
-    return "279 €";
-  }
-  if (tier === "VIP") {
+  if (tier === "VIP" || (course && (course.slug === "pack-mentorat-vip" || (course.title && (course.title.toLowerCase().includes("vip") || course.title.toLowerCase().includes("goat")))))) {
     return "879 €";
+  }
+  if (tier === "STARTER" || (course && (course.slug === "html-css" || (course.title && course.title.toLowerCase().includes("fondation"))))) {
+    return "279 €";
   }
   return "579 €";
 }
@@ -117,15 +120,33 @@ async function loadInitialData() {
   // 1. Charger tous les cours
   const coursesRes = await coursApiFetch("/api/courses");
   if (coursesRes && coursesRes.ok) {
-    allCourses = await coursesRes.json();
+    const rawCourses = await coursesRes.json();
+    // Aligner le 3ème pack sur le Pack Mentorat VIP (ADR-013 & ADR-014)
+    allCourses = rawCourses.map(course => {
+      const slug = (course.slug || "").toLowerCase();
+      const title = (course.title || "").toLowerCase();
+      if (slug === "git-github" || (title.includes("git & github") && !title.includes("fondation"))) {
+        return {
+          ...course,
+          slug: "pack-mentorat-vip",
+          title: "Pack Mentorat VIP – Coaching Individuel & Accompagnement Sur Mesure",
+          description: "L'excellence NoSeumCode : Tout le Pack Dynamique (HTML/CSS, JS, APIs) plus 4 heures de coaching individuel 1-to-1 avec Cédric, revues de code dédiées et préparation aux entretiens techniques.",
+          priceInCents: 87900,
+          requiredTier: "VIP",
+          level: "AVANCÉ",
+          imageUrl: course.imageUrl || "images/courses/javascript.webp"
+        };
+      }
+      return course;
+    });
   } else {
-    // Fallback seed courses complets (Starter 279 € & Web 579 €)
+    // Fallback seed packs officiels (Fondations 279 €, Dynamique 579 €, Mentorat VIP 879 €)
     allCourses = [
       {
         id: "c1000000-0000-0000-0000-000000000001",
         slug: "html-css",
-        title: "Pack Fondations – HTML5, CSS3 & Git",
-        description: "Apprends à structurer tes pages en HTML5 sémantique et à créer des designs modernes, responsives et accessibles avec CSS3, Flexbox et CSS Grid.",
+        title: "Starter Pack Fondations – HTML5, CSS3 & Git",
+        description: "Apprends à structurer tes pages en HTML5 sémantique et à créer des designs modernes, responsives et accessibles avec CSS3, Flexbox, Grid et la maîtrise de Git.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
         createdByName: "Admin CodeBangers",
@@ -142,7 +163,7 @@ async function loadInitialData() {
         id: "c2000000-0000-0000-0000-000000000002",
         slug: "javascript",
         title: "Pack Dynamique – JavaScript ES6+ & APIs REST",
-        description: "Donne vie à tes créations web : manipulation du DOM, requêtes API asynchrones, animations dynamiques et logique applicative complète.",
+        description: "Donne vie à tes créations web : manipulation du DOM, requêtes API asynchrones, animations dynamiques et logique applicative complète en cohortes de 6 élèves max.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 25).toISOString(),
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
         createdByName: "Admin CodeBangers",
@@ -157,18 +178,18 @@ async function loadInitialData() {
       },
       {
         id: "c3000000-0000-0000-0000-000000000003",
-        slug: "git-github",
-        title: "Git & GitHub – L'outil n°1 des devs pro",
-        description: "Ne perds plus jamais ton code et apprends à bosser à plusieurs sur le même projet sans tout casser. Versionne comme un expert !",
+        slug: "pack-mentorat-vip",
+        title: "Pack Mentorat VIP – Coaching Individuel & Accompagnement Sur Mesure",
+        description: "L'excellence NoSeumCode : Tout le Pack Dynamique plus 4 heures de coaching individuel 1-to-1 avec Cédric, revues de code dédiées et préparation aux entretiens techniques.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 20).toISOString(),
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4).toISOString(),
-        createdByName: "Admin CodeBangers",
-        updatedByName: "Admin CodeBangers",
-        imageUrl: "images/logos/Git_Logo_full.svg",
-        priceInCents: 27900,
+        createdByName: "Cédric Ragot",
+        updatedByName: "Cédric Ragot",
+        imageUrl: "images/courses/javascript.webp",
+        priceInCents: 87900,
         currency: "EUR",
-        level: "DEBUTANT",
-        requiredTier: "STARTER",
+        level: "AVANCÉ",
+        requiredTier: "VIP",
         isPublished: true,
         chaptersCount: 3
       }
@@ -263,7 +284,7 @@ function renderCourseCatalog() {
           if (currentRole === "ADMIN" || currentRole === "TEACHER") {
             accessBadge = `<span style="background: rgba(0, 255, 135, 0.15); color: #00a85a; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(0, 255, 135, 0.4);">✓ Accès Édition</span>`;
             actionBtn = `
-              <a href="cours.html?id=${course.id}" class="card__link bangers-regular">
+              <a href="parcours.html?id=${course.id}" class="card__link bangers-regular">
                 Gérer le cours
                 <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -288,7 +309,7 @@ function renderCourseCatalog() {
               if (isPaid) {
                 accessBadge = `<span style="background: rgba(0, 255, 135, 0.15); color: #00a85a; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(0, 255, 135, 0.4);">✓ Inscrit • Payé</span>`;
                 actionBtn = `
-                  <a href="cours.html?id=${course.id}" class="card__link bangers-regular">
+                  <a href="parcours.html?id=${course.id}" class="card__link bangers-regular">
                     Continuer la formation
                     <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -302,7 +323,7 @@ function renderCourseCatalog() {
                     <button class="button button__primary bangers-regular" style="flex:1; padding: 8px 12px; font-size: 1rem; cursor:pointer;" onclick="initiateStripeCheckout('${course.id}')">
                       💳 Débloquer (${price})
                     </button>
-                    <a href="cours.html?id=${course.id}" class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; text-decoration:none; display:inline-flex; align-items:center;">
+                    <a href="parcours.html?id=${course.id}" class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; text-decoration:none; display:inline-flex; align-items:center;">
                       Aperçu
                     </a>
                   </div>
@@ -317,7 +338,7 @@ function renderCourseCatalog() {
                 <button class="button button__primary bangers-regular" style="flex:1; padding: 8px 12px; font-size: 1rem; cursor:pointer;" onclick="initiateStripeCheckout('${course.id}')">
                   💳 Découvrir (${price})
                 </button>
-                <a href="cours.html?id=${course.id}" class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; text-decoration:none; display:inline-flex; align-items:center;">
+                <a href="parcours.html?id=${course.id}" class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; text-decoration:none; display:inline-flex; align-items:center;">
                   Aperçu
                 </a>
               </div>
@@ -402,7 +423,7 @@ async function loadSingleCourse(courseId, requestedChapterId) {
       <div class="access-gate-card">
         <h2 class="access-gate-title">Formation introuvable</h2>
         <p class="access-gate-desc">Le cours demandé n'existe pas ou a été supprimé.</p>
-        <a href="cours.html" class="button button__primary bangers-regular" style="padding: 10px 24px; font-size: 1.1rem; text-decoration:none;">Retour au catalogue</a>
+        <a href="parcours.html" class="button button__primary bangers-regular" style="padding: 10px 24px; font-size: 1.1rem; text-decoration:none;">Retour au catalogue</a>
       </div>
     `;
     return;
@@ -633,7 +654,7 @@ function renderAccessGate(title, description, type, extraStatus = "") {
 
   contentArea.innerHTML = `
     <div class="catalog-container">
-      <a href="cours.html" class="back-link bangers-regular">
+      <a href="parcours.html" class="back-link bangers-regular">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
@@ -705,7 +726,7 @@ function renderClassroom() {
     <!-- Header Banner -->
     <div class="course-header-banner">
       <div class="course-header-top">
-        <a href="cours.html" class="back-link bangers-regular" style="margin-bottom: 0;">
+        <a href="parcours.html" class="back-link bangers-regular" style="margin-bottom: 0;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
@@ -1029,7 +1050,7 @@ async function handleSaveCourse(event) {
     allCourses.unshift(newCourse);
     closeCourseManageModal();
     alert("🎉 Formation créée avec succès !");
-    window.location.href = `cours.html?id=${newCourse.id}`;
+    window.location.href = `parcours.html?id=${newCourse.id}`;
   }
 }
 
@@ -1159,7 +1180,7 @@ async function handleDeleteCourse(courseId) {
   });
 
   alert("🗑️ Formation supprimée.");
-  window.location.href = "cours.html";
+  window.location.href = "parcours.html";
 }
 
 /**
@@ -1218,7 +1239,7 @@ async function initiateStripeCheckout(courseId) {
   } else if (typeof window.openAuthModal === "function" && !currentUser) {
     window.openAuthModal("login");
   } else {
-    window.location.href = `cours.html?id=${encodeURIComponent(courseId)}&checkout=true`;
+    window.location.href = `parcours.html?id=${encodeURIComponent(courseId)}&checkout=true`;
   }
 }
 
@@ -1249,7 +1270,7 @@ async function handleEnroll(courseId) {
   }
 
   alert("🎉 Inscription confirmée ! Vous avez accès à l'aperçu gratuit de la section 1.");
-  window.location.href = `cours.html?id=${courseId}`;
+  window.location.href = `parcours.html?id=${courseId}`;
 }
 
 function markChapterComplete(chapId) {

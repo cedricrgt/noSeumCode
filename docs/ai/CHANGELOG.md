@@ -480,3 +480,31 @@ _Chronologique — plus récent en bas_
    - Ajout des suites de tests unitaires `CohortServiceTest` (9 tests) et `CohortControllerTest` (6 tests).
    - Enrichissement de `PaywallSecurityTest` (11 tests validant l'accès à vie Starter et le verrouillage Web) et `PaymentCheckoutServiceTest` (16 tests validant Klarna et la synchronisation des métadonnées cohorte/tier).
    - 112 tests unitaires et d'intégration Spring Boot validés avec succès (`BUILD SUCCESS`, 0 erreur, 0 échec).
+
+---
+
+## 2026-09-27 — Refactor Parcours : Endpoint Dédié /parcours, Pack VIP Catalogue & UX Modales Mobile
+
+**Conversation ID**: `7af84ac3-b5b9-431f-8c77-e4358acf88bf`  
+**Branche**: `feat/sprint-6-cohorts-plans-klarna`  
+**Objectif**: Passage à l'endpoint dédié `/parcours` (`parcours.html` avec redirection 301 de l'ancien `/cours`), intégration du Pack Mentorat VIP (879 €) dans le catalogue à la place du cours Git isolé, refonte mobile-first des modales d'accueil (suppression du scrollbox encombrant au profit de 3 à 4 points clés percutants), et transfert du programme pédagogique exhaustif directement sur la vue de paiement / paywall Stripe du pack.
+
+### Réalisations & Livrables :
+1. **Endpoint & Routage Dédié `/parcours`** :
+   - Création de `frontend/parcours.html` et redirection 301 de `cours.html` et `course.html` vers `parcours.html` avec conservation des paramètres d'URL.
+   - Configuration Apache `.htaccess` : redirection 301 de `^cours/?$` et `^cours\.html$` vers `/parcours`, et réécriture interne transparente de `^parcours/?$` vers `parcours.html`.
+   - Backend Spring Boot : alias `@RequestMapping({"/api/courses", "/api/parcours"})` sur `CourseController` et autorisation `permitAll()` sur `/api/parcours/**` dans `SecurityConfig`.
+   - Mise à jour de tous les liens internes (`header.html`, `footer.html`, `index.html`, `dashboard.html`, `success.html`, `dashboard.js`, `cours.js`, `header.js`).
+2. **Intégration du Pack Mentorat VIP au Catalogue** :
+   - Migration Flyway `V015__transform_course3_to_vip_pack.sql` : alignement des intitulés officiels (Starter Pack Fondations 279 €, Pack Dynamique 579 €) et transformation de la formation 3 en Pack Mentorat VIP (879 €, tier VIP, 4h de coaching individuel avec Cédric).
+   - `cours.js` : mise à jour des fallbacks et de la logique d'affichage du catalogue pour présenter les 3 packs officiels sans aucun cours isolé résiduel.
+3. **Refonte UX Mobile des Modales d'Accueil (`index.html`)** :
+   - Suppression du conteneur déroulant à défilement vertical (`overflow-y: auto`), source de friction majeure sur smartphone (conforme à `rule-19-mobile-best-pratices`).
+   - Remplacement par 3 à 4 puces synthétiques à fort impact (compétences cibles, promotion de 6 élèves max, replay illimité garanti, projet concret déployé ou 4h de coaching individuel).
+   - Préservation des cibles tactiles supérieures à 44x44pt et du bouton d'action principal.
+4. **Déplacement du Programme Détaillé sur la Page/Vue de Paiement (`popovers-shared.html`, `header.js`)** :
+   - Intégration d'un bloc dépliable `<details open>` dans la modale de paiement in-app (`#stripe-paywall-modal`).
+   - Injection dynamique du syllabus complet (modules, descriptifs détaillés, rassurance cohorte/replays) via `openStripePaywall()` en fonction du pack sélectionné (`STARTER`, `WEB`, `VIP`) avant le terminal Stripe Embedded.
+5. **Validation & Tests** :
+   - Recompilation complète des bundles CSS dist via `node frontend/build.js`.
+   - 112 tests unitaires et d'intégration validés avec succès sous Maven (`BUILD SUCCESS`, 0 échec).
