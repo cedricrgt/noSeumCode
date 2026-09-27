@@ -425,3 +425,27 @@ _Chronologique — plus récent en bas_
 4. **Validation Locale & Tests** :
    - Recompilation complète des bundles CSS (`node frontend/build.js`).
    - 82 tests unitaires et d'intégration Spring Boot validés avec succès (`BUILD SUCCESS`, 0 erreur, 0 échec).
+
+---
+
+## 2026-09-27 — Correctif : Redirection Dynamique OAuth2 Multi-Environnements & Inscription Ateliers
+
+**Conversation ID**: `4e2adcdb-309a-40f9-9c4d-715b084694af`  
+**Branche**: `fix/oauth2-dynamic-redirect-uri`  
+**Objectif**: Permettre la redirection dynamique du callback OAuth2 vers l'origine frontend initiatrice (`develop.noseumcode.fr`, `noseumcode.fr` ou `localhost:3000`), évitant ainsi le basculement forcé vers la production lors d'un login Google sur le site de dev et préservant les données de session (inscriptions ateliers en attente dans `localStorage`).
+
+### Réalisations & Corrections :
+1. **Filtre d'Origine et de Sécurité OAuth2 (`OAuth2RedirectUriFilter.java`)** :
+   - Capture du paramètre `redirect_uri` (ou de l'en-tête `Referer`) sur les routes d'initiation `/oauth2/authorization/**`.
+   - Contrôle strict anti-Open Redirect par liste blanche (`https://noseumcode.fr`, `https://develop.noseumcode.fr`, `https://*.noseumcode.fr`, `localhost:3000/5500/8080`).
+   - Stockage sécurisé dans un cookie HTTP-only `SameSite=Lax` et en session pour transmission au callback.
+2. **Gestionnaire de Succès d'Authentification OAuth2 (`OAuth2AuthenticationSuccessHandler.java`)** :
+   - Récupération de la cible de redirection autorisée, suppression immédiate du cookie (durée 0), et redirection vers le dashboard de l'environnement source avec transmission des claims JWT dans le fragment d'URL (`token`, `refreshToken`, `role`, `userName`, `firstName`, `email`).
+3. **Configuration de Sécurité (`SecurityConfig.java`, `application.properties`)** :
+   - Injection de `OAuth2RedirectUriFilter` avant `OAuth2AuthorizationRequestRedirectFilter`.
+   - Ajout explicite de `https://develop.noseumcode.fr` dans les origines CORS autorisées par défaut.
+4. **Frontend (`frontend/js/header.js`)** :
+   - Passage dynamique de `?redirect_uri=${encodeURIComponent(window.location.origin + '/dashboard.html')}` sur les liens des fournisseurs sociaux Google et Discord.
+5. **Tests & Validation** :
+   - Ajout des suites de tests unitaires `OAuth2RedirectUriFilterTest` (6 tests) et `OAuth2AuthenticationSuccessHandlerTest` (4 tests).
+   - 92 tests unitaires et d'intégration Spring Boot validés avec succès (`BUILD SUCCESS`, 0 erreur, 0 échec).

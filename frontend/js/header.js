@@ -55,9 +55,10 @@ async function loadHeader() {
           { id: "social-register-google", provider: "google" },
           { id: "social-register-discord",  provider: "discord" },
         ];
+        const redirectTarget = encodeURIComponent(`${window.location.origin}/dashboard.html`);
         oauthLinks.forEach(({ id, provider }) => {
           const el = document.getElementById(id);
-          if (el) el.href = `${window.API_BASE_URL}/oauth2/authorization/${provider}`;
+          if (el) el.href = `${window.API_BASE_URL}/oauth2/authorization/${provider}?redirect_uri=${redirectTarget}`;
         });
 
         await loadSchedule();
