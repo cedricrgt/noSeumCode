@@ -836,14 +836,14 @@ function updateDiscordHeaderButton(data) {
 
   if (data && data.linked) {
     labelHeader.textContent = `@${data.discordUsername || "Discord"}`;
-    btnHeader.style.background = "rgba(88, 101, 242, 0.25)";
-    btnHeader.style.borderColor = "#5865F2";
-    btnHeader.style.color = "#fff";
+    btnHeader.style.background = "rgba(88, 101, 242, 0.1)";
+    btnHeader.style.borderColor = "rgba(88, 101, 242, 0.35)";
+    btnHeader.style.color = "#4752c4";
   } else {
     labelHeader.textContent = "Discord";
-    btnHeader.style.background = "rgba(88, 101, 242, 0.12)";
-    btnHeader.style.borderColor = "rgba(88, 101, 242, 0.4)";
-    btnHeader.style.color = "#7289da";
+    btnHeader.style.background = "#f8fafc";
+    btnHeader.style.borderColor = "#e2e8f0";
+    btnHeader.style.color = "#64748b";
   }
 }
 
@@ -857,21 +857,21 @@ function renderDiscordCard(data) {
         <div style="max-width: 680px;">
           <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;">
             <span style="font-size: 1.4rem;">🎮</span>
-            <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: #fff;">
+            <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--dash-dark-navy, #0a1628);">
               Rejoins le serveur Discord de la communauté NoSeumCode
             </h3>
           </div>
-          <p style="margin: 0 0 1rem 0; color: var(--dash-text-muted); font-size: 0.95rem; line-height: 1.6;">
+          <p style="margin: 0 0 1.2rem 0; color: var(--dash-text-muted, #718096); font-size: 0.95rem; line-height: 1.6;">
             Associe ton compte Discord en un clic pour débloquer automatiquement tes salons privés de cohorte, participer aux sessions live hebdomadaires, poser tes questions à Cédric et échanger avec les autres apprenants.
           </p>
-          <div style="display: flex; flex-wrap: wrap; gap: 1.2rem; font-size: 0.85rem; color: #cbd5e1;">
-            <span style="display: inline-flex; align-items: center; gap: 0.4rem;">💬 Entraide 7j/7</span>
-            <span style="display: inline-flex; align-items: center; gap: 0.4rem;">🎙️ Salons vocaux live</span>
-            <span style="display: inline-flex; align-items: center; gap: 0.4rem;">🏆 Rôles bot automatiques</span>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; font-size: 0.85rem;">
+            <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">💬 Entraide 7j/7</span>
+            <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">🎙️ Salons vocaux live</span>
+            <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">🏆 Rôles bot automatiques</span>
           </div>
         </div>
         <div>
-          <button id="btn-connect-discord" class="button button__primary bangers-regular" onclick="connectDiscordAccount()" style="background: #5865F2; border-color: #5865F2; display: inline-flex; align-items: center; gap: 0.6rem; min-height: 48px; padding: 0.75rem 1.6rem; font-size: 1rem; cursor: pointer; color: #fff;" aria-label="Associer mon compte Discord">
+          <button id="btn-connect-discord" class="button button__primary bangers-regular" onclick="connectDiscordAccount()" style="background: #5865F2; border-color: #5865F2; display: inline-flex; align-items: center; gap: 0.6rem; min-height: 48px; padding: 0.75rem 1.6rem; font-size: 1rem; cursor: pointer; color: #ffffff;" aria-label="Associer mon compte Discord">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
             </svg>
@@ -884,7 +884,7 @@ function renderDiscordCard(data) {
   }
 
   const roleBadges = (data.assignedRoleNames || []).map(r => `
-    <span style="background: rgba(88, 101, 242, 0.25); border: 1px solid rgba(88, 101, 242, 0.6); color: #c4b5fd; padding: 0.25rem 0.65rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600;">
+    <span style="background: rgba(88, 101, 242, 0.08); border: 1px solid rgba(88, 101, 242, 0.25); color: #4752c4; padding: 0.3rem 0.7rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600;">
       🛡️ @${escapeHtml(r)}
     </span>
   `).join("");
@@ -893,34 +893,34 @@ function renderDiscordCard(data) {
 
   container.innerHTML = `
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
-      <div style="display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap;">
-        <img src="${escapeHtml(avatarSrc)}" alt="Avatar Discord" style="width: 58px; height: 58px; border-radius: 50%; border: 2px solid #5865F2; object-fit: cover;" onerror="this.src='images/favicon.png'">
+      <div style="display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;">
+        <img src="${escapeHtml(avatarSrc)}" alt="Avatar Discord" style="width: 58px; height: 58px; border-radius: 50%; border: 2px solid #5865F2; object-fit: cover; box-shadow: 0 4px 12px rgba(88, 101, 242, 0.2);" onerror="this.src='images/favicon.png'">
         <div>
           <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
-            <h3 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #fff;">
+            <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--dash-dark-navy, #0a1628);">
               @${escapeHtml(data.discordUsername || "Apprenant")}
             </h3>
-            <span style="background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.4); color: #4ade80; padding: 0.2rem 0.55rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">
+            <span style="background: rgba(0, 255, 135, 0.15); border: 1px solid rgba(0, 168, 90, 0.3); color: #008748; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">
               ● COMPTE ASSOCIÉ
             </span>
           </div>
-          <p style="margin: 0.35rem 0 0.5rem 0; color: #94a3b8; font-size: 0.85rem;">
+          <p style="margin: 0.35rem 0 0.5rem 0; color: var(--dash-text-muted, #718096); font-size: 0.88rem;">
             ${data.serverJoined ? '✅ Membre actif du serveur Discord NoSeumCode' : '⏳ En attente de rejoindre le serveur'}
           </p>
           <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
-            <span style="font-size: 0.8rem; color: #64748b;">Rôles :</span>
-            ${roleBadges}
+            <span style="font-size: 0.82rem; font-weight: 600; color: #475569;">Rôles actifs :</span>
+            ${roleBadges.length > 0 ? roleBadges : '<span style="font-size: 0.8rem; color: #94a3b8;">Aucun rôle pour le moment</span>'}
           </div>
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-        <a href="${escapeHtml(data.inviteUrl || 'https://discord.gg/noseumcode')}" target="_blank" rel="noopener noreferrer" class="button button__primary bangers-regular" style="background: #5865F2; border-color: #5865F2; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 42px; padding: 0.6rem 1.2rem; font-size: 0.95rem; color: #fff;">
+        <a href="${escapeHtml(data.inviteUrl || 'https://discord.gg/noseumcode')}" target="_blank" rel="noopener noreferrer" class="button button__primary bangers-regular" style="background: #5865F2; border-color: #5865F2; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 42px; padding: 0.6rem 1.25rem; font-size: 0.95rem; color: #ffffff;">
           <span>🚀 Ouvrir Discord</span>
         </a>
-        <button id="btn-sync-discord" class="button button__secondary bangers-regular" onclick="syncDiscordRoles()" style="min-height: 42px; padding: 0.6rem 1rem; font-size: 0.95rem; cursor: pointer;" title="Resynchroniser mes rôles Discord">
+        <button id="btn-sync-discord" class="button button__secondary bangers-regular" onclick="syncDiscordRoles()" style="min-height: 42px; padding: 0.6rem 1.1rem; font-size: 0.95rem; cursor: pointer;" title="Resynchroniser mes rôles Discord">
           <span>🔄 Synchroniser</span>
         </button>
-        <button class="dash-btn-logout" onclick="unlinkDiscordAccount()" style="font-size: 0.8rem; padding: 0.5rem 0.8rem; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.1); color: #f87171; cursor: pointer;" title="Dissocier ce compte Discord">
+        <button onclick="unlinkDiscordAccount()" style="font-size: 0.82rem; font-weight: 600; padding: 0.55rem 0.9rem; border-radius: 8px; border: 1px solid #fecdd3; background: #fff1f2; color: #e11d48; cursor: pointer; transition: background 0.2s;" title="Dissocier ce compte Discord">
           Dissocier
         </button>
       </div>
@@ -937,23 +937,30 @@ async function connectDiscordAccount() {
 
   try {
     const redirectTarget = encodeURIComponent(`${window.location.origin}/dashboard.html`);
-    const response = await apiFetch(`/api/discord/link-url?redirect_uri=${redirectTarget}`);
-    if (!response || !response.ok) {
-      throw new Error("Impossible de générer le lien de connexion Discord.");
+    const token = currentAuth.token;
+    if (!token) {
+      throw new Error("Session expirée. Veuillez vous reconnecter.");
     }
-    const data = await response.json();
-    if (data.url) {
-      window.location.href = data.url;
-    }
+
+    // Détermination dynamique de l'URL du backend (api.noseumcode.fr en prod/develop, localhost:8080 en dev local)
+    const backendBase = window.API_BASE_URL || API_BASE || "https://api.noseumcode.fr";
+    const linkUrl = `${backendBase}/oauth2/authorization/discord?redirect_uri=${redirectTarget}&link_token=${encodeURIComponent(token)}`;
+    window.location.href = linkUrl;
   } catch (error) {
     console.error("Erreur liaison Discord:", error);
     showGlobalDashboardToast("❌ Impossible de joindre Discord. Réessayez ultérieurement.", "error");
     if (btn) {
       btn.disabled = false;
-      btn.innerHTML = `<span>Associer mon compte Discord ➔</span>`;
+      btn.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+        </svg>
+        <span>Associer mon compte Discord ➔</span>
+      `;
     }
   }
 }
+
 
 async function syncDiscordRoles() {
   const btn = document.getElementById("btn-sync-discord");
