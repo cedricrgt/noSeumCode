@@ -690,6 +690,15 @@ window.redirectToStripeCheckout = redirectToStripeCheckout;
  */
 async function initiateCourseEnrollment(courseId, courseTitle, priceText, tier, cohortId) {
   courseId = resolveCourseId(courseId);
+  if (typeof window.trackConversion === 'function') {
+    window.trackConversion('checkout_initiate', {
+      course_id: courseId,
+      course_title: courseTitle,
+      price: priceText,
+      tier: tier || 'STANDARD',
+      cohort_id: cohortId || undefined
+    });
+  }
   await openStripePaywall(courseId, courseTitle, priceText, tier, cohortId);
 }
 window.initiateCourseEnrollment = initiateCourseEnrollment;

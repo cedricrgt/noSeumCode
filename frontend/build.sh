@@ -49,7 +49,9 @@ concat "$DIST/homepage.css" \
   "$STYLES/pages/thanks.css" \
   "$STYLES/pages/homepage/hero.css" \
   "$STYLES/pages/homepage/presentation.css" \
+  "$STYLES/pages/homepage/rassurance.css" \
   "$STYLES/pages/homepage/courses.css" \
+  "$STYLES/pages/homepage/mentor.css" \
   "$STYLES/pages/homepage/blog.css" \
   "$STYLES/pages/homepage/faq.css" \
   "$STYLES/pages/homepage/footer.css"
