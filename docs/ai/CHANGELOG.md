@@ -535,3 +535,38 @@ _Chronologique — plus récent en bas_
 6. **Validation Locale & Tests** :
    - Recompilation complète des bundles CSS dist (`node frontend/build.js`).
    - Exécution intégrale de la suite de 112 tests unitaires et d'intégration Spring Boot (`BUILD SUCCESS`, 0 erreur, 0 échec).
+
+---
+
+## 2026-09-28 — Sprint 8 : Performance Web & SEO Technique (Images <800Ko, SSG Statique, CLS, Cache Apache)
+
+**Conversation ID**: `935e91a7-2d44-44b3-82bb-f9975fc875cf`  
+**Branche**: `feat/sprint-web-performance-seo`  
+**Objectif**: Réduction drastique du poids des images du frontend (passage sous le seuil strict de 800 Ko total pour l'ensemble du dossier images), création de pages statiques (SSG) dédiées aux formations avec métadonnées Open Graph (1200x630 px) et Schema.org Course, suppression du Cumulative Layout Shift (CLS), et configuration de la compression `mod_deflate` et de l'expiration du cache Apache dans `.htaccess`.
+
+### Réalisations & Livrables :
+1. **Compression Drastique des Images & Formats Next-Gen (<800 Ko total)** :
+   - Remplacement du faux `git.webp` (JPEG non compressé de 2,73 Mo) par un vrai WebP optimisé (83,9 Ko, -96,9%).
+   - Conversion et compression de tous les assets visuels de cours : `html.webp` (23,3 Ko), `javascript.webp` (41,8 Ko), `git.jpg` (64,4 Ko).
+   - Optimisation avec quantification palette des logos et icônes : `logo-css.png` (18,4 Ko), `logo-html.png` (11,2 Ko), `logo-js.png` (11,1 Ko), `logo-react.png` (14,2 Ko), `favicon.png` (7,3 Ko, était 235 Ko), `logo.png` (28,2 Ko, était 274 Ko), `student-female-smiling.png` (71,3 Ko, était 899 Ko).
+   - Génération de 3 bannières Open Graph haute définition 1200x630 px : `og-main.png` (107 Ko), `og-starter.png` (102,6 Ko), `og-pack-web.png` (105,1 Ko).
+   - **Bilan Poids** : Poids total de l'ensemble du répertoire `frontend/images/` ramené de **11,68 Mo** à **711 Ko** (-94% de réduction globale, et 379 Ko pour les images de contenu pur). Objectif < 800 Ko pleinement atteint.
+2. **Pages Statiques Formations & Données Structurées SSG** :
+   - Création de `frontend/formations/starter.html` : landing page statique dédiée au Pack Starter (HTML5, CSS3, Git), intégrant le Schema.org `Course` JSON-LD officiel (tarif 279 €, débutant, formateur Cédric Ragot), meta Open Graph 1200x630 px et Twitter Cards.
+   - Création de `frontend/formations/pack-web.html` : landing page statique pour le Pack Web complet (JavaScript ES6+, APIs REST, option VIP à 879 €), balisage Schema.org `Course` complet avec offres multiples et meta Open Graph dédiées.
+   - Création de `frontend/formations/index.html` : hub comparatif des offres avec matrice détaillée (tarifs, jauge 6 max, horaires, replays à vie, support Discord).
+   - Réécriture d'URL propres dans `.htaccess` : `/formations/starter`, `/formations/pack-web`, `/formations`.
+3. **Optimisation Core Web Vitals & Élimination du CLS** :
+   - Hauteur déterministe assignée à l'en-tête `.header` (`height: var(--header-height)` soit 153px desktop, 118px mobile) et au conteneur `.header__container`.
+   - Dimensionnement explicite et `aspect-ratio: 320 / 239` sur le logo NoSeumCode (`.logo__img`), garantissant un calcul de boîte immédiat par le moteur de rendu navigateur avant le téléchargement des images.
+   - Résilience multi-profondeur dans `header.js` via la fonction `resolveAssetPath` pour charger de manière fiable les partiels (`header.html`, `footer.html`, `popovers-shared.html`, `schedule.json`) sur les routes imbriquées `/formations/*`.
+4. **Compression Apache `mod_deflate` & Caching `mod_expires` (`frontend/.htaccess`)** :
+   - Activation de `mod_deflate` pour tous les types MIME textuels (HTML, CSS, JS, JSON, XML, SVG, WOFF, WOFF2).
+   - Durées d'expiration `mod_expires` et en-têtes `Cache-Control` : 1 an pour les assets statiques immuables (images, favicons, polices web WOFF2), 1 mois pour CSS/JS, et 0 seconde (`no-cache, must-revalidate`) pour les documents HTML afin de garantir un déploiement instantané.
+5. **SEO Technique & Sitemap** :
+   - Mise à jour de `frontend/sitemap.xml` : ajout des routes propres `/formations/starter`, `/formations/pack-web`, `/formations`, intégration de `workshops.html`, et alignement des priorités et dates de modification.
+   - Balises Open Graph 1200x630 px généralisées sur `index.html`, `parcours.html` et `workshops.html`.
+   - Ajout des liens internes vers les formations dans le footer partagé (`footer.html`).
+6. **Pipeline de Build & Validation Locale** :
+   - Mise à jour de `frontend/build.sh` pour intégrer la compilation et minification de `formations.min.css` (24 Ko) et `workshops.min.css` (21 Ko).
+   - Exécution complète de la suite de 112 tests unitaires et d'intégration Spring Boot (`BUILD SUCCESS`, 0 erreur, 0 échec).

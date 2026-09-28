@@ -92,5 +92,17 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Alternative rejetée**: Google Analytics 4 (GA4) / Google Tag Manager avec bandeau de cookies (rejeté car alourdit la page, dégrade le score Web Vitals, nécessite une bannière intrusive de consentement et fait fuir l'audience jeune).
 **Conséquence**: Script de tracking < 2 Ko, respect strict de la confidentialité sans bandeau de cookies bloquant, et données fiables sur les conversions réelles.
 
+## ADR-016 — Optimisation Web Performance, Compression d'Assets & SSG Formations
+**Status**: Actif
+**Décision**: 
+1. Optimiser drastiquement tous les assets graphiques du frontend vers de véritables formats WebP et PNG quantifiés (passage de 11,7 Mo à 711 Ko au total, soit -94% de poids, avec chaque image <110 Ko).
+2. Déployer des pages statiques (SSG) dédiées pour chaque offre de formation (`/formations/starter.html`, `/formations/pack-web.html`, `/formations/index.html`) avec métadonnées Open Graph (1200x630 px) et données structurées Schema.org `Course` (JSON-LD).
+3. Éliminer le CLS (Cumulative Layout Shift) en assignant des dimensions explicites (hauteur d'en-tête déterministe, `aspect-ratio: 320/239` sur le logo) et en configurant la compression `mod_deflate` / Brotli et les durées d'expiration `mod_expires` (1 an pour les assets statiques immuables, 1 mois pour CSS/JS, 0s pour HTML) dans `.htaccess`.
+**Alternative rejetée**: 
+- Chargement d'images brutes haute résolution non compressées côté client ou redimensionnement dynamique au runtime (rejeté car dégrade lourdement le LCP et le score Core Web Vitals).
+- Pages de formation générées uniquement via JavaScript côté client (SPA) sans HTML pré-rendu (rejeté car pénalisant pour le référencement naturel SEO Googlebot et le partage sur les réseaux sociaux Discord/LinkedIn/Twitter).
+**Conséquence**: Vitesse de chargement quasi-instantanée sur mobile et desktop, score Core Web Vitals optimal (CLS ~0, LCP réduit de plusieurs secondes), et indexation SEO sémantique des offres NoSeumCode.
+
+
 
 
