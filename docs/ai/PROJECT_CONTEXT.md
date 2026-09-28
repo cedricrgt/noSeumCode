@@ -45,7 +45,7 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `feat/sprint-10-pagespeed-web-vitals` (en cours de PR vers `develop`)
+## Active Branch: `feat/sprint-10-perf-and-a11y-tuning` (en cours de PR vers `develop`)
 ## Current State: Sprints 1 à 10 validés (Gamme Starter/Web/VIP, Cohortes jauge 6 max, Replays à vie Starter, Klarna BNPL, Flyway V015, Google Safe Browsing / Lookalike résolu, Performance Web & SEO Technique, Refonte Copywriting Hero "Apprendre à coder en construisant de vrais projets", Double regard Rassurance Parents/Jeunes, Section Ton Mentor Cédric, Analytics Cookieless & RGPD Plausible/Umami avec tracking complet des conversions, et Optimisation PageSpeed & Core Web Vitals : LCP < 1.5s, CLS 0.00 sur Hero, déferrement Stripe & minification JS, parallélisation Promise.all, rapatriement local WebP des visuels, compositing GPU sur gradient text) avec 112 tests unitaires et d'intégration Spring Boot réussis (0 échec).
 ## Next Steps: Lancement commercial, acquisition apprenants et suivi des conversions analytics en production.
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).

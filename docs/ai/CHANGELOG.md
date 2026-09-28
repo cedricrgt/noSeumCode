@@ -644,7 +644,22 @@ _Chronologique — plus récent en bas_
    - Redimensionnement et optimisation du logo en WebP natif (8,9 Ko) et PNG optimisé (8,2 Ko au lieu de 28,8 Ko) avec dimensions explicites `width="141"` `height="105"` et balise `<picture>` dans `header.html` et `footer.html`.
    - Rapatriement local et compression WebP des 3 visuels de cartes de services (`images/card/card-live.webp`, `card-projects.webp`, `card-coaching.webp`), des cartes de blog (`images/blogCards/blog-html.webp`, `blog-js.webp`), et du visuel étudiant SVG Hero (`images/hero/student-female-smiling.webp`, 26 Ko au lieu de 73 Ko).
 
-5. **Validation & Tests** :
+5. **Résolution des Insights PageSpeed & Conformité Accessibilité WCAG AA (Task 10.5)** :
+   - **Élimination du délai LCP (1 100 ms)** : Ajout de `<link rel="preload" as="image" href="images/hero/student-female-smiling.webp" type="image/webp" fetchpriority="high">` dans le `<head>` et ajout des attributs `fetchpriority="high" loading="eager" decoding="async"` sur la balise `<image>` SVG.
+   - **Élimination du CLS Hero (0.081)** :
+     * Remplacement de l'animation SMIL SVG (`<animate attributeName="startOffset">`), qui forçait la recalculation continue de mise en page des glyphes, par une rotation de groupe `<g class="hero__blob-text-rotate">` accélérée par GPU (`animation: heroBlobRotate 25s linear infinite` avec `transform-origin: 100px 100px`).
+     * Exclusion de `.hero` de l'IntersectionObserver dans `script.js` (`section:not(.hero)`), éliminant l'application tardive de `fadeIn` (`translateY(20px)`) sur la zone above-the-fold qui masquait l'élément LCP et décalait le layout.
+   - **Suppression des ajustements forcés de mise en page (Forced Reflow - 136 ms)** :
+     * Déferrement de l'injection du script Plausible Analytics (`script.tagged-events.outbound-links.js`) sur `window.load` via `requestIdleCallback` (avec stub d'accumulation `window.plausible.q` pour ne perdre aucun événement) sur toutes les pages (`index.html`, `formations/*.html`, `workshops.html`, `parcours.html`).
+     * Encadrement de la lecture/écriture géométrique du header (`updateHeaderHeightVar`) dans `window.requestAnimationFrame` dans `header.js`.
+   - **Correction Accessibilité & Conformité RGAA / WCAG AA** :
+     * Suppression de l'attribut prohibé `aria-label` sur `<label for="burger-toggle">` dans `header.html` et insertion d'un intitulé accessible via la nouvelle classe `.sr-only` (`utilities.css`).
+     * Correction des ratios de contraste inférieurs à 4.5:1 : `.section-tag` configuré en `#047857` sur fond clair (>5.1:1) et `#00ff87` sur fond sombre ; badge parents `.rassurance__badge` basculé en `#1d4ed8` (>5.8:1) ; pastille Pack 1 passée en `#1d4ed8` et Pack 3 en `#92400e` (>7.2:1) ; liens de pied de page `.footer__link` configurés en `#cbd5e1` (>11.6:1).
+     * Différenciation des liens identiques pointant vers des destinations différentes : attribution d'`aria-label` contextuels uniques pour chaque carte d'article de blog (`index.html`).
+   - **Compression d'Assets** :
+     * Recompression sans perte de `images/header/logo.webp` (7,5 Ko au lieu de 8,9 Ko).
+
+6. **Validation & Tests** :
    - Compilation et minification réussie de tous les bundles CSS et JS via `node build.js`.
    - Contrôle syntaxique rigoureux de tous les scripts avec Node.js (`node -c`).
    - Exécution complète des 112 tests Spring Boot (`BUILD SUCCESS`, 0 erreur, 0 échec).

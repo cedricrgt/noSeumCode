@@ -35,8 +35,19 @@
     />
     <meta name="twitter:image" content="https://noseumcode.fr/images/og/og-pack-web.png" />
 
-    <!-- Plausible Analytics Cookieless & RGPD (Sprint 9 / ADR-015) -->
-    <script defer data-domain="noseumcode.fr" src="https://plausible.io/js/script.tagged-events.outbound-links.js"></script>
+    <!-- Plausible Analytics Cookieless & RGPD (Sprint 9 / ADR-015) - Deferred on idle to prevent forced reflow -->
+    <script>
+      window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments); };
+      window.addEventListener('load', function() {
+        (window.requestIdleCallback || function(cb) { setTimeout(cb, 1); })(function() {
+          var s = document.createElement('script');
+          s.defer = true;
+          s.setAttribute('data-domain', 'noseumcode.fr');
+          s.src = 'https://plausible.io/js/script.tagged-events.outbound-links.js';
+          document.head.appendChild(s);
+        });
+      });
+    </script>
 
     <!-- Schema.org JSON-LD (Course) -->
     <script type="application/ld+json">

@@ -128,6 +128,19 @@ h1, h2, h3, h4, h5, h6 {
 
 
 
+/* Accessibility: Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 /* Accessibility: Skip Link */
 .skip-link {
   position: absolute;
@@ -159,11 +172,15 @@ section[id], div[id] {
 .section-tag {
   display: inline-block;
   font-size: 1.5rem;
-  color: #00a85a;
+  color: #047857; /* Contrast > 5:1 on light backgrounds (WCAG AA) */
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 2px;
   margin-bottom: var(--spacing-sm);
+}
+
+.section--dark .section-tag {
+  color: var(--primary-green); /* Contrast > 14:1 on dark backgrounds */
 }
 
 .section-title {
@@ -234,6 +251,14 @@ section[id], div[id] {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -1241,4 +1266,42 @@ html {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: var(--spacing-xl);
+}
+
+.footer__title {
+  color: var(--white);
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: var(--spacing-sm);
+  list-style: none;
+}
+
+.footer__links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.footer__link {
+  color: #cbd5e1; /* Contrast 11.6:1 on dark navy #0a1628 (WCAG AAA) */
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.footer__link:hover,
+.footer__link:focus-visible {
+  color: var(--primary-green); /* Contrast 14.3:1 on dark navy */
+  text-decoration: underline;
+}
+
+.footer__copyright {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #94a3b8; /* Contrast 6.7:1 on dark navy (WCAG AA) */
+  font-size: 0.85rem;
+  padding-top: var(--spacing-xl);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: var(--spacing-lg);
 }
