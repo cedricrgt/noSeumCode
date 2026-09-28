@@ -187,4 +187,23 @@ class DiscordServiceTest {
         verify(discordGateway).addRoleToMember("discord-999", "role-web-456");
         verify(discordGateway).addRoleToMember("discord-999", "role-starter-123");
     }
+
+    @Test
+    @DisplayName("Devrait retirer les rôles Discord quand les paiements sont échoués ou remboursés")
+    void shouldRemoveRevokedRolesWhenSyncingUserRoles() {
+        testUser.setDiscordUserId("discord-999");
+        Course course = new Course("VIP Mentoring", "desc");
+        Enrollment enrollment = new Enrollment(testUser, course, PaymentStatus.FAILED, 0, EnrollmentTier.VIP, null);
+        when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(List.of(enrollment));
+        when(discordGateway.getGuildMember("discord-999")).thenReturn(Optional.of(
+                new DiscordMemberDto("discord-999", "jean", null, null, List.of("role-vip-789"), "2026-09-28")
+        ));
+
+        DiscordStatusResponse response = discordService.syncUserRoles(testUser);
+
+        assertTrue(response.linked());
+        verify(discordGateway).removeRoleFromMember("discord-999", "role-vip-789");
+        verify(discordGateway).removeRoleFromMember("discord-999", "role-web-456");
+        verify(discordGateway).removeRoleFromMember("discord-999", "role-starter-123");
+    }
 }

@@ -24,6 +24,33 @@ let pendingAdminChapters = [];
 let teacherChapters = [];
 let allAvailableCourses = [];
 
+// Bespoke Brand SVGs (NoSeumCode Style - Zero AI Emojis)
+const ICONS = {
+  student: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`,
+  teacher: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="13" y2="11"/></svg>`,
+  admin: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+  check: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>`,
+  clock: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+  cross: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  refund: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>`,
+  trash: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
+  ban: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>`,
+  unlock: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>`,
+  restore: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>`,
+  book: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`,
+  users: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  calendar: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+  chat: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+  voice: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`,
+  bot: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>`,
+  refresh: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-1.19"/></svg>`,
+  external: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`,
+  edit: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+  send: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 3px;" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`,
+  user: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+  discord: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>`
+};
+
 // Init on Load
 document.addEventListener("DOMContentLoaded", async () => {
   parseAuthFromUrl();
@@ -110,13 +137,13 @@ async function loadStoredAuth() {
   if (sessionStorage.getItem("noseum_discord_linked") === "true") {
     sessionStorage.removeItem("noseum_discord_linked");
     setTimeout(() => {
-      showGlobalDashboardToast("🎉 Ton compte Discord a été associé avec succès ! Tes rôles et accès au serveur NoSeumCode sont à jour.", "success");
+      showGlobalDashboardToast("Ton compte Discord a été associé avec succès ! Vos rôles et accès au serveur NoSeumCode sont à jour.", "success");
     }, 300);
   }
   if (sessionStorage.getItem("noseum_discord_denied") === "true") {
     sessionStorage.removeItem("noseum_discord_denied");
     setTimeout(() => {
-      showGlobalDashboardToast("ℹ️ L'autorisation Discord a été annulée.", "info");
+      showGlobalDashboardToast("L'autorisation Discord a été annulée.", "info");
     }, 300);
   }
 
@@ -124,8 +151,24 @@ async function loadStoredAuth() {
   if (sessionStorage.getItem("noseum_workshop_just_registered") === "true") {
     sessionStorage.removeItem("noseum_workshop_just_registered");
     setTimeout(() => {
-      showGlobalDashboardToast("🎉 Félicitations ! Votre place pour l'atelier découverte a été confirmée.", "success");
+      showGlobalDashboardToast("Félicitations ! Votre place pour l'atelier découverte a été confirmée.", "success");
     }, 200);
+  }
+
+  // Synchronisation proactive du paiement si redirection depuis Stripe Checkout (?session_id=...)
+  const urlParams = new URLSearchParams(window.location.search);
+  const stripeSessionId = urlParams.get("session_id");
+  if (stripeSessionId && currentAuth.token) {
+    try {
+      const syncRes = await apiFetch(`/api/payments/confirm-session?session_id=${encodeURIComponent(stripeSessionId)}`);
+      if (syncRes && syncRes.ok) {
+        showGlobalDashboardToast("Paiement validé avec succès ! Vos accès et cours sont maintenant débloqués.", "success");
+        const cleanUrl = window.location.pathname + window.location.hash;
+        window.history.replaceState(null, null, cleanUrl);
+      }
+    } catch (e) {
+      console.warn("Échec de confirmation synchrone session Stripe:", e);
+    }
   }
 
   // Si un achat de formation est en attente, basculer immédiatement vers le checkout du cours
@@ -147,7 +190,7 @@ async function loadStoredAuth() {
       const regRes = await apiFetch(`/api/user-workshops/${pendingWorkshopId}`, { method: "POST" });
       if (regRes && (regRes.ok || regRes.status === 201 || regRes.status === 409)) {
         setTimeout(() => {
-          showGlobalDashboardToast("🎉 Félicitations ! Votre place pour l'atelier découverte a été confirmée.", "success");
+          showGlobalDashboardToast("Félicitations ! Votre place pour l'atelier découverte a été confirmée.", "success");
         }, 200);
       } else {
         const errJson = await regRes.json().catch(() => ({}));
@@ -211,13 +254,13 @@ function updateUserUI() {
   if (roleBadgeEl) {
     if (role === "TEACHER") {
       roleBadgeEl.className = "dash-badge-teacher";
-      roleBadgeEl.textContent = "👨‍🏫 FORMATEUR / ENSEIGNANT";
+      roleBadgeEl.innerHTML = `${ICONS.teacher} FORMATEUR / ENSEIGNANT`;
     } else if (role === "ADMIN") {
       roleBadgeEl.className = "dash-badge-admin";
-      roleBadgeEl.textContent = "🛡️ ADMINISTRATEUR";
+      roleBadgeEl.innerHTML = `${ICONS.admin} ADMINISTRATEUR`;
     } else {
       roleBadgeEl.className = "dash-badge-student";
-      roleBadgeEl.textContent = "🎓 APPRENANT";
+      roleBadgeEl.innerHTML = `${ICONS.student} APPRENANT`;
     }
   }
 
@@ -496,7 +539,9 @@ function renderStudentCourses() {
   if (enrolledCourses.length === 0) {
     grid.innerHTML = `
       <div style="text-align: center; padding: 3rem 2rem; background: #ffffff; border-radius: 20px; border: 2px dashed #cbd5e1; grid-column: 1 / -1;">
-        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📚</div>
+        <div style="width: 54px; height: 54px; border-radius: 12px; background: rgba(0, 255, 135, 0.1); color: #008748; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        </div>
         <h3 style="font-size: 1.2rem; color: var(--dash-dark-navy); margin-bottom: 0.5rem;">Aucune formation en cours</h3>
         <p style="color: var(--dash-text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
           Vous n'êtes inscrit à aucun cours pour le moment. Parcourez notre catalogue pour démarrer votre apprentissage.
@@ -515,8 +560,8 @@ function renderStudentCourses() {
     const tierLabel = tier === "STARTER" ? "Pack Fondations" : (tier === "VIP" ? "Pack Mentorat VIP" : "Pack Dynamique");
     const tierColor = tier === "STARTER" ? "#2563eb" : (tier === "VIP" ? "#d97706" : "#7c3aed");
     const tierBg = tier === "STARTER" ? "rgba(37, 99, 235, 0.12)" : (tier === "VIP" ? "rgba(217, 119, 6, 0.12)" : "rgba(124, 58, 237, 0.12)");
-    const cohortBadge = course.cohortName ? `<span style="font-size: 0.72rem; color: #0284c7; background: rgba(2, 132, 199, 0.12); padding: 2px 7px; border-radius: 4px; font-weight: 600;">👥 ${escapeHtml(course.cohortName)}</span>` : "";
-    const replayBadge = (tier === "STARTER" || course.lifetimeAccess) ? `<span style="font-size: 0.72rem; color: #059669; background: rgba(5, 150, 105, 0.12); padding: 2px 7px; border-radius: 4px; font-weight: 600;">♾️ Replay à vie</span>` : "";
+    const cohortBadge = course.cohortName ? `<span style="font-size: 0.72rem; color: #0284c7; background: rgba(2, 132, 199, 0.12); padding: 2px 7px; border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px;">${ICONS.users}${escapeHtml(course.cohortName)}</span>` : "";
+    const replayBadge = (tier === "STARTER" || course.lifetimeAccess) ? `<span style="font-size: 0.72rem; color: #059669; background: rgba(5, 150, 105, 0.12); padding: 2px 7px; border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px;">${ICONS.clock}Replay à vie</span>` : "";
 
     const card = document.createElement("article");
     card.className = "card card-white card-paddingtop";
@@ -537,7 +582,7 @@ function renderStudentCourses() {
         <div class="card__header">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.35rem; flex-wrap:wrap; gap: 0.4rem;">
             <div style="display:flex; gap:0.4rem; align-items:center; flex-wrap:wrap;">
-              <span class="section-tag" style="font-size: 0.72rem; margin-bottom: 0;">🎓 EN COURS</span>
+              <span class="section-tag" style="font-size: 0.72rem; margin-bottom: 0; display: inline-flex; align-items: center; gap: 3px;">${ICONS.student} EN COURS</span>
               <span style="background: ${tierBg}; color: ${tierColor}; font-size: 0.72rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">${tierLabel}</span>
               ${cohortBadge}
               ${replayBadge}
@@ -651,7 +696,9 @@ function renderStudentWorkshops() {
   if (enrolledWorkshops.length === 0) {
     grid.innerHTML = `
       <div style="text-align: center; padding: 2.5rem 2rem; background: #ffffff; border-radius: 20px; border: 2px dashed #cbd5e1; grid-column: 1 / -1;">
-        <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🍁</div>
+        <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(0, 217, 255, 0.1); color: #0099b8; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
         <h3 style="font-size: 1.15rem; color: var(--dash-dark-navy); margin-bottom: 0.5rem;">Aucun atelier découverte réservé</h3>
         <p style="color: var(--dash-text-muted); font-size: 0.95rem; margin-bottom: 1.25rem;">
           Profitez des vacances de Toussaint pour coder en direct pendant 2h avec votre mentor (ateliers 100% gratuits, jauge stricte de 6 élèves max).
@@ -680,8 +727,8 @@ function renderStudentWorkshops() {
           <span style="background: rgba(0, 217, 255, 0.12); color: #0099b8; font-weight: 700; font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 6px; text-transform: uppercase;">
             ${escapeHtml(reg.workshopTheme || "Atelier Découverte")}
           </span>
-          <span style="font-size: 0.85rem; color: var(--dash-text-muted); font-weight: 600;">
-            📅 ${escapeHtml(dateStr)}
+          <span style="font-size: 0.85rem; color: var(--dash-text-muted); font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+            ${ICONS.calendar} ${escapeHtml(dateStr)}
           </span>
         </div>
         <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--dash-dark-navy); margin-bottom: 0.5rem; line-height: 1.3;">
@@ -694,7 +741,7 @@ function renderStudentWorkshops() {
 
       <div style="border-top: 1px solid #e2e8f0; padding-top: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
         <span style="font-size: 0.85rem; color: #059669; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;">
-          <span>✅</span> Place confirmée (6 max)
+          ${ICONS.check} Place confirmée (6 max)
         </span>
         <button type="button" onclick="cancelStudentWorkshop('${reg.workshopId}')" class="button button__secondary" style="font-size: 0.8rem; padding: 0.4rem 0.8rem; color: #e11d48; border-color: rgba(225,29,72,0.3); background: rgba(225,29,72,0.05); cursor: pointer;">
           Libérer ma place
@@ -856,7 +903,9 @@ function renderDiscordCard(data) {
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
         <div style="max-width: 680px;">
           <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;">
-            <span style="font-size: 1.4rem;">🎮</span>
+            <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(88, 101, 242, 0.12); color: #5865F2; display: inline-flex; align-items: center; justify-content: center;">
+              ${ICONS.discord}
+            </div>
             <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--dash-dark-navy, #0a1628);">
               Rejoins le serveur Discord de la communauté NoSeumCode
             </h3>
@@ -865,17 +914,15 @@ function renderDiscordCard(data) {
             Associe ton compte Discord en un clic pour débloquer automatiquement tes salons privés de cohorte, participer aux sessions live hebdomadaires, poser tes questions à Cédric et échanger avec les autres apprenants.
           </p>
           <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; font-size: 0.85rem;">
-            <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">💬 Entraide 7j/7</span>
-            <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">🎙️ Salons vocaux live</span>
-            <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">🏆 Rôles bot automatiques</span>
+            <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">${ICONS.chat} Entraide 7j/7</span>
+            <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">${ICONS.voice} Salons vocaux live</span>
+            <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">${ICONS.bot} Rôles automatiques</span>
           </div>
         </div>
         <div>
           <button id="btn-connect-discord" class="button button__primary bangers-regular" onclick="connectDiscordAccount()" style="background: #5865F2; border-color: #5865F2; display: inline-flex; align-items: center; gap: 0.6rem; min-height: 48px; padding: 0.75rem 1.6rem; font-size: 1rem; cursor: pointer; color: #ffffff;" aria-label="Associer mon compte Discord">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
-            </svg>
-            <span>Associer mon compte Discord ➔</span>
           </button>
         </div>
       </div>
@@ -884,8 +931,8 @@ function renderDiscordCard(data) {
   }
 
   const roleBadges = (data.assignedRoleNames || []).map(r => `
-    <span style="background: rgba(88, 101, 242, 0.08); border: 1px solid rgba(88, 101, 242, 0.25); color: #4752c4; padding: 0.3rem 0.7rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600;">
-      🛡️ @${escapeHtml(r)}
+    <span style="background: rgba(88, 101, 242, 0.08); border: 1px solid rgba(88, 101, 242, 0.25); color: #4752c4; padding: 0.3rem 0.7rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+      ${ICONS.admin} @${escapeHtml(r)}
     </span>
   `).join("");
 
@@ -904,8 +951,8 @@ function renderDiscordCard(data) {
               ● COMPTE ASSOCIÉ
             </span>
           </div>
-          <p style="margin: 0.35rem 0 0.5rem 0; color: var(--dash-text-muted, #718096); font-size: 0.88rem;">
-            ${data.serverJoined ? '✅ Membre actif du serveur Discord NoSeumCode' : '⏳ En attente de rejoindre le serveur'}
+          <p style="margin: 0.35rem 0 0.5rem 0; color: var(--dash-text-muted, #718096); font-size: 0.88rem; display: inline-flex; align-items: center; gap: 4px;">
+            ${data.serverJoined ? ICONS.check + ' Membre actif du serveur Discord NoSeumCode' : ICONS.clock + ' En attente de rejoindre le serveur'}
           </p>
           <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
             <span style="font-size: 0.82rem; font-weight: 600; color: #475569;">Rôles actifs :</span>
@@ -915,10 +962,10 @@ function renderDiscordCard(data) {
       </div>
       <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
         <a href="${escapeHtml(data.inviteUrl || 'https://discord.gg/noseumcode')}" target="_blank" rel="noopener noreferrer" class="button button__primary bangers-regular" style="background: #5865F2; border-color: #5865F2; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 42px; padding: 0.6rem 1.25rem; font-size: 0.95rem; color: #ffffff;">
-          <span>🚀 Ouvrir Discord</span>
+          ${ICONS.external} Ouvrir Discord
         </a>
-        <button id="btn-sync-discord" class="button button__secondary bangers-regular" onclick="syncDiscordRoles()" style="min-height: 42px; padding: 0.6rem 1.1rem; font-size: 0.95rem; cursor: pointer;" title="Resynchroniser mes rôles Discord">
-          <span>🔄 Synchroniser</span>
+        <button id="btn-sync-discord" class="button button__secondary bangers-regular" onclick="syncDiscordRoles()" style="min-height: 42px; padding: 0.6rem 1.1rem; font-size: 0.95rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;" title="Resynchroniser mes rôles Discord">
+          ${ICONS.refresh} Synchroniser
         </button>
         <button onclick="unlinkDiscordAccount()" style="font-size: 0.82rem; font-weight: 600; padding: 0.55rem 0.9rem; border-radius: 8px; border: 1px solid #fecdd3; background: #fff1f2; color: #e11d48; cursor: pointer; transition: background 0.2s;" title="Dissocier ce compte Discord">
           Dissocier
@@ -1180,13 +1227,13 @@ function renderTeacherDashboard() {
 
     if (chapter.status === "APPROVED") {
       statusPillClass = "approved";
-      statusLabel = "🟢 Validé & En ligne";
+      statusLabel = "Validé & En ligne";
     } else if (chapter.status === "PENDING_APPROVAL") {
       statusPillClass = "pending";
-      statusLabel = "🟡 En attente de validation Admin";
+      statusLabel = "En attente de validation";
     } else if (chapter.status === "REJECTED") {
       statusPillClass = "rejected";
-      statusLabel = "🔴 Refusé par l'Admin";
+      statusLabel = "Refusé par l'Admin";
     }
 
     card.innerHTML = `
@@ -1212,9 +1259,9 @@ function renderTeacherDashboard() {
         ` : ""}
       </div>
       <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
-        <button class="dash-btn dash-btn-secondary" style="flex:1;" onclick="openEditChapterModal('${chapter.id}')">✏️ Modifier</button>
+        <button class="dash-btn dash-btn-secondary" style="flex:1; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem;" onclick="openEditChapterModal('${chapter.id}')">${ICONS.edit} Modifier</button>
         ${chapter.status !== "PENDING_APPROVAL" && chapter.status !== "APPROVED" ? `
-          <button class="dash-btn dash-btn-primary" style="flex:1;" onclick="submitChapter('${chapter.id}')">🚀 Soumettre</button>
+          <button class="dash-btn dash-btn-primary" style="flex:1; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem;" onclick="submitChapter('${chapter.id}')">${ICONS.send} Soumettre</button>
         ` : ""}
       </div>
     `;
@@ -1353,7 +1400,7 @@ async function handleSaveChapter(event) {
     renderNotifications();
     renderTeacherDashboard();
     closeModal("add-chapter-modal");
-    alert("🎉 Section enregistrée avec son contenu et soumise à la validation de l'administrateur !");
+    alert("Section enregistrée avec son contenu et soumise à la validation de l'administrateur !");
   }
 }
 
@@ -1532,8 +1579,8 @@ function renderAdminCourses() {
 
     tr.innerHTML = `
       <td style="padding: 1rem 1.25rem;">
-        <a href="parcours.html?id=${course.id}" class="course-title-link" target="_blank" title="Cliquez pour accéder à la formation">
-          🎓 ${escapeHtml(course.title)}
+        <a href="parcours.html?id=${course.id}" class="course-title-link" target="_blank" title="Cliquez pour accéder à la formation" style="display: inline-flex; align-items: center; gap: 5px;">
+          ${ICONS.book} ${escapeHtml(course.title)}
           <span style="font-size: 0.75rem; color: #00d9ff;">↗</span>
         </a>
       </td>
@@ -1697,13 +1744,13 @@ function renderAdminUsers() {
     const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.userName;
 
     let roleBadgeClass = "dash-badge-student";
-    let roleBadgeLabel = "🎓 APPRENANT";
+    let roleBadgeLabel = `${ICONS.student} APPRENANT`;
     if (user.role === "TEACHER") {
       roleBadgeClass = "dash-badge-teacher";
-      roleBadgeLabel = "👨‍🏫 ENSEIGNANT";
+      roleBadgeLabel = `${ICONS.teacher} ENSEIGNANT`;
     } else if (user.role === "ADMIN") {
       roleBadgeClass = "dash-badge-admin";
-      roleBadgeLabel = "🛡️ ADMIN";
+      roleBadgeLabel = `${ICONS.admin} ADMIN`;
     }
 
     // Payment badge
@@ -1716,13 +1763,13 @@ function renderAdminUsers() {
       paymentLabel = "✓ Payé";
     } else if (pStatus === "PENDING" || pStatus === "EN ATTENTE") {
       paymentBadgeClass = "payment-badge-pending";
-      paymentLabel = "⏳ En attente";
+      paymentLabel = "En attente";
     } else if (pStatus === "REFUNDED" || pStatus === "REMBOURSÉ") {
       paymentBadgeClass = "payment-badge-refunded";
-      paymentLabel = "↩️ Remboursé";
+      paymentLabel = "Remboursé";
     } else if (pStatus === "FAILED" || pStatus === "ÉCHOUÉ") {
       paymentBadgeClass = "payment-badge-failed";
-      paymentLabel = "❌ Échoué";
+      paymentLabel = "Échoué";
     }
 
     // Account status badge
@@ -1731,9 +1778,9 @@ function renderAdminUsers() {
 
     let statusBadgeHtml = `<span class="status-badge-active">● Actif</span>`;
     if (isDeleted) {
-      statusBadgeHtml = `<span class="status-badge-deleted">🗑️ Supprimé</span>`;
+      statusBadgeHtml = `<span class="status-badge-deleted">${ICONS.trash} Supprimé</span>`;
     } else if (isBlocked) {
-      statusBadgeHtml = `<span class="status-badge-banned">🚫 Banni</span>`;
+      statusBadgeHtml = `<span class="status-badge-banned">${ICONS.ban} Banni</span>`;
     }
 
     const createdFormatted = user.createdAt ? new Date(user.createdAt).toLocaleDateString("fr-FR", {
@@ -1773,8 +1820,16 @@ function renderAdminUsers() {
           ${user.enrolledCoursesCount || 0}
         </span>
       </td>
-      <td style="padding: 1rem 1.25rem;">
-        <span class="${paymentBadgeClass}" style="width: fit-content; display: inline-block;">${paymentLabel}</span>
+      <td style="padding: 0.75rem 1.25rem;" onclick="event.stopPropagation()">
+        <select id="user-pay-select-${user.id}" class="form-select" 
+                style="padding: 0.35rem 0.6rem; font-size: 0.8rem; font-weight: 600; width: auto; background: #fff; border: 1.5px solid #cbd5e1; border-radius: 8px; cursor: pointer;"
+                onchange="handleUpdateUserGlobalPaymentStatus('${user.id}', this.value)"
+                title="Modifier le statut de paiement global de l'utilisateur">
+          <option value="PAID" ${pStatus === "PAID" || pStatus === "PAYÉ" ? "selected" : ""}>✓ Payé</option>
+          <option value="PENDING" ${pStatus === "PENDING" || pStatus === "EN ATTENTE" ? "selected" : ""}>En attente</option>
+          <option value="FAILED" ${pStatus === "FAILED" || pStatus === "ÉCHOUÉ" ? "selected" : ""}>Échoué</option>
+          <option value="REFUNDED" ${pStatus === "REFUNDED" || pStatus === "REMBOURSÉ" ? "selected" : ""}>Remboursé</option>
+        </select>
       </td>
       <td style="padding: 1rem 1.25rem;">
         ${statusBadgeHtml}
@@ -1785,29 +1840,29 @@ function renderAdminUsers() {
             ${isOpen ? "▲ Fermer" : "▼ Détails & Cours"}
           </button>
           <select id="role-select-${user.id}" class="form-select" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; width: auto; background: #fff;" onclick="event.stopPropagation()">
-            <option value="STUDENT" ${user.role === "STUDENT" ? "selected" : ""}>🎓 Apprenant</option>
-            <option value="TEACHER" ${user.role === "TEACHER" ? "selected" : ""}>👨‍🏫 Enseignant</option>
-            <option value="ADMIN" ${user.role === "ADMIN" ? "selected" : ""}>🛡️ Admin</option>
+            <option value="STUDENT" ${user.role === "STUDENT" ? "selected" : ""}>Apprenant</option>
+            <option value="TEACHER" ${user.role === "TEACHER" ? "selected" : ""}>Enseignant</option>
+            <option value="ADMIN" ${user.role === "ADMIN" ? "selected" : ""}>Admin</option>
           </select>
           <button class="button button__primary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="event.stopPropagation(); handleAssignUserRole('${user.id}')" title="Appliquer le rôle">
             Rôle
           </button>
           ${isBlocked ? `
-            <button class="dash-btn dash-btn-success" style="padding: 4px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); handleToggleBlockUser('${user.id}', true)" title="Débloquer l'utilisateur">
-              🔓 Débloquer
+            <button class="dash-btn dash-btn-success" style="padding: 4px 8px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 3px;" onclick="event.stopPropagation(); handleToggleBlockUser('${user.id}', true)" title="Débloquer l'utilisateur">
+              ${ICONS.unlock} Débloquer
             </button>
           ` : `
-            <button class="dash-btn dash-btn-warning" style="padding: 4px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); handleToggleBlockUser('${user.id}', false)" title="Bannir / Bloquer l'utilisateur">
-              🚫 Bannir
+            <button class="dash-btn dash-btn-warning" style="padding: 4px 8px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 3px;" onclick="event.stopPropagation(); handleToggleBlockUser('${user.id}', false)" title="Bannir / Bloquer l'utilisateur">
+              ${ICONS.ban} Bannir
             </button>
           `}
           ${isDeleted ? `
-            <button class="dash-btn dash-btn-info" style="padding: 4px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); handleToggleDeleteUser('${user.id}', true)" title="Restaurer l'utilisateur">
-              ♻️
+            <button class="dash-btn dash-btn-info" style="padding: 4px 8px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 3px;" onclick="event.stopPropagation(); handleToggleDeleteUser('${user.id}', true)" title="Restaurer l'utilisateur">
+              ${ICONS.restore}
             </button>
           ` : `
-            <button class="dash-btn dash-btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); handleToggleDeleteUser('${user.id}', false)" title="Supprimer l'utilisateur">
-              🗑️
+            <button class="dash-btn dash-btn-danger" style="padding: 4px 8px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 3px;" onclick="event.stopPropagation(); handleToggleDeleteUser('${user.id}', false)" title="Supprimer l'utilisateur">
+              ${ICONS.trash}
             </button>
           `}
         </div>
@@ -1831,7 +1886,7 @@ function renderAdminUsers() {
           <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem; margin-bottom: 1.25rem;">
             <div>
               <h4 style="font-size: 1.15rem; font-weight: 700; color: var(--dash-dark-navy); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
-                <span>👤 Informations Détaillées : ${escapeHtml(fullName)}</span>
+                <span style="display: inline-flex; align-items: center; gap: 6px;">${ICONS.user} Informations Détaillées : ${escapeHtml(fullName)}</span>
               </h4>
               <div style="font-size: 0.82rem; color: var(--dash-text-muted); display: flex; flex-wrap: wrap; gap: 1rem;">
                 <span>UUID : <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #0f172a;">${user.id}</code></span>
@@ -1840,8 +1895,18 @@ function renderAdminUsers() {
                 <span>Inscription : <strong>${escapeHtml(createdFormatted)}</strong></span>
               </div>
             </div>
-            <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
               <span class="${roleBadgeClass}">${roleBadgeLabel}</span>
+              <div style="display: inline-flex; align-items: center; gap: 0.35rem; background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.25rem 0.6rem; border-radius: 8px;">
+                <span style="font-size: 0.75rem; font-weight: 600; color: var(--dash-text-muted);">Paiement global :</span>
+                <select class="form-select" style="padding: 0.2rem 0.4rem; font-size: 0.75rem; font-weight: 600; width: auto; background: #fff; border: 1px solid #cbd5e1;"
+                        onchange="handleUpdateUserGlobalPaymentStatus('${user.id}', this.value)">
+                  <option value="PAID" ${pStatus === "PAID" || pStatus === "PAYÉ" ? "selected" : ""}>✓ Payé</option>
+                  <option value="PENDING" ${pStatus === "PENDING" || pStatus === "EN ATTENTE" ? "selected" : ""}>En attente</option>
+                  <option value="FAILED" ${pStatus === "FAILED" || pStatus === "ÉCHOUÉ" ? "selected" : ""}>Échoué</option>
+                  <option value="REFUNDED" ${pStatus === "REFUNDED" || pStatus === "REMBOURSÉ" ? "selected" : ""}>Remboursé</option>
+                </select>
+              </div>
               ${statusBadgeHtml}
             </div>
           </div>
@@ -1850,7 +1915,7 @@ function renderAdminUsers() {
           <div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
               <h5 style="font-size: 1rem; font-weight: 700; color: var(--dash-dark-navy); display: flex; align-items: center; gap: 0.5rem;">
-                <span>🎓 Formations & Statut de Paiement par Cours</span>
+                <span style="display: inline-flex; align-items: center; gap: 5px;">${ICONS.book} Formations & Statut de Paiement par Cours</span>
               </h5>
               <span style="font-size: 0.8rem; color: var(--dash-text-muted);">
                 Définissez le statut de paiement individuel pour chaque formation :
@@ -1859,7 +1924,7 @@ function renderAdminUsers() {
 
             <div id="user-courses-container-${user.id}">
               <div style="text-align: center; padding: 1.5rem; color: var(--dash-text-muted); font-size: 0.85rem;">
-                ⏳ Chargement des formations et des statuts de paiement...
+                Chargement des formations et des statuts de paiement...
               </div>
             </div>
           </div>
@@ -1942,7 +2007,7 @@ async function loadUserCourseEnrollments(userId) {
   if (enrolledItems.length === 0) {
     html += `
       <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 1.5rem; text-align: center; color: var(--dash-text-muted); font-size: 0.88rem; margin-bottom: 1rem;">
-        ℹ️ Cet utilisateur n'est actuellement inscrit à <strong>aucune formation</strong>.
+        Cet utilisateur n'est actuellement inscrit à <strong>aucune formation</strong>.
       </div>
     `;
   } else {
@@ -1980,9 +2045,9 @@ async function loadUserCourseEnrollments(userId) {
             <select id="course-pay-select-${userId}-${course.id}" class="form-select" style="padding: 0.35rem 0.6rem; font-size: 0.8rem; font-weight: 600; background: #fff; width: 100%; border: 1.5px solid #cbd5e1;" 
                     onchange="handleUpdateCoursePaymentStatus('${userId}', '${course.id}', this.value)">
               <option value="PAID" ${status === "PAID" ? "selected" : ""}>✓ Payé (Accès complet)</option>
-              <option value="PENDING" ${status === "PENDING" ? "selected" : ""}>⏳ En attente de paiement</option>
-              <option value="FAILED" ${status === "FAILED" ? "selected" : ""}>❌ Échoué</option>
-              <option value="REFUNDED" ${status === "REFUNDED" ? "selected" : ""}>↩️ Remboursé</option>
+              <option value="PENDING" ${status === "PENDING" ? "selected" : ""}>En attente de paiement</option>
+              <option value="FAILED" ${status === "FAILED" ? "selected" : ""}>Échoué</option>
+              <option value="REFUNDED" ${status === "REFUNDED" ? "selected" : ""}>Remboursé</option>
             </select>
           </td>
           <td style="padding: 0.75rem 1rem; text-align: right;">
@@ -1990,8 +2055,8 @@ async function loadUserCourseEnrollments(userId) {
               <a href="parcours.html?id=${course.id}" target="_blank" class="button button__secondary" style="padding: 4px 10px; font-size: 0.75rem; text-decoration: none; display: inline-block;">
                 Accéder ↗
               </a>
-              <button class="dash-btn dash-btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="handleAdminUnenrollUser('${userId}', '${enrollment.id}')" title="Désinscrire l'utilisateur de cette formation">
-                🗑️
+              <button class="dash-btn dash-btn-danger" style="padding: 4px 8px; font-size: 0.75rem; display: inline-flex; align-items: center; justify-content: center;" onclick="handleAdminUnenrollUser('${userId}', '${enrollment.id}')" title="Désinscrire l'utilisateur de cette formation">
+                ${ICONS.trash}
               </button>
             </div>
           </td>
@@ -2006,7 +2071,7 @@ async function loadUserCourseEnrollments(userId) {
   if (availableToEnroll.length > 0) {
     html += `
       <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; background: #f8fafc; padding: 0.85rem 1rem; border-radius: 12px; border: 1px solid #e2e8f0;">
-        <span style="font-weight: 600; font-size: 0.82rem; color: var(--dash-dark-navy);">➕ Inscrire à une autre formation :</span>
+        <span style="font-weight: 600; font-size: 0.82rem; color: var(--dash-dark-navy);">+ Inscrire à une autre formation :</span>
         <select id="select-enroll-${userId}" class="form-select" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; width: auto; background: #fff;">
           ${availableToEnroll.map(c => `<option value="${c.id}">${escapeHtml(c.title)}</option>`).join("")}
         </select>
@@ -2032,14 +2097,14 @@ async function handleAdminEnrollUser(userId) {
   });
 
   if (res && res.ok) {
-    alert("✅ Utilisateur inscrit avec succès !");
+    showGlobalDashboardToast("Utilisateur inscrit avec succès !", "success");
   } else {
     await apiFetch(`/api/enrollments/user/${userId}/course/${courseId}/payment-status`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ paymentStatus: "PAID" })
     });
-    alert("✅ Utilisateur inscrit avec succès !");
+    showGlobalDashboardToast("Utilisateur inscrit avec succès !", "success");
   }
 
   await loadAdminUsers();
@@ -2054,7 +2119,7 @@ async function handleAdminUnenrollUser(userId, enrollmentId) {
   });
 
   if (res && (res.ok || res.status === 204)) {
-    alert("🗑️ Inscription supprimée avec succès.");
+    showGlobalDashboardToast("Inscription supprimée avec succès.", "info");
   }
 
   await loadAdminUsers();
@@ -2079,9 +2144,46 @@ async function handleUpdateCoursePaymentStatus(userId, courseId, newStatus) {
     });
   }
 
+  if (response && response.ok) {
+    showGlobalDashboardToast(`Statut de cours mis à jour (${newStatus}) pour ${userName}.`, "success");
+  } else {
+    showGlobalDashboardToast("Erreur lors de la mise à jour du statut.", "error");
+  }
+
   // Mettre à jour la liste des utilisateurs pour recalculer le statut global
   await loadAdminUsers();
   await loadUserCourseEnrollments(userId);
+}
+
+async function handleUpdateUserGlobalPaymentStatus(userId, newStatus) {
+  const targetUser = adminUsersList.find(u => u.id === userId);
+  const userName = targetUser ? (targetUser.firstName || targetUser.userName) : "l'utilisateur";
+
+  try {
+    const res = await apiFetch(`/api/payments/user/${userId}/status`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        paymentStatus: newStatus,
+        source: "ADMIN_MANUAL",
+        reason: `Mise à jour manuelle par administrateur vers ${newStatus}`
+      })
+    });
+
+    if (res && res.ok) {
+      showGlobalDashboardToast(`Statut global de ${userName} mis à jour : ${newStatus}`, "success");
+    } else {
+      showGlobalDashboardToast("Erreur lors de la mise à jour du statut global.", "error");
+    }
+  } catch (err) {
+    console.error("Erreur update payment status:", err);
+    showGlobalDashboardToast("Erreur réseau.", "error");
+  }
+
+  await loadAdminUsers();
+  if (openUserDetailsMap[userId]) {
+    await loadUserCourseEnrollments(userId);
+  }
 }
 
 async function handleAssignUserRole(userId) {
@@ -2186,7 +2288,7 @@ async function handleToggleDeleteUser(userId, isCurrentlyDeleted) {
     }
 
     if (response && response.ok) {
-      alert(`✅ Compte de ${userName} restauré avec succès.`);
+      showGlobalDashboardToast(`Compte de ${userName} restauré avec succès.`, "success");
       await loadAdminUsers();
     } else {
       let errMsg = "Erreur lors de la restauration du compte.";
@@ -2196,7 +2298,7 @@ async function handleToggleDeleteUser(userId, isCurrentlyDeleted) {
           if (data.message) errMsg = data.message;
         } catch (_) {}
       }
-      alert(`❌ Échec : ${errMsg}`);
+      showGlobalDashboardToast(`Échec : ${errMsg}`, "error");
     }
   } else {
     // Soft delete
@@ -2214,7 +2316,7 @@ async function handleToggleDeleteUser(userId, isCurrentlyDeleted) {
     }
 
     if (response && response.ok) {
-      alert(`✅ Utilisateur ${userName} marqué comme supprimé.`);
+      showGlobalDashboardToast(`Utilisateur ${userName} marqué comme supprimé.`, "info");
       await loadAdminUsers();
     } else {
       let errMsg = "Erreur lors de la suppression.";
@@ -2224,7 +2326,7 @@ async function handleToggleDeleteUser(userId, isCurrentlyDeleted) {
           if (data.message) errMsg = data.message;
         } catch (_) {}
       }
-      alert(`❌ Échec : ${errMsg}`);
+      showGlobalDashboardToast(`Échec : ${errMsg}`, "error");
     }
   }
 }
@@ -2245,7 +2347,7 @@ function renderAdminDashboard() {
   if (pendingAdminChapters.length === 0) {
     listEl.innerHTML = `
       <div style="background: var(--dash-card-bg); border: 1px solid var(--dash-card-border); border-radius: 16px; padding: 2.5rem; text-align: center; color: var(--dash-text-muted);">
-        <p style="font-size: 1.2rem; margin-bottom: 0.5rem; color: #fff;">🎉 Aucune modification en attente de validation</p>
+        <p style="font-size: 1.2rem; margin-bottom: 0.5rem; color: #fff;">Aucune modification en attente de validation</p>
         <p style="margin: 0;">Toutes les sections soumises par les enseignants ont été traitées.</p>
       </div>
     `;
@@ -2259,7 +2361,7 @@ function renderAdminDashboard() {
       <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
           <span style="font-size: 0.85rem; color: var(--dash-neon-blue); font-weight: 600;">${escapeHtml(item.courseTitle || "Formation")}</span>
-          <span class="status-pill pending">🟡 En attente de validation</span>
+          <span class="status-pill pending">${ICONS.clock} En attente de validation</span>
         </div>
         <h4 class="dash-card-title">${escapeHtml(item.title)}</h4>
         <p style="font-size: 0.85rem; color: var(--dash-text-muted); margin-bottom: 0.25rem;">
