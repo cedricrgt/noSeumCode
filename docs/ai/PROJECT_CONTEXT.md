@@ -45,11 +45,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `fix/google-safe-browsing-deceptive-warning` (en cours de PR vers `develop`)
-## Current State: Sprints 1 à 7 validés (Gamme Starter/Web/VIP, Cohortes jauge 6 max, Replays à vie Starter, Klarna BNPL, Flyway V015) et Correctif Google Safe Browsing / Lookalike (`.well-known/assetlinks.json`, `robots-dev.txt`, durcissement Apache, exclusion FTP CI/CD) avec 112 tests unitaires et d'intégration Spring Boot réussis (0 échec).
-## Next Sprint: Sprint 8 — Performance Web & SEO Technique (Images <800Ko, Pages statiques formations SSG, Core Web Vitals, Cache Apache).
-## Sprints Suivants:
-- Sprint 9 : Refonte Copywriting & Rassurance Parents/Jeunes (Mentor & Analytics Plausible/Umami).
+## Active Branch: `feat/sprint-web-performance-seo` (en cours de PR vers `develop`)
+## Current State: Sprints 1 à 8 validés (Gamme Starter/Web/VIP, Cohortes jauge 6 max, Replays à vie Starter, Klarna BNPL, Flyway V015, Google Safe Browsing / Lookalike résolu, et Performance Web & SEO Technique : images réduites de 11,7 Mo à 711 Ko total, SSG statique /formations/starter & pack-web, Apache mod_deflate & mod_expires, élimination CLS) avec 112 tests unitaires et d'intégration Spring Boot réussis (0 échec).
+## Next Sprint: Sprint 9 — Refonte Copywriting & Rassurance Parents/Jeunes (Mentor & Analytics Plausible/Umami).
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN

@@ -82,6 +82,24 @@ concat "$DIST/en-construction.css" \
   "$STYLES/pages/homepage/footer.css"
 minify "$DIST/en-construction.css"
 
+# ─── Formations bundle ──────────────────────────────────────────────────────
+
+echo "Building formations bundle…"
+concat "$DIST/formations.css" \
+  "${BASE_FILES[@]}" \
+  "$STYLES/pages/formations.css" \
+  "$STYLES/pages/homepage/footer.css"
+minify "$DIST/formations.css"
+
+# ─── Workshops bundle ───────────────────────────────────────────────────────
+
+echo "Building workshops bundle…"
+concat "$DIST/workshops.css" \
+  "${BASE_FILES[@]}" \
+  "$STYLES/pages/workshops.css" \
+  "$STYLES/pages/homepage/footer.css"
+minify "$DIST/workshops.css"
+
 echo ""
 echo "✅ CSS bundles built in $DIST/"
 ls -lh "$DIST/"*.min.css
@@ -91,7 +109,7 @@ ls -lh "$DIST/"*.min.css
 IMG_SRC="$SCRIPT_DIR/images"
 IMG_DIST="$SCRIPT_DIR/images/dist"
 
-if command -v convert &>/dev/null; then
+if command -v magick &>/dev/null || (command -v convert &>/dev/null && convert -version 2>&1 | grep -qi "imagemagick"); then
   echo ""
   echo "Optimizing images…"
 

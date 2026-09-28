@@ -16,8 +16,8 @@
 | **Sprint 5** | **Portail Client Stripe** | Factures PDF, reçus d'achat et gestion des moyens de paiement apprenant | ✅ **Terminé** |
 | **Sprint 6** | **Workshops Gratuits Toussaint** | Bandeau header réactivé, page dédiée `workshops.html`, jauge stricte 6 élèves max | ✅ **Terminé** |
 | **Sprint 7** | **Nouvelle Gamme & Accès Cohortes** | Pack Starter (accès replays à vie), Pack Web, option VIP, Klarna BNPL via Stripe | ✅ **Terminé** |
-| **Sprint 8** | **Performance Web & SEO Technique** | Compression images (<800 Ko), rendu statique dédié formations, fix CLS, cache Apache | 🟡 **Prêt / Prochain** |
-| **Sprint 9** | **Copywriting & Rassurance Parents/Jeunes** | Refonte Hero, section Ton Mentor, rassurance parents, Analytics RGPD cookieless | ⚪ **Planifié** |
+| **Sprint 8** | **Performance Web & SEO Technique** | Compression images (<800 Ko), rendu statique dédié formations, fix CLS, cache Apache | ✅ **Terminé** |
+| **Sprint 9** | **Copywriting & Rassurance Parents/Jeunes** | Refonte Hero, section Ton Mentor, rassurance parents, Analytics RGPD cookieless | 🟡 **Prêt / Prochain** |
 
 ---
 
@@ -69,12 +69,12 @@ gantt
     Klarna BNPL & Stripe Checkout (7.3)  :done, s7_3, 2026-09-27, 2026-09-27
 
     section Sprint 8 : Performance & SEO
-    Compression Images <800Ko (8.1)      :s8_1, after s7_3, 1d
-    Pages Statiques Formations & OG (8.2):s8_2, after s8_1, 2d
-    Fix CLS Header & Cache Apache (8.3)  :s8_3, after s8_2, 1d
+    Compression Images <800Ko (8.1)      :done, s8_1, 2026-09-27, 2026-09-28
+    Pages Statiques Formations & OG (8.2):done, s8_2, 2026-09-27, 2026-09-28
+    Fix CLS Header & Cache Apache (8.3)  :done, s8_3, 2026-09-27, 2026-09-28
 
     section Sprint 9 : Copywriting & Analytics
-    Hero & Rassurance Parents/Jeunes(9.1):s9_1, after s8_3, 2d
+    Hero & Rassurance Parents/Jeunes(9.1):s9_1, 2026-09-28, 2d
     Section Ton Mentor (9.2)             :s9_2, after s9_1, 1d
     Analytics Cookieless RGPD (9.3)      :s9_3, after s9_2, 1d
 ```
@@ -161,7 +161,7 @@ gantt
 
 ---
 
-### Sprint 8 : Performance Web & SEO Technique
+### Sprint 8 : Performance Web & SEO Technique (Terminé)
 - **8.1 Compression Drastique des Images** :
   - Remplacement du faux `git.webp` (2,73 Mo) par un vrai WebP compressé (<100 Ko).
   - Optimisation des logos PNG (`logo-css`, `logo-react`, `logo-js`) et du favicon (passage de 10 Mo au total à <800 Ko).

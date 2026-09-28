@@ -27,13 +27,19 @@ function sanitizePartialHTML(rawText) {
   return doc.body.innerHTML;
 }
 
+function resolveAssetPath(relPath) {
+  if (document.querySelector("base[href]")) return relPath;
+  if (window.location.pathname.includes("/formations")) return "/" + relPath;
+  return relPath;
+}
+
 async function loadHeader() {
   const headerPlaceholder = document.getElementById("header-placeholder");
   if (!headerPlaceholder) return;
 
   try {
 
-    const headerResponse = await fetch("partials/header.html");
+    const headerResponse = await fetch(resolveAssetPath("partials/header.html"));
     if (!headerResponse.ok) throw new Error("Failed to load header");
     let headerHtml = await headerResponse.text();
     headerHtml = headerHtml.replace(/http:\/\/localhost:8080/g, window.API_BASE_URL);
@@ -51,7 +57,7 @@ async function loadHeader() {
 
     const popoversPlaceholder = document.getElementById("popovers-placeholder");
     if (popoversPlaceholder) {
-      const popoversResponse = await fetch("partials/popovers-shared.html");
+      const popoversResponse = await fetch(resolveAssetPath("partials/popovers-shared.html"));
       if (popoversResponse.ok) {
         const popoversHtml = await popoversResponse.text();
         popoversPlaceholder.innerHTML = sanitizePartialHTML(popoversHtml);
@@ -1135,7 +1141,7 @@ async function loadFooter() {
   if (!footerPlaceholder) return;
 
   try {
-    const response = await fetch("partials/footer.html");
+    const response = await fetch(resolveAssetPath("partials/footer.html"));
     if (!response.ok) throw new Error("Failed to load footer");
     const footerHTML = await response.text();
     footerPlaceholder.innerHTML = footerHTML;
@@ -1149,7 +1155,7 @@ async function loadSchedule() {
   if (!tbody) return;
 
   try {
-    const response = await fetch("data/schedule.json");
+    const response = await fetch(resolveAssetPath("data/schedule.json"));
     if (!response.ok) throw new Error("Failed to load schedule");
     const data = await response.json();
 
@@ -1189,7 +1195,7 @@ async function updatePromoBanner() {
   if (!track) return;
 
   try {
-    const response = await fetch("data/schedule.json");
+    const response = await fetch(resolveAssetPath("data/schedule.json"));
     if (!response.ok) return;
     const data = await response.json();
 
