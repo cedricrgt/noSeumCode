@@ -736,4 +736,20 @@ _Chronologique — plus récent en bas_
 
 4. **Validation & Tests** :
    - 129 tests unitaires Maven validés avec succès (`BUILD SUCCESS`, 0 erreur, 0 échec).
-   - Build frontend minifié validé (`npm run build`).
+   - Build frontend minifié validé (`npm run build`).
+
+---
+
+### 2026-09-28 — Correctif CI/CD : Propagation des Secrets Discord OAuth2 & Rôles sur la VM Oracle Cloud
+**Conversation**: `090e821d-c81b-4b96-80d1-ddc3085e6fe8`  
+**Branche**: `fix/ci-discord-env-secrets`
+
+#### Ce qui a changé :
+1. **Résolution de l'Erreur Snowflake Client ID Discord** :
+   - Problème : Discord rejetait la redirection OAuth2 avec l'erreur `{"client_id": ["La valeur « mock-discord-client-id » n’est pas snowflake."]}`.
+   - Cause : Le workflow CI/CD `.github/workflows/deploy.yml` écrivait en dur `DISCORD_CLIENT_ID=mock-discord-client-id` et `DISCORD_CLIENT_SECRET=mock-discord-client-secret` dans le `.env` de production de la VM Oracle Cloud, et n'injectait pas les variables du bot et des rôles.
+   - Solution :
+     * Configuration des secrets GitHub Actions manquants via GitHub CLI : `DISCORD_BOT_TOKEN`, `DISCORD_INVITE_URL`, `DISCORD_ROLE_DEFAULT_ID`, `DISCORD_ROLE_STARTER_ID`, `DISCORD_ROLE_WEB_ID`, `DISCORD_ROLE_VIP_ID`, et validation de `DISCORD_CLIENT_ID` (`1554118371501412422`), `DISCORD_CLIENT_SECRET`, `DISCORD_GUILD_ID` (`1554111429106339931`).
+     * Mise à jour de `.github/workflows/deploy.yml` pour transmettre ces secrets à l'étape SSH, les déclarer dans `envs:`, les injecter dans le template `backend/.env.tpl` et les substituer via `envsubst`.
+2. **Documentation & Prévention** :
+   - Ajout d'une règle dans la section « Fausses Hypothèses à Éviter » de `docs/ai/KNOWN_ISSUES.md`.
