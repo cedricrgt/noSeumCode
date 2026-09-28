@@ -1,6 +1,6 @@
 # PROJECT_CONTEXT.md — NoSeumCode
 
-_Last updated: 2026-09-25 | Conversation: 81fa4873-a589-4692-878b-98cdc85b45b9_
+_Last updated: 2026-09-27 | Conversation: 5eff324b-9634-487e-a43d-fbc635b0c995_
 
 ## Project Overview
 
@@ -45,12 +45,12 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `feat/sprint-6-cohorts-plans-klarna` (en cours de PR vers `develop`)
-## Current State: Sprints 1 à 7 validés (Gamme Starter/Web/VIP, Cohortes jauge 6 max, Replays à vie Starter, Klarna BNPL, Flyway V014) avec 112 tests unitaires et d'intégration Spring Boot réussis (0 échec).
+## Active Branch: `fix/google-safe-browsing-deceptive-warning` (en cours de PR vers `develop`)
+## Current State: Sprints 1 à 7 validés (Gamme Starter/Web/VIP, Cohortes jauge 6 max, Replays à vie Starter, Klarna BNPL, Flyway V015) et Correctif Google Safe Browsing / Lookalike (`.well-known/assetlinks.json`, `robots-dev.txt`, durcissement Apache, exclusion FTP CI/CD) avec 112 tests unitaires et d'intégration Spring Boot réussis (0 échec).
 ## Next Sprint: Sprint 8 — Performance Web & SEO Technique (Images <800Ko, Pages statiques formations SSG, Core Web Vitals, Cache Apache).
 ## Sprints Suivants:
 - Sprint 9 : Refonte Copywriting & Rassurance Parents/Jeunes (Mentor & Analytics Plausible/Umami).
-## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009).
+## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN
 

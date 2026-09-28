@@ -38,8 +38,16 @@ async function loadHeader() {
     let headerHtml = await headerResponse.text();
     headerHtml = headerHtml.replace(/http:\/\/localhost:8080/g, window.API_BASE_URL);
     headerPlaceholder.innerHTML = sanitizePartialHTML(headerHtml);
-
     await updatePromoBanner();
+
+    // Visual staging badge on develop subdomain to clearly indicate pre-production environment
+    if (window.location.hostname === "develop.noseumcode.fr" && !document.getElementById("dev-env-indicator")) {
+      const devBanner = document.createElement("div");
+      devBanner.id = "dev-env-indicator";
+      devBanner.style.cssText = "background: #0f172a; color: #38bdf8; text-align: center; font-size: 0.78rem; font-family: 'Poppins', sans-serif; padding: 6px 12px; border-bottom: 1px solid rgba(56, 189, 248, 0.25); font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; z-index: 99999; position: relative;";
+      devBanner.innerHTML = "<span>🛠️</span> <span><strong>Environnement de test NoSeumCode</strong> (develop.noseumcode.fr) — Espace réservé à la pré-production.</span>";
+      document.body.prepend(devBanner);
+    }
 
     const popoversPlaceholder = document.getElementById("popovers-placeholder");
     if (popoversPlaceholder) {

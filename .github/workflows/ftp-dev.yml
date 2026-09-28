@@ -40,3 +40,13 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD_DEV != '' && secrets.FTP_PASSWORD_DEV || secrets.FTP_PASSWORD }}
           server-dir: ${{ secrets.FTP_DIR_DEV || 'develop.noseumcode.fr/' }}
           local-dir: ./frontend/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.env*
+            **/*.sh
+            **/*.ps1
+            **/build.js
+            **/package*.json
+            **/README.md

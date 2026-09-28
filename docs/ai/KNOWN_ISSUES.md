@@ -94,7 +94,22 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Status**: Résolu. La migration `V013__seed_toussaint_workshops.sql` utilisait des identifiants avec préfixe non hexadécimal (`w1000000-...`). Bien que toléré par H2 en mémoire lors des tests, PostgreSQL en production lève une erreur `22P02: invalid input syntax for type uuid`.
 **Fix applied**: Remplacement des UUIDs par des valeurs hexadécimales valides `b1000000-0000-0000-0000-00000000000x` dans V013 et dans `workshops.js`. Ajout d'une commande automatique de nettoyage `DELETE FROM flyway_schema_history WHERE success = false;` dans `deploy.yml` pour permettre le rejeu automatique sans intervention manuelle.
 
+### ISSUE-023 ✅ Avertissement Google Safe Browsing / Chrome Lookalike sur develop.noseumcode.fr [RÉSOLU]
+**Status**: Résolu. Google Chrome affichait un avertissement interstitiel rouge (« Site dangereux / Site trompeur » ou « Attention : faux site / S'agit-il du bon site ? ») lors de la visite de `https://develop.noseumcode.fr`.
+**Causes racines identifiées** :
+1. Détection Lookalike / Social Engineering par Google Safe Browsing : `develop.noseumcode.fr` présentait une interface identique à `noseumcode.fr` (formulaires d'authentification email/mot de passe et bouton Google) sans fichier d'association explicite Digital Asset Links entre les domaines.
+2. Absence de `robots.txt` restrictif sur l'environnement de dev : les moteurs et robots Google scannaient le sous-domaine de pré-production qui exposait un `robots.txt` autorisant l'exploration (`Allow: /`) et pointant vers la sitemap de production.
+3. Fichiers de build internes exposés publiquement à la racine du sous-domaine (`build.sh`, `build.ps1`, `package.json`, etc.).
+**Fix applied** :
+1. Implémentation du protocole Google Digital Asset Links (`frontend/.well-known/assetlinks.json`) liant formellement `noseumcode.fr`, `www.noseumcode.fr` et `develop.noseumcode.fr` pour les relations `get_login_creds` et `handle_all_urls`.
+2. Création de `frontend/robots-dev.txt` (`Disallow: /`) et réécriture transparente dans `.htaccess` pour isoler strictement `develop.noseumcode.fr` de tout crawler web.
+3. Durcissement Apache `.htaccess` : blocage HTTP strict (403 Forbidden) des scripts shell/powershell/build, manifestes de paquets (`package.json`, `package-lock.json`), fichiers markdown et dotfiles (hors `/.well-known/`). En-tête MIME `application/json` et CORS garanti pour `assetlinks.json`.
+4. Workflows CI/CD (`ftp-dev.yml` et `ftp.yml`) : exclusion formelle de téléversement des fichiers hors production (`exclude: **/*.sh, **/*.ps1, build.js, package*.json, README.md, .env*`).
+5. Indicateur visuel d'environnement de staging dans `header.js` sur `develop.noseumcode.fr` pour clarifier le statut de pré-production auprès des utilisateurs et des réviseurs Google.
+
 ## Fausses Hypothèses à Éviter
+- Ne pas supposer qu'un simple `X-Robots-Tag: noindex` empêche Google Safe Browsing de scanner un sous-domaine : Safe Browsing analyse les pages visitées par les utilisateurs Chrome indépendamment des directives d'indexation SEO.
+- Ne pas supposer que Chrome reconnaît automatiquement les relations entre un sous-domaine de dev et un domaine principal : sans fichier `/.well-known/assetlinks.json` et sans validation Search Console, un clone de staging avec formulaire de login peut être classé comme hameçonnage/lookalike.
 - Ne pas supposer que PostgreSQL accepte n'importe quelle chaîne de 36 caractères pour le type `uuid` : contrairement à H2 (souple en mémoire lors des tests), PostgreSQL exige des caractères hexadécimaux stricts `[0-9a-fA-F]`. Des préfixes comme `w1000000-...` provoquent une erreur SQL `22P02: invalid input syntax for type uuid`.
 - Ne pas supposer qu'un simple redémarrage de conteneur suffit après l'échec d'une migration Flyway : Flyway consigne la ligne avec `success = false` dans `flyway_schema_history`. Une purge (`DELETE FROM flyway_schema_history WHERE success = false;`) ou un `flyway repair` est nécessaire pour réexécuter la migration corrigée.
 - Ne pas supposer qu'une erreur navigateur 'Access-Control-Allow-Origin blocked by CORS policy' sur `api.noseumcode.fr` est toujours un problème de configuration CORS : si le conteneur Spring Boot crashe, Nginx renvoie une page 502 Bad Gateway sans en-tête CORS, ce qui déclenche l'erreur CORS côté navigateur.
