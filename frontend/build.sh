@@ -27,6 +27,14 @@ minify() {
   echo "  → minify: $output"
 }
 
+minify_js() {
+  local input="$1"
+  local output="${input%.js}.min.js"
+  npx --yes terser "$input" -o "$output" -c -m 2>/dev/null \
+    || cp "$input" "$output"
+  echo "  → minify JS: $output"
+}
+
 # ─── Shared base (reset + typo + all components) ────────────────────────────
 
 BASE_FILES=(
@@ -105,6 +113,14 @@ minify "$DIST/workshops.css"
 echo ""
 echo "✅ CSS bundles built in $DIST/"
 ls -lh "$DIST/"*.min.css
+
+echo ""
+echo "📦 Minifying JavaScript files…"
+minify_js "$SCRIPT_DIR/js/header.js"
+minify_js "$SCRIPT_DIR/js/script.js"
+minify_js "$SCRIPT_DIR/js/popover-hubspot.js"
+
+echo "✅ JS minified successfully!"
 
 # ─── Image optimization ─────────────────────────────────────────────────────
 

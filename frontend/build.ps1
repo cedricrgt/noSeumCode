@@ -70,4 +70,21 @@ Concat-Files (Join-Path $distDir "en-construction.css") ($baseFiles + @(
     (Join-Path $stylesDir "pages\homepage\footer.css")
 ))
 
-Write-Host "`n✅ Bundles CSS générés avec succès dans styles/dist/ !" -ForegroundColor Green
+Write-Host "`n📦 Minification des scripts JavaScript…"
+$jsDir = Join-Path $scriptDir "js"
+function Minify-Js($inputPath) {
+    $outPath = $inputPath -replace "\.js$", ".min.js"
+    try {
+        & npx.cmd --yes terser $inputPath -o $outPath -c -m
+        Write-Host "  → minify JS: $outPath"
+    } catch {
+        Copy-Item -Force $inputPath $outPath
+        Write-Warning "Minification échouée pour $inputPath, copie brute."
+    }
+}
+
+Minify-Js (Join-Path $jsDir "header.js")
+Minify-Js (Join-Path $jsDir "script.js")
+Minify-Js (Join-Path $jsDir "popover-hubspot.js")
+
+Write-Host "`n✅ Bundles CSS & JS générés avec succès !" -ForegroundColor Green

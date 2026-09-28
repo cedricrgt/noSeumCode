@@ -33,34 +33,64 @@ function resolveAssetPath(relPath) {
   return relPath;
 }
 
-async function loadHeader() {
+async function loadPartials() {
   const headerPlaceholder = document.getElementById("header-placeholder");
-  if (!headerPlaceholder) return;
+  const popoversPlaceholder = document.getElementById("popovers-placeholder");
+  const footerPlaceholder = document.getElementById("footer-placeholder");
+
+  const fetches = [];
+
+  if (headerPlaceholder) {
+    fetches.push(
+      fetch(resolveAssetPath("partials/header.html"))
+        .then((res) => (res.ok ? res.text() : ""))
+        .then((html) => ({ type: "header", html }))
+        .catch((err) => ({ type: "header", error: err }))
+    );
+  }
+
+  if (popoversPlaceholder) {
+    fetches.push(
+      fetch(resolveAssetPath("partials/popovers-shared.html"))
+        .then((res) => (res.ok ? res.text() : ""))
+        .then((html) => ({ type: "popovers", html }))
+        .catch((err) => ({ type: "popovers", error: err }))
+    );
+  }
+
+  if (footerPlaceholder) {
+    fetches.push(
+      fetch(resolveAssetPath("partials/footer.html"))
+        .then((res) => (res.ok ? res.text() : ""))
+        .then((html) => ({ type: "footer", html }))
+        .catch((err) => ({ type: "footer", error: err }))
+    );
+  }
 
   try {
+    const results = await Promise.all(fetches);
 
-    const headerResponse = await fetch(resolveAssetPath("partials/header.html"));
-    if (!headerResponse.ok) throw new Error("Failed to load header");
-    let headerHtml = await headerResponse.text();
-    headerHtml = headerHtml.replace(/http:\/\/localhost:8080/g, window.API_BASE_URL);
-    headerPlaceholder.innerHTML = sanitizePartialHTML(headerHtml);
-    await updatePromoBanner();
+    for (const item of results) {
+      if (item.error) {
+        console.error(`Error loading partial ${item.type}:`, item.error);
+        continue;
+      }
 
-    // Visual staging badge on develop subdomain to clearly indicate pre-production environment
-    if (window.location.hostname === "develop.noseumcode.fr" && !document.getElementById("dev-env-indicator")) {
-      const devBanner = document.createElement("div");
-      devBanner.id = "dev-env-indicator";
-      devBanner.style.cssText = "background: #0f172a; color: #38bdf8; text-align: center; font-size: 0.78rem; font-family: 'Poppins', sans-serif; padding: 6px 12px; border-bottom: 1px solid rgba(56, 189, 248, 0.25); font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; z-index: 99999; position: relative;";
-      devBanner.innerHTML = "<span>🛠️</span> <span><strong>Environnement de test NoSeumCode</strong> (develop.noseumcode.fr) — Espace réservé à la pré-production.</span>";
-      document.body.prepend(devBanner);
-    }
+      if (item.type === "header" && headerPlaceholder && item.html) {
+        let headerHtml = item.html.replace(/http:\/\/localhost:8080/g, window.API_BASE_URL);
+        headerPlaceholder.innerHTML = sanitizePartialHTML(headerHtml);
+        updatePromoBanner();
 
-    const popoversPlaceholder = document.getElementById("popovers-placeholder");
-    if (popoversPlaceholder) {
-      const popoversResponse = await fetch(resolveAssetPath("partials/popovers-shared.html"));
-      if (popoversResponse.ok) {
-        const popoversHtml = await popoversResponse.text();
-        popoversPlaceholder.innerHTML = sanitizePartialHTML(popoversHtml);
+        // Visual staging badge on develop subdomain to clearly indicate pre-production environment
+        if (window.location.hostname === "develop.noseumcode.fr" && !document.getElementById("dev-env-indicator")) {
+          const devBanner = document.createElement("div");
+          devBanner.id = "dev-env-indicator";
+          devBanner.style.cssText = "background: #0f172a; color: #38bdf8; text-align: center; font-size: 0.78rem; font-family: 'Poppins', sans-serif; padding: 6px 12px; border-bottom: 1px solid rgba(56, 189, 248, 0.25); font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; z-index: 99999; position: relative;";
+          devBanner.innerHTML = "<span>🛠️</span> <span><strong>Environnement de test NoSeumCode</strong> (develop.noseumcode.fr) — Espace réservé à la pré-production.</span>";
+          document.body.prepend(devBanner);
+        }
+      } else if (item.type === "popovers" && popoversPlaceholder && item.html) {
+        popoversPlaceholder.innerHTML = sanitizePartialHTML(item.html);
 
         // Inject dynamic OAuth2 URLs based on current environment (API_BASE_URL)
         const oauthLinks = [
@@ -75,7 +105,9 @@ async function loadHeader() {
           if (el) el.href = `${window.API_BASE_URL}/oauth2/authorization/${provider}?redirect_uri=${redirectTarget}`;
         });
 
-        await loadSchedule();
+        loadSchedule();
+      } else if (item.type === "footer" && footerPlaceholder && item.html) {
+        footerPlaceholder.innerHTML = item.html;
       }
     }
 
@@ -83,23 +115,30 @@ async function loadHeader() {
     checkUserAuthHeader();
     initPromoPopup();
     updateHeaderHeightVar();
-
   } catch (error) {
-    console.error("Error loading header:", error);
+    console.error("Error loading partials:", error);
   }
+}
+
+async function loadHeader() {
+  return loadPartials();
 }
 
 function updateHeaderHeightVar() {
   const header = document.querySelector(".header");
   if (header) {
+    const isMobile = window.innerWidth <= 768;
+    const expected = isMobile ? 118 : 153;
     const h = header.offsetHeight;
-    if (h > 0) {
+    if (h > 0 && Math.abs(h - expected) > 2) {
       document.documentElement.style.setProperty("--header-height", `${h}px`);
     }
   }
 }
 
 window.addEventListener("resize", updateHeaderHeightVar);
+window.loadPartials = loadPartials;
+window.loadHeader = loadHeader;
 
 // ========================================================
 // Authentification Globale & Pop-up Modal
@@ -1315,8 +1354,7 @@ function initScrollEffect() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await loadHeader();
-  await loadFooter();
+  await loadPartials();
   initScrollEffect();
 });
 
