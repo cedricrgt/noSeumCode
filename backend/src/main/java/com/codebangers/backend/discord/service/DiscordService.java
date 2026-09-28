@@ -148,8 +148,19 @@ public class DiscordService {
         List<String> targetRoleIds = resolveTargetRoleIds(user);
         String discordUserId = user.getDiscordUserId();
 
+        List<String> manageableTierRoleIds = new ArrayList<>();
+        addRoleIfNotEmpty(manageableTierRoleIds, discordGateway.getVipRoleId());
+        addRoleIfNotEmpty(manageableTierRoleIds, discordGateway.getWebRoleId());
+        addRoleIfNotEmpty(manageableTierRoleIds, discordGateway.getStarterRoleId());
+
         for (String roleId : targetRoleIds) {
             discordGateway.addRoleToMember(discordUserId, roleId);
+        }
+
+        for (String roleId : manageableTierRoleIds) {
+            if (!targetRoleIds.contains(roleId)) {
+                discordGateway.removeRoleFromMember(discordUserId, roleId);
+            }
         }
 
         log.info("🔄 Rôles Discord synchronisés pour {} (Discord ID: {})", user.getEmail(), discordUserId);

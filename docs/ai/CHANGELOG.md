@@ -752,4 +752,38 @@ _Chronologique — plus récent en bas_
      * Configuration des secrets GitHub Actions manquants via GitHub CLI : `DISCORD_BOT_TOKEN`, `DISCORD_INVITE_URL`, `DISCORD_ROLE_DEFAULT_ID`, `DISCORD_ROLE_STARTER_ID`, `DISCORD_ROLE_WEB_ID`, `DISCORD_ROLE_VIP_ID`, et validation de `DISCORD_CLIENT_ID` (`1554118371501412422`), `DISCORD_CLIENT_SECRET`, `DISCORD_GUILD_ID` (`1554111429106339931`).
      * Mise à jour de `.github/workflows/deploy.yml` pour transmettre ces secrets à l'étape SSH, les déclarer dans `envs:`, les injecter dans le template `backend/.env.tpl` et les substituer via `envsubst`.
 2. **Documentation & Prévention** :
-   - Ajout d'une règle dans la section « Fausses Hypothèses à Éviter » de `docs/ai/KNOWN_ISSUES.md`.
+   - Ajout d'une règle dans la section « Fausses Hypothèses à Éviter » de `docs/ai/KNOWN_ISSUES.md`.
+
+---
+
+### 2026-09-28 — Correctif : Pack VIP, Révocation Rôles Discord & Gestion des Statuts de Paiement Admin
+**Conversation**: `090e821d-c81b-4b96-80d1-ddc3085e6fe8`  
+**Branche**: `fix/vip-enrollment-admin-status-and-icons`
+
+#### Ce qui a changé :
+1. **Synchronisation Inscription & Pack Mentorat VIP** :
+   - Correction sur `frontend/index.html` : le bouton d'inscription VIP pointe désormais vers le cours Pack VIP (`c3000000-0000-0000-0000-000000000003`) au lieu du Pack Web (`c2`).
+   - Correction dans `frontend/js/header.js` : le slug `"vip"` et ses alias (`pack-vip`, `mentorat-vip`, `goat`) pointent vers `c3000000-0000-0000-0000-000000000003`.
+   - Ajout de la méthode `enrollInBundleCourses` dans `PaymentService.java` et `EnrollmentService.java` : l'achat ou l'octroi d'un pack VIP inscrit immédiatement l'étudiant aux 3 cours (`c3`, `c2`, `c1`) avec le tier `VIP`.
+   - Ajout de la synchronisation proactive synchrone dans `frontend/js/dashboard.js` : inspection de `session_id` Stripe Checkout à l'arrivée sur le dashboard et déblocage immédiat via `/api/payments/confirm-session`.
+
+2. **Révocation du Statut de Paiement & Rôles Discord** :
+   - `DiscordService.java` : implémentation de la suppression effective des rôles (`discordGateway.removeRoleFromMember`) pour tout rôle tier (`vipRoleId`, `webRoleId`, `starterRoleId`) non détenu lors de la synchronisation.
+   - `EnrollmentService.java` : injection de `DiscordService` et appel systématique de `syncUserRoles(user)` lors des mises à jour (`updatePaymentStatus`, `setCoursePaymentStatusForUser`, `deleteEnrollment`).
+   - `EnrollmentService.java` : renforcement de `hasPaidAccess` avec verrouillage prioritaire `explicitDenied` (si une inscription est `FAILED` ou `REFUNDED`, l'accès au cours est immédiatement rejeté même si un bundle partagé était actif).
+   - `EnrollmentService.java` : propagation en cascade des statuts `FAILED` et `REFUNDED` sur les inscriptions sœurs partageant le même tier bundle.
+   - `PaymentService.java` : levée de la restriction `status == PAID` sur `syncDiscordRolesIfLinked` et déclenchement de la synchronisation Discord lors des mises à jour manuelles de statut de paiement (`processPaymentStatusUpdate`).
+   - `UserController.java` : cartographie fidèle des statuts de paiement (`ÉCHOUÉ`, `REMBOURSÉ`, `PAYÉ`, `EN ATTENTE`, `GRATUIT`).
+
+3. **Gestion Interactive du Statut de Paiement Admin** :
+   - `frontend/js/dashboard.js` : ajout du sélecteur interactif de statut de paiement global dans le tableau des utilisateurs de l'administration et dans la vue détaillée déroulante.
+   - Implémentation de `handleUpdateUserGlobalPaymentStatus` appelant `PATCH /api/payments/user/{userId}/status` avec rafraîchissement réactif de la liste et toasts de notification.
+   - Amélioration de `handleUpdateCoursePaymentStatus` pour notifier immédiatement l'administrateur et synchroniser l'affichage.
+
+4. **Élimination des Emojis IA & Intégration d'Icônes Vectorielles NoSeumCode** :
+   - Purge intégrale de tous les emojis Unicode génériques sur `frontend/dashboard.html` et `frontend/js/dashboard.js`.
+   - Création d'une bibliothèque de composants vectoriels SVG personnalisés (`ICONS`) respectant l'identité visuelle comic/cyberpunk NoSeumCode (`#00ff87`, `#0a1628`, `#5865F2`) pour tous les badges de rôles, statuts de paiement, indicateurs de cohorte, cartes d'ateliers, boutons et états vides.
+
+5. **Validation & Tests** :
+   - Suite complète de 130 tests unitaires et d'intégration validée avec 100% de succès (`BUILD SUCCESS`).
+   - Build des bundles CSS et JS frontend exécuté avec succès (`npm run build`).

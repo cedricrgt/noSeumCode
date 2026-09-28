@@ -26,13 +26,33 @@ public class EnrollmentService {
     private final EnrollmentRepository enrollmentRepository;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
+    private com.codebangers.backend.discord.service.DiscordService discordService;
 
     public EnrollmentService(EnrollmentRepository enrollmentRepository,
                            CourseRepository courseRepository,
                            UserRepository userRepository) {
+        this(enrollmentRepository, courseRepository, userRepository, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public EnrollmentService(EnrollmentRepository enrollmentRepository,
+                           CourseRepository courseRepository,
+                           UserRepository userRepository,
+                           @org.springframework.beans.factory.annotation.Autowired(required = false) com.codebangers.backend.discord.service.DiscordService discordService) {
         this.enrollmentRepository = enrollmentRepository;
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
+        this.discordService = discordService;
+    }
+
+    private void syncDiscordRolesIfLinked(User user) {
+        if (discordService != null && user != null && user.isDiscordLinked()) {
+            try {
+                discordService.syncUserRoles(user);
+            } catch (Exception e) {
+                // Silently handle Discord sync error to avoid breaking database transaction
+            }
+        }
     }
 
     @Transactional(readOnly = true)
@@ -85,15 +105,15 @@ public class EnrollmentService {
         Optional<Enrollment> directEnrollment = enrollmentRepository.findByUserIdAndCourseId(user.getId(), courseId);
         if (directEnrollment.isPresent()) {
             Enrollment e = directEnrollment.get();
-            if (e.getPaymentStatus() == PaymentStatus.PAID) {
-                EnrollmentTier userTier = e.getTier() != null ? e.getTier() : EnrollmentTier.WEB;
-                if (userTier.canAccess(requiredTier)) {
-                    return true;
-                }
+            // Si l'inscription directe est explicitement non payée (FAILED, REFUNDED, PENDING) -> accès refusé
+            if (e.getPaymentStatus() != PaymentStatus.PAID) {
+                return false;
             }
+            EnrollmentTier userTier = e.getTier() != null ? e.getTier() : EnrollmentTier.WEB;
+            return userTier.canAccess(requiredTier);
         }
 
-        // 2. Vérification si l'utilisateur possède une autre inscription active d'un tier suffisant (Pack global)
+        // 2. Si aucune inscription directe, vérifier si une autre inscription active d'un tier suffisant existe (Pack global)
         List<Enrollment> paidEnrollments = enrollmentRepository.findByUserId(user.getId()).stream()
                 .filter(e -> e.getPaymentStatus() == PaymentStatus.PAID)
                 .toList();
@@ -129,8 +149,26 @@ public class EnrollmentService {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
             .orElseThrow(() -> new ResourceNotFoundException("Enrollment", enrollmentId));
 
+        EnrollmentTier oldTier = enrollment.getTier();
         enrollment.setPaymentStatus(status);
-        return enrollmentRepository.save(enrollment);
+        Enrollment saved = enrollmentRepository.save(enrollment);
+
+        if (status == PaymentStatus.FAILED || status == PaymentStatus.REFUNDED) {
+            if (oldTier != null && (oldTier == EnrollmentTier.VIP || oldTier == EnrollmentTier.WEB)) {
+                List<Enrollment> userEnrollments = enrollmentRepository.findByUserId(saved.getUser().getId());
+                for (Enrollment other : userEnrollments) {
+                    if (!other.getId().equals(saved.getId()) && other.getTier() == oldTier) {
+                        other.setPaymentStatus(status);
+                        enrollmentRepository.save(other);
+                    }
+                }
+            }
+        } else if (status == PaymentStatus.PAID) {
+            syncBundleEnrollmentsForTier(saved.getUser(), oldTier, saved.getCohort(), status);
+        }
+
+        syncDiscordRolesIfLinked(saved.getUser());
+        return saved;
     }
 
     public Enrollment setCoursePaymentStatusForUser(UUID userId, UUID courseId, PaymentStatus status) {
@@ -139,23 +177,90 @@ public class EnrollmentService {
 
     public Enrollment setCoursePaymentStatusForUser(UUID userId, UUID courseId, PaymentStatus status, EnrollmentTier tier, Cohort cohort) {
         Optional<Enrollment> existing = enrollmentRepository.findByUserIdAndCourseId(userId, courseId);
+        Enrollment saved;
+        EnrollmentTier effectiveTier = tier != null ? tier : (existing.map(Enrollment::getTier).orElse(EnrollmentTier.WEB));
+
+        // Auto-detect tier from courseId if not explicitly specified
+        UUID c1Id = UUID.fromString("c1000000-0000-0000-0000-000000000001");
+        UUID c2Id = UUID.fromString("c2000000-0000-0000-0000-000000000002");
+        UUID c3Id = UUID.fromString("c3000000-0000-0000-0000-000000000003");
+        if (courseId.equals(c3Id)) {
+            effectiveTier = EnrollmentTier.VIP;
+        } else if (courseId.equals(c2Id) && effectiveTier != EnrollmentTier.VIP) {
+            effectiveTier = EnrollmentTier.WEB;
+        }
+
         if (existing.isPresent()) {
             Enrollment enrollment = existing.get();
+            EnrollmentTier oldTier = enrollment.getTier();
             enrollment.setPaymentStatus(status);
-            if (tier != null) {
-                enrollment.setTier(tier);
-            }
+            enrollment.setTier(effectiveTier);
             if (cohort != null) {
                 enrollment.setCohort(cohort);
             }
-            return enrollmentRepository.save(enrollment);
+            saved = enrollmentRepository.save(enrollment);
+
+            if (status == PaymentStatus.FAILED || status == PaymentStatus.REFUNDED) {
+                List<Enrollment> userEnrollments = enrollmentRepository.findByUserId(userId);
+                for (Enrollment other : userEnrollments) {
+                    if (!other.getId().equals(saved.getId()) && oldTier != null && other.getTier() == oldTier) {
+                        other.setPaymentStatus(status);
+                        enrollmentRepository.save(other);
+                    }
+                }
+            } else if (status == PaymentStatus.PAID) {
+                syncBundleEnrollmentsForTier(saved.getUser(), effectiveTier, cohort, status);
+            }
         } else {
             User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", userId));
             Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
-            Enrollment newEnrollment = new Enrollment(user, course, status, 0, tier != null ? tier : EnrollmentTier.WEB, cohort);
-            return enrollmentRepository.save(newEnrollment);
+            Enrollment newEnrollment = new Enrollment(user, course, status, 0, effectiveTier, cohort);
+            saved = enrollmentRepository.save(newEnrollment);
+
+            if (status == PaymentStatus.PAID) {
+                syncBundleEnrollmentsForTier(user, effectiveTier, cohort, status);
+            }
+        }
+        syncDiscordRolesIfLinked(saved.getUser());
+        return saved;
+    }
+
+    private void syncBundleEnrollmentsForTier(User user, EnrollmentTier tier, Cohort cohort, PaymentStatus status) {
+        if (tier == null || user == null) return;
+        UUID c1Id = UUID.fromString("c1000000-0000-0000-0000-000000000001");
+        UUID c2Id = UUID.fromString("c2000000-0000-0000-0000-000000000002");
+        UUID c3Id = UUID.fromString("c3000000-0000-0000-0000-000000000003");
+
+        List<UUID> targetCourseIds = new java.util.ArrayList<>();
+        if (tier == EnrollmentTier.VIP) {
+            targetCourseIds.add(c3Id);
+            targetCourseIds.add(c2Id);
+            targetCourseIds.add(c1Id);
+        } else if (tier == EnrollmentTier.WEB) {
+            targetCourseIds.add(c2Id);
+            targetCourseIds.add(c1Id);
+        }
+
+        List<Enrollment> existingEnrollments = enrollmentRepository.findByUserId(user.getId());
+        for (UUID cid : targetCourseIds) {
+            Course c = courseRepository.findById(cid).orElse(null);
+            if (c != null) {
+                Enrollment e = existingEnrollments.stream()
+                        .filter(x -> x.getCourse() != null && x.getCourse().getId().equals(cid))
+                        .findFirst()
+                        .orElse(null);
+                if (e != null) {
+                    e.setPaymentStatus(status);
+                    e.setTier(tier);
+                    if (cohort != null) e.setCohort(cohort);
+                    enrollmentRepository.save(e);
+                } else if (status != null) {
+                    Enrollment ne = new Enrollment(user, c, status, 0, tier, cohort);
+                    enrollmentRepository.save(ne);
+                }
+            }
         }
     }
 
@@ -168,6 +273,11 @@ public class EnrollmentService {
     }
 
     public void deleteEnrollment(UUID enrollmentId) {
+        Optional<Enrollment> enrollmentOpt = enrollmentRepository.findById(enrollmentId);
+        User user = enrollmentOpt.map(Enrollment::getUser).orElse(null);
         enrollmentRepository.deleteById(enrollmentId);
+        if (user != null) {
+            syncDiscordRolesIfLinked(user);
+        }
     }
 }

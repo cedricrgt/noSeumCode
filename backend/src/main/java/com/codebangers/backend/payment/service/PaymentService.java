@@ -111,6 +111,7 @@ public class PaymentService {
             }
         }
 
+        syncDiscordRolesIfLinked(user, request.getPaymentStatus());
         return enrollmentRepository.findByUserId(userId);
     }
 
@@ -239,6 +240,12 @@ public class PaymentService {
                         Enrollment newEnrollment = new Enrollment(user, course, status, 0, tier, cohort);
                         enrollmentRepository.save(newEnrollment);
                     }
+
+                    // En cas de pack/bundle (VIP ou WEB), synchroniser les cours inclus
+                    if (tier == EnrollmentTier.VIP || tier == EnrollmentTier.WEB) {
+                        enrollInBundleCourses(user, tier, cohort, status);
+                    }
+
                     log.info("🎓 Inscription mise à jour suite à webhook Stripe pour {} sur le cours {} (Tier: {}, Cohorte: {}) -> Statut: {}",
                             user.getEmail(), course.getTitle(), tier, (cohort != null ? cohort.getName() : "Aucune"), status);
                     syncDiscordRolesIfLinked(user, status);
@@ -323,14 +330,60 @@ public class PaymentService {
             enrollmentRepository.save(enrollment);
         }
 
+        // En cas de pack/bundle (VIP ou WEB), synchroniser les cours inclus
+        if (tier == EnrollmentTier.VIP || tier == EnrollmentTier.WEB) {
+            enrollInBundleCourses(user, tier, cohort, PaymentStatus.PAID);
+        }
+
         log.info("🎓 Inscription confirmée (synchronisation Stripe directe) pour {} sur le cours {} (Tier: {}, Cohorte: {}) -> Statut: PAID",
                 user.getEmail(), course.getTitle(), tier, (cohort != null ? cohort.getName() : "Aucune"));
         syncDiscordRolesIfLinked(user, PaymentStatus.PAID);
         return enrollment;
     }
 
+    private void enrollInBundleCourses(User user, EnrollmentTier tier, Cohort cohort, PaymentStatus status) {
+        if (tier == null || user == null) return;
+
+        List<Enrollment> existingEnrollments = enrollmentRepository.findByUserId(user.getId());
+
+        UUID c1Id = UUID.fromString("c1000000-0000-0000-0000-000000000001"); // Fondations
+        UUID c2Id = UUID.fromString("c2000000-0000-0000-0000-000000000002"); // Dynamique
+        UUID c3Id = UUID.fromString("c3000000-0000-0000-0000-000000000003"); // VIP
+
+        List<UUID> targetCourseIds = new java.util.ArrayList<>();
+        if (tier == EnrollmentTier.VIP) {
+            targetCourseIds.add(c3Id);
+            targetCourseIds.add(c2Id);
+            targetCourseIds.add(c1Id);
+        } else if (tier == EnrollmentTier.WEB) {
+            targetCourseIds.add(c2Id);
+            targetCourseIds.add(c1Id);
+        } else if (tier == EnrollmentTier.STARTER) {
+            targetCourseIds.add(c1Id);
+        }
+
+        for (UUID cid : targetCourseIds) {
+            Course c = courseRepository.findById(cid).orElse(null);
+            if (c != null) {
+                Enrollment e = existingEnrollments.stream()
+                        .filter(x -> x.getCourse() != null && x.getCourse().getId().equals(cid))
+                        .findFirst()
+                        .orElse(null);
+                if (e != null) {
+                    e.setPaymentStatus(status);
+                    e.setTier(tier);
+                    if (cohort != null) e.setCohort(cohort);
+                    enrollmentRepository.save(e);
+                } else if (status != null) {
+                    Enrollment ne = new Enrollment(user, c, status, 0, tier, cohort);
+                    enrollmentRepository.save(ne);
+                }
+            }
+        }
+    }
+
     private void syncDiscordRolesIfLinked(User user, PaymentStatus status) {
-        if (discordService != null && user != null && user.isDiscordLinked() && status == PaymentStatus.PAID) {
+        if (discordService != null && user != null && user.isDiscordLinked()) {
             try {
                 discordService.syncUserRoles(user);
             } catch (Exception e) {

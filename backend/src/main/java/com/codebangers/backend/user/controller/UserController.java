@@ -151,7 +151,17 @@ public class UserController {
                 response.setPaymentStatus("GRATUIT");
             } else {
                 boolean hasPaid = enrollments.stream().anyMatch(e -> e.getPaymentStatus() == Enrollment.PaymentStatus.PAID);
-                response.setPaymentStatus(hasPaid ? "PAYÉ" : "EN ATTENTE");
+                boolean hasRefunded = enrollments.stream().anyMatch(e -> e.getPaymentStatus() == Enrollment.PaymentStatus.REFUNDED);
+                boolean hasFailed = enrollments.stream().anyMatch(e -> e.getPaymentStatus() == Enrollment.PaymentStatus.FAILED);
+                if (hasPaid) {
+                    response.setPaymentStatus("PAYÉ");
+                } else if (hasRefunded) {
+                    response.setPaymentStatus("REMBOURSÉ");
+                } else if (hasFailed) {
+                    response.setPaymentStatus("ÉCHOUÉ");
+                } else {
+                    response.setPaymentStatus("EN ATTENTE");
+                }
             }
         } catch (Exception e) {
             response.setEnrolledCoursesCount(0);
