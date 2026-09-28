@@ -14,7 +14,7 @@ const observer = new IntersectionObserver((entries) => {
 
 document.addEventListener("DOMContentLoaded", () => {
   const cards = document.querySelectorAll(".card");
-  const sections = document.querySelectorAll("section");
+  const sections = document.querySelectorAll("section:not(.hero)");
 
   cards.forEach((card) => observer.observe(card));
   sections.forEach((section) => observer.observe(section));

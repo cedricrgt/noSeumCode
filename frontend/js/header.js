@@ -125,15 +125,17 @@ async function loadHeader() {
 }
 
 function updateHeaderHeightVar() {
-  const header = document.querySelector(".header");
-  if (header) {
-    const isMobile = window.innerWidth <= 768;
-    const expected = isMobile ? 118 : 153;
-    const h = header.offsetHeight;
-    if (h > 0 && Math.abs(h - expected) > 2) {
-      document.documentElement.style.setProperty("--header-height", `${h}px`);
+  window.requestAnimationFrame(() => {
+    const header = document.querySelector(".header");
+    if (header) {
+      const isMobile = window.innerWidth <= 768;
+      const expected = isMobile ? 118 : 153;
+      const h = header.offsetHeight;
+      if (h > 0 && Math.abs(h - expected) > 2) {
+        document.documentElement.style.setProperty("--header-height", `${h}px`);
+      }
     }
-  }
+  });
 }
 
 window.addEventListener("resize", updateHeaderHeightVar);

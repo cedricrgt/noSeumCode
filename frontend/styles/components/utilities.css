@@ -1,4 +1,17 @@
 
+/* Accessibility: Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 /* Accessibility: Skip Link */
 .skip-link {
   position: absolute;
@@ -30,11 +43,15 @@ section[id], div[id] {
 .section-tag {
   display: inline-block;
   font-size: 1.5rem;
-  color: #00a85a;
+  color: #047857; /* Contrast > 5:1 on light backgrounds (WCAG AA) */
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 2px;
   margin-bottom: var(--spacing-sm);
+}
+
+.section--dark .section-tag {
+  color: var(--primary-green); /* Contrast > 14:1 on dark backgrounds */
 }
 
 .section-title {
@@ -105,6 +122,14 @@ section[id], div[id] {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
 
