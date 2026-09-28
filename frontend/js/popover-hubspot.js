@@ -32,6 +32,12 @@
                 region: "eu1",
                 target: "#hubspot-form-container",
                 onFormSubmitted: () => {
+                  if (typeof window.trackConversion === 'function') {
+                    window.trackConversion('hubspot_form_submitted', {
+                      form_id: '1a00f0a3-c33c-47e3-9614-b56fdc4a8586',
+                      location: 'lead_magnet_programme'
+                    });
+                  }
                   if (container) {
                     container.innerHTML = `
                       <div style="text-align: center; padding: 2rem 1rem; color: #fff;">

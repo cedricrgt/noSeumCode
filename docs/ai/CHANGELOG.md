@@ -570,3 +570,50 @@ _Chronologique — plus récent en bas_
 6. **Pipeline de Build & Validation Locale** :
    - Mise à jour de `frontend/build.sh` pour intégrer la compilation et minification de `formations.min.css` (24 Ko) et `workshops.min.css` (21 Ko).
    - Exécution complète de la suite de 112 tests unitaires et d'intégration Spring Boot (`BUILD SUCCESS`, 0 erreur, 0 échec).
+
+---
+
+## 2026-09-28 — Sprint 9 : Refonte Copywriting & Rassurance Parents/Jeunes (Mentor & Analytics Plausible/Umami)
+
+**Conversation ID**: `75f79e74-a07a-434f-8d80-e223f416f4b8`  
+**Branche**: `feat/sprint-9-copywriting-analytics`  
+**Objectif**: Repositionnement du message d'accroche et du hero (« Apprendre à coder en construisant de vrais projets »), mise en place du double discours jeunes (16-25 ans) et parents, création de la section dédiée « Ton Mentor » (Cédric Ragot), intégration d'une solution d'analytics cookieless privacy-first (Plausible / Umami) conforme au RGPD, et mesure automatisée des conversions (clics CTA, soumissions formulaires HubSpot, checkouts Stripe).
+
+### Réalisations & Livrables :
+1. **Repositionnement Copywriting & Hero (`frontend/index.html`, `hero.css`)** :
+   - Titre principal aligné sur la proposition de valeur : *« Apprendre à coder en construisant de vrais projets ! »*.
+   - Sous-titre et descriptif clarifiés : cours en direct en promotions de 6 élèves max, 2h de cours interactif + 2h d'atelier projet par semaine pour maîtriser le web sans décrocher.
+   - Ajout d'une barre de badges de rassurance visuelle dans le hero (promotions de 6 élèves max, 2h+2h / semaine, replays à vie illimités).
+   - Micro-copie de réassurance sous les CTAs : sans prérequis, facilités de paiement 3x/4x via Klarna, et encadrement bienveillant garanti.
+   - Balisage SEO & OpenGraph / Twitter Cards synchronisé avec le nouveau message d'accroche.
+
+2. **Section Double Regard : Rassurance Parents & Jeunes (`frontend/index.html`, `rassurance.css`)** :
+   - Création de la section `#rassurance` avec grille comparative double perspective :
+     * **Côté Jeunes (16-25 ans)** : Du concret sans théorie assommante (code dès la 1ère heure), zéro solitude face aux bugs (aide en temps réel), portfolio professionnel déployé sur GitHub pour impressionner les recruteurs, et salon d'entraide Discord 7j/7.
+     * **Côté Parents** : Rythme structuré et compatible avec les études (soirées/samedis, 2h cours + 2h atelier), promotions limitées à 6 élèves max (garantie d'écoute et de suivi individuel), mentor senior expérimenté (+10 ans d'expertise logicielle), et replays à vie avec paiement sécurisé Stripe & Klarna.
+
+3. **Section "Ton Mentor" — Cédric Ragot (`frontend/index.html`, `mentor.css`, `mentor-cedric.webp`)** :
+   - Création de la section `#mentor` valorisant l'expertise technique et la pédagogie active de Cédric (fondateur et ingénieur logiciel senior avec plus de 10 ans d'expérience).
+   - Intégration d'un portrait WebP optimisé (8,2 Ko) avec badge vérifié « Formateur & Lead Dev ».
+   - Présentation des 3 piliers de la méthode NoSeumCode :
+     1. *Code First (Pratique immédiate)* : apprentissage par la pratique directe, manipulation des outils pros dès la première heure.
+     2. *Résolution sans Jugement* : dédramatisation des bugs, apprentissage de la console et du débogage méthodique.
+     3. *Accompagnement & Suivi 7j/7* : disponibilité en direct sur Discord et révision personnalisée du code.
+   - Encadré de mise en valeur de l'option **Mentorat VIP** (4h de coaching individuel 1-to-1).
+   - Ajout de l'entrée « Ton Mentor » dans la barre de navigation du header partagé (`frontend/partials/header.html`).
+
+4. **Analytics Cookieless & Privacy-First Conforme RGPD (`frontend/js/analytics.js`, `frontend/.htaccess`)** :
+   - Création d'un module d'orchestration analytics ultra-léger (<1,5 Ko) et respectueux de la vie privée, exempté de consentement cookies (CNIL) car 100% cookieless et sans collecte de données personnelles (PII).
+   - Support natif et simultané de Plausible Analytics (`window.plausible`) et d'Umami Analytics (`window.umami.track`), avec repli de développement fluide (`console.debug`) et respect du flag Do Not Track (`navigator.doNotTrack`).
+   - Mesure automatisée des 3 grands objectifs de conversion :
+     * **Clics CTA** : écoute déléguée des boutons d'action (`cta_click`) avec identification du bouton, du texte et de l'emplacement (`hero_go_coder`, `hero_workshop_promo`, `mentor_vip_reserve`, etc.).
+     * **Soumissions formulaires HubSpot** : écoute native des messages postMessage HubSpot (`hsFormCallback` / `onFormSubmitted`) et callback direct dans `popover-hubspot.js` (`hubspot_form_submitted`).
+     * **Tunnel de paiement Stripe** : déclenchement de `checkout_initiate` à chaque sélection de pack dans `header.js` (`initiateCourseEnrollment`), et déclenchement de `checkout_completed` à l'atterrissage sur `success.html` (avec `course_id` et `session_id`).
+     * **Téléchargements de documents** : suivi automatique des téléchargements de brochures PDF (`pdf_download`).
+   - Durcissement de la Content Security Policy dans `.htaccess` : autorisation de `https://plausible.io`, `https://cloud.umami.is` et `https://api-gateway.umami.dev` dans `script-src` et `connect-src`.
+   - Déploiement du script de tracking sur l'ensemble des pages de l'application (`index.html`, `formations/index.html`, `formations/starter.html`, `formations/pack-web.html`, `workshops.html`, `parcours.html`, `success.html`, `thanks.html`, `dashboard.html`).
+
+5. **Build CSS & Tests** :
+   - Mise à jour de `build.js` et `build.sh` pour intégrer `rassurance.css` et `mentor.css` dans le bundle minifié `homepage.min.css` (28,5 Ko).
+   - Validation de la syntaxe JavaScript avec Node.js.
+   - Exécution complète des 112 tests unitaires et d'intégration Spring Boot (`BUILD SUCCESS`, 0 erreur, 0 échec).

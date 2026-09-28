@@ -17,7 +17,7 @@
 | **Sprint 6** | **Workshops Gratuits Toussaint** | Bandeau header réactivé, page dédiée `workshops.html`, jauge stricte 6 élèves max | ✅ **Terminé** |
 | **Sprint 7** | **Nouvelle Gamme & Accès Cohortes** | Pack Starter (accès replays à vie), Pack Web, option VIP, Klarna BNPL via Stripe | ✅ **Terminé** |
 | **Sprint 8** | **Performance Web & SEO Technique** | Compression images (<800 Ko), rendu statique dédié formations, fix CLS, cache Apache | ✅ **Terminé** |
-| **Sprint 9** | **Copywriting & Rassurance Parents/Jeunes** | Refonte Hero, section Ton Mentor, rassurance parents, Analytics RGPD cookieless | 🟡 **Prêt / Prochain** |
+| **Sprint 9** | **Copywriting & Rassurance Parents/Jeunes** | Refonte Hero, section Ton Mentor, rassurance parents, Analytics RGPD cookieless | ✅ **Terminé** |
 
 ---
 
@@ -74,9 +74,9 @@ gantt
     Fix CLS Header & Cache Apache (8.3)  :done, s8_3, 2026-09-27, 2026-09-28
 
     section Sprint 9 : Copywriting & Analytics
-    Hero & Rassurance Parents/Jeunes(9.1):s9_1, 2026-09-28, 2d
-    Section Ton Mentor (9.2)             :s9_2, after s9_1, 1d
-    Analytics Cookieless RGPD (9.3)      :s9_3, after s9_2, 1d
+    Hero & Rassurance Parents/Jeunes(9.1):done, s9_1, 2026-09-28, 2026-09-28
+    Section Ton Mentor (9.2)             :done, s9_2, 2026-09-28, 2026-09-28
+    Analytics Cookieless RGPD (9.3)      :done, s9_3, 2026-09-28, 2026-09-28
 ```
 
 ---
@@ -174,7 +174,7 @@ gantt
 
 ---
 
-### Sprint 9 : Refonte Copywriting & Rassurance Parents/Jeunes
+### Sprint 9 : Refonte Copywriting & Rassurance Parents/Jeunes (Terminé)
 - **9.1 Repositionnement du Message & Hero** :
   - Titre : *"Apprendre à coder en construisant de vrais projets"*.
   - Double discours : cool et valorisant pour les 16-25 ans, structuré et rassurant pour les parents (cours en direct, petits groupes de 6, 2h cours + 2h atelier projet par semaine).

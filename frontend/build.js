@@ -28,18 +28,22 @@ function concatFiles(outputFile, inputFiles) {
 function minifyFile(inputPath) {
   const outputPath = inputPath.replace(/\.css$/, '.min.css');
   try {
-    execSync(`npx --yes lightningcss-cli --minify --bundle "${inputPath}" -o "${outputPath}"`, {
-      stdio: 'ignore'
+    const cmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+    execSync(`${cmd} --yes lightningcss-cli --minify --bundle "${inputPath}" -o "${outputPath}"`, {
+      stdio: 'ignore',
+      shell: true
     });
   } catch (_) {
-    const raw = fs.readFileSync(inputPath, 'utf8');
-    const minified = raw
-      .replace(/\/\*[\s\S]*?\*/g, '')
-      .replace(/\s+/g, ' ')
-      .replace(/\s*([{}:;,])\s*/g, '$1')
-      .replace(/;}/g, '}')
-      .trim();
-    fs.writeFileSync(outputPath, minified, 'utf8');
+    if (fs.existsSync(inputPath)) {
+      const raw = fs.readFileSync(inputPath, 'utf8');
+      const minified = raw
+        .replace(/\/\*[\s\S]*?\*/g, '')
+        .replace(/\s+/g, ' ')
+        .replace(/\s*([{}:;,])\s*/g, '$1')
+        .replace(/;}/g, '}')
+        .trim();
+      fs.writeFileSync(outputPath, minified, 'utf8');
+    }
   }
   console.log(`  → minify: ${path.relative(frontendDir, outputPath)}`);
 }
@@ -64,7 +68,9 @@ concatFiles(homepageDist, [
   path.join(stylesDir, 'pages', 'thanks.css'),
   path.join(stylesDir, 'pages', 'homepage', 'hero.css'),
   path.join(stylesDir, 'pages', 'homepage', 'presentation.css'),
+  path.join(stylesDir, 'pages', 'homepage', 'rassurance.css'),
   path.join(stylesDir, 'pages', 'homepage', 'courses.css'),
+  path.join(stylesDir, 'pages', 'homepage', 'mentor.css'),
   path.join(stylesDir, 'pages', 'homepage', 'blog.css'),
   path.join(stylesDir, 'pages', 'homepage', 'faq.css'),
   path.join(stylesDir, 'pages', 'homepage', 'footer.css')
@@ -110,5 +116,15 @@ concatFiles(workshopsDist, [
   path.join(stylesDir, 'pages', 'homepage', 'footer.css')
 ]);
 minifyFile(workshopsDist);
+
+// 6. Formations
+console.log('📦 Construction du bundle formations.css…');
+const formationsDist = path.join(distDir, 'formations.css');
+concatFiles(formationsDist, [
+  ...BASE_FILES,
+  path.join(stylesDir, 'pages', 'formations.css'),
+  path.join(stylesDir, 'pages', 'homepage', 'footer.css')
+]);
+minifyFile(formationsDist);
 
 console.log('\n✅ Bundles CSS générés avec succès dans frontend/styles/dist/ !');
