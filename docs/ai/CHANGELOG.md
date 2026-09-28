@@ -700,4 +700,40 @@ _Chronologique — plus récent en bas_
 
 5. **Validation & Tests** :
    - Ajout des suites de tests unitaires : `DiscordGatewayImplTest` (3 tests), `DiscordServiceTest` (8 tests), `DiscordControllerTest` (6 tests).
-   - Exécution de la suite complète de 129 tests Spring Boot (`BUILD SUCCESS`, 0 échec, 0 erreur).
+   - Exécution de la suite complète de 129 tests Spring Boot (`BUILD SUCCESS`, 0 échec, 0 erreur).
+
+---
+
+### 2026-09-28 — Sprint 11 : Déploiement Serveur Discord & Harmonisation UI Dashboard
+**Conversation**: `090e821d-c81b-4b96-80d1-ddc3085e6fe8`  
+**Branche**: `feat/sprint-11-discord-integration`
+
+#### Ce qui a changé :
+1. **Architecture Serveur Discord Live via MCP (`1554111429106339931`)** :
+   - Création de la hiérarchie de rôles avec couleurs et permissions restreintes (évitant l'erreur 50013 d'escalade de privilèges) :
+     * `Teacher` (`1554196347773657118`, `#F59E0B`) — Attribué à l'enseignant Cédric (`admin.noseumcode`).
+     * `Student` (`1554196414354030812`, `#3B82F6`) — Rôle de base pour tout apprenant vérifié.
+     * `Student Starter` (`1554196429143150673`, `#10B981`) — Accès Pack Fondations.
+     * `Student Web` (`1554196443906969752`, `#06B6D4`) — Accès Pack Dynamique Web.
+     * `Student VIP` (`1554196465533067346`, `#8B5CF6`) — Accès Mentorat VIP.
+   - Création des catégories et salons privés verrouillés (`@everyone` denied) :
+     * `ESPACE ENSEIGNANTS` : `#salle-des-profs`, `#ressources-cours` (Teacher & Bot).
+     * `ESPACE ÉTUDIANTS` : `#salon-étudiants`, `#projets-portfolio` (Student, Teacher & Bot).
+     * `PACK STARTER` : `#starter-cours-et-projets` (Student Starter/Web/VIP, Teacher & Bot).
+     * `PACK WEB` : `#web-cours-et-projets` (Student Web/VIP, Teacher & Bot).
+     * `MENTORAT VIP` : `#vip-salon-coaching` (Student VIP, Teacher & Bot).
+
+2. **Résolution de la Redirection OAuth2 Discord (`DiscordController.java`, `application.properties`, `dashboard.js`)** :
+   - Problème : Clic sur « Associer mon compte Discord » depuis `develop.noseumcode.fr` redirigeait vers `http://localhost:8080`.
+   - Cause : Fallback `@Value("${app.backend.url:${SERVER_URL:http://localhost:8080}}")` sur les environnements sans variable `SERVER_URL`.
+   - Correction backend : Valeur par défaut basculée sur `https://api.noseumcode.fr` avec résolution dynamique du proxy reverse via en-têtes `X-Forwarded-Host` et `X-Forwarded-Proto`.
+   - Correction frontend : Construction directe de l'URL OAuth2 dans `connectDiscordAccount()` avec `window.API_BASE_URL` ou fallback `https://api.noseumcode.fr`, évitant tout appel préliminaire renvoyant un host erroné.
+
+3. **Harmonisation Graphique de la Carte Discord (`dashboard.html`, `dashboard.js`)** :
+   - Refonte visuelle de la carte Discord pour l'aligner sur la charte NoSeumCode : fond blanc épuré (`--dash-card-bg: #ffffff`), suppression des gradients sombres Cyber Dark inadaptés au reste du dashboard.
+   - Typographie et contrastes conformes : titres en `--dash-dark-navy` (`#0a1628`), descriptions en `--dash-text-muted` (`#718096`), pastilles de statuts et rôles claires (`rgba(88, 101, 242, 0.08)`, texte `#4752c4`).
+   - Boutons d'action harmonisés (primaire Discord, secondaire synchronisation, destructif dissociation avec styles d'alerte discrets).
+
+4. **Validation & Tests** :
+   - 129 tests unitaires Maven validés avec succès (`BUILD SUCCESS`, 0 erreur, 0 échec).
+   - Build frontend minifié validé (`npm run build`).

@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -38,7 +39,7 @@ public class DiscordController {
             DiscordService discordService,
             UserService userService,
             DiscordGateway discordGateway,
-            @Value("${app.backend.url:${SERVER_URL:http://localhost:8080}}") String backendBaseUrl) {
+            @Value("${app.backend.url:${SERVER_URL:https://api.noseumcode.fr}}") String backendBaseUrl) {
         this.discordService = discordService;
         this.userService = userService;
         this.discordGateway = discordGateway;
@@ -69,7 +70,8 @@ public class DiscordController {
     @GetMapping("/link-url")
     public ResponseEntity<?> getLinkUrl(
             @RequestParam(value = "redirect_uri", required = false) String redirectUri,
-            @AuthenticationPrincipal Jwt jwt) {
+            @AuthenticationPrincipal Jwt jwt,
+            HttpServletRequest request) {
         if (jwt == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Authentification requise pour générer l'URL de liaison Discord."));
@@ -78,9 +80,11 @@ public class DiscordController {
         String token = jwt.getTokenValue();
         String targetRedirect = (redirectUri != null && !redirectUri.isBlank())
                 ? redirectUri
-                : "http://localhost:3000/dashboard.html";
+                : "https://noseumcode.fr/dashboard.html";
 
-        String linkUrl = UriComponentsBuilder.fromUriString(backendBaseUrl)
+        String effectiveBaseUrl = resolveBaseUrl(request);
+
+        String linkUrl = UriComponentsBuilder.fromUriString(effectiveBaseUrl)
                 .path("/oauth2/authorization/discord")
                 .queryParam("redirect_uri", URLEncoder.encode(targetRedirect, StandardCharsets.UTF_8))
                 .queryParam("link_token", token)
@@ -88,6 +92,18 @@ public class DiscordController {
                 .toUriString();
 
         return ResponseEntity.ok(Map.of("url", linkUrl));
+    }
+
+    private String resolveBaseUrl(HttpServletRequest request) {
+        if (request != null) {
+            String forwardedProto = request.getHeader("X-Forwarded-Proto");
+            String forwardedHost = request.getHeader("X-Forwarded-Host");
+            if (forwardedHost != null && !forwardedHost.isBlank()) {
+                String proto = (forwardedProto != null && !forwardedProto.isBlank()) ? forwardedProto : "https";
+                return proto + "://" + forwardedHost;
+            }
+        }
+        return backendBaseUrl;
     }
 
     /**

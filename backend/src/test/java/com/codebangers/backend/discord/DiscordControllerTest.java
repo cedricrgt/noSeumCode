@@ -80,7 +80,7 @@ class DiscordControllerTest {
     @Test
     @DisplayName("GET /api/discord/link-url devrait générer l'URL OAuth2 de liaison avec le link_token")
     void shouldGenerateLinkUrlWithTokenAndRedirect() {
-        ResponseEntity<?> response = controller.getLinkUrl("http://localhost:3000/dashboard.html", mockJwt);
+        ResponseEntity<?> response = controller.getLinkUrl("http://localhost:3000/dashboard.html", mockJwt, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody() instanceof Map);
