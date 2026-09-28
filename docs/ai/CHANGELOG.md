@@ -617,3 +617,34 @@ _Chronologique — plus récent en bas_
    - Mise à jour de `build.js` et `build.sh` pour intégrer `rassurance.css` et `mentor.css` dans le bundle minifié `homepage.min.css` (28,5 Ko).
    - Validation de la syntaxe JavaScript avec Node.js.
    - Exécution complète des 112 tests unitaires et d'intégration Spring Boot (`BUILD SUCCESS`, 0 erreur, 0 échec).
+
+---
+
+### 2026-09-28 — Sprint 10 : Optimisation PageSpeed & Core Web Vitals (LCP < 1.5s, CLS 0.00, Déferrement Stripe & GPU Compositing)
+**Conversation**: `435919e4-c088-4d3b-ab96-450cd0467e7d`  
+**Branche**: `feat/sprint-10-pagespeed-web-vitals`
+
+#### Ce qui a changé :
+1. **Déferrement & Suppression Tiers Bloquants (Task 10.1 / ADR-017)** :
+   - Retrait du SDK synchrone `https://js.stripe.com/v3/` de la page d'accueil `frontend/index.html` (-278 Ko, élimination de plus de 3 150 ms de temps de blocage du thread principal).
+   - Le SDK Stripe est désormais chargé uniquement et de manière dynamique à la demande via `ensureStripeJsLoaded()` lors du déclenchement du paywall ou sur `parcours.html`.
+
+2. **Élimination des Ressources Bloquant le Rendu & Minification JS (Task 10.2)** :
+   - Ajout de l'attribut `defer` sur tous les scripts de la page d'accueil (`analytics.js`, `script.min.js`, `header.min.js`, `popover-hubspot.min.js`).
+   - Automatisation de la minification JS avec Terser dans `build.js`, `build.sh` et `build.ps1` (`header.min.js` à 38,4 Ko, `script.min.js` à 3,8 Ko, `popover-hubspot.min.js` à 2,7 Ko).
+   - Ajout du script `"build": "node build.js"` dans `frontend/package.json`.
+
+3. **Éradication Complète du CLS sur le Hero & Compositing GPU (Task 10.3)** :
+   - Remplacement de l'animation non-composée `gradientShift` (qui animait `background-position-x` et déclenchait des repaints continus CPU) par l'animation accélérée sur GPU `gradientGlow` avec `transform: translateZ(0)` et `opacity` dans `frontend/styles/typo/typography.css`, avec désactivation automatique sous `prefers-reduced-motion`.
+   - Suppression de la mutation dynamique de style `backgroundSize = "200% 200%"` au runtime dans `frontend/js/script.js`.
+   - Calibrage strict de la hauteur déterministe d'en-tête (153px desktop, 118px mobile) dans `updateHeaderHeightVar()` de `header.js` afin d'éviter toute recalculation de marge et affaissement brutal du Hero au chargement.
+
+4. **Optimisation du Waterfall Réseau & Assets Locaux (Task 10.4)** :
+   - Parallélisation complète du chargement des partials HTML (`header.html`, `footer.html`, `popovers-shared.html`) via `Promise.all()` dans `header.js` (`loadPartials()`), réduisant la cascade réseau de 3 requêtes en série à 1 seul aller-retour HTTP.
+   - Redimensionnement et optimisation du logo en WebP natif (8,9 Ko) et PNG optimisé (8,2 Ko au lieu de 28,8 Ko) avec dimensions explicites `width="141"` `height="105"` et balise `<picture>` dans `header.html` et `footer.html`.
+   - Rapatriement local et compression WebP des 3 visuels de cartes de services (`images/card/card-live.webp`, `card-projects.webp`, `card-coaching.webp`), des cartes de blog (`images/blogCards/blog-html.webp`, `blog-js.webp`), et du visuel étudiant SVG Hero (`images/hero/student-female-smiling.webp`, 26 Ko au lieu de 73 Ko).
+
+5. **Validation & Tests** :
+   - Compilation et minification réussie de tous les bundles CSS et JS via `node build.js`.
+   - Contrôle syntaxique rigoureux de tous les scripts avec Node.js (`node -c`).
+   - Exécution complète des 112 tests Spring Boot (`BUILD SUCCESS`, 0 erreur, 0 échec).

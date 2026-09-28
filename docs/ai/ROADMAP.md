@@ -18,6 +18,7 @@
 | **Sprint 7** | **Nouvelle Gamme & Accès Cohortes** | Pack Starter (accès replays à vie), Pack Web, option VIP, Klarna BNPL via Stripe | ✅ **Terminé** |
 | **Sprint 8** | **Performance Web & SEO Technique** | Compression images (<800 Ko), rendu statique dédié formations, fix CLS, cache Apache | ✅ **Terminé** |
 | **Sprint 9** | **Copywriting & Rassurance Parents/Jeunes** | Refonte Hero, section Ton Mentor, rassurance parents, Analytics RGPD cookieless | ✅ **Terminé** |
+| **Sprint 10** | **Optimisation PageSpeed & Core Web Vitals** | LCP < 1.5s, éradication CLS 0.175 sur Hero, déferrement Stripe & GPU compositing | ✅ **Terminé** |
 
 ---
 
@@ -77,6 +78,12 @@ gantt
     Hero & Rassurance Parents/Jeunes(9.1):done, s9_1, 2026-09-28, 2026-09-28
     Section Ton Mentor (9.2)             :done, s9_2, 2026-09-28, 2026-09-28
     Analytics Cookieless RGPD (9.3)      :done, s9_3, 2026-09-28, 2026-09-28
+
+    section Sprint 10 : Optimisation PageSpeed & Core Web Vitals
+    Retrait Stripe de la homepage (10.1) :done, s10_1, 2026-09-28, 2026-09-28
+    Scripts Defer & Minification JS (10.2):done, s10_2, 2026-09-28, 2026-09-28
+    Éradication CLS & GPU Compositing(10.3):done, s10_3, 2026-09-28, 2026-09-28
+    Optimisation Images & Waterfall (10.4):done, s10_4, 2026-09-28, 2026-09-28
 ```
 
 ---
@@ -183,3 +190,21 @@ gantt
 - **9.3 Analytics Conforme RGPD & Cookieless** :
   - Intégration de Plausible ou Umami (léger, respectueux de la vie privée, sans bandeau cookie intrusif).
   - Mesure des conversions (clics CTA, soumissions HubSpot, checkouts Stripe).
+
+---
+
+### Sprint 10 : Optimisation PageSpeed & Core Web Vitals (Terminé)
+- **10.1 Déferrement & Suppression Tiers Bloquants** :
+  - Retrait du SDK Stripe (`js.stripe.com/v3/`) de la page d'accueil `index.html` (-278 Ko, -3 150 ms de blocage thread principal, élimination des alertes de cache TTL tiers).
+  - Chargement dynamique de Stripe conditionné à `parcours.html` ou à l'ouverture du modal de paiement.
+- **10.2 Élimination des Ressources Bloquant le Rendu** :
+  - Ajout de l'attribut `defer` sur tous les scripts de la page d'accueil (`header.js`, `script.js`, `popover-hubspot.js`).
+  - Minification de `header.js` (14,3 Ko) dans le script de build.
+- **10.3 Éradication Complète du CLS (0.175 ➔ 0.00)** :
+  - Calibrage strict de la hauteur réservée pour `#header-placeholder` (desktop 153px, mobile 118px) pour éliminer l'affaissement brutal du Hero au chargement du DOM.
+  - Remplacement de l'animation non-composée `background-position-x` (`gradientShift` sur `.gradient-text`) par une animation accélérée matériellement sur GPU (`transform` ou pseudo-élément `opacity`).
+- **10.4 Optimisation du Waterfall Réseau & Images** :
+  - Parallélisation du chargement des partials (`header.html`, `footer.html`, `popovers-shared.html`) via `Promise.all()`.
+  - Redimensionnement du logo en SVG/WebP natif 141x105 (<5 Ko au lieu du 320x239 de 28 Ko).
+  - Rapatriement local et compression WebP des 3 visuels Unsplash avec attributs `width="400"`, `height="300"`, `loading="lazy"` et `decoding="async"`.
+

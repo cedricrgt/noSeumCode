@@ -121,12 +121,6 @@ if (!prefersReducedMotion) {
   });
 }
 
-const gradientTexts = document.querySelectorAll(".gradient-text");
-
-gradientTexts.forEach((text) => {
-  text.style.backgroundSize = "200% 200%";
-});
-
 const scrollToTopBtn = document.createElement("button");
 scrollToTopBtn.innerHTML = "↑";
 scrollToTopBtn.className = "scroll-to-top";

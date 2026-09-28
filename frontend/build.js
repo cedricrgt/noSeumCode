@@ -127,4 +127,27 @@ concatFiles(formationsDist, [
 ]);
 minifyFile(formationsDist);
 
-console.log('\n✅ Bundles CSS générés avec succès dans frontend/styles/dist/ !');
+// 7. JS Minification (Sprint 10 / Task 10.2)
+console.log('\n📦 Minification des scripts JavaScript…');
+const jsDir = path.join(frontendDir, 'js');
+
+function minifyJsFile(inputPath, outputPath) {
+  if (!fs.existsSync(inputPath)) return;
+  try {
+    const cmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+    execSync(`${cmd} --yes terser "${inputPath}" -o "${outputPath}" -c -m`, {
+      stdio: 'ignore',
+      shell: true
+    });
+    console.log(`  → minify JS: ${path.relative(frontendDir, outputPath)}`);
+  } catch (err) {
+    console.warn(`  ⚠️ Minification JS échouée pour ${path.basename(inputPath)}, copie brute.`);
+    fs.copyFileSync(inputPath, outputPath);
+  }
+}
+
+minifyJsFile(path.join(jsDir, 'header.js'), path.join(jsDir, 'header.min.js'));
+minifyJsFile(path.join(jsDir, 'script.js'), path.join(jsDir, 'script.min.js'));
+minifyJsFile(path.join(jsDir, 'popover-hubspot.js'), path.join(jsDir, 'popover-hubspot.min.js'));
+
+console.log('\n✅ Bundles CSS & JS générés avec succès !');

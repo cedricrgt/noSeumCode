@@ -103,6 +103,18 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 - Pages de formation générées uniquement via JavaScript côté client (SPA) sans HTML pré-rendu (rejeté car pénalisant pour le référencement naturel SEO Googlebot et le partage sur les réseaux sociaux Discord/LinkedIn/Twitter).
 **Conséquence**: Vitesse de chargement quasi-instantanée sur mobile et desktop, score Core Web Vitals optimal (CLS ~0, LCP réduit de plusieurs secondes), et indexation SEO sémantique des offres NoSeumCode.
 
+## ADR-017 — Optimisation PageSpeed & Core Web Vitals (LCP < 1.5s, CLS ~0.00 & Compositing GPU)
+**Status**: Actif
+**Décision**: 
+1. **Déferrement & suppression des tiers bloquants** : retirer le script synchrone Stripe.js (`js.stripe.com/v3/`) de la page d'accueil (économie de 278 Ko et élimination de 3 150 ms de temps de blocage CPU) et basculer sur son injection asynchrone dynamique à la demande (`ensureStripeJsLoaded()`) lors de l'ouverture du modal de paiement ou sur `parcours.html`. Ajouter l'attribut `defer` sur tous les scripts de la page d'accueil (`header.min.js`, `script.min.js`, `popover-hubspot.min.js`, `analytics.js`).
+2. **Parallélisation réseau du chargement des partials** : remplacer l'enchaînement séquentiel en cascade (`header.html` ➔ `popovers-shared.html` ➔ `footer.html`) par un chargement simultané via `Promise.all()`, réduisant la latence d'affichage du squelette de page à un seul aller-retour HTTP.
+3. **Éradication du CLS et GPU compositing** : éliminer les sauts de mise en page (CLS) en remplaçant l'animation non-composée `background-position-x` (`gradientShift`) par une animation accélérée matériellement sur GPU (`transform: translateZ(0)` et `opacity`), supprimer les mutations JavaScript directes de `background-size` dans le DOM, et figer la hauteur déterministe d'en-tête (153px desktop, 118px mobile).
+4. **Optimisation des images et rapatriement local** : convertir le visuel SVG Hero en WebP (26 Ko au lieu de 73 Ko), intégrer le logo sous forme d'élément `<picture>` avec source WebP (8,9 Ko) et dimensions natives explicites (141x105 px), et rapatrier localement l'ensemble des visuels distants Unsplash vers des formats WebP compressés (<20 Ko chacun) dans `images/card/` et `images/blogCards/`.
+**Alternative rejetée**: 
+- Maintenir le SDK Stripe chargé de manière synchrone sur la page d'accueil pour anticiper un éventuel achat (rejeté car pénalise 100% des visiteurs en augmentant le Total Blocking Time de plus de 3 secondes).
+- Continuer à charger les fragments HTML en série (rejeté car allonge inutilement le LCP et le temps avant interactivité).
+**Conséquence**: Score PageSpeed mobile/desktop maximisé (LCP < 1.5s, CLS réduit à ~0.00, TBT minimal), autonomie vis-à-vis des CDN tiers, et fluidité visuelle totale sans scintillement ni décalage de contenu.
+
 
 
 

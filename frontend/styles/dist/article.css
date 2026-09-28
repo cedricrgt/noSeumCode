@@ -96,6 +96,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .gradient-text {
+  display: inline-block;
   background: linear-gradient(
     135deg,
     var(--gradient-start),
@@ -105,16 +106,23 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   font-weight: 800;
-  animation: gradientShift 3s ease infinite;
+  transform: translateZ(0);
+  will-change: opacity;
+  animation: gradientGlow 3s ease-in-out infinite alternate;
 }
 
-@keyframes gradientShift {
-  0%,
-  100% {
-    background-position: 0% 50%;
+@keyframes gradientGlow {
+  0% {
+    opacity: 0.92;
   }
-  50% {
-    background-position: 100% 50%;
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gradient-text {
+    animation: none;
   }
 }
 
@@ -711,7 +719,7 @@ html {
 .logo__img {
   height: 115px;
   width: auto;
-  aspect-ratio: 320 / 239;
+  aspect-ratio: 141 / 105;
   object-fit: contain;
 }
 
@@ -891,7 +899,7 @@ html {
   .logo__img {
     height: 60px;
     width: auto;
-    aspect-ratio: 320 / 239;
+    aspect-ratio: 141 / 105;
   }
 
   .header__navbar {
