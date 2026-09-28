@@ -57,6 +57,32 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String userName = user.getUserName() != null ? user.getUserName() : "";
         String firstName = user.getFirstName() != null ? user.getFirstName() : "";
         String email = user.getEmail() != null ? user.getEmail() : "";
+        // Nettoyage éventuel du cookie de liaison (Sprint 11)
+        boolean isSecure = request.isSecure() || "https".equalsIgnoreCase(request.getHeader("X-Forwarded-Proto"));
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (OAuth2RedirectUriFilter.LINK_USER_EMAIL_COOKIE_NAME.equals(cookie.getName())) {
+                    ResponseCookie deleteLinkCookie = ResponseCookie.from(OAuth2RedirectUriFilter.LINK_USER_EMAIL_COOKIE_NAME, "")
+                            .path("/")
+                            .httpOnly(true)
+                            .maxAge(0)
+                            .sameSite("Lax")
+                            .secure(isSecure)
+                            .build();
+                    response.addHeader(HttpHeaders.SET_COOKIE, deleteLinkCookie.toString());
+                    break;
+                }
+            }
+        }
+        try {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.removeAttribute(OAuth2RedirectUriFilter.LINK_USER_EMAIL_COOKIE_NAME);
+            }
+        } catch (Exception ignored) {
+        }
+
+        String discordParam = user.isDiscordLinked() ? "&discord_status=linked" : "";
 
         String targetUrl = UriComponentsBuilder.fromUriString(targetRedirectUri)
                 .fragment("token=" + token +
@@ -64,7 +90,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                         "&role=" + user.getRole().name() +
                         "&userName=" + URLEncoder.encode(userName, StandardCharsets.UTF_8) +
                         "&firstName=" + URLEncoder.encode(firstName, StandardCharsets.UTF_8) +
-                        "&email=" + URLEncoder.encode(email, StandardCharsets.UTF_8))
+                        "&email=" + URLEncoder.encode(email, StandardCharsets.UTF_8) +
+                        discordParam)
                 .build()
                 .toUriString();
 

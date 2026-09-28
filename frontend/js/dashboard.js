@@ -56,7 +56,14 @@ function parseAuthFromUrl() {
   const role = params.get("role");
   const userName = params.get("userName");
   const firstName = params.get("firstName");
-  const email = params.get("email");
+  const discordStatus = params.get("discord_status");
+  const discordError = params.get("discord_error");
+
+  if (discordStatus === "linked") {
+    sessionStorage.setItem("noseum_discord_linked", "true");
+  } else if (discordError === "access_denied") {
+    sessionStorage.setItem("noseum_discord_denied", "true");
+  }
 
   if (token) {
     currentAuth.token = token;
@@ -70,7 +77,9 @@ function parseAuthFromUrl() {
       localStorage.setItem("noseum_refresh_token", refreshToken);
     }
     localStorage.setItem("noseum_user", JSON.stringify(currentAuth.user));
+  }
 
+  if (token || discordStatus || discordError) {
     // Clear hash without reloading
     history.replaceState(null, null, window.location.pathname);
   }
@@ -96,6 +105,20 @@ async function loadStoredAuth() {
   }
 
   updateUserUI();
+
+  // Notification après liaison de compte Discord (Sprint 11)
+  if (sessionStorage.getItem("noseum_discord_linked") === "true") {
+    sessionStorage.removeItem("noseum_discord_linked");
+    setTimeout(() => {
+      showGlobalDashboardToast("🎉 Ton compte Discord a été associé avec succès ! Tes rôles et accès au serveur NoSeumCode sont à jour.", "success");
+    }, 300);
+  }
+  if (sessionStorage.getItem("noseum_discord_denied") === "true") {
+    sessionStorage.removeItem("noseum_discord_denied");
+    setTimeout(() => {
+      showGlobalDashboardToast("ℹ️ L'autorisation Discord a été annulée.", "info");
+    }, 300);
+  }
 
   // Notification de confirmation après réservation directe ou redirection post-auth
   if (sessionStorage.getItem("noseum_workshop_just_registered") === "true") {
@@ -252,6 +275,7 @@ async function manuallySwitchDashboardView(targetRole) {
   if (targetRole === "STUDENT") {
     await loadStudentCourses();
     await loadStudentWorkshops();
+    await loadDiscordStatus();
   } else if (targetRole === "TEACHER") {
     await loadTeacherData();
   } else if (targetRole === "ADMIN") {
@@ -317,6 +341,7 @@ async function refreshDashboardData() {
   } else {
     await loadStudentCourses();
     await loadStudentWorkshops();
+    await loadDiscordStatus();
   }
 }
 
@@ -770,7 +795,226 @@ async function openStripeCustomerPortal() {
 window.openStripeCustomerPortal = openStripeCustomerPortal;
 
 // ==========================================
-// 4d. Export HubSpot CRM (Ateliers Découvertes) & Notifications
+// 4d. Communauté Discord & Liaison Compte Apprenant (Sprint 11)
+// ==========================================
+
+async function loadDiscordStatus() {
+  const container = document.getElementById("discord-card-container");
+  if (!container) return;
+
+  try {
+    const response = await apiFetch("/api/discord/status");
+    if (!response || !response.ok) {
+      if (response && response.status === 401) return;
+      throw new Error("Impossible de charger le statut Discord.");
+    }
+
+    const data = await response.json();
+    renderDiscordCard(data);
+    updateDiscordHeaderButton(data);
+  } catch (error) {
+    console.warn("Erreur chargement Discord:", error);
+    if (container) {
+      container.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <p style="margin: 0; color: #94a3b8; font-size: 0.9rem;">
+            Impossible de charger le statut Discord pour le moment.
+          </p>
+          <button class="button button__secondary" style="padding: 6px 12px; font-size: 0.85rem;" onclick="loadDiscordStatus()">
+            Réessayer
+          </button>
+        </div>
+      `;
+    }
+  }
+}
+
+function updateDiscordHeaderButton(data) {
+  const btnHeader = document.getElementById("btn-discord-header");
+  const labelHeader = document.getElementById("discord-header-label");
+  if (!btnHeader || !labelHeader) return;
+
+  if (data && data.linked) {
+    labelHeader.textContent = `@${data.discordUsername || "Discord"}`;
+    btnHeader.style.background = "rgba(88, 101, 242, 0.25)";
+    btnHeader.style.borderColor = "#5865F2";
+    btnHeader.style.color = "#fff";
+  } else {
+    labelHeader.textContent = "Discord";
+    btnHeader.style.background = "rgba(88, 101, 242, 0.12)";
+    btnHeader.style.borderColor = "rgba(88, 101, 242, 0.4)";
+    btnHeader.style.color = "#7289da";
+  }
+}
+
+function renderDiscordCard(data) {
+  const container = document.getElementById("discord-card-container");
+  if (!container) return;
+
+  if (!data || !data.linked) {
+    container.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+        <div style="max-width: 680px;">
+          <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;">
+            <span style="font-size: 1.4rem;">🎮</span>
+            <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: #fff;">
+              Rejoins le serveur Discord de la communauté NoSeumCode
+            </h3>
+          </div>
+          <p style="margin: 0 0 1rem 0; color: var(--dash-text-muted); font-size: 0.95rem; line-height: 1.6;">
+            Associe ton compte Discord en un clic pour débloquer automatiquement tes salons privés de cohorte, participer aux sessions live hebdomadaires, poser tes questions à Cédric et échanger avec les autres apprenants.
+          </p>
+          <div style="display: flex; flex-wrap: wrap; gap: 1.2rem; font-size: 0.85rem; color: #cbd5e1;">
+            <span style="display: inline-flex; align-items: center; gap: 0.4rem;">💬 Entraide 7j/7</span>
+            <span style="display: inline-flex; align-items: center; gap: 0.4rem;">🎙️ Salons vocaux live</span>
+            <span style="display: inline-flex; align-items: center; gap: 0.4rem;">🏆 Rôles bot automatiques</span>
+          </div>
+        </div>
+        <div>
+          <button id="btn-connect-discord" class="button button__primary bangers-regular" onclick="connectDiscordAccount()" style="background: #5865F2; border-color: #5865F2; display: inline-flex; align-items: center; gap: 0.6rem; min-height: 48px; padding: 0.75rem 1.6rem; font-size: 1rem; cursor: pointer; color: #fff;" aria-label="Associer mon compte Discord">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+            </svg>
+            <span>Associer mon compte Discord ➔</span>
+          </button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const roleBadges = (data.assignedRoleNames || []).map(r => `
+    <span style="background: rgba(88, 101, 242, 0.25); border: 1px solid rgba(88, 101, 242, 0.6); color: #c4b5fd; padding: 0.25rem 0.65rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600;">
+      🛡️ @${escapeHtml(r)}
+    </span>
+  `).join("");
+
+  const avatarSrc = data.discordAvatar || "images/favicon.png";
+
+  container.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+      <div style="display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap;">
+        <img src="${escapeHtml(avatarSrc)}" alt="Avatar Discord" style="width: 58px; height: 58px; border-radius: 50%; border: 2px solid #5865F2; object-fit: cover;" onerror="this.src='images/favicon.png'">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+            <h3 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #fff;">
+              @${escapeHtml(data.discordUsername || "Apprenant")}
+            </h3>
+            <span style="background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.4); color: #4ade80; padding: 0.2rem 0.55rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">
+              ● COMPTE ASSOCIÉ
+            </span>
+          </div>
+          <p style="margin: 0.35rem 0 0.5rem 0; color: #94a3b8; font-size: 0.85rem;">
+            ${data.serverJoined ? '✅ Membre actif du serveur Discord NoSeumCode' : '⏳ En attente de rejoindre le serveur'}
+          </p>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+            <span style="font-size: 0.8rem; color: #64748b;">Rôles :</span>
+            ${roleBadges}
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+        <a href="${escapeHtml(data.inviteUrl || 'https://discord.gg/noseumcode')}" target="_blank" rel="noopener noreferrer" class="button button__primary bangers-regular" style="background: #5865F2; border-color: #5865F2; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 42px; padding: 0.6rem 1.2rem; font-size: 0.95rem; color: #fff;">
+          <span>🚀 Ouvrir Discord</span>
+        </a>
+        <button id="btn-sync-discord" class="button button__secondary bangers-regular" onclick="syncDiscordRoles()" style="min-height: 42px; padding: 0.6rem 1rem; font-size: 0.95rem; cursor: pointer;" title="Resynchroniser mes rôles Discord">
+          <span>🔄 Synchroniser</span>
+        </button>
+        <button class="dash-btn-logout" onclick="unlinkDiscordAccount()" style="font-size: 0.8rem; padding: 0.5rem 0.8rem; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.1); color: #f87171; cursor: pointer;" title="Dissocier ce compte Discord">
+          Dissocier
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+async function connectDiscordAccount() {
+  const btn = document.getElementById("btn-connect-discord");
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span>Redirection Discord...</span>`;
+  }
+
+  try {
+    const redirectTarget = encodeURIComponent(`${window.location.origin}/dashboard.html`);
+    const response = await apiFetch(`/api/discord/link-url?redirect_uri=${redirectTarget}`);
+    if (!response || !response.ok) {
+      throw new Error("Impossible de générer le lien de connexion Discord.");
+    }
+    const data = await response.json();
+    if (data.url) {
+      window.location.href = data.url;
+    }
+  } catch (error) {
+    console.error("Erreur liaison Discord:", error);
+    showGlobalDashboardToast("❌ Impossible de joindre Discord. Réessayez ultérieurement.", "error");
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<span>Associer mon compte Discord ➔</span>`;
+    }
+  }
+}
+
+async function syncDiscordRoles() {
+  const btn = document.getElementById("btn-sync-discord");
+  const originalHtml = btn ? btn.innerHTML : null;
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span>⏳ Synchronisation...</span>`;
+  }
+
+  try {
+    const response = await apiFetch("/api/discord/sync", { method: "POST" });
+    if (!response || !response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || "Erreur lors de la synchronisation des rôles.");
+    }
+    const data = await response.json();
+    renderDiscordCard(data);
+    showGlobalDashboardToast("✅ Rôles Discord synchronisés avec succès !", "success");
+  } catch (error) {
+    console.error("Erreur sync Discord:", error);
+    showGlobalDashboardToast(`❌ ${error.message}`, "error");
+  } finally {
+    if (btn && originalHtml) {
+      btn.disabled = false;
+      btn.innerHTML = originalHtml;
+    }
+  }
+}
+
+async function unlinkDiscordAccount() {
+  const confirmed = window.confirm("Êtes-vous sûr de vouloir dissocier votre compte Discord ? Vos rôles NoSeumCode sur le serveur ne seront plus mis à jour.");
+  if (!confirmed) return;
+
+  try {
+    const response = await apiFetch("/api/discord/unlink", { method: "POST" });
+    if (!response || !response.ok) {
+      throw new Error("Impossible de dissocier le compte Discord.");
+    }
+    showGlobalDashboardToast("ℹ️ Votre compte Discord a été dissocié.", "success");
+    await loadDiscordStatus();
+  } catch (error) {
+    console.error("Erreur dissociation Discord:", error);
+    showGlobalDashboardToast("❌ Erreur lors de la dissociation du compte.", "error");
+  }
+}
+
+function scrollToDiscordSection() {
+  const section = document.getElementById("discord-section");
+  if (section) {
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+window.loadDiscordStatus = loadDiscordStatus;
+window.connectDiscordAccount = connectDiscordAccount;
+window.syncDiscordRoles = syncDiscordRoles;
+window.unlinkDiscordAccount = unlinkDiscordAccount;
+window.scrollToDiscordSection = scrollToDiscordSection;
+
+// ==========================================
+// 4e. Export HubSpot CRM (Ateliers Découvertes) & Notifications
 // ==========================================
 
 function showGlobalDashboardToast(message, type = "success") {

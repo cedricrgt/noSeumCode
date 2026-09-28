@@ -42,6 +42,21 @@ public class User {
     @Column(name = "avatar_url", length = 500)
     private String avatarUrl;
 
+    // =========================
+    // Discord Integration (Sprint 11)
+    // =========================
+    @Column(name = "discord_user_id", length = 50)
+    private String discordUserId;
+
+    @Column(name = "discord_username", length = 100)
+    private String discordUsername;
+
+    @Column(name = "discord_avatar", length = 255)
+    private String discordAvatar;
+
+    @Column(name = "discord_linked_at")
+    private LocalDateTime discordLinkedAt;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.USER;
@@ -247,5 +262,41 @@ public class User {
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    public String getDiscordUserId() {
+        return discordUserId;
+    }
+
+    public void setDiscordUserId(String discordUserId) {
+        this.discordUserId = discordUserId;
+    }
+
+    public String getDiscordUsername() {
+        return discordUsername;
+    }
+
+    public void setDiscordUsername(String discordUsername) {
+        this.discordUsername = discordUsername;
+    }
+
+    public String getDiscordAvatar() {
+        return discordAvatar;
+    }
+
+    public void setDiscordAvatar(String discordAvatar) {
+        this.discordAvatar = discordAvatar;
+    }
+
+    public LocalDateTime getDiscordLinkedAt() {
+        return discordLinkedAt;
+    }
+
+    public void setDiscordLinkedAt(LocalDateTime discordLinkedAt) {
+        this.discordLinkedAt = discordLinkedAt;
+    }
+
+    public boolean isDiscordLinked() {
+        return discordUserId != null && !discordUserId.isBlank();
     }
 }

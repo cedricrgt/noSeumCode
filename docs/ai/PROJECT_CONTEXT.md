@@ -1,6 +1,6 @@
 # PROJECT_CONTEXT.md — NoSeumCode
 
-_Last updated: 2026-09-28 | Conversation: 435919e4-c088-4d3b-ab96-450cd0467e7d_
+_Last updated: 2026-09-28 | Conversation: 090e821d-c81b-4b96-80d1-ddc3085e6fe8_
 
 ## Project Overview
 
@@ -33,11 +33,14 @@ backend/src/main/java/com/codebangers/backend/
   chapter/      Chapter management + approval workflow
   payment/      PaymentController (Stripe webhook + manual admin)
   workshop/     Workshop + UserWorkshop
+  cohort/       Cohort entity, CohortController, CohortService
+  discord/      DiscordGateway (REST API v10), DiscordService, DiscordController
 frontend/
-  index.html / dashboard.html / cours.html
-  js/header.js dashboard.js cours.js script.js
+  index.html / dashboard.html / parcours.html / workshops.html
+  formations/   starter.html / pack-web.html / index.html
+  js/header.js dashboard.js cours.js script.js workshops.js analytics.js
   partials/     HTML fragments (header.html, popovers-shared.html, footer.html)
-  .htaccess     Apache security headers + HTTPS redirect
+  .htaccess     Apache security headers + HTTPS redirect + compression mod_deflate
 ```
 
 ## Environments & CI/CD Topology
@@ -45,9 +48,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `feat/sprint-10-perf-and-a11y-tuning` (en cours de PR vers `develop`)
-## Current State: Sprints 1 à 10 validés (Gamme Starter/Web/VIP, Cohortes jauge 6 max, Replays à vie Starter, Klarna BNPL, Flyway V015, Google Safe Browsing / Lookalike résolu, Performance Web & SEO Technique, Refonte Copywriting Hero "Apprendre à coder en construisant de vrais projets", Double regard Rassurance Parents/Jeunes, Section Ton Mentor Cédric, Analytics Cookieless & RGPD Plausible/Umami avec tracking complet des conversions, et Optimisation PageSpeed & Core Web Vitals : LCP < 1.5s, CLS 0.00 sur Hero, déferrement Stripe & minification JS, parallélisation Promise.all, rapatriement local WebP des visuels, compositing GPU sur gradient text) avec 112 tests unitaires et d'intégration Spring Boot réussis (0 échec).
-## Next Steps: Lancement commercial, acquisition apprenants et suivi des conversions analytics en production.
+## Active Branch: `feat/sprint-11-discord-integration` (en cours de PR vers `develop`)
+## Current State: Sprints 1 à 11 validés (Gamme Starter/Web/VIP, Cohortes jauge 6 max, Replays à vie Starter, Klarna BNPL, Flyway V016, Intégration Discord OAuth2 scopes identify/email/guilds.join, liaison de compte sécurisée avec anti-collision OWASP ASVS, auto-join du serveur communautaire via Discord REST API v10, attribution automatique et synchronisation dynamique des rôles selon le palier d'achat post-Stripe Checkout, carte de gestion Discord sur le tableau de bord apprenant, SEO & PageSpeed Core Web Vitals optimisés) avec 129 tests unitaires et d'intégration Spring Boot réussis (0 échec).
+## Next Steps: Lancement commercial, acquisition apprenants, animation de la communauté Discord NoSeumCode et suivi des conversions analytics en production.
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN

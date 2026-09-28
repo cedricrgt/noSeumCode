@@ -34,12 +34,13 @@ public class PaymentService {
     private final CourseRepository courseRepository;
     private final StripeGateway stripeGateway;
     private final CohortRepository cohortRepository;
+    private com.codebangers.backend.discord.service.DiscordService discordService;
 
     public PaymentService(UserRepository userRepository,
                           EnrollmentRepository enrollmentRepository,
                           CourseRepository courseRepository,
                           StripeGateway stripeGateway) {
-        this(userRepository, enrollmentRepository, courseRepository, stripeGateway, null);
+        this(userRepository, enrollmentRepository, courseRepository, stripeGateway, null, null);
     }
 
     @Autowired
@@ -48,11 +49,26 @@ public class PaymentService {
                           CourseRepository courseRepository,
                           StripeGateway stripeGateway,
                           @Autowired(required = false) CohortRepository cohortRepository) {
+        this(userRepository, enrollmentRepository, courseRepository, stripeGateway, cohortRepository, null);
+    }
+
+    public PaymentService(UserRepository userRepository,
+                          EnrollmentRepository enrollmentRepository,
+                          CourseRepository courseRepository,
+                          StripeGateway stripeGateway,
+                          CohortRepository cohortRepository,
+                          com.codebangers.backend.discord.service.DiscordService discordService) {
         this.userRepository = userRepository;
         this.enrollmentRepository = enrollmentRepository;
         this.courseRepository = courseRepository;
         this.stripeGateway = stripeGateway;
         this.cohortRepository = cohortRepository;
+        this.discordService = discordService;
+    }
+
+    @Autowired(required = false)
+    public void setDiscordService(com.codebangers.backend.discord.service.DiscordService discordService) {
+        this.discordService = discordService;
     }
 
     /**
@@ -225,6 +241,7 @@ public class PaymentService {
                     }
                     log.info("🎓 Inscription mise à jour suite à webhook Stripe pour {} sur le cours {} (Tier: {}, Cohorte: {}) -> Statut: {}",
                             user.getEmail(), course.getTitle(), tier, (cohort != null ? cohort.getName() : "Aucune"), status);
+                    syncDiscordRolesIfLinked(user, status);
                     return;
                 }
             } catch (IllegalArgumentException e) {
@@ -308,7 +325,18 @@ public class PaymentService {
 
         log.info("🎓 Inscription confirmée (synchronisation Stripe directe) pour {} sur le cours {} (Tier: {}, Cohorte: {}) -> Statut: PAID",
                 user.getEmail(), course.getTitle(), tier, (cohort != null ? cohort.getName() : "Aucune"));
+        syncDiscordRolesIfLinked(user, PaymentStatus.PAID);
         return enrollment;
+    }
+
+    private void syncDiscordRolesIfLinked(User user, PaymentStatus status) {
+        if (discordService != null && user != null && user.isDiscordLinked() && status == PaymentStatus.PAID) {
+            try {
+                discordService.syncUserRoles(user);
+            } catch (Exception e) {
+                log.warn("Impossible de synchroniser les rôles Discord suite au paiement pour {}: {}", user.getEmail(), e.getMessage());
+            }
+        }
     }
 
     /**

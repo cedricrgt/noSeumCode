@@ -663,3 +663,41 @@ _Chronologique — plus récent en bas_
    - Compilation et minification réussie de tous les bundles CSS et JS via `node build.js`.
    - Contrôle syntaxique rigoureux de tous les scripts avec Node.js (`node -c`).
    - Exécution complète des 112 tests Spring Boot (`BUILD SUCCESS`, 0 erreur, 0 échec).
+
+---
+
+### 2026-09-28 — Sprint 11 : Intégration Discord & Automatisation Rôles Communauté (ADR-018)
+**Conversation**: `090e821d-c81b-4b96-80d1-ddc3085e6fe8`  
+**Branche**: `feat/sprint-11-discord-integration`
+
+#### Ce qui a changé :
+1. **Scopes OAuth2 & Persistance Base de Données (Task 11.1)** :
+   - Ajout des scopes Discord `identify,email,guilds.join` dans `application.properties`.
+   - Migration Flyway `V016__add_discord_integration_fields_to_users.sql` : ajout des colonnes `discord_user_id`, `discord_username`, `discord_avatar`, `discord_linked_at` avec index de recherche sur `discord_user_id`.
+   - Mise à jour de l'entité JPA `User` et de `UserRepository` (`findByDiscordUserId`).
+
+2. **Architecture Hexagonale Ports/Adapters (`DiscordGateway`) (Task 11.2 / ADR-018)** :
+   - Définition du port `DiscordGateway` et de l'implémentation adaptateur `DiscordGatewayImpl` (`RestClient` Spring Boot).
+   - Intégration de l'API REST Discord v10 :
+     * `joinGuildMember(guildId, userId, userAccessToken, roleIds)` via `PUT /guilds/{guildId}/members/{userId}` (gestion de `201 Created` pour nouvelle adhésion et `204 No Content` pour membre déjà présent avec assignation itérative des rôles).
+     * `addRoleToMember(guildId, userId, roleId)` via `PUT /guilds/{guildId}/members/{userId}/roles/{roleId}`.
+     * `removeRoleFromMember(guildId, userId, roleId)` via `DELETE /guilds/{guildId}/members/{userId}/roles/{roleId}`.
+     * `getGuildMember(guildId, userId)` via `GET /guilds/{guildId}/members/{userId}`.
+   - Mode simulation gracieuse non-bloquant en dev et test si le bot token ou l'ID de guilde ne sont pas renseignés.
+
+3. **Liaison de Compte, Anti-collision OWASP & Calcul des Rôles (Task 11.3)** :
+   - `DiscordService` : calcul hiérarchique cumulatif des rôles selon le palier maximal payé (`VIP` -> VIP + Web + Starter + Membre ; `WEB` -> Web + Starter + Membre ; `STARTER` -> Starter + Membre ; `NONE` -> Membre).
+   - Vérification stricte anti-collision : interdiction d'associer un compte Discord déjà lié à un autre compte élève (`DuplicateResourceException` HTTP 409).
+   - Flux d'authentification étendu : `OAuth2RedirectUriFilter` capture `link_token` et pose `oauth2_link_email` en cookie HTTP-only/session pour autoriser la liaison à chaud sans perte de session.
+   - `CustomOAuth2UserService` et `OAuth2AuthenticationSuccessHandler` traitent le jeton d'accès utilisateur pour adjoindre le membre à la guilde et synchroniser ses rôles avec redirection `#discord_status=linked`.
+   - Gestionnaire d'échec `OAuth2AuthenticationFailureHandler` avec retour gracieux `#discord_error=access_denied`.
+   - Câblage automatique post-paiement Stripe dans `PaymentService` (`checkout.session.completed` et confirmation directe).
+
+4. **Tableau de Bord Apprenant & Expérience Utilisateur (Task 11.4)** :
+   - Bouton d'accès rapide dans l'en-tête du tableau de bord (`#btn-discord-header`) avec indicateur d'état connecté / déconnecté.
+   - Section dédiée et carte responsive Cyber Dark dans `dashboard.html` : affichage du tag Discord, avatar utilisateur, badges des rôles actifs, lien direct vers le salon, bouton de synchronisation manuelle et déliaison en 1 clic.
+   - Contrôleur REST `DiscordController` (`/api/discord/status`, `/api/discord/link-url`, `/api/discord/sync`, `/api/discord/unlink`).
+
+5. **Validation & Tests** :
+   - Ajout des suites de tests unitaires : `DiscordGatewayImplTest` (3 tests), `DiscordServiceTest` (8 tests), `DiscordControllerTest` (6 tests).
+   - Exécution de la suite complète de 129 tests Spring Boot (`BUILD SUCCESS`, 0 échec, 0 erreur).
