@@ -26,17 +26,20 @@ public class SecurityConfig {
         private final CustomOAuth2UserService customOAuth2UserService;
         private final CustomOidcUserService customOidcUserService;
         private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+        private final com.codebangers.backend.auth.oauth2.OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
         private final com.codebangers.backend.auth.oauth2.OAuth2RedirectUriFilter oAuth2RedirectUriFilter;
         private final List<String> allowedOrigins;
 
         public SecurityConfig(CustomOAuth2UserService customOAuth2UserService,
                         CustomOidcUserService customOidcUserService,
                         OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler,
+                        com.codebangers.backend.auth.oauth2.OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler,
                         com.codebangers.backend.auth.oauth2.OAuth2RedirectUriFilter oAuth2RedirectUriFilter,
                         @Value("${app.cors.allowed-origins:http://localhost:3000,https://noseumcode.fr,https://www.noseumcode.fr,https://develop.noseumcode.fr}") String corsOrigins) {
                 this.customOAuth2UserService = customOAuth2UserService;
                 this.customOidcUserService = customOidcUserService;
                 this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
+                this.oAuth2AuthenticationFailureHandler = oAuth2AuthenticationFailureHandler;
                 this.oAuth2RedirectUriFilter = oAuth2RedirectUriFilter;
 
                 java.util.Set<String> origins = java.util.Arrays.stream(corsOrigins.split(","))
@@ -78,7 +81,8 @@ public class SecurityConfig {
                                                                                                       // Facebook
                                                                 .oidcUserService(customOidcUserService)) // Google
                                                                                                          // (OIDC)
-                                                .successHandler(oAuth2AuthenticationSuccessHandler))
+                                                .successHandler(oAuth2AuthenticationSuccessHandler)
+                                                .failureHandler(oAuth2AuthenticationFailureHandler))
                                 .oauth2ResourceServer(oauth2 -> oauth2
                                                 .jwt(jwt -> jwt.jwtAuthenticationConverter(
                                                                 jwtAuthenticationConverter())));

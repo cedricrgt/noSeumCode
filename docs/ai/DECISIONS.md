@@ -113,8 +113,20 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Alternative rejetée**: 
 - Maintenir le SDK Stripe chargé de manière synchrone sur la page d'accueil pour anticiper un éventuel achat (rejeté car pénalise 100% des visiteurs en augmentant le Total Blocking Time de plus de 3 secondes).
 - Continuer à charger les fragments HTML en série (rejeté car allonge inutilement le LCP et le temps avant interactivité).
-**Conséquence**: Score PageSpeed mobile/desktop maximisé (LCP < 1.5s, CLS réduit à ~0.00, TBT minimal), autonomie vis-à-vis des CDN tiers, et fluidité visuelle totale sans scintillement ni décalage de contenu.
 
-
-
-
+## ADR-018 — Architecture Intégration Discord Community & Pattern Ports/Adapters
+**Status**: Actif
+**Décision**: 
+1. **Pattern Ports/Adapters (`DiscordGateway`)** : Abstraire l'intégration Discord REST API v10 derrière l'interface port `DiscordGateway` et son adaptateur `DiscordGatewayImpl` (`RestClient` Spring Boot) pour gérer l'adhésion au serveur Discord (`PUT /guilds/{guildId}/members/{userId}`) et l'attribution/retrait dynamique de rôles (`PUT /guilds/{guildId}/members/{userId}/roles/{roleId}`).
+2. **Liaison de compte sécurisée & Anti-collision (OWASP ASVS)** : Permettre à un étudiant connecté de lier son compte Discord via OAuth2 (`link_token` JWT transitoire). Vérifier l'unicité de `discord_user_id` et interdire la collision avec un compte existant (`DuplicateResourceException` HTTP 409).
+3. **Calcul cumulatif des rôles par palier de formation** :
+   - `VIP` ➔ Rôles VIP + Web + Starter + Membre par défaut.
+   - `WEB` ➔ Rôles Web + Starter + Membre par défaut.
+   - `STARTER` ➔ Rôles Starter + Membre par défaut.
+   - `NONE` ➔ Rôle Membre par défaut.
+4. **Synchronisation automatique post-paiement Stripe** : Lors de la confirmation d'une commande (webhook Stripe ou endpoint de secours `confirm-session`), synchroniser automatiquement les rôles Discord de l'élève si son compte est lié.
+5. **Résilience et non-blocage** : Si le token de bot ou l'identifiant de guilde ne sont pas configurés (environnements dev/tests), `DiscordGatewayImpl` simule l'opération gracieusement sans bloquer le flux d'authentification ou d'inscription.
+**Alternative rejetée**: 
+- Bibliothèque lourde WebSocket (JDA / Discord4J) : rejetée en raison de l'empreinte mémoire excessive (WebSockets persistants, gestion d'événements superflue) alors que de simples requêtes REST HTTP v10 suffisent pour administrer les membres et rôles.
+- Rendre les erreurs Discord bloquantes pour le checkout Stripe ou la connexion utilisateur : rejeté car une indisponibilité de l'API Discord ne doit jamais impacter le chiffre d'affaires ou l'accès aux cours de l'élève.
+**Conséquence**: Expérience d'onboarding communautaire automatisée, synchronisation instantanée des accès Discord dès l'achat d'un pack, et robustesse totale en environnement de test/développement.

@@ -133,4 +133,6 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 - Ne pas supposer que la désactivation CSRF est sécurisée sans vérification du `state` OAuth2.
 - Ne pas supposer que `sanitizePartialHTML()` couvre tous les vecteurs XSS.
 - Ne pas supposer que le profil `prod` est activé par défaut (dépend de la variable env `SPRING_PROFILES_ACTIVE`).
+- Ne pas supposer que l'appel Discord `PUT /guilds/{guildId}/members/{userId}` accepte uniquement le jeton utilisateur : il exige impérativement l'en-tête `Authorization: Bot <bot_token>` ET le jeton d'accès OAuth2 de l'utilisateur (avec scope `guilds.join`) dans le corps JSON `{ "access_token": "..." }`. Si l'utilisateur est déjà membre de la guilde, Discord renvoie HTTP 204 No Content (et non 201 Created) sans assigner les rôles passés dans le corps ; il faut alors assigner chaque rôle individuellement via `PUT /guilds/{guildId}/members/{userId}/roles/{roleId}`.
+- Ne pas supposer que l'échec d'un appel réseau vers l'API Discord doit faire échouer la transaction d'achat Stripe ou la connexion utilisateur : l'intégration Discord doit rester résiliente et non-bloquante avec simulation gracieuse en dev/staging si les credentials du bot sont absents.
 

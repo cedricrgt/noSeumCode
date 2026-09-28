@@ -29,9 +29,14 @@ public class OAuth2RedirectUriFilter extends OncePerRequestFilter {
 
     public static final String REDIRECT_URI_PARAM = "redirect_uri";
     public static final String REDIRECT_URI_COOKIE_NAME = "oauth2_redirect_uri";
+    public static final String LINK_TOKEN_PARAM = "link_token";
+    public static final String LINK_USER_EMAIL_COOKIE_NAME = "oauth2_link_email";
     public static final int COOKIE_EXPIRE_SECONDS = 300; // 5 minutes
 
     private final List<String> authorizedOrigins;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private org.springframework.security.oauth2.jwt.JwtDecoder jwtDecoder;
 
     public OAuth2RedirectUriFilter(
             @Value("${app.cors.allowed-origins:http://localhost:3000,https://noseumcode.fr,https://www.noseumcode.fr,https://develop.noseumcode.fr}") String corsOrigins) {
@@ -90,6 +95,35 @@ public class OAuth2RedirectUriFilter extends OncePerRequestFilter {
                     HttpSession session = request.getSession(true);
                     if (session != null) {
                         session.setAttribute(REDIRECT_URI_COOKIE_NAME, redirectUri);
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+
+            // Capture account linking token if present (Sprint 11)
+            String linkToken = request.getParameter(LINK_TOKEN_PARAM);
+            if (linkToken != null && !linkToken.isBlank() && jwtDecoder != null) {
+                try {
+                    org.springframework.security.oauth2.jwt.Jwt decodedJwt = jwtDecoder.decode(linkToken);
+                    String linkEmail = decodedJwt.getSubject();
+                    if (linkEmail != null && !linkEmail.isBlank()) {
+                        boolean isSecure = request.isSecure() || "https".equalsIgnoreCase(request.getHeader("X-Forwarded-Proto"));
+                        ResponseCookie linkCookie = ResponseCookie.from(LINK_USER_EMAIL_COOKIE_NAME, linkEmail)
+                                .path("/")
+                                .httpOnly(true)
+                                .maxAge(COOKIE_EXPIRE_SECONDS)
+                                .sameSite("Lax")
+                                .secure(isSecure)
+                                .build();
+                        response.addHeader(HttpHeaders.SET_COOKIE, linkCookie.toString());
+
+                        try {
+                            HttpSession session = request.getSession(true);
+                            if (session != null) {
+                                session.setAttribute(LINK_USER_EMAIL_COOKIE_NAME, linkEmail);
+                            }
+                        } catch (Exception ignored) {
+                        }
                     }
                 } catch (Exception ignored) {
                 }

@@ -19,6 +19,7 @@
 | **Sprint 8** | **Performance Web & SEO Technique** | Compression images (<800 Ko), rendu statique dédié formations, fix CLS, cache Apache | ✅ **Terminé** |
 | **Sprint 9** | **Copywriting & Rassurance Parents/Jeunes** | Refonte Hero, section Ton Mentor, rassurance parents, Analytics RGPD cookieless | ✅ **Terminé** |
 | **Sprint 10** | **Optimisation PageSpeed & Core Web Vitals** | LCP < 1.5s, éradication CLS 0.175 sur Hero, déferrement Stripe & GPU compositing | ✅ **Terminé** |
+| **Sprint 11** | **Intégration Discord & Communauté** | OAuth2 Discord (`identify`, `email`, `guilds.join`), liaison compte, auto-join guild et synchronisation dynamique des rôles selon le palier (Starter, Web, VIP) | ✅ **Terminé** |
 
 ---
 
@@ -84,6 +85,12 @@ gantt
     Scripts Defer & Minification JS (10.2):done, s10_2, 2026-09-28, 2026-09-28
     Éradication CLS & GPU Compositing(10.3):done, s10_3, 2026-09-28, 2026-09-28
     Optimisation Images & Waterfall (10.4):done, s10_4, 2026-09-28, 2026-09-28
+
+    section Sprint 11 : Discord & Communauté
+    OAuth2 Scopes & Modèle V016 (11.1)   :done, s11_1, 2026-09-28, 2026-09-28
+    Ports/Adapters Discord Gateway (11.2):done, s11_2, 2026-09-28, 2026-09-28
+    Synchronisation Rôles & Stripe (11.3):done, s11_3, 2026-09-28, 2026-09-28
+    Dashboard UI & Unlink/Sync (11.4)    :done, s11_4, 2026-09-28, 2026-09-28
 ```
 
 ---
@@ -208,3 +215,23 @@ gantt
   - Redimensionnement du logo en SVG/WebP natif 141x105 (<5 Ko au lieu du 320x239 de 28 Ko).
   - Rapatriement local et compression WebP des 3 visuels Unsplash avec attributs `width="400"`, `height="300"`, `loading="lazy"` et `decoding="async"`.
 
+---
+
+### Sprint 11 : Intégration Discord & Automatisation Rôles Communauté (Terminé)
+- **11.1 Scopes OAuth2 Discord & Modèle de Données** :
+  - Configuration des scopes `identify`, `email`, `guilds.join` dans `application.properties`.
+  - Migration Flyway `V016__add_discord_integration_fields_to_users.sql` : colonnes `discord_user_id`, `discord_username`, `discord_avatar`, `discord_linked_at` avec index sur `discord_user_id`.
+  - Entité `User` et `UserRepository.findByDiscordUserId` pour recherche rapide et contrôle d'unicité.
+- **11.2 Architecture Hexagonale Ports/Adapters (`DiscordGateway`)** :
+  - Port `DiscordGateway` et adaptateur `DiscordGatewayImpl` utilisant Spring `RestClient` pour communiquer avec l'API Discord v10.
+  - Adhésion automatique au serveur (`PUT /guilds/{guildId}/members/{userId}`) via bot token et user access token.
+  - Attribution et révocation unitaire de rôles (`PUT / DELETE /guilds/{guildId}/members/{userId}/roles/{roleId}`).
+  - Mode simulation gracieuse non-bloquant lorsque les identifiants Discord ne sont pas configurés (profils dev / CI).
+- **11.3 Synchronisation Dynamique des Rôles & Pipeline de Paiement** :
+  - `DiscordService` : logique de liaison avec anti-collision (OWASP ASVS), déliaison sécurisée, et calcul hiérarchique cumulatif des rôles (VIP, Web, Starter, Membre).
+  - Câblage direct dans `PaymentService` lors de la complétion d'un achat Stripe (webhook et secours `confirm-session`).
+  - Flux OAuth2 étendu : capture de `link_token` JWT transitoire pour lier un compte connecté sans déconnexion.
+- **11.4 Tableau de Bord Apprenant & Actions Utilisateur** :
+  - Barre d'outils header : bouton interactif Discord avec statut visuel (connecté / déconnecté).
+  - Section dédiée dans `dashboard.html` : carte Discord Cyber Dark affichant le tag Discord, l'avatar, les badges de rôles actifs, bouton de synchronisation manuelle, et dissociation en 1 clic.
+  - Toasts d'information clairs lors de la liaison, déliaison et synchronisation.
