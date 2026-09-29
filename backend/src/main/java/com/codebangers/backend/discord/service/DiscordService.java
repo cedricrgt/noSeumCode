@@ -6,6 +6,7 @@ import com.codebangers.backend.course.model.EnrollmentTier;
 import com.codebangers.backend.course.repository.EnrollmentRepository;
 import com.codebangers.backend.discord.dto.DiscordMemberDto;
 import com.codebangers.backend.discord.dto.DiscordStatusResponse;
+import com.codebangers.backend.user.model.Role;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.repository.UserRepository;
 import org.slf4j.Logger;
@@ -211,6 +212,12 @@ public class DiscordService {
     public List<String> resolveRoleNamesForUser(User user) {
         List<String> names = new ArrayList<>();
         if (user == null) return names;
+
+        if (user.getRole() == Role.ADMIN) {
+            names.add("Administrateur");
+        } else if (user.getRole() == Role.TEACHER) {
+            names.add("Formateur");
+        }
 
         List<Enrollment> enrollments = enrollmentRepository.findByUserId(user.getId());
         EnrollmentTier highestTier = enrollments.stream()

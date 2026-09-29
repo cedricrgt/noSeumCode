@@ -806,4 +806,35 @@ _Chronologique — plus récent en bas_
    - Permet de diagnostiquer et vérifier immédiatement la joignabilité publique de l'endpoint dans un navigateur ou via un outil de monitoring sans générer d'erreur HTTP 405 Method Not Allowed.
 4. **Validation & Tests** :
    - Test unitaire dédié ajouté dans `PaymentWebhookSecurityTest.java` (`getWebhookHealthShouldReturnStatusUp`).
-   - Exécution complète des 131 tests unitaires et d'intégration Spring Boot (`BUILD SUCCESS`, 0 erreur, 0 échec).
+   - Exécution complète des 131 tests unitaires et d'intégration Spring Boot (`BUILD SUCCESS`, 0 erreur, 0 échec).
+
+---
+
+### 2026-09-29 — Correctif : Intégration de la Communauté Discord sur le Dashboard Formateur et Administrateur
+**Conversation**: `e1260507-cd0d-4086-9f94-d405535e6d71`  
+**Branche**: `fix/teacher-dashboard-discord-integration`
+
+#### Ce qui a changé :
+1. **Ajout des Sections Discord dans les Vues Formateur et Administrateur (`frontend/dashboard.html`)** :
+   - Insertion de `#discord-section-teacher` et `#discord-card-container-teacher` dans le panneau `#view-teacher`.
+   - Insertion de `#discord-section-admin` et `#discord-card-container-admin` dans le panneau `#view-admin`.
+   - Utilisation de la classe partagée `.discord-card-container` pour l'injection dynamique multi-vues.
+
+2. **Rendu Dynamique Multi-Vues & Copywriting Adapté (`frontend/js/dashboard.js`)** :
+   - Refactorisation de `loadDiscordStatus()` et `renderDiscordCard(data, targetContainer)` pour interroger et mettre à jour tous les conteneurs `.discord-card-container`.
+   - En état non associé, génération d'un contenu adapté au rôle du panneau actif :
+     * **Formateur** : Titre « Espace Discord Formateur NoSeumCode », présentation de l'accompagnement pédagogique et des salons formateurs privés (`#salle-des-profs`, `#ressources-cours`), badges dédiés et bouton « Associer mon compte Formateur ➔ ».
+     * **Administrateur** : Titre « Administration Serveur Discord NoSeumCode », description de la modération globale et de la gestion communautaire, bouton « Associer mon compte Administrateur ➔ ».
+     * **Apprenant** : Contenu apprenant existant.
+   - En état associé, affichage des informations du profil Discord, des badges de rôles actifs (incluant `@Formateur` et `@Administrateur`), et des actions (Ouvrir Discord, Synchroniser, Dissocier).
+   - Prise en charge des boutons multiples dans `connectDiscordAccount()` et `syncDiscordRoles()`.
+   - Amélioration de `scrollToDiscordSection()` pour cibler dynamiquement l'ancre de la vue affichée (`#discord-section-teacher`, `#discord-section-admin`, ou `#discord-section`).
+   - Appel inconditionnel de `loadDiscordStatus()` dans `refreshDashboardData()` et dans `manuallySwitchDashboardView()` pour maintenir à jour les cartes et le bouton d'en-tête `#btn-discord-header`.
+
+3. **Résolution Backend des Rôles Formateur et Administrateur (`DiscordService.java`)** :
+   - Mise à jour de `resolveRoleNamesForUser(User user)` pour attribuer le libellé `"Formateur"` pour `Role.TEACHER` et `"Administrateur"` pour `Role.ADMIN`.
+   - Ajout d'un test unitaire dans `DiscordServiceTest.java` (`shouldResolveTeacherRoleNameForTeacherUser`).
+
+4. **Validation & Tests** :
+   - Validation syntaxique JavaScript réussie (`node -c frontend/js/dashboard.js`).
+   - Exécution complète de la suite de tests Spring Boot : 132 tests réussis (`BUILD SUCCESS`, 0 erreur, 0 échec).

@@ -206,4 +206,16 @@ class DiscordServiceTest {
         verify(discordGateway).removeRoleFromMember("discord-999", "role-web-456");
         verify(discordGateway).removeRoleFromMember("discord-999", "role-starter-123");
     }
+
+    @Test
+    @DisplayName("Devrait résoudre le libellé Formateur pour un utilisateur de rôle TEACHER")
+    void shouldResolveTeacherRoleNameForTeacherUser() {
+        User teacherUser = new User("cedric_teacher", "Cédric", "Ragot", "cedric@codebangers.fr", "hash", Role.TEACHER);
+        teacherUser.setId(UUID.randomUUID());
+        when(enrollmentRepository.findByUserId(teacherUser.getId())).thenReturn(List.of());
+
+        List<String> names = discordService.resolveRoleNamesForUser(teacherUser);
+
+        assertTrue(names.contains("Formateur"));
+    }
 }
