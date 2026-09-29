@@ -132,4 +132,17 @@ class PaymentWebhookSecurityTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         verifyNoInteractions(paymentService);
     }
+
+    @Test
+    void getWebhookHealthShouldReturnStatusUp() {
+        PaymentController controller = new PaymentController(paymentService, validator, objectMapper, secret);
+
+        ResponseEntity<Map<String, Object>> response = controller.getWebhookHealth();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("UP", response.getBody().get("status"));
+        assertEquals("stripe-webhook", response.getBody().get("service"));
+        assertEquals("/api/payments/webhook", response.getBody().get("endpoint"));
+    }
 }

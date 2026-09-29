@@ -786,4 +786,24 @@ _Chronologique — plus récent en bas_
 
 5. **Validation & Tests** :
    - Suite complète de 130 tests unitaires et d'intégration validée avec 100% de succès (`BUILD SUCCESS`).
-   - Build des bundles CSS et JS frontend exécuté avec succès (`npm run build`).
+   - Build des bundles CSS et JS frontend exécuté avec succès (`npm run build`).
+
+---
+
+### 2026-09-29 — Correctif : Résolution de l'Erreur 404 sur l'Endpoint Webhook Stripe
+**Conversation**: `e1260507-cd0d-4086-9f94-d405535e6d71`  
+**Branche**: `fix/stripe-webhook-endpoint-routing`
+
+#### Ce qui a changé :
+1. **Mise à Jour de l'Endpoint Webhook dans Stripe (Dashboard/API)** :
+   - Problème : Stripe a notifié 36 échecs de livraison HTTP 404 sur `https://noseumcode.fr/api/payments/webhook`.
+   - Cause : Le webhook Stripe (`we_1UJIZZAmRX1Xf5vuArlYEPHR`) ciblait le domaine racine de production (`noseumcode.fr`), qui héberge exclusivement les fichiers statiques du frontend sur Apache o2switch, au lieu du sous-domaine de l'API Spring Boot (`https://api.noseumcode.fr/api/payments/webhook`).
+   - Solution : Mise à jour immédiate de l'endpoint webhook Stripe via l'API Stripe pour pointer vers `https://api.noseumcode.fr/api/payments/webhook`.
+2. **Redirection de Secours HTTP 307 sur Apache (`frontend/.htaccess`)** :
+   - Ajout d'une règle Apache `RewriteRule ^api/(.*)$ https://api.noseumcode.fr/api/$1 [R=307,L,QSA]` pour intercepter toute requête accidentelle vers `noseumcode.fr/api/*` et la rediriger de manière transparente vers l'API backend sur Oracle Cloud tout en préservant la méthode HTTP (POST, GET, etc.) et le corps de la requête.
+3. **Endpoint GET de Diagnostic / Health Check Webhook (`PaymentController.java`)** :
+   - Ajout d'un point de terminaison `@GetMapping(value = {"/webhook", "/webhook/stripe"})` renvoyant un statut `200 OK` avec `{"status":"UP", "service":"stripe-webhook"}`.
+   - Permet de diagnostiquer et vérifier immédiatement la joignabilité publique de l'endpoint dans un navigateur ou via un outil de monitoring sans générer d'erreur HTTP 405 Method Not Allowed.
+4. **Validation & Tests** :
+   - Test unitaire dédié ajouté dans `PaymentWebhookSecurityTest.java` (`getWebhookHealthShouldReturnStatusUp`).
+   - Exécution complète des 131 tests unitaires et d'intégration Spring Boot (`BUILD SUCCESS`, 0 erreur, 0 échec).
