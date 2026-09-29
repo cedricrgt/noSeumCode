@@ -20,6 +20,7 @@
 | **Sprint 9** | **Copywriting & Rassurance Parents/Jeunes** | Refonte Hero, section Ton Mentor, rassurance parents, Analytics RGPD cookieless | ✅ **Terminé** |
 | **Sprint 10** | **Optimisation PageSpeed & Core Web Vitals** | LCP < 1.5s, éradication CLS 0.175 sur Hero, déferrement Stripe & GPU compositing | ✅ **Terminé** |
 | **Sprint 11** | **Intégration Discord & Communauté** | OAuth2 Discord (`identify`, `email`, `guilds.join`), liaison compte, auto-join guild et synchronisation dynamique des rôles selon le palier (Starter, Web, VIP) | ✅ **Terminé** |
+| **Sprint 12** | **Web Performance, BFCache & Cache Policy** | Déblocage BFCache (.htaccess), cache 1 an CSS/JS, versioning assets, élagage Google Fonts (-35Ko) | 🔄 **En cours** |
 
 ---
 
@@ -91,6 +92,11 @@ gantt
     Ports/Adapters Discord Gateway (11.2):done, s11_2, 2026-09-28, 2026-09-28
     Synchronisation Rôles & Stripe (11.3):done, s11_3, 2026-09-28, 2026-09-28
     Dashboard UI & Unlink/Sync (11.4)    :done, s11_4, 2026-09-28, 2026-09-28
+
+    section Sprint 12 : Web Performance & BFCache
+    Déblocage BFCache Apache (12.1)      :active, s12_1, 2026-09-29, 2026-09-30
+    Cache 1 an CSS/JS & Versioning (12.2):active, s12_2, 2026-09-29, 2026-09-30
+    Élagage Fonts & Suppression 404(12.3):active, s12_3, 2026-09-29, 2026-09-30
 ```
 
 ---
@@ -235,3 +241,18 @@ gantt
   - Barre d'outils header : bouton interactif Discord avec statut visuel (connecté / déconnecté).
   - Section dédiée dans `dashboard.html` : carte Discord Cyber Dark affichant le tag Discord, l'avatar, les badges de rôles actifs, bouton de synchronisation manuelle, et dissociation en 1 clic.
   - Toasts d'information clairs lors de la liaison, déliaison et synchronisation.
+
+---
+
+### Sprint 12 : Optimisations Web Performance, BFCache & Cache Apache (En cours)
+- **12.1 Déblocage BFCache sur Apache (`.htaccess`)** :
+  - Remplacement de `no-store` par `no-cache, must-revalidate` sur les fichiers HTML pour débloquer la restauration instantanée (0 ms) en mémoire vive lors des navigations Précédent/Suivant, tout en garantissant la fraîcheur du contenu via revalidation HTTP 304.
+  - Élimination de la transmission de l'en-tête `no-store` sur les requêtes partielles (`fetch("partials/*.html")`).
+- **12.2 Extension du Cache Statique CSS/JS & Versioning d'Assets** :
+  - Alignement de la directive `Cache-Control` sur 1 an (`max-age=31536000, public`) pour les fichiers CSS et JS dans `.htaccess` (résolution de l'audit Lighthouse « Serve static assets with an efficient cache policy »).
+  - Implémentation du versioning systématique par query string (`?v=sprint12`) sur les balises de styles et de scripts dans tous les fichiers HTML du frontend.
+  - Priorisation du téléchargement du CSS critique `homepage.min.css` en tête du `<head>`.
+- **12.3 Allègement des Web Fonts & Éradication des 404** :
+  - Élagage des graisses superflues de Poppins (`300` et `500`) pour ne charger que `wght@400;600;700` et `Bangers` (gain estimé : ~35-40 Ko).
+  - Nettoyage des appels de scripts inexistants (`js/footer.js` dans `workshops.html`, `js/popovers.js` dans les pages de formations remplacé par `js/popover-hubspot.min.js`).
+
