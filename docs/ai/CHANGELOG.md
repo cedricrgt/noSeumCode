@@ -837,4 +837,31 @@ _Chronologique — plus récent en bas_
 
 4. **Validation & Tests** :
    - Validation syntaxique JavaScript réussie (`node -c frontend/js/dashboard.js`).
-   - Exécution complète de la suite de tests Spring Boot : 132 tests réussis (`BUILD SUCCESS`, 0 erreur, 0 échec).
+   - Exécution complète de la suite de tests Spring Boot : 132 tests réussis (`BUILD SUCCESS`, 0 erreur, 0 échec).
+
+---
+
+### 2026-09-29 — Correctif : Résolution du Blocage Infini du Statut Discord et Sécurisation de scrollToDiscordSection
+**Conversation**: `090e821d-c81b-4b96-80d1-ddc3085e6fe8`  
+**Branche**: `fix/dashboard-discord-status-and-scroll`
+
+#### Ce qui a changé :
+1. **Éradication de l'erreur `ReferenceError: email is not defined` (`frontend/js/dashboard.js`)** :
+   - Ajout de l'extraction de `email` dans `parseAuthFromUrl()` et dans le gestionnaire OAuth2 de `frontend/dashboard.html`.
+   - Simplification de tous les appels `normalizeRole(role)` (passage d'un argument unique).
+2. **Élimination du blocage infini du loader Discord (`frontend/js/dashboard.js`)** :
+   - Suppression du `return;` silencieux en cas de réponse HTTP 401 ou d'absence de jeton dans `loadDiscordStatus()`.
+   - Rendu automatique de l'état d'invitation propre (`renderDiscordCard({ linked: false })`) pour inviter l'utilisateur à associer son compte sans bloquer sur le spinner.
+3. **Sécurisation de la navigation `#btn-discord-header` (`frontend/dashboard.html`, `frontend/js/dashboard.js`)** :
+   - Déclaration précoce de `scrollToDiscordSection()` dans le `<head>` de `dashboard.html` et au sommet de `dashboard.js`.
+   - Enregistrement immédiat sur `window.scrollToDiscordSection` et ajout d'un écouteur `click` direct dans `setupEventListeners()`.
+4. **Prévention de la Temporal Dead Zone (TDZ) et initialisation robuste (`frontend/js/dashboard.js`)** :
+   - Déplacement des variables d'état `activeDashboardView` et `cachedDiscordData` au sommet du fichier.
+   - Adaptation de `initDashboard()` pour s'exécuter que `document.readyState` soit `loading`, `interactive` ou `complete`.
+   - Définition dynamique et robuste de `getApiBaseUrl()` garantissant la validité des requêtes API même si `window.API_BASE_URL` n'est pas encore instancié.
+   - Sécurisation de `fetchNotifications()` avec garde-fou contre les réponses non tabulaires.
+5. **Invalidation du cache HTTP navigateur (`frontend/dashboard.html`)** :
+   - Ajout du tag de versioning `js/dashboard.js?v=sprint11.2` pour forcer le rafraîchissement immédiat par les navigateurs clients.
+6. **Validation & Tests** :
+   - Tests de simulation du cycle de vie du navigateur en environnement Node (`node -e`).
+   - Suite complète Maven Spring Boot au vert : 132 tests exécutés, 0 échec, 0 erreur.
