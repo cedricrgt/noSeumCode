@@ -318,12 +318,16 @@ async function manuallySwitchDashboardView(targetRole) {
   if (targetRole === "STUDENT") {
     await loadStudentCourses();
     await loadStudentWorkshops();
-    await loadDiscordStatus();
   } else if (targetRole === "TEACHER") {
     await loadTeacherData();
   } else if (targetRole === "ADMIN") {
     await loadAdminData();
   }
+
+  if (typeof cachedDiscordData !== "undefined" && cachedDiscordData) {
+    renderDiscordCard(cachedDiscordData);
+  }
+  await loadDiscordStatus();
 }
 
 function logout() {
@@ -384,8 +388,9 @@ async function refreshDashboardData() {
   } else {
     await loadStudentCourses();
     await loadStudentWorkshops();
-    await loadDiscordStatus();
   }
+
+  await loadDiscordStatus();
 }
 
 // ==========================================
@@ -845,9 +850,11 @@ window.openStripeCustomerPortal = openStripeCustomerPortal;
 // 4d. Communauté Discord & Liaison Compte Apprenant (Sprint 11)
 // ==========================================
 
+let cachedDiscordData = null;
+
 async function loadDiscordStatus() {
-  const container = document.getElementById("discord-card-container");
-  if (!container) return;
+  const containers = document.querySelectorAll(".discord-card-container, #discord-card-container, #discord-card-container-teacher, #discord-card-container-admin");
+  if (!containers || containers.length === 0) return;
 
   try {
     const response = await apiFetch("/api/discord/status");
@@ -857,11 +864,12 @@ async function loadDiscordStatus() {
     }
 
     const data = await response.json();
+    cachedDiscordData = data;
     renderDiscordCard(data);
     updateDiscordHeaderButton(data);
   } catch (error) {
     console.warn("Erreur chargement Discord:", error);
-    if (container) {
+    containers.forEach(container => {
       container.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
           <p style="margin: 0; color: #94a3b8; font-size: 0.9rem;">
@@ -872,7 +880,7 @@ async function loadDiscordStatus() {
           </button>
         </div>
       `;
-    }
+    });
   }
 }
 
@@ -894,93 +902,139 @@ function updateDiscordHeaderButton(data) {
   }
 }
 
-function renderDiscordCard(data) {
-  const container = document.getElementById("discord-card-container");
-  if (!container) return;
+function renderDiscordCard(data, targetContainer = null) {
+  const containers = targetContainer 
+    ? [targetContainer] 
+    : document.querySelectorAll(".discord-card-container, #discord-card-container, #discord-card-container-teacher, #discord-card-container-admin");
+  if (!containers || containers.length === 0) return;
 
-  if (!data || !data.linked) {
-    container.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
-        <div style="max-width: 680px;">
-          <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;">
-            <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(88, 101, 242, 0.12); color: #5865F2; display: inline-flex; align-items: center; justify-content: center;">
-              ${ICONS.discord}
+  containers.forEach(container => {
+    let containerRole = "STUDENT";
+    if (container.id === "discord-card-container-teacher") {
+      containerRole = "TEACHER";
+    } else if (container.id === "discord-card-container-admin") {
+      containerRole = "ADMIN";
+    } else if (container.id === "discord-card-container") {
+      containerRole = "STUDENT";
+    } else if (activeDashboardView) {
+      containerRole = activeDashboardView;
+    } else if (currentAuth && currentAuth.user && currentAuth.user.role) {
+      containerRole = currentAuth.user.role;
+    }
+
+    if (!data || !data.linked) {
+      let title = "Rejoins le serveur Discord de la communauté NoSeumCode";
+      let desc = "Associe ton compte Discord en un clic pour débloquer automatiquement tes salons privés de cohorte, participer aux sessions live hebdomadaires, poser tes questions à Cédric et échanger avec les autres apprenants.";
+      let badgesHtml = `
+        <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">${ICONS.chat} Entraide 7j/7</span>
+        <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">${ICONS.voice} Salons vocaux live</span>
+        <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">${ICONS.bot} Rôles automatiques</span>
+      `;
+      let btnLabel = "Associer mon compte Discord ➔";
+
+      if (containerRole === "TEACHER") {
+        title = "Espace Discord Formateur NoSeumCode";
+        desc = "Associez votre compte Discord pour accéder à vos salons formateurs privés (#salle-des-profs, #ressources-cours), échanger en direct avec l'équipe pédagogique et accompagner les apprenants dans leurs canaux d'entraide.";
+        badgesHtml = `
+          <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">${ICONS.teacher} Salons Privés Formateurs</span>
+          <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">${ICONS.chat} Mentorat & Entraide</span>
+          <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">${ICONS.bot} Rôle @Formateur Automatique</span>
+        `;
+        btnLabel = "Associer mon compte Formateur ➔";
+      } else if (containerRole === "ADMIN") {
+        title = "Administration Serveur Discord NoSeumCode";
+        desc = "Associez votre compte Discord administrateur pour superviser l'ensemble des salons de formation, synchroniser automatiquement les permissions et gérer la communauté NoSeumCode.";
+        badgesHtml = `
+          <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">${ICONS.admin} Accès Modération & Admin</span>
+          <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">${ICONS.bot} Synchronisation Rôles API</span>
+          <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">${ICONS.check} Tous Salons Débloqués</span>
+        `;
+        btnLabel = "Associer mon compte Administrateur ➔";
+      }
+
+      container.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+          <div style="max-width: 680px;">
+            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;">
+              <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(88, 101, 242, 0.12); color: #5865F2; display: inline-flex; align-items: center; justify-content: center;">
+                ${ICONS.discord}
+              </div>
+              <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--dash-dark-navy, #0a1628);">
+                ${escapeHtml(title)}
+              </h3>
             </div>
-            <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--dash-dark-navy, #0a1628);">
-              Rejoins le serveur Discord de la communauté NoSeumCode
-            </h3>
+            <p style="margin: 0 0 1.2rem 0; color: var(--dash-text-muted, #718096); font-size: 0.95rem; line-height: 1.6;">
+              ${escapeHtml(desc)}
+            </p>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; font-size: 0.85rem;">
+              ${badgesHtml}
+            </div>
           </div>
-          <p style="margin: 0 0 1.2rem 0; color: var(--dash-text-muted, #718096); font-size: 0.95rem; line-height: 1.6;">
-            Associe ton compte Discord en un clic pour débloquer automatiquement tes salons privés de cohorte, participer aux sessions live hebdomadaires, poser tes questions à Cédric et échanger avec les autres apprenants.
-          </p>
-          <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; font-size: 0.85rem;">
-            <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">${ICONS.chat} Entraide 7j/7</span>
-            <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">${ICONS.voice} Salons vocaux live</span>
-            <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; padding: 0.35rem 0.75rem; border-radius: 8px; font-weight: 500;">${ICONS.bot} Rôles automatiques</span>
+          <div>
+            <button class="btn-connect-discord button button__primary bangers-regular" onclick="connectDiscordAccount()" style="background: #5865F2; border-color: #5865F2; display: inline-flex; align-items: center; gap: 0.6rem; min-height: 48px; padding: 0.75rem 1.6rem; font-size: 1rem; cursor: pointer; color: #ffffff;" aria-label="${escapeHtml(btnLabel)}">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+              </svg>
+              <span>${escapeHtml(btnLabel)}</span>
+            </button>
           </div>
         </div>
-        <div>
-          <button id="btn-connect-discord" class="button button__primary bangers-regular" onclick="connectDiscordAccount()" style="background: #5865F2; border-color: #5865F2; display: inline-flex; align-items: center; gap: 0.6rem; min-height: 48px; padding: 0.75rem 1.6rem; font-size: 1rem; cursor: pointer; color: #ffffff;" aria-label="Associer mon compte Discord">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+      `;
+      return;
+    }
+
+    const roleBadges = (data.assignedRoleNames || []).map(r => `
+      <span style="background: rgba(88, 101, 242, 0.08); border: 1px solid rgba(88, 101, 242, 0.25); color: #4752c4; padding: 0.3rem 0.7rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+        ${ICONS.admin} @${escapeHtml(r)}
+      </span>
+    `).join("");
+
+    const avatarSrc = data.discordAvatar || "images/favicon.png";
+
+    container.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+        <div style="display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;">
+          <img src="${escapeHtml(avatarSrc)}" alt="Avatar Discord" style="width: 58px; height: 58px; border-radius: 50%; border: 2px solid #5865F2; object-fit: cover; box-shadow: 0 4px 12px rgba(88, 101, 242, 0.2);" onerror="this.src='images/favicon.png'">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+              <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--dash-dark-navy, #0a1628);">
+                @${escapeHtml(data.discordUsername || "Membre")}
+              </h3>
+              <span style="background: rgba(0, 255, 135, 0.15); border: 1px solid rgba(0, 168, 90, 0.3); color: #008748; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">
+                ● COMPTE ASSOCIÉ
+              </span>
+            </div>
+            <p style="margin: 0.35rem 0 0.5rem 0; color: var(--dash-text-muted, #718096); font-size: 0.88rem; display: inline-flex; align-items: center; gap: 4px;">
+              ${data.serverJoined ? ICONS.check + ' Membre actif du serveur Discord NoSeumCode' : ICONS.clock + ' En attente de rejoindre le serveur'}
+            </p>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+              <span style="font-size: 0.82rem; font-weight: 600; color: #475569;">Rôles actifs :</span>
+              ${roleBadges.length > 0 ? roleBadges : '<span style="font-size: 0.8rem; color: #94a3b8;">Aucun rôle pour le moment</span>'}
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <a href="${escapeHtml(data.inviteUrl || 'https://discord.gg/noseumcode')}" target="_blank" rel="noopener noreferrer" class="button button__primary bangers-regular" style="background: #5865F2; border-color: #5865F2; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 42px; padding: 0.6rem 1.25rem; font-size: 0.95rem; color: #ffffff;">
+            ${ICONS.external} Ouvrir Discord
+          </a>
+          <button class="btn-sync-discord button button__secondary bangers-regular" onclick="syncDiscordRoles()" style="min-height: 42px; padding: 0.6rem 1.1rem; font-size: 0.95rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;" title="Resynchroniser mes rôles Discord">
+            ${ICONS.refresh} Synchroniser
+          </button>
+          <button onclick="unlinkDiscordAccount()" style="font-size: 0.82rem; font-weight: 600; padding: 0.55rem 0.9rem; border-radius: 8px; border: 1px solid #fecdd3; background: #fff1f2; color: #e11d48; cursor: pointer; transition: background 0.2s;" title="Dissocier ce compte Discord">
+            Dissocier
           </button>
         </div>
       </div>
     `;
-    return;
-  }
-
-  const roleBadges = (data.assignedRoleNames || []).map(r => `
-    <span style="background: rgba(88, 101, 242, 0.08); border: 1px solid rgba(88, 101, 242, 0.25); color: #4752c4; padding: 0.3rem 0.7rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
-      ${ICONS.admin} @${escapeHtml(r)}
-    </span>
-  `).join("");
-
-  const avatarSrc = data.discordAvatar || "images/favicon.png";
-
-  container.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
-      <div style="display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;">
-        <img src="${escapeHtml(avatarSrc)}" alt="Avatar Discord" style="width: 58px; height: 58px; border-radius: 50%; border: 2px solid #5865F2; object-fit: cover; box-shadow: 0 4px 12px rgba(88, 101, 242, 0.2);" onerror="this.src='images/favicon.png'">
-        <div>
-          <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
-            <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--dash-dark-navy, #0a1628);">
-              @${escapeHtml(data.discordUsername || "Apprenant")}
-            </h3>
-            <span style="background: rgba(0, 255, 135, 0.15); border: 1px solid rgba(0, 168, 90, 0.3); color: #008748; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">
-              ● COMPTE ASSOCIÉ
-            </span>
-          </div>
-          <p style="margin: 0.35rem 0 0.5rem 0; color: var(--dash-text-muted, #718096); font-size: 0.88rem; display: inline-flex; align-items: center; gap: 4px;">
-            ${data.serverJoined ? ICONS.check + ' Membre actif du serveur Discord NoSeumCode' : ICONS.clock + ' En attente de rejoindre le serveur'}
-          </p>
-          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
-            <span style="font-size: 0.82rem; font-weight: 600; color: #475569;">Rôles actifs :</span>
-            ${roleBadges.length > 0 ? roleBadges : '<span style="font-size: 0.8rem; color: #94a3b8;">Aucun rôle pour le moment</span>'}
-          </div>
-        </div>
-      </div>
-      <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-        <a href="${escapeHtml(data.inviteUrl || 'https://discord.gg/noseumcode')}" target="_blank" rel="noopener noreferrer" class="button button__primary bangers-regular" style="background: #5865F2; border-color: #5865F2; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 42px; padding: 0.6rem 1.25rem; font-size: 0.95rem; color: #ffffff;">
-          ${ICONS.external} Ouvrir Discord
-        </a>
-        <button id="btn-sync-discord" class="button button__secondary bangers-regular" onclick="syncDiscordRoles()" style="min-height: 42px; padding: 0.6rem 1.1rem; font-size: 0.95rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;" title="Resynchroniser mes rôles Discord">
-          ${ICONS.refresh} Synchroniser
-        </button>
-        <button onclick="unlinkDiscordAccount()" style="font-size: 0.82rem; font-weight: 600; padding: 0.55rem 0.9rem; border-radius: 8px; border: 1px solid #fecdd3; background: #fff1f2; color: #e11d48; cursor: pointer; transition: background 0.2s;" title="Dissocier ce compte Discord">
-          Dissocier
-        </button>
-      </div>
-    </div>
-  `;
+  });
 }
 
 async function connectDiscordAccount() {
-  const btn = document.getElementById("btn-connect-discord");
-  if (btn) {
+  const btns = document.querySelectorAll(".btn-connect-discord, #btn-connect-discord");
+  btns.forEach(btn => {
     btn.disabled = true;
     btn.innerHTML = `<span>Redirection Discord...</span>`;
-  }
+  });
 
   try {
     const redirectTarget = encodeURIComponent(`${window.location.origin}/dashboard.html`);
@@ -996,7 +1050,7 @@ async function connectDiscordAccount() {
   } catch (error) {
     console.error("Erreur liaison Discord:", error);
     showGlobalDashboardToast("❌ Impossible de joindre Discord. Réessayez ultérieurement.", "error");
-    if (btn) {
+    btns.forEach(btn => {
       btn.disabled = false;
       btn.innerHTML = `
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -1004,18 +1058,17 @@ async function connectDiscordAccount() {
         </svg>
         <span>Associer mon compte Discord ➔</span>
       `;
-    }
+    });
   }
 }
 
-
 async function syncDiscordRoles() {
-  const btn = document.getElementById("btn-sync-discord");
-  const originalHtml = btn ? btn.innerHTML : null;
-  if (btn) {
+  const btns = document.querySelectorAll(".btn-sync-discord, #btn-sync-discord");
+  btns.forEach(btn => {
     btn.disabled = true;
+    btn.dataset.originalHtml = btn.innerHTML;
     btn.innerHTML = `<span>⏳ Synchronisation...</span>`;
-  }
+  });
 
   try {
     const response = await apiFetch("/api/discord/sync", { method: "POST" });
@@ -1024,16 +1077,20 @@ async function syncDiscordRoles() {
       throw new Error(err.message || "Erreur lors de la synchronisation des rôles.");
     }
     const data = await response.json();
+    cachedDiscordData = data;
     renderDiscordCard(data);
+    updateDiscordHeaderButton(data);
     showGlobalDashboardToast("✅ Rôles Discord synchronisés avec succès !", "success");
   } catch (error) {
     console.error("Erreur sync Discord:", error);
     showGlobalDashboardToast(`❌ ${error.message}`, "error");
   } finally {
-    if (btn && originalHtml) {
+    btns.forEach(btn => {
       btn.disabled = false;
-      btn.innerHTML = originalHtml;
-    }
+      if (btn.dataset.originalHtml) {
+        btn.innerHTML = btn.dataset.originalHtml;
+      }
+    });
   }
 }
 
@@ -1047,6 +1104,7 @@ async function unlinkDiscordAccount() {
       throw new Error("Impossible de dissocier le compte Discord.");
     }
     showGlobalDashboardToast("ℹ️ Votre compte Discord a été dissocié.", "success");
+    cachedDiscordData = null;
     await loadDiscordStatus();
   } catch (error) {
     console.error("Erreur dissociation Discord:", error);
@@ -1055,7 +1113,17 @@ async function unlinkDiscordAccount() {
 }
 
 function scrollToDiscordSection() {
-  const section = document.getElementById("discord-section");
+  let section = null;
+  if (activeDashboardView === "TEACHER") {
+    section = document.getElementById("discord-section-teacher");
+  } else if (activeDashboardView === "ADMIN") {
+    section = document.getElementById("discord-section-admin");
+  }
+  if (!section) {
+    section = document.getElementById("discord-section")
+      || document.getElementById("discord-section-teacher")
+      || document.getElementById("discord-section-admin");
+  }
   if (section) {
     section.scrollIntoView({ behavior: "smooth", block: "start" });
   }
