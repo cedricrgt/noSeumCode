@@ -130,3 +130,16 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 - Bibliothèque lourde WebSocket (JDA / Discord4J) : rejetée en raison de l'empreinte mémoire excessive (WebSockets persistants, gestion d'événements superflue) alors que de simples requêtes REST HTTP v10 suffisent pour administrer les membres et rôles.
 - Rendre les erreurs Discord bloquantes pour le checkout Stripe ou la connexion utilisateur : rejeté car une indisponibilité de l'API Discord ne doit jamais impacter le chiffre d'affaires ou l'accès aux cours de l'élève.
 **Conséquence**: Expérience d'onboarding communautaire automatisée, synchronisation instantanée des accès Discord dès l'achat d'un pack, et robustesse totale en environnement de test/développement.
+
+## ADR-019 — Politique de Cache HTTP Apache & Restauration BFCache (Back/Forward Cache)
+**Status**: Actif
+**Décision**: 
+1. **Élimination de `no-store` sur les documents HTML** : Remplacer `Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"` par `Header set Cache-Control "no-cache, must-revalidate"` pour les fichiers `.html` dans `.htaccess`. Cela garantit la revalidation auprès du serveur (`304 Not Modified`) pour toute nouvelle visite ou déploiement tout en autorisant Chromium et Safari à restaurer la page instantanément (0 ms) via le Back/Forward Cache (BFCache) lors des navigations dans l'historique.
+2. **Cache 1 an pour les assets statiques CSS & JS (`max-age=31536000, public`)** : Aligner la durée de mise en cache des feuilles de style et des scripts sur celle des images et polices web pour satisfaire pleinement les audits Lighthouse / Core Web Vitals.
+3. **Invalidation par Versioning d'Assets (Cache Busting)** : Associer systématiquement une chaîne de version (`?v=sprintXX`) à toutes les références de scripts et de styles dans le balisage HTML pour forcer l'invalidation immédiate du cache client à chaque livraison sans dépendre de l'expiration du TTL.
+4. **Allègement des polices Google Fonts** : Ne charger que les graisses strictement nécessaires (`wght@400;600;700` et `Bangers`) pour réduire le poids de transfert de ~40 Ko et limiter les micro-reflows FOUT.
+**Alternative rejetée**: 
+- Maintenir `no-store` sur les fichiers HTML : rejetée car cela détruit l'arbre DOM et l'état JS en mémoire vive dès que l'utilisateur quitte la page, provoquant un rechargement réseau complet lors d'un retour arrière et dégradant l'expérience de navigation.
+- Conserver un cache de 30 jours sans versioning sur CSS/JS : rejetée car pénalisée par les audits d'efficacité de cache Lighthouse et susceptible de laisser subsister du code JavaScript ou CSS obsolète chez l'utilisateur lors de correctifs urgents.
+**Conséquence**: Navigation retour/avance instantanée (0 ms), satisfaction intégrale des audits de politique de cache Lighthouse, élimination des requêtes 404 parasites et réduction significative du payload réseau initial.
+

@@ -864,4 +864,27 @@ _Chronologique — plus récent en bas_
    - Ajout du tag de versioning `js/dashboard.js?v=sprint11.2` pour forcer le rafraîchissement immédiat par les navigateurs clients.
 6. **Validation & Tests** :
    - Tests de simulation du cycle de vie du navigateur en environnement Node (`node -e`).
-   - Suite complète Maven Spring Boot au vert : 132 tests exécutés, 0 échec, 0 erreur.
+   - Suite complète Maven Spring Boot au vert : 132 tests exécutés, 0 échec, 0 erreur.
+
+---
+
+### 2026-09-29 — Sprint 12 : Optimisations Web Performance, BFCache & Politique de Cache Apache
+**Conversation**: `6cc4f067-52cf-47fa-8a14-4b60fd93f304`  
+**Branche**: `feat/web-performance-caching-bfcache`
+
+#### Ce qui a changé :
+1. **Déblocage du Back/Forward Cache (BFCache) sur Apache (`frontend/.htaccess`)** :
+   - Remplacement de la directive `Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"` par `Header set Cache-Control "no-cache, must-revalidate"` sur tous les fichiers `.html`.
+   - Élimination des deux causes de disqualification BFCache signalées par Lighthouse/GTmetrix : navigation principale désormais stockable en mémoire vive par Chromium et disparition de l'en-tête `no-store` sur les requêtes fetch internes des partials (`header.html`, `popovers-shared.html`, `footer.html`).
+2. **Extension de la politique de cache des assets statiques CSS & JS à 1 an (`frontend/.htaccess`)** :
+   - Passage de `max-age=2592000` (30 jours) à `max-age=31536000, public` (1 an) pour tous les fichiers `.css` et `.js` dans `mod_headers` et `mod_expires`.
+   - Résolution de l'audit Lighthouse « Serve static assets with an efficient cache policy ».
+3. **Mise en place du versioning d'assets (Cache Busting) (`frontend/index.html`, `parcours.html`, `workshops.html`, etc.)** :
+   - Ajout du paramètre de versioning `?v=sprint12` sur l'ensemble des stylesheets et scripts clients (`homepage.min.css?v=sprint12`, `header.min.js?v=sprint12`, `script.min.js?v=sprint12`, `popover-hubspot.min.js?v=sprint12`, `analytics.js?v=sprint12`).
+   - Priorisation du CSS critique `homepage.min.css` en tête de `<head>` pour accélérer le déclenchement de son téléchargement.
+4. **Allègement des polices Google Fonts & Nettoyage des 404 (`frontend/*.html`, `frontend/formations/*.html`)** :
+   - Élagage des graisses non utilisées de la police Poppins (`300` et `500`), ne conservant que `wght@400;600;700` et `Bangers` : économie estimée de ~35-40 Ko sur le payload global des polices (~92.6 Ko initial).
+   - Suppression de l'appel vers `js/footer.js` (fichier inexistant) dans `workshops.html` et remplacement de `js/popovers.js` (inexistant) par `js/popover-hubspot.min.js` dans les pages de formations.
+5. **Validation & Tests** :
+   - Exécution du script de build `npm run build` dans `frontend/` (recompilation et minification sans erreur).
+   - Suite complète Spring Boot validée via `mvnw.cmd test` : 132 tests réussis (`BUILD SUCCESS`, 0 erreur, 0 échec).
