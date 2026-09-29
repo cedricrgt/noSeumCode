@@ -2,7 +2,19 @@
  * NoSeumCode - Dashboard Multi-Rôles, Notifications & Authentification Sociale
  */
 
-const API_BASE = window.API_BASE_URL;
+function getApiBaseUrl() {
+  if (typeof window !== "undefined" && window.API_BASE_URL) {
+    return window.API_BASE_URL;
+  }
+  const isLocal = typeof window !== "undefined" && (
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1" ||
+    window.location.hostname.endsWith(".local")
+  );
+  return isLocal ? `http://${window.location.hostname}:8080` : "https://api.noseumcode.fr";
+}
+
+const API_BASE = getApiBaseUrl();
 
 // State
 let currentAuth = {
@@ -23,6 +35,28 @@ let enrolledCourses = [];
 let pendingAdminChapters = [];
 let teacherChapters = [];
 let allAvailableCourses = [];
+let activeDashboardView = null;
+let cachedDiscordData = null;
+
+// Navigation sécurisée et immédiate vers la communauté Discord (Sprint 11)
+function scrollToDiscordSection() {
+  let section = null;
+  if (typeof activeDashboardView !== "undefined" && activeDashboardView === "TEACHER") {
+    section = document.getElementById("discord-section-teacher");
+  } else if (typeof activeDashboardView !== "undefined" && activeDashboardView === "ADMIN") {
+    section = document.getElementById("discord-section-admin");
+  }
+  if (!section) {
+    section = document.getElementById("discord-section")
+      || document.getElementById("discord-section-teacher")
+      || document.getElementById("discord-section-admin")
+      || document.querySelector(".discord-card-container");
+  }
+  if (section) {
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+window.scrollToDiscordSection = scrollToDiscordSection;
 
 // Bespoke Brand SVGs (NoSeumCode Style - Zero AI Emojis)
 const ICONS = {
@@ -52,13 +86,19 @@ const ICONS = {
 };
 
 // Init on Load
-document.addEventListener("DOMContentLoaded", async () => {
+async function initDashboard() {
   parseAuthFromUrl();
   setupEventListeners();
   await loadStoredAuth();
   await refreshDashboardData();
   startNotificationPolling();
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initDashboard);
+} else {
+  initDashboard();
+}
 
 // ==========================================
 // 1. Auth & Session Management
@@ -83,6 +123,7 @@ function parseAuthFromUrl() {
   const role = params.get("role");
   const userName = params.get("userName");
   const firstName = params.get("firstName");
+  const email = params.get("email");
   const discordStatus = params.get("discord_status");
   const discordError = params.get("discord_error");
 
@@ -94,7 +135,7 @@ function parseAuthFromUrl() {
 
   if (token) {
     currentAuth.token = token;
-    currentAuth.user.role = normalizeRole(role, email);
+    currentAuth.user.role = normalizeRole(role);
     if (userName) currentAuth.user.userName = decodeURIComponent(userName);
     if (firstName) currentAuth.user.firstName = decodeURIComponent(firstName);
     if (email) currentAuth.user.email = decodeURIComponent(email);
@@ -124,7 +165,7 @@ async function loadStoredAuth() {
   currentAuth.token = savedToken;
   try {
     currentAuth.user = JSON.parse(savedUser);
-    currentAuth.user.role = normalizeRole(currentAuth.user.role, currentAuth.user.email);
+    currentAuth.user.role = normalizeRole(currentAuth.user.role);
   } catch (e) {
     console.error("Error parsing stored user:", e);
     logout();
@@ -212,7 +253,7 @@ async function loadStoredAuth() {
       }
       if (res.ok) {
         const freshUser = await res.json();
-        currentAuth.user.role = normalizeRole(freshUser.role, freshUser.email);
+        currentAuth.user.role = normalizeRole(freshUser.role);
         currentAuth.user.firstName = freshUser.firstName;
         currentAuth.user.lastName = freshUser.lastName;
         currentAuth.user.email = freshUser.email;
@@ -223,8 +264,6 @@ async function loadStoredAuth() {
     }
   } catch (_) {}
 }
-
-let activeDashboardView = null;
 
 function updateUserUI() {
   const userFullNameEl = document.getElementById("dash-user-fullname");
@@ -248,7 +287,7 @@ function updateUserUI() {
     userAvatarEl.textContent = initials.toUpperCase();
   }
 
-  const role = normalizeRole(currentAuth.user.role, currentAuth.user.email);
+  const role = normalizeRole(currentAuth.user.role);
   currentAuth.user.role = role;
 
   if (roleBadgeEl) {
@@ -334,7 +373,7 @@ function logout() {
   const refreshToken = localStorage.getItem("noseum_refresh_token");
   if (refreshToken) {
     try {
-      fetch(`${window.API_BASE_URL}/api/auth/logout`, {
+      fetch(`${getApiBaseUrl()}/api/auth/logout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ refreshToken })
@@ -359,12 +398,14 @@ async function apiFetch(endpoint, options = {}) {
     ...(options.headers || {})
   };
 
-  if (currentAuth.token) {
-    headers["Authorization"] = `Bearer ${currentAuth.token}`;
+  const token = currentAuth.token || localStorage.getItem("noseum_token");
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
   }
 
   try {
-    const response = await fetch(`${API_BASE}${endpoint}`, {
+    const baseUrl = getApiBaseUrl();
+    const response = await fetch(`${baseUrl}${endpoint}`, {
       ...options,
       headers
     });
@@ -378,7 +419,7 @@ async function apiFetch(endpoint, options = {}) {
 async function refreshDashboardData() {
   await fetchNotifications();
 
-  const role = normalizeRole(currentAuth.user.role, currentAuth.user.email);
+  const role = normalizeRole(currentAuth.user.role);
   currentAuth.user.role = role;
 
   if (role === "ADMIN") {
@@ -398,32 +439,40 @@ async function refreshDashboardData() {
 // ==========================================
 
 async function fetchNotifications() {
-  const res = await apiFetch("/api/notifications");
-  if (res && res.ok) {
-    notifications = await res.json();
-  } else if (notifications.length === 0) {
-    // Demo mock notifications
-    notifications = [
-      {
-        id: "notif-1",
-        title: "Nouvelle section en attente",
-        message: "L'enseignant Cedric a soumis 'Architecture Microservices' pour validation.",
-        type: "COURSE_SUBMISSION",
-        isRead: false,
-        createdAt: new Date(Date.now() - 1000 * 60 * 12).toISOString()
-      },
-      {
-        id: "notif-2",
-        title: "Section validée !",
-        message: "Votre section 'Introduction à Spring Security' a été validée par l'admin.",
-        type: "COURSE_APPROVED",
-        isRead: true,
-        createdAt: new Date(Date.now() - 1000 * 60 * 140).toISOString()
-      }
-    ];
+  try {
+    const res = await apiFetch("/api/notifications");
+    if (res && res.ok) {
+      const data = await res.json();
+      notifications = Array.isArray(data) ? data : (data && Array.isArray(data.content) ? data.content : []);
+    } else if (!notifications || notifications.length === 0) {
+      // Demo mock notifications
+      notifications = [
+        {
+          id: "notif-1",
+          title: "Nouvelle section en attente",
+          message: "L'enseignant Cedric a soumis 'Architecture Microservices' pour validation.",
+          type: "COURSE_SUBMISSION",
+          isRead: false,
+          createdAt: new Date(Date.now() - 1000 * 60 * 12).toISOString()
+        },
+        {
+          id: "notif-2",
+          title: "Section validée !",
+          message: "Votre section 'Introduction à Spring Security' a été validée par l'admin.",
+          type: "COURSE_APPROVED",
+          isRead: true,
+          createdAt: new Date(Date.now() - 1000 * 60 * 140).toISOString()
+        }
+      ];
+    }
+  } catch (err) {
+    console.warn("Erreur chargement notifications:", err);
+    if (!Array.isArray(notifications)) notifications = [];
   }
 
-  renderNotifications();
+  if (Array.isArray(notifications)) {
+    renderNotifications();
+  }
 }
 
 function renderNotifications() {
@@ -850,16 +899,25 @@ window.openStripeCustomerPortal = openStripeCustomerPortal;
 // 4d. Communauté Discord & Liaison Compte Apprenant (Sprint 11)
 // ==========================================
 
-let cachedDiscordData = null;
-
 async function loadDiscordStatus() {
   const containers = document.querySelectorAll(".discord-card-container, #discord-card-container, #discord-card-container-teacher, #discord-card-container-admin");
   if (!containers || containers.length === 0) return;
 
+  const token = currentAuth.token || localStorage.getItem("noseum_token");
+  if (!token) {
+    renderDiscordCard({ linked: false });
+    updateDiscordHeaderButton(null);
+    return;
+  }
+
   try {
     const response = await apiFetch("/api/discord/status");
     if (!response || !response.ok) {
-      if (response && response.status === 401) return;
+      if (response && response.status === 401) {
+        renderDiscordCard({ linked: false });
+        updateDiscordHeaderButton(null);
+        return;
+      }
       throw new Error("Impossible de charger le statut Discord.");
     }
 
@@ -896,9 +954,9 @@ function updateDiscordHeaderButton(data) {
     btnHeader.style.color = "#4752c4";
   } else {
     labelHeader.textContent = "Discord";
-    btnHeader.style.background = "#f8fafc";
-    btnHeader.style.borderColor = "#e2e8f0";
-    btnHeader.style.color = "#64748b";
+    btnHeader.style.background = "rgba(88, 101, 242, 0.08)";
+    btnHeader.style.borderColor = "rgba(88, 101, 242, 0.3)";
+    btnHeader.style.color = "#4752c4";
   }
 }
 
@@ -1038,13 +1096,13 @@ async function connectDiscordAccount() {
 
   try {
     const redirectTarget = encodeURIComponent(`${window.location.origin}/dashboard.html`);
-    const token = currentAuth.token;
+    const token = currentAuth.token || localStorage.getItem("noseum_token");
     if (!token) {
       throw new Error("Session expirée. Veuillez vous reconnecter.");
     }
 
     // Détermination dynamique de l'URL du backend (api.noseumcode.fr en prod/develop, localhost:8080 en dev local)
-    const backendBase = window.API_BASE_URL || API_BASE || "https://api.noseumcode.fr";
+    const backendBase = getApiBaseUrl();
     const linkUrl = `${backendBase}/oauth2/authorization/discord?redirect_uri=${redirectTarget}&link_token=${encodeURIComponent(token)}`;
     window.location.href = linkUrl;
   } catch (error) {
@@ -1114,15 +1172,16 @@ async function unlinkDiscordAccount() {
 
 function scrollToDiscordSection() {
   let section = null;
-  if (activeDashboardView === "TEACHER") {
+  if (typeof activeDashboardView !== "undefined" && activeDashboardView === "TEACHER") {
     section = document.getElementById("discord-section-teacher");
-  } else if (activeDashboardView === "ADMIN") {
+  } else if (typeof activeDashboardView !== "undefined" && activeDashboardView === "ADMIN") {
     section = document.getElementById("discord-section-admin");
   }
   if (!section) {
     section = document.getElementById("discord-section")
       || document.getElementById("discord-section-teacher")
-      || document.getElementById("discord-section-admin");
+      || document.getElementById("discord-section-admin")
+      || document.querySelector(".discord-card-container");
   }
   if (section) {
     section.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1182,9 +1241,10 @@ async function downloadHubspotCsv(workshopId = null) {
 
   try {
     showGlobalDashboardToast("⏳ Génération du fichier CSV HubSpot en cours...", "success");
+    const apiBase = getApiBaseUrl();
     const url = workshopId
-      ? `${API_BASE}/api/user-workshops/export/hubspot-csv?workshopId=${encodeURIComponent(workshopId)}`
-      : `${API_BASE}/api/user-workshops/export/hubspot-csv`;
+      ? `${apiBase}/api/user-workshops/export/hubspot-csv?workshopId=${encodeURIComponent(workshopId)}`
+      : `${apiBase}/api/user-workshops/export/hubspot-csv`;
 
     const res = await fetch(url, {
       headers: { "Authorization": `Bearer ${token}` }
@@ -2687,4 +2747,12 @@ function setupEventListeners() {
       bellBtn.setAttribute("aria-expanded", "false");
     }
   });
+
+  const btnDiscordHeader = document.getElementById("btn-discord-header");
+  if (btnDiscordHeader) {
+    btnDiscordHeader.addEventListener("click", (e) => {
+      e.preventDefault();
+      scrollToDiscordSection();
+    });
+  }
 }

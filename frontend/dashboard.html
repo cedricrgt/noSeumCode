@@ -23,6 +23,20 @@
   <link rel="stylesheet" href="styles/components/popover.css" />
   <link rel="stylesheet" href="styles/dist/homepage.min.css" />
   <link rel="stylesheet" href="styles/pages/dashboard.css" />
+
+  <!-- Navigation directe et sécurisée vers la section Discord (Sprint 11) -->
+  <script>
+    function scrollToDiscordSection() {
+      const section = (typeof activeDashboardView !== "undefined" && activeDashboardView === "TEACHER" && document.getElementById("discord-section-teacher"))
+        || (typeof activeDashboardView !== "undefined" && activeDashboardView === "ADMIN" && document.getElementById("discord-section-admin"))
+        || document.getElementById("discord-section") 
+        || document.getElementById("discord-section-teacher") 
+        || document.getElementById("discord-section-admin")
+        || document.querySelector(".discord-card-container");
+      if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    window.scrollToDiscordSection = scrollToDiscordSection;
+  </script>
 </head>
 <body class="dashboard-body">
   <a href="#main-dashboard" class="skip-link">Aller au contenu principal</a>
@@ -584,12 +598,13 @@
       const hash = window.location.hash;
       if (!hash || !hash.includes('token=')) return;
 
-      // Parse les paramètres du fragment : #token=xxx&role=yyy&userName=zzz&firstName=aaa
+      // Parse les paramètres du fragment : #token=xxx&role=yyy&userName=zzz&firstName=aaa&email=bbb
       const params = new URLSearchParams(hash.substring(1));
       const token     = params.get('token');
       const role      = params.get('role');
       const userName  = params.get('userName');
       const firstName = params.get('firstName');
+      const email     = params.get('email');
 
       if (token) {
         localStorage.setItem('noseum_token', token);
@@ -598,6 +613,7 @@
         const userObj = {
           userName:  userName  || '',
           firstName: firstName || '',
+          email:     email     || '',
           role:      role      || 'STUDENT'
         };
         localStorage.setItem('noseum_user', JSON.stringify(userObj));
@@ -622,6 +638,6 @@
   <!-- Scripts -->
   <script src="js/analytics.js"></script>
   <script src="js/header.js"></script>
-  <script src="js/dashboard.js"></script>
+  <script src="js/dashboard.js?v=sprint11.2"></script>
 </body>
 </html>
