@@ -119,6 +119,20 @@ public class PaymentController {
     }
 
     /**
+     * Webhook Stripe health check / readiness endpoint.
+     * Allows monitoring services, developers, and ping checks to verify endpoint availability without 405 errors.
+     */
+    @GetMapping(value = {"/webhook", "/webhook/stripe"})
+    public ResponseEntity<Map<String, Object>> getWebhookHealth() {
+        return ResponseEntity.ok(Map.of(
+                "status", "UP",
+                "service", "stripe-webhook",
+                "endpoint", "/api/payments/webhook",
+                "message", "NoSeumCode Stripe Webhook listener is operational. Expecting POST requests with Stripe-Signature."
+        ));
+    }
+
+    /**
      * Webhook Stripe récepteur d'événements automatisés (Stripe Webhook Handler).
      * Accessible publiquement par les serveurs Stripe avec validation HMAC SHA-256 cryptographique.
      */
