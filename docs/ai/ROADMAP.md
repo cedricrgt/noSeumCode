@@ -23,7 +23,7 @@
 | **Sprint 12** | **Web Performance, BFCache & Cache Policy** | Déblocage BFCache (.htaccess), cache 1 an CSS/JS, versioning assets, élagage Google Fonts (-35Ko) | ✅ **Terminé** |
 | **Sprint 13** | **Socle Technique, Sécurité Serveur & Assets** | Déblocage CSP HubSpot, cache Apache étendu, SEO technique (robots.txt, sitemap), compression WebP (>5 Mo) et 3 pages légales | ✅ **Terminé** |
 | **Sprint 14** | **Nouvelle Architecture des Offres (3 Packages)** | Modélisation catalogue `cours.js` (Starter 89 €, Web Pro 179 €, VIP 389 €), alignement Stripe, navigation `header.html` et page parcours | ✅ **Terminé** |
-| **Sprint 15** | **Refonte Copywriting Homepage & SEO Sémantique** | Copywriting validé, H1/Hero percutant, suppression du double regard, grille des 3 offres `#parcours`, FAQ 6 questions et mots-clés cibles | 📋 **Planifié** |
+| **Sprint 15** | **Refonte Copywriting Homepage & SEO Sémantique** | Copywriting validé, H1/Hero percutant, suppression du double regard, grille des 3 offres `#parcours`, FAQ 6 questions et mots-clés cibles | ✅ **Terminé** |
 | **Sprint 16** | **Tunnel Lead Magnet, Onboarding & Cocon Blog** | Sécurisation `thanks.html` (liens PDF + upsell), onboarding `success.html`, gabarit cocon blog (`article.html`) et recette globale | 📋 **Planifié** |
 
 ---
@@ -114,11 +114,11 @@ gantt
     Navigation Globale & Header (14.3)       :done, s14_3, 2026-09-30, 2026-09-30
 
     section Sprint 15 : Copywriting & SEO Homepage
-    Métadonnées & Matrice Mots-Clés (15.1)   :s15_1, 2026-10-02, 2026-10-04
-    Hero H1 Sans le Seum & Trustbar (15.2)   :s15_2, 2026-10-02, 2026-10-04
-    La Méthode 3 Piliers (15.3)              :s15_3, 2026-10-02, 2026-10-04
-    Grille 3 Packages #parcours (15.4)       :s15_4, 2026-10-02, 2026-10-04
-    FAQ 6 Questions Anti-Objections (15.5)   :s15_5, 2026-10-02, 2026-10-04
+    Métadonnées & Matrice Mots-Clés (15.1)   :done, s15_1, 2026-09-30, 2026-09-30
+    Hero H1 Sans le Seum & Trustbar (15.2)   :done, s15_2, 2026-09-30, 2026-09-30
+    La Méthode 3 Piliers (15.3)              :done, s15_3, 2026-09-30, 2026-09-30
+    Grille 3 Packages #parcours (15.4)       :done, s15_4, 2026-09-30, 2026-09-30
+    FAQ 6 Questions Anti-Objections (15.5)   :done, s15_5, 2026-09-30, 2026-09-30
 
     section Sprint 16 : Conversion, Lead Magnet & QA
     Lead Magnet thanks.html & Upsell (16.1)  :s16_1, 2026-10-04, 2026-10-05
@@ -325,7 +325,7 @@ gantt
 
 ---
 
-### Sprint 15 : Refonte Copywriting Homepage & Optimisation Sémantique SEO (Planifié)
+### Sprint 15 : Refonte Copywriting Homepage & Optimisation Sémantique SEO (Terminé)
 - **15.1 Métadonnées SEO `<head>` & Cocon Sémantique (`frontend/index.html`)** :
   - Balise `<title>` : `NoSeumCode | Apprends le Développement Web Sans le Seum (HTML, CSS, JS)`.
   - Meta description orientée bénéfices réels (de zéro aux premiers sites web en ligne, projets concrets, mentorat direct, garantie 14 jours).

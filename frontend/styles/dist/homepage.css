@@ -1687,6 +1687,7 @@ html {
 
 .courses__header {
   margin-bottom: var(--spacing-2xl);
+  text-align: center;
 }
 
 .courses__cards {
@@ -1694,6 +1695,58 @@ html {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: var(--spacing-xl);
 }
+
+.card-package {
+  padding: 2.25rem 1.75rem;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: var(--radius-xl);
+}
+
+.card-package .card__tag {
+  width: auto;
+  height: auto;
+  display: inline-flex;
+  align-self: center;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.card-featured {
+  box-shadow: 0 12px 48px rgba(0, 255, 135, 0.25);
+  transform: scale(1.03);
+  z-index: 2;
+}
+
+@media (max-width: 900px) {
+  .card-featured {
+    transform: none;
+  }
+}
+
+.tool-badge {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: #e2e8f0;
+  font-weight: 500;
+  display: inline-block;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.tool-badge:hover {
+  background: rgba(0, 255, 135, 0.1);
+  border-color: rgba(0, 255, 135, 0.4);
+}
+
 
 
 /* Section Ton Mentor (Sprint 9 / Task 9.2) */
