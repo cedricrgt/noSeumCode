@@ -906,4 +906,32 @@ _Chronologique — plus récent en bas_
    - Tableau récapitulatif, diagramme de Gantt Mermaid et spécifications détaillées page par page enrichis pour les Sprints 13 à 16.
 3. **Synchronisation du Kanban GitHub Projects (Projet 1)** :
    - Sprint 12 passé à `Done`.
-   - Création des Draft Issues pour les Sprints 13, 14, 15 et 16 avec statut `Todo`.
+   - Création des Draft Issues pour les Sprints 13, 14, 15 et 16 avec statut `Todo`.
+
+---
+
+### 2026-09-30 — Sprint 13 : Socle Technique, Sécurité Serveur & Assainissement des Assets
+**Conversation**: `e8ec6f84-8fe9-4797-b252-c7c4ae21f579`  
+**Branche**: `feat/sprint-13-technical-foundation-seo-assets`
+
+#### Ce qui a changé :
+1. **Déblocage CSP HubSpot & Directives Apache (`frontend/.htaccess`)** :
+   - Mise à jour de la directive Content-Security-Policy autorisant l'affichage et la soumission des popovers HubSpot sans violation : intégration de `https://forms.eu1.hsforms.com`, `https://forms.hubspot.com`, `https://api.hsforms.com` et domaines associés dans `script-src`, `frame-src`, `connect-src`, `img-src` et `form-action`.
+   - Conservation des directives `mod_expires` 1 an pour les assets statiques et médias modernes (`image/webp`, `image/avif`, `image/svg+xml`, `font/woff2`).
+   - Ajout des règles de réécriture d'URL propres pour les pages légales (`/mentions-legales`, `/cgv`, `/confidentialite`) et redirection 301 automatique de `/politique-confidentialite` vers `/confidentialite.html`.
+2. **Hygiène SEO Technique (`frontend/robots.txt` & `frontend/sitemap.xml`)** :
+   - `robots.txt` : interdiction formelle d'exploration des dossiers privés (`Disallow: /documents/`, `Disallow: /data/`) et des pages transactionnelles (`/dashboard.html`, `/thanks.html`, `/success.html`, `/reset-password.html`), maintien de `Allow: /` et déclaration du sitemap canonique.
+   - `sitemap.xml` : suppression de `/dashboard.html`, maintien de la racine canonique `https://noseumcode.fr/`, et remplacement de l'URL de confidentialité par `https://noseumcode.fr/confidentialite.html` (avec `lastmod: 2026-09-30`).
+3. **Assainissement des Assets Graphiques (`frontend/images/courses/git.webp`)** :
+   - Compression WebP Sharp de `git.webp` à 47,9 Ko (qualité 75%, effort 6), conforme à la fourchette cible de 45 à 65 Ko (gain direct de 2,68 Mo par rapport au fichier original non optimisé).
+   - Validation de conformité pour `javascript.webp` (42,7 Ko) et `favicon.png` (7,4 Ko, <15 Ko).
+4. **Pages Légales & Conformité RGPD (`frontend/mentions-legales.html`, `cgv.html`, `confidentialite.html`)** :
+   - `mentions-legales.html` : ajout du numéro SIRET (921 584 712 00014) sous le responsable de publication et mentions des hébergeurs o2switch (Frontend) et Oracle Cloud Infrastructure (Backend API).
+   - `cgv.html` : formalisation des 3 Packages (Starter 89 €, Web Pro 179 € ou 2x 95 €, Mentorat VIP 389 € ou 3x 135 €), paiements échelonnés Stripe / Klarna BNPL, droit de rétractation légal et garantie commerciale satisfait ou remboursé 14 jours, et médiation de la consommation (L. 612-1).
+   - `confidentialite.html` : création de la page complète de politique de confidentialité conforme RGPD (mention des sous-traitants Stripe PCI-DSS, Brevo pour les e-mails transactionnels, HubSpot, hébergement ISO 27001 en UE, analytics Plausible cookieless, droits CNIL).
+   - `politique-confidentialite.html` : synchronisation et ajout de l'URL canonique vers `confidentialite.html`.
+   - `footer.html` : mise à jour du lien de confidentialité vers `confidentialite.html`.
+5. **Validation Locale & Tests** :
+   - Recompilation et minification des bundles CSS et JS sans erreur (`node build.js`).
+   - Suite complète Spring Boot validée via `.\mvnw.cmd test` : 132 tests réussis (`BUILD SUCCESS`, 0 erreur, 0 échec).
+

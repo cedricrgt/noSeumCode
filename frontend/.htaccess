@@ -49,6 +49,21 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^formations/?$ formations/index.html [L,QSA]
 
+# 4. Réécriture propre des pages légales (Sprint 13)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^mentions-legales/?$ mentions-legales.html [L,QSA]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^cgv/?$ cgv.html [L,QSA]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^confidentialite/?$ confidentialite.html [L,QSA]
+
+RewriteRule ^politique-confidentialite(\.html)?$ /confidentialite.html [R=301,L]
+
 
 # ----------------------------------------------------------------------
 # Redirection "En construction" (supprimer ce bloc quand le site est prêt)
@@ -200,5 +215,5 @@ DirectoryIndex index.html
 
     # Content Security Policy
     # Allows Stripe.js, embedded checkout iframes, HubSpot forms & scripts, API connections, and cookieless Analytics (Plausible/Umami)
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://js.stripe.com https://js-eu1.hsforms.net https://js.hsforms.net https://plausible.io https://cloud.umami.is; frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://forms-eu1.hsforms.com https://forms.hsforms.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: https://*.stripe.com https://forms-eu1.hsforms.com; connect-src 'self' https://noseumcode.fr https://api.noseumcode.fr https://develop.noseumcode.fr http://localhost:8080 http://localhost:3000 https://api.stripe.com https://forms-eu1.hsforms.com https://forms.hsforms.com https://api-eu1.hubspot.com https://api.hubspot.com https://plausible.io https://cloud.umami.is https://api-gateway.umami.dev; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://forms-eu1.hsforms.com https://forms.hsforms.com;"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://js.stripe.com https://js-eu1.hsforms.net https://js.hsforms.net https://plausible.io https://cloud.umami.is; frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://forms.eu1.hsforms.com https://forms-eu1.hsforms.com https://forms.hubspot.com https://forms.hsforms.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: https://*.stripe.com https://forms.hubspot.com https://forms-eu1.hsforms.com; connect-src 'self' https://noseumcode.fr https://api.noseumcode.fr https://develop.noseumcode.fr http://localhost:8080 http://localhost:3000 https://api.stripe.com https://api.hsforms.com https://forms.hubspot.com https://forms-eu1.hsforms.com https://forms.hsforms.com https://api-eu1.hubspot.com https://api.hubspot.com https://plausible.io https://cloud.umami.is https://api-gateway.umami.dev; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://forms.hubspot.com https://forms-eu1.hsforms.com https://forms.hsforms.com;"
 </IfModule>
