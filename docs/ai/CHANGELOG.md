@@ -1014,4 +1014,33 @@ _Chronologique — plus récent en bas_
 7. **Validation Locale & Tests** :
    - Exécution complète des 132 tests Spring Boot réussie (`mvnw.cmd test` : 0 échec, 0 erreur).
 
+---
+
+### 2026-09-30 — Fix Typographique & Ergonomie de Lecture (Alignement Strict & Règle 20)
+**Conversation**: `e8ec6f84-8fe9-4797-b252-c7c4ae21f579`  
+**Branche**: `fix/typography-text-alignment-rules`
+
+#### Ce qui a changé :
+1. **Création de la règle projet d'alignement (`.agents/rules/rule-20-typography-readability.md`)** :
+   - Formalisation de l'ergonomie de lecture occidentale (LTR) : mur d'ancrage visuel gauche vertical constant sur l'axe X.
+   - Définition stricte des seules exceptions autorisées au centrage (<= 3 lignes : sous-titres Hero sous H1, micro-réassurance sous CTA, bannières d'action / empty states, citations isolées, titres H1/H2, badges et boutons).
+   - Définition des éléments formellement interdits de centrer : corps d'articles et de cours (60 à 75 caractères max par ligne), réponses de FAQ, checklists à puces verticalement alignées, paragraphes descriptifs de cartes et packages d'offres.
+2. **Harmonisation CSS & Élimination des Centrages Abusifs** :
+   - `frontend/styles/components/utilities.css` : Ajout de `text-align: left;` sur `.card-grid` pour isoler les cartes enfants du `text-align: center;` hérité des conteneurs `.section`.
+   - `frontend/styles/components/cards.css` : Ajout explicite de `text-align: left;` sur `.card`, `.card__title` et `.card__paragraphe`.
+   - `frontend/styles/pages/homepage/courses.css` : Remplacement du `text-align: center;` général de `.card-package` par `text-align: left;`. Déclaration de règles ciblées : `.package-tagline` (`text-align: left`), `.package-features` (`text-align: left`), `.package-title` et `.package-price` (`text-align: center`), et `.package-reassurance` (`text-align: center`).
+   - `frontend/styles/pages/homepage/mentor.css` : Ajout explicite de `text-align: left;` sur `.mentor__text`, `.mentor__pillar-desc` et `.mentor__vip-desc`. Dans la media query mobile (`@media (max-width: 900px)`), maintien de l'alignement à gauche pour tous les paragraphes descriptifs afin d'éviter les retours de ligne en dents de scie.
+   - `frontend/styles/pages/formations.css` : Maintien de l'alignement gauche sur `.mentor-card` et `.mentor-info p` sur mobile.
+   - `frontend/styles/pages/article.css` : Ajout de `text-align: left;` et `max-width: 75ch;` sur `.article-intro` et `.article-section p`.
+   - `frontend/styles/pages/cours.css` : Ajout de `text-align: left;` et `max-width: 75ch;` sur `.rendered-markdown`.
+3. **Balise & Classes Sémantiques HTML (`frontend/index.html`)** :
+   - Ajout des classes sémantiques `package-title` et `package-reassurance` sur les 3 cartes d'offres de la section `#parcours`.
+   - Vérification de l'alignement strict à gauche sur toutes les checklists à puces `✓` et les textes descriptifs.
+4. **Décision Architecturale (ADR-020)** :
+   - Rédaction et enregistrement d'ADR-020 dans `docs/ai/DECISIONS.md`.
+5. **Rebuild & Tests** :
+   - Recompilation réussie de tous les bundles CSS/JS minifiés (`node build.js`).
+   - Compilation et validation des tests backend Java réussies (`mvnw.cmd test-compile`).
+
+
 

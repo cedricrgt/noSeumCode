@@ -11,7 +11,7 @@
 
 .card-package {
   padding: 2.25rem 1.75rem;
-  text-align: center;
+  text-align: left;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -29,6 +29,34 @@
   font-size: 0.8rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
+}
+
+.card-package .package-title {
+  text-align: center;
+}
+
+.card-package .package-tagline {
+  text-align: left;
+  line-height: 1.6;
+}
+
+.card-package .package-price {
+  text-align: center;
+}
+
+.card-package .package-features {
+  text-align: left;
+  list-style: none;
+  padding: 0;
+  line-height: 1.8;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-package .package-reassurance {
+  text-align: center;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
 }
 
 .card-featured {

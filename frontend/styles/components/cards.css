@@ -4,6 +4,7 @@
   transition: transform var(--transition-normal), box-shadow var(--transition-normal);
   display: flex;
   flex-direction: column;
+  text-align: left;
 }
 
 .card:hover {
@@ -94,11 +95,13 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: inherit;
+  text-align: left;
 }
 
 .card__paragraphe {
   font-size: 1rem;
   line-height: 1.7;
+  text-align: left;
   flex: 1;
 }
 

@@ -48,8 +48,8 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `feat/sprint-15-homepage-copywriting-seo`
-## Current State: Sprints 1 à 15 validés. Sprint 15 complété avec succès (métadonnées SEO & OpenGraph index.html avec image dédiée partage-noseumcode.png, refonte Hero avec H1 percutant et réassurance, Trustbar outils pros, 3 piliers de La Méthode NoSeumCode avec suppression du double regard, grille des 3 offres #parcours avec boutons Stripe directs, FAQ 6 questions cibles anti-objections, styles CSS et bundles homepage.min.css régénérés).
+## Active Branch: `fix/typography-text-alignment-rules`
+## Current State: Sprints 1 à 15 validés. Fix typographique & ergonomie de lecture complété (ADR-020, Règle 20 : mur d'ancrage LTR gauche pour paragraphes et listes, isolation card-grid et packages, préservation de l'alignement gauche sur mobile, bundles CSS régénérés).
 ## Next Steps: Lancement du Sprint 16 (Tunnel Lead Magnet, Onboarding Apprenant & Cocon Blog : sécurisation thanks.html avec liens PDF réparés et upsell doux, onboarding post-achat success.html en 3 étapes, gabarit sémantique article.html et recette globale PageSpeed CWV).
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
