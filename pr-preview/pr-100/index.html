@@ -1,0 +1,950 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NoSeumCode | Apprends le Développement Web Sans le Seum (HTML, CSS, JS)</title>
+    <meta
+      name="description"
+      content="Passe de zéro à tes premiers sites web en ligne. Des formations pratiques HTML, CSS et JavaScript avec projets réels, entraide active et mentorat individuel."
+    />
+    <link rel="canonical" href="https://noseumcode.fr/" />
+    <link rel="icon" type="image/png" href="images/favicon.png" />
+
+    <!-- OpenGraph / Facebook / Discord -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="NoSeumCode" />
+    <meta property="og:title" content="NoSeumCode | Apprends le Développement Web Sans le Seum" />
+    <meta
+      property="og:description"
+      content="Des projets concrets, zéro cours théorique de 400 pages, du code propre et un accompagnement humain pour lancer tes projets web."
+    />
+    <meta property="og:url" content="https://noseumcode.fr/" />
+    <meta property="og:image" content="https://noseumcode.fr/images/og/partage-noseumcode.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="fr_FR" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="NoSeumCode | Apprends le Développement Web Sans le Seum" />
+    <meta
+      name="twitter:description"
+      content="Des projets concrets, zéro cours théorique de 400 pages, du code propre et un accompagnement humain pour lancer tes projets web."
+    />
+    <meta name="twitter:image" content="https://noseumcode.fr/images/og/partage-noseumcode.png" />
+
+    <!-- LCP Image Preload (Crucial for eliminating LCP discovery & render delay) -->
+    <link rel="preload" as="image" href="images/hero/student-female-smiling.webp" type="image/webp" fetchpriority="high" />
+
+    <!-- Plausible Analytics Cookieless & RGPD (Sprint 9 / ADR-015) - Deferred on idle to prevent forced reflow -->
+    <script>
+      window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments); };
+      window.addEventListener('load', function() {
+        (window.requestIdleCallback || function(cb) { setTimeout(cb, 1); })(function() {
+          var s = document.createElement('script');
+          s.defer = true;
+          s.setAttribute('data-domain', 'noseumcode.fr');
+          s.src = 'https://plausible.io/js/script.tagged-events.outbound-links.js';
+          document.head.appendChild(s);
+        });
+      });
+    </script>
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "NoSeumCode",
+      "url": "https://noseumcode.fr",
+      "logo": "https://noseumcode.fr/images/header/logo.png",
+      "description": "Formations au développement web pratique pour débutants et intermédiaires. Apprends HTML5, CSS3, JavaScript ES6+ et Git sans le seum avec projets réels et mentorat.",
+      "sameAs": [
+        "https://github.com/cedricrgt/noSeumCode"
+      ]
+    }
+    </script>
+    
+    <link rel="stylesheet" href="styles/dist/homepage.min.css?v=sprint15" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Bangers&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Bangers&display=swap"
+      />
+    </noscript>
+  </head>
+  <body>
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+    <!-- Header landmark container -->
+    <div id="header-placeholder"></div>
+
+    <main id="main-content" class="home">
+      
+      
+      <section class="hero poppins-regular">
+          <div class="hero__right">
+            <svg
+              class="hero__blob-svg"
+              viewBox="0 0 200 200"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-labelledby="hero-image-desc"
+            >
+              <title id="hero-image-desc">
+                Étudiante souriante avec casque audio
+              </title>
+    
+              
+              <image
+                href="images/hero/student-female-smiling.webp"
+                width="200"
+                height="200"
+                preserveAspectRatio="xMidYMid slice"
+                clip-path="url(#heroBlobClip)"
+                fetchpriority="high"
+                loading="eager"
+                decoding="async"
+              />
+    
+              
+              <clipPath id="heroBlobClip">
+                <path
+                  d="M43.1,-68.5C56.2,-58.6,67.5,-47.3,72.3,-33.9C77.2,-20.5,75.5,-4.9,74.2,11.3C72.9,27.6,71.9,44.5,63.8,57.2C55.7,69.8,40.6,78.2,25.5,79.2C10.4,80.1,-4.7,73.6,-20.9,69.6C-37.1,65.5,-54.5,63.9,-66,54.8C-77.5,45.8,-83.2,29.3,-85.7,12.3C-88.3,-4.8,-87.7,-22.3,-79.6,-34.8C-71.5,-47.3,-55.8,-54.9,-41.3,-64.2C-26.7,-73.6,-13.4,-84.7,0.8,-86C15,-87.2,29.9,-78.5,43.1,-68.5Z"
+                  transform="translate(100 100)"
+                />
+              </clipPath>
+    
+              <g class="hero__blob-text-rotate">
+                <path
+                  id="heroBlobPath"
+                  d="M43.1,-68.5C56.2,-58.6,67.5,-47.3,72.3,-33.9C77.2,-20.5,75.5,-4.9,74.2,11.3C72.9,27.6,71.9,44.5,63.8,57.2C55.7,69.8,40.6,78.2,25.5,79.2C10.4,80.1,-4.7,73.6,-20.9,69.6C-37.1,65.5,-54.5,63.9,-66,54.8C-77.5,45.8,-83.2,29.3,-85.7,12.3C-88.3,-4.8,-87.7,-22.3,-79.6,-34.8C-71.5,-47.3,-55.8,-54.9,-41.3,-64.2C-26.7,-73.6,-13.4,-84.7,0.8,-86C15,-87.2,29.9,-78.5,43.1,-68.5Z"
+                  transform="translate(100 100)"
+                  fill="none"
+                  stroke="none"
+                  pathLength="100"
+                />
+      
+                <text class="hero__blob-text">
+                  <textPath href="#heroBlobPath" startOffset="0%">
+                    ★ CODE EN MODE BANGER ★ CODE EN MODE BANGER ★ CODE EN MODE BANGER ★
+                  </textPath>
+                </text>
+              </g>
+            </svg>
+          </div>
+          <div class="hero__left">
+            <span class="section-tag" style="margin-bottom: 0.75rem; display: inline-block;">Formations Web Débutant &amp; Intermédiaire</span>
+            <h1 class="hero__title bangers-regular">
+              Apprends à coder pour de vrai. <span class="gradient-text">Sans le seum.</span>
+            </h1>
+            <p class="hero__paragraphe poppins-regular">
+              Marre des tutoriels théoriques interminables où tu recopies du code sans rien comprendre ? Avec NoSeumCode, tu construis de vrais sites web dès ta première semaine, guidé pas à pas avec du code moderne et du mentorat direct.
+            </p>
+
+            <div class="hero__decorations">
+              <div class="hero__buttons">
+                <a href="#parcours" class="button button__primary bangers-regular" data-track="cta_click" data-track-cta="hero_view_packages" data-track-location="hero">
+                  Voir les 3 Packs d'Apprentissage ↓
+                </a>
+                <button type="button" class="button button__secondary bangers-regular" popovertarget="hubspot-popover" aria-haspopup="dialog" data-track="cta_click" data-track-cta="hero_download_program" data-track-location="hero">
+                  Télécharger le Programme (PDF)
+                </button>
+              </div>
+              <p class="hero__subtext-reassurance poppins-regular" style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.75rem;">
+                ✓ Projets 100% pratiques • ✓ Accès à vie aux mises à jour • ✓ Garantie 14 jours satisfait ou remboursé
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             SECTION PREUVE SOCIALE & BOÎTE À OUTILS (SPRINT 15)
+             ======================================================== -->
+        <section class="section section--trustbar" style="padding: 1.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
+          <div class="container text-center">
+            <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px;">
+              Les technologies et outils professionnels que tu vas maîtriser :
+            </p>
+            <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; align-items: center; opacity: 0.9;">
+              <span class="tool-badge">HTML5 Sémantique</span>
+              <span class="tool-badge">CSS3 &amp; Flexbox</span>
+              <span class="tool-badge">JavaScript ES6+</span>
+              <span class="tool-badge">Git &amp; GitHub</span>
+              <span class="tool-badge">VS Code</span>
+              <span class="tool-badge">Responsive Design</span>
+            </div>
+          </div>
+        </section>
+
+        
+        <section id="services" class="section section--light">
+          <span class="section-tag">La Méthode NoSeumCode</span>
+          <h2 class="section-title">
+            Trois piliers pour apprendre vite, sans décrocher
+          </h2>
+
+          <div class="card-grid">
+            
+            <article class="card card-green">
+              <header class="card__imageContainer">
+                <img
+                  class="card__image"
+                  src="images/card/card-live.webp"
+                  alt="Zéro théorie inutile, 100% de création"
+                  width="400"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </header>
+              <main class="card__main">
+                <div class="card__header">
+                  <div class="card__tag card__tag-white">
+                    <svg
+                      class="card__icon"
+                      viewBox="0 0 24 24"
+                      fill="#00ff87"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M15 10L20 5V19L15 14M4 6H14C15.1046 6 16 6.89543 16 8V16C16 17.1046 15.1046 18 14 18H4C2.89543 18 2 17.1046 2 16V8C2 6.89543 2.89543 6 4 6Z"
+                        stroke="#1a2332"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <h3 class="card__title">Zéro théorie inutile, 100% de création</h3>
+                </div>
+                <p
+                  class="card__paragraphe card__paragraphe-white poppins-regular"
+                >
+                  Oublie les cours magistraux de 400 pages et les vidéos où l'on regarde passivement quelqu'un d'autre taper du code. Ici, tu installes tes outils dès la première heure et tu construis des interfaces réelles qui tournent dans ton navigateur.
+                </p>
+                <button popovertarget="pedagogy-live" class="card__link bangers-regular" style="background:none; border:none; cursor:pointer;" aria-haspopup="dialog">
+                  En savoir plus
+                  <svg
+                    class="card__chevron"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M9 18L15 12L9 6"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+              </main>
+            </article>
+
+            
+            <article class="card card-white">
+              <header class="card__imageContainer">
+                <img
+                  class="card__image"
+                  src="images/card/card-projects.webp"
+                  alt="Des projets que tu seras fier de montrer"
+                  width="400"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </header>
+              <main class="card__main">
+                <div class="card__header">
+                  <div class="card__tag card__tag-blue">
+                    <svg
+                      class="card__icon"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M12 2L2 7L12 12L22 7L12 2Z"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M2 17L12 22L22 17"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M2 12L12 17L22 12"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <h3 class="card__title">Des projets que tu seras fier de montrer</h3>
+                </div>
+                <p class="card__paragraphe card__textGreen poppins-regular">
+                  À la fin de ton parcours, tu ne repars pas avec un simple fichier texte sur ton bureau. Tu possèdes des applications complètes, hébergées en ligne, versionnées proprement avec Git et GitHub, prêtes à être partagées à des recruteurs ou à tes clients.
+                </p>
+                <button popovertarget="pedagogy-projects" class="card__link bangers-regular" style="background:none; border:none; cursor:pointer;" aria-haspopup="dialog">
+                  Ce que tu vas créer
+                  <svg
+                    class="card__chevron-darken"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M9 18L15 12L9 6"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+              </main>
+            </article>
+
+            
+            <article class="card card-white">
+              <header class="card__imageContainer">
+                <img
+                  class="card__image"
+                  src="images/card/card-coaching.webp"
+                  alt="Un mentor et une communauté à tes côtés"
+                  width="400"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </header>
+              <main class="card__main">
+                <div class="card__header">
+                  <div class="card__tag card__tag-grey">
+                    <svg
+                      class="card__icon"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <circle
+                        cx="9"
+                        cy="7"
+                        r="4"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25393 19.0078 6.11683 19.0078 7.005C19.0078 7.89317 18.7122 8.75607 18.1676 9.45768C17.623 10.1593 16.8604 10.6597 16 10.88"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <h3 class="card__title">Un mentor et une communauté à tes côtés</h3>
+                </div>
+                <p class="card__paragraphe card__textGreen poppins-regular">
+                  La première cause d'abandon en programmation est une virgule manquante qui bloque ton écran pendant trois jours. Sur notre Discord privé, tu poses tes questions, partages ton code et obtiens de l'aide rapidement pour continuer d'avancer sereinement.
+                </p>
+                <button popovertarget="pedagogy-mentoring" class="card__link bangers-regular" style="background:none; border:none; cursor:pointer;" aria-haspopup="dialog">
+                  Découvrir le coaching
+                  <svg
+                    class="card__chevron-darken"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M9 18L15 12L9 6"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+              </main>
+            </article>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             SECTION OFFRES : LES 3 PACKAGES (SPRINT 15 / TASK 15.4)
+             ======================================================== -->
+        <section id="parcours" class="section section--white">
+          <div class="courses__header text-center">
+            <span class="section-tag">Nos Parcours de Formation</span>
+            <h2 class="section-title">
+              Choisis le pack adapté à ton niveau et à tes ambitions
+            </h2>
+            <p class="section-subtitle">
+              Accès immédiat, vidéos courtes et percutantes, exercices corrigés et garantie satisfait ou remboursé.
+            </p>
+          </div>
+
+          <div class="card-grid">
+            <!-- CARTE 1 : PACK STARTER (89 €) -->
+            <article class="card card-white card-package">
+              <div class="card__tag" style="background: rgba(0, 217, 255, 0.15); color: #00d9ff;">Idéal Débutant</div>
+              <h3 class="bangers-regular package-title" style="font-size: 1.8rem; margin: 0.5rem 0;">Pack Starter</h3>
+              <p class="package-tagline" style="color: #64748b; font-size: 0.95rem; text-align: left;">Les fondations indispensables du web moderne.</p>
+              <div class="package-price bangers-regular" style="font-size: 2.5rem; color: #070e18; margin: 1rem 0;">
+                89 € <span style="font-size: 0.9rem; font-family: 'Poppins'; font-weight: normal; color: #64748b;">paiement unique</span>
+              </div>
+              <ul class="package-features poppins-regular" style="text-align: left; list-style: none; padding: 0; line-height: 1.8; font-size: 0.9rem; margin-bottom: 1.5rem;">
+                <li>✓ <strong>Formation HTML5 Complète</strong> (Structure &amp; SEO)</li>
+                <li>✓ <strong>Formation CSS3 Moderne</strong> (Flexbox, Grid &amp; Couleurs)</li>
+                <li>✓ <strong>Responsive Design</strong> (Adapté mobile &amp; tablettes)</li>
+                <li>✓ <strong>2 Projets de Portfolio</strong> (Page Bio-Link + Landing Page)</li>
+                <li>✓ <strong>Accès Communauté Discord</strong> d'entraide</li>
+                <li>✓ <strong>Mises à jour à vie</strong> incluses</li>
+              </ul>
+              <button type="button" class="button button__primary bangers-regular" style="width: 100%;" onclick="initiateCourseEnrollment('pack-starter', 'Pack Starter', '89 €')">
+                Choisir le Pack Starter • 89 €
+              </button>
+              <p class="package-reassurance" style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.5rem; text-align: center;">Accès immédiat • Garantie 14 jours</p>
+            </article>
+
+            <!-- CARTE 2 : PACK WEB PRO (179 € — RECOMMANDÉ) -->
+            <article class="card card-green card-package card-featured" style="border: 2px solid #00ff87; position: relative;">
+              <div class="card__tag" style="background: #00ff87; color: #070e18; font-weight: bold;">Le Plus Populaire</div>
+              <h3 class="bangers-regular package-title" style="font-size: 1.8rem; margin: 0.5rem 0; color: #fff;">Pack Web Pro</h3>
+              <p class="package-tagline" style="color: #cbd5e1; font-size: 0.95rem; text-align: left;">Deviens un développeur web frontend autonome.</p>
+              <div class="package-price bangers-regular" style="font-size: 2.5rem; color: #00ff87; margin: 1rem 0;">
+                179 € <span style="font-size: 0.9rem; font-family: 'Poppins'; font-weight: normal; color: #cbd5e1;">ou 2x 95 €</span>
+              </div>
+              <ul class="package-features poppins-regular" style="text-align: left; list-style: none; padding: 0; line-height: 1.8; font-size: 0.9rem; margin-bottom: 1.5rem; color: #fff;">
+                <li>✓ <strong>Tout le Pack Starter inclus</strong> (HTML5 + CSS3)</li>
+                <li>✓ <strong>Formation JavaScript Moderne (ES6+)</strong></li>
+                <li>✓ <strong>Manipulation du DOM &amp; Animations</strong> interactives</li>
+                <li>✓ <strong>Connexion API &amp; Données en temps réel</strong> (fetch/async)</li>
+                <li>✓ <strong>4 Projets Portfolio Additionnels</strong> (Dashboard Gaming, etc.)</li>
+                <li>🎁 <strong>BONUS OFFERT : Formation Git &amp; GitHub</strong> (valeur 49 €)</li>
+                <li>✓ <strong>Accès Prioritaire Discord</strong> &amp; salons d'entraide</li>
+              </ul>
+              <button type="button" class="button button__primary bangers-regular" style="width: 100%; background: #00ff87; color: #070e18;" onclick="initiateCourseEnrollment('pack-web-pro', 'Pack Web Pro', '179 €')">
+                Rejoindre le Pack Web Pro • 179 €
+              </button>
+              <p class="package-reassurance" style="font-size: 0.75rem; color: #a0aec0; margin-top: 0.5rem; text-align: center;">Soit 2x 95 € sans frais • Garantie 14 jours</p>
+            </article>
+
+            <!-- CARTE 3 : PACK MENTORAT VIP (389 €) -->
+            <article class="card card-white card-package">
+              <div class="card__tag" style="background: rgba(255, 51, 102, 0.15); color: #ff3366;">10 Places / Mois</div>
+              <h3 class="bangers-regular package-title" style="font-size: 1.8rem; margin: 0.5rem 0;">Pack Mentorat VIP</h3>
+              <p class="package-tagline" style="color: #64748b; font-size: 0.95rem; text-align: left;">L'accélération avec un formateur senior dédié.</p>
+              <div class="package-price bangers-regular" style="font-size: 2.5rem; color: #070e18; margin: 1rem 0;">
+                389 € <span style="font-size: 0.9rem; font-family: 'Poppins'; font-weight: normal; color: #64748b;">ou 3x 135 €</span>
+              </div>
+              <ul class="package-features poppins-regular" style="text-align: left; list-style: none; padding: 0; line-height: 1.8; font-size: 0.9rem; margin-bottom: 1.5rem;">
+                <li>✓ <strong>L'intégralité du Pack Web Pro</strong> + Git &amp; GitHub</li>
+                <li>🎯 <strong>4H de Mentorat Individuel (1-to-1)</strong> en visio privée</li>
+                <li>🔍 <strong>Revue de Code Ligne par Ligne</strong> de tes projets</li>
+                <li>💼 <strong>Coaching Carrière &amp; Audit Portfolio</strong> (CV + GitHub)</li>
+                <li>💬 <strong>Canal Privé Direct avec ton Mentor</strong> sur Discord</li>
+                <li>✓ <strong>Suivi personnalisé</strong> garanti sous 24h ouvrées</li>
+              </ul>
+              <button type="button" class="button button__primary bangers-regular" style="width: 100%;" onclick="initiateCourseEnrollment('pack-mentorat-vip', 'Pack Mentorat VIP', '389 €')">
+                Postuler au Pack VIP • 389 €
+              </button>
+              <p class="package-reassurance" style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.5rem; text-align: center;">Soit 3x 135 € sans frais • 100% garanti</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             SECTION TON MENTOR (SPRINT 9 / TASK 9.2)
+             ======================================================== -->
+        <section id="mentor" class="mentor section">
+          <div class="mentor__container">
+            <div class="mentor__header">
+              <span class="section-tag">Ton Formateur</span>
+              <h2 class="section-title section-title--light">
+                Apprends avec Cédric, ingénieur logiciel &amp; mentor passionné
+              </h2>
+              <p class="section-subtitle section-subtitle--light">
+                Plus de 10 ans d'expérience dans l'ingénierie web et le cloud mis au service de ton apprentissage.
+              </p>
+            </div>
+
+            <div class="mentor__hero">
+              <div class="mentor__avatar-wrapper">
+                <img
+                  class="mentor__avatar"
+                  src="images/mentor-cedric.webp"
+                  alt="Portrait de Cédric Ragot, mentor et formateur chez NoSeumCode"
+                  width="240"
+                  height="240"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div class="mentor__verified-badge">
+                  <span>✓</span> Formateur &amp; Lead Dev
+                </div>
+              </div>
+
+              <div class="mentor__bio">
+                <h3 class="mentor__name bangers-regular">Cédric Ragot</h3>
+                <p class="mentor__role poppins-regular">Fondateur de NoSeumCode &amp; Ingénieur Web Senior</p>
+                <p class="mentor__text poppins-regular">
+                  « Après plus d'une décennie à concevoir des architectures web et cloud pour des startups et grands comptes, j'ai créé <strong>NoSeumCode</strong> pour apporter une réponse concrète au problème des formations traditionnelles : le manque d'interaction humaine et le fossé entre la théorie scolaire et la vraie vie professionnelle.
+                </p>
+                <p class="mentor__text poppins-regular">
+                  Mon engagement ? Être à tes côtés à chaque étape, t'enseigner les vraies bonnes pratiques de l'industrie (Git, architecture propre, code lisible) et te donner la fierté de construire des projets dont tu pourras te vanter. »
+                </p>
+
+                <div class="mentor__badges">
+                  <span class="mentor__badge">💻 10+ ans d'expérience web</span>
+                  <span class="mentor__badge">🎓 Pédagogie active &amp; bienveillante</span>
+                  <span class="mentor__badge">⚡ Expert HTML5, CSS3, JS &amp; Git</span>
+                  <span class="mentor__badge">👥 Promotions de 6 élèves</span>
+                </div>
+              </div>
+            </div>
+
+            <h3 class="mentor__pillars-title bangers-regular">Les 3 Piliers de Ma Méthode</h3>
+
+            <div class="mentor__pillars">
+              <div class="mentor__pillar-card">
+                <div class="mentor__pillar-icon">⚡</div>
+                <h4 class="mentor__pillar-heading poppins-regular">1. Code First (Pratique immédiate)</h4>
+                <p class="mentor__pillar-desc poppins-regular">
+                  On n'apprend pas à nager sur un tabouret : on apprend à coder en écrivant du code. Dès la première heure, tu crées des fichiers, tu manipules les outils des pros et tu vois le résultat immédiatement dans ton navigateur.
+                </p>
+              </div>
+
+              <div class="mentor__pillar-card">
+                <div class="mentor__pillar-icon">🧩</div>
+                <h4 class="mentor__pillar-heading poppins-regular">2. Résolution sans Jugement</h4>
+                <p class="mentor__pillar-desc poppins-regular">
+                  Avoir des erreurs dans son code est 100% normal : c'est le métier même du développeur ! Je t'apprends à lire les messages d'erreur, déboguer avec méthode et trouver des solutions sans jamais stresser ni te sentir jugé.
+                </p>
+              </div>
+
+              <div class="mentor__pillar-card">
+                <div class="mentor__pillar-icon">🤝</div>
+                <h4 class="mentor__pillar-heading poppins-regular">3. Accompagnement &amp; Suivi 7j/7</h4>
+                <p class="mentor__pillar-desc poppins-regular">
+                  Un canal Discord privé et des séances de questions-réponses en direct te garantissent de ne jamais rester bloqué plus de quelques heures. Tu progresses en confiance avec le soutien constant de ton mentor.
+                </p>
+              </div>
+            </div>
+
+            <div class="mentor__vip-cta">
+              <div class="mentor__vip-info">
+                <span class="mentor__vip-tag">Besoin d'un coup d'accélérateur ?</span>
+                <h4 class="mentor__vip-title bangers-regular">Option Mentorat VIP : 4h de Coaching Individuel One-to-One</h4>
+                <p class="mentor__vip-desc poppins-regular">
+                  Envie d'un accompagnement personnalisé sur-mesure ? Le <strong>Pack Mentorat VIP</strong> inclut 4 heures de sessions privées d'1h avec Cédric : revues de code approfondies, audit de ton portfolio et simulations d'entretiens techniques.
+                </p>
+              </div>
+              <a href="#parcours" class="button button__primary bangers-regular" data-track="cta_click" data-track-cta="mentor_vip_reserve" data-track-location="mentor">
+                Découvrir le Mentorat VIP
+              </a>
+            </div>
+          </div>
+        </section>
+
+        
+        <section class="section section--dark">
+          <h2 class="section-title section-title--light">
+            🚀 Explore, Apprends, Code&nbsp;!
+          </h2>
+          <p class="section-subtitle section-subtitle--light">
+            Nos <span class="gradient-text">articles</span> et vidéos pour
+            <span class="gradient-text">progresser</span> à ton
+            <span class="gradient-text">rythme</span>&nbsp;!
+          </p>
+          <p class="section-subtitle section-subtitle--muted">
+            Les bases du web n'auront plus de secrets pour toi.
+          </p>
+
+          <div class="card-grid">
+            <article class="card card-green card-paddingtop">
+              <header class="card__imageContainer">
+                <img
+                  class="card__image"
+                  src="images/blogCards/blog-html.webp"
+                  alt="Guide pour débuter en HTML et créer une page web"
+                  width="400"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </header>
+              <main class="card__main">
+                <div class="card__header">
+                  <h3>Débuter avec HTML – Crée ta première page web</h3>
+                </div>
+                <p
+                  class="card__paragraphe card__paragraphe-white poppins-regular"
+                >
+                  Envie de créer ton premier site web ? Découvre les bases du
+                  HTML et apprends à structurer tes pages comme un pro en
+                  quelques minutes.
+                </p>
+                <a href="article.html?id=html-css" class="card__link bangers-regular" aria-label="Lire l'article : Débuter avec HTML">
+                  Lire l'article
+                  <svg
+                    class="card__chevron"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M9 18L15 12L9 6"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </a>
+              </main>
+            </article>
+
+            <article class="card card-green card-paddingtop">
+              <header class="card__imageContainer">
+                <img
+                  class="card__image"
+                  src="images/blogCards/blog-js.webp"
+                  alt="Tutoriel premiers pas en programmation JavaScript"
+                  width="400"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </header>
+              <main class="card__main">
+                <div class="card__header">
+                  <h3>Premiers pas en JavaScript – Donne vie à ton site</h3>
+                </div>
+                <p
+                  class="card__paragraphe card__paragraphe-white poppins-regular"
+                >
+                  Passe au niveau supérieur en ajoutant de l'interactivité à tes
+                  pages web avec JavaScript. Variables, fonctions et événements
+                  au programme !
+                </p>
+                <a href="article.html?id=javascript" class="card__link bangers-regular" aria-label="Lire l'article : Premiers pas en JavaScript">
+                  Lire l'article
+                  <svg
+                    class="card__chevron"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M9 18L15 12L9 6"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </a>
+              </main>
+            </article>
+
+            <article class="card card-green card-paddingtop">
+              <header class="card__imageContainer">
+                <img
+                  class="card__image"
+                  src="images/courses/git.webp"
+                  alt="Importance de Git et GitHub pour les développeurs professionnels"
+                  width="400"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </header>
+              <main class="card__main">
+                <div class="card__header">
+                  <h3>Pourquoi Git est vital pour ta carrière de dev</h3>
+                </div>
+                <p
+                  class="card__paragraphe card__paragraphe-white poppins-regular"
+                >
+                  Tu veux bosser chez Google ou Ubisoft ? Ils utilisent tous Git. Découvre comment cet outil sauve tes fesses et boost ton équipe.
+                </p>
+                <a href="article.html?id=git-github" class="card__link bangers-regular" aria-label="Lire l'article : Pourquoi Git est vital pour ta carrière de dev">
+                  Lire l'article
+                  <svg
+                    class="card__chevron"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M9 18L15 12L9 6"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </a>
+              </main>
+            </article>
+          </div>
+        </section>
+      
+
+        
+        <section id="faq" class="faq section section--light">
+          <div class="faq__header">
+            <span class="section-tag">FAQ</span>
+            <h2 class="section-title">Tes questions, nos réponses en mode banger</h2>
+          </div>
+
+          <div class="faq__list poppins-regular">
+            <details class="faq__item">
+              <summary class="faq__summary">
+                Je n'ai jamais codé de ma vie. Est-ce que je peux vraiment suivre ?
+                <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </summary>
+              <div class="faq__answer">
+                Absolument. Le Pack Starter démarre de zéro complet. Aucune connaissance préalable en programmation n'est demandée. Tout est expliqué pas à pas avec des exemples concrets.
+              </div>
+            </details>
+
+            <details class="faq__item">
+              <summary class="faq__summary">
+                Est-ce qu'il faut être bon en maths pour réussir ?
+                <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </summary>
+              <div class="faq__answer">
+                Non, c'est une légende urbaine. Le développement web fait appel à de la logique et à de la structure, pas à des intégrales ou des théorèmes mathématiques. Si tu as un peu de bon sens, tu réussiras.
+              </div>
+            </details>
+
+            <details class="faq__item">
+              <summary class="faq__summary">
+                Pendant combien de temps ai-je accès aux cours ?
+                <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </summary>
+              <div class="faq__answer">
+                Ton accès est illimité et garanti à vie. Tu avances à ton propre rythme, selon ton emploi du temps. Si nous mettons à jour le cours, tu profites des ajouts gratuitement.
+              </div>
+            </details>
+
+            <details class="faq__item">
+              <summary class="faq__summary">
+                Je suis parent, puis-je offrir cette formation à mon enfant / adolescent ?
+                <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </summary>
+              <div class="faq__answer">
+                Tout à fait. Lors du paiement, vous pouvez renseigner vos coordonnées bancaires pour le règlement et indiquer l'adresse email de votre enfant pour son accès étudiant. Nos cours sont 100% encadrés, sans publicité, et forment à des compétences techniques réelles et utiles pour ses études.
+              </div>
+            </details>
+
+            <details class="faq__item">
+              <summary class="faq__summary">
+                Que se passe-t-il si la formation ne me convient pas ?
+                <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </summary>
+              <div class="faq__answer">
+                Tu ne prends aucun risque financier grâce à notre garantie 14 jours satisfait ou remboursé. Un simple message à notre support et tu es remboursé intégralement, sans justification exigée.
+              </div>
+            </details>
+
+            <details class="faq__item">
+              <summary class="faq__summary">
+                Proposez-vous le paiement en plusieurs fois ?
+                <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </summary>
+              <div class="faq__answer">
+                Oui. Tu peux régler le Pack Web Pro en 2 fois (2x 95 €) et le Pack Mentorat VIP en 3 fois (3x 135 €) directement par carte bancaire de façon sécurisée via Stripe.
+              </div>
+            </details>
+          </div>
+        </section>
+
+    </main>
+
+    <!-- Footer landmark container placed outside main -->
+    <div id="footer-placeholder"></div>
+
+    <div id="pedagogy-live" popover aria-label="Détails pédagogie Cours en Direct">
+      <button class="popover__close" popovertarget="pedagogy-live" popovertargetaction="hide" aria-label="Fermer">×</button>
+      <header class="popover__header">
+        <h3 class="popover__title">Cours en Direct</h3>
+        <p class="popover__tagline">L'énergie du groupe, l'aide en temps réel !</p>
+      </header>
+      <div class="popover__content">
+        <h4>Pourquoi choisir le direct ?</h4>
+        <ul class="popover__syllabus">
+          <li class="popover__syllabus-item">
+            <span class="popover__syllabus-icon">💬</span>
+            <div class="popover__syllabus-text">
+              <strong>Zéro Blocage</strong>
+              Tu es coincé sur une ligne de code ? Je t'aide instantanément.
+            </div>
+          </li>
+          <li class="popover__syllabus-item">
+            <span class="popover__syllabus-icon">🔥</span>
+            <div class="popover__syllabus-text">
+              <strong>Motivation Max</strong>
+              Apprendre à plusieurs, c'est plus fun et on n'abandonne pas.
+            </div>
+          </li>
+          <li class="popover__syllabus-item">
+            <span class="popover__syllabus-icon">🕒</span>
+            <div class="popover__syllabus-text">
+              <strong>Rythme Équilibré</strong>
+                2h par semaine pour progresser sans stress ni surcharge scolaire.
+            </div>
+          </li>
+          <li class="popover__syllabus-item">
+            <span class="popover__syllabus-icon">📅</span>
+            <div class="popover__syllabus-text">
+              <strong>Régularité Efficace</strong>
+              Un rendez-vous fixe chaque semaine pour avancer pas à pas, sans décrocher.
+            </div>
+          </li>
+        </ul>
+      </div>
+      <footer class="popover__footer">
+        <button type="button" class="button button__primary bangers-regular popover__cta" onclick="openGlobalAuthModal('register')">Je veux rejoindre le live !</button>
+      </footer>
+    </div>
+
+    <div id="pedagogy-projects" popover aria-label="Détails pédagogie Projets Professionnels">
+      <button class="popover__close" popovertarget="pedagogy-projects" popovertargetaction="hide" aria-label="Fermer">×</button>
+      <header class="popover__header">
+        <h3 class="popover__title">Projets Pro</h3>
+        <p class="popover__tagline">Construis ton avenir ligne par ligne !</p>
+      </header>
+      <div class="popover__content">
+        <h4>Quelques idées de projets que tu vas créer :</h4>
+        <ul class="popover__syllabus">
+          <li class="popover__syllabus-item">
+            <span class="popover__syllabus-icon">🔗</span>
+            <div class="popover__syllabus-text">
+              <strong>Bio-Link "Flex"</strong>
+              Crée ta propre page de liens stylisée pour tes réseaux sociaux.
+            </div>
+          </li>
+          <li class="popover__syllabus-item">
+            <span class="popover__syllabus-icon">🎮</span>
+            <div class="popover__syllabus-text">
+              <strong>Gaming Dashboard</strong>
+              Un tableau de bord qui affiche tes stats de jeux préférés.
+            </div>
+          </li>
+          <li class="popover__syllabus-item">
+            <span class="popover__syllabus-icon">💼</span>
+            <div class="popover__syllabus-text">
+              <strong>Portfolio Impeccable</strong>
+              Un site vitrine pro pour impressionner tes futurs recruteurs.
+            </div>
+          </li>
+        </ul>
+      </div>
+      <footer class="popover__footer">
+        <button type="button" class="button button__primary bangers-regular popover__cta" onclick="openGlobalAuthModal('register')">Je lance mon projet !</button>
+      </footer>
+    </div>
+
+    <div id="pedagogy-mentoring" popover aria-label="Détails pédagogie Suivi Mentorat">
+      <button class="popover__close" popovertarget="pedagogy-mentoring" popovertargetaction="hide" aria-label="Fermer">×</button>
+      <header class="popover__header">
+        <h3 class="popover__title">Suivi G.O.A.T</h3>
+        <p class="popover__tagline">Un mentor dédié pour ta réussite !</p>
+      </header>
+      <div class="popover__content">
+        <h4>Ton accompagnement VIP :</h4>
+        <ul class="popover__syllabus">
+          <li class="popover__syllabus-item">
+            <span class="popover__syllabus-icon">🎯</span>
+            <div class="popover__syllabus-text">
+              <strong>Objectifs Persos</strong>
+              On définit ensemble ton parcours selon tes envies.
+            </div>
+          </li>
+          <li class="popover__syllabus-item">
+            <span class="popover__syllabus-icon">🔍</span>
+            <div class="popover__syllabus-text">
+              <strong>Code Review</strong>
+              Je relis ton code et je te donne les meilleures astuces de pro.
+            </div>
+          </li>
+          <li class="popover__syllabus-item">
+            <span class="popover__syllabus-icon">🚀</span>
+            <div class="popover__syllabus-text">
+              <strong>Orientation Tech</strong>
+              Conseils pour tes études ou ton premier job de développeur.
+            </div>
+          </li>
+        </ul>
+      </div>
+      <footer class="popover__footer">
+        <button type="button" class="button button__primary bangers-regular popover__cta" onclick="openGlobalAuthModal('register')">Je veux mon mentor !</button>
+      </footer>
+    </div>
+
+    <script defer src="js/analytics.js?v=sprint15"></script>
+    <script defer src="js/script.min.js?v=sprint15"></script>
+    <script defer src="js/header.min.js?v=sprint15"></script>
+    <script defer src="js/popover-hubspot.min.js?v=sprint15"></script>
+
+    <div id="popovers-placeholder"></div>
+  </body>
+</html>
