@@ -971,4 +971,47 @@ _Chronologique — plus récent en bas_
 7. **Validation Locale & Tests** :
    - Compilation et minification des assets clients (`node build.js`).
    - Suite complète des 132 tests Spring Boot exécutée et validée avec succès (`mvnw.cmd test` : 0 échec, 0 erreur).
+
+---
+
+### 2026-09-30 — Sprint 15 : Refonte Copywriting Homepage & Optimisation Sémantique SEO
+**Conversation**: `e8ec6f84-8fe9-4797-b252-c7c4ae21f579`  
+**Branche**: `feat/sprint-15-homepage-copywriting-seo`
+
+#### Ce qui a changé :
+1. **Métadonnées SEO `<head>` & Cocon Sémantique (`frontend/index.html`)** :
+   - Titre optimisé : `NoSeumCode | Apprends le Développement Web Sans le Seum (HTML, CSS, JS)`.
+   - Meta description ciblée bénéfices apprenants : `Passe de zéro à tes premiers sites web en ligne. Des formations pratiques HTML, CSS et JavaScript avec projets réels, entraide active et mentorat individuel.`.
+   - Balise canonique stricte `https://noseumcode.fr/`.
+   - Balises OpenGraph & Twitter Cards complètes avec image dédiée `https://noseumcode.fr/images/og/partage-noseumcode.png`.
+   - Enrichissement du schéma JSON-LD Schema.org `EducationalOrganization`.
+2. **Refonte Section Hero & Trustbar Preuve Sociale (`frontend/index.html`)** :
+   - Tag supérieur : `<span class="section-tag">Formations Web Débutant & Intermédiaire</span>`.
+   - H1 percutant : `Apprends à coder pour de vrai. <span class="gradient-text">Sans le seum.</span>`.
+   - Paragraphe sous-titre anti-théorie et boutons CTA directs (*Voir les 3 Packs d'Apprentissage ↓* vers `#parcours`, *Télécharger le Programme (PDF)* via popover HubSpot).
+   - Puces de rassurance immédiates : *✓ Projets 100% pratiques • ✓ Accès à vie aux mises à jour • ✓ Garantie 14 jours satisfait ou remboursé*.
+   - Intégration de la Trustbar des technologies maîtrisées : HTML5 Sémantique, CSS3 & Flexbox, JavaScript ES6+, Git & GitHub, VS Code, Responsive Design.
+3. **Section « La Méthode NoSeumCode » & Abandon du Double Regard** :
+   - Remplacement de l'en-tête de section `#services` : Tag `La Méthode NoSeumCode`, Titre `Trois piliers pour apprendre vite, sans décrocher`.
+   - Déploiement des 3 piliers :
+     1. *Zéro théorie inutile, 100% de création* (outils pro dès la première heure, interfaces réelles).
+     2. *Des projets que tu seras fier de montrer* (code en ligne, Git/GitHub, portfolio recruteurs/clients).
+     3. *Un mentor et une communauté à tes côtés* (Discord privé, support réactif, zéro blocage).
+   - Suppression complète de la section scindée `#rassurance` (« Double Regard Parents & Jeunes ») pour garantir une voix éditoriale unique, jeune, dynamique et orientée projet.
+4. **Section Offres : Grille des 3 Packages (`#parcours`)** :
+   - Remplacement de l'ancienne section `#courses` par l'ancre officielle `#parcours`.
+   - 3 fiches tarifaires avec intégration directe de `initiateCourseEnrollment(...)` vers le paywall Stripe :
+     * **Pack Starter (89 €)** : Tag « Idéal Débutant », 4 modules (HTML5, CSS3, Flexbox/Grid, Responsive), 2 projets portfolio, accès Discord et mises à jour à vie.
+     * **Pack Web Pro (179 € ou 2x 95 €)** : Tag « Le Plus Populaire » (card featured bordure verte & glow), Starter + JS ES6+, manipulation DOM, requêtes API + Bonus Git & GitHub offert (6 projets portfolio).
+     * **Pack Mentorat VIP (389 € ou 3x 135 €)** : Tag « 10 Places / Mois », Web Pro + 4h de visio 1-to-1 avec Cédric, revue de code ligne par ligne et audit portfolio/CV.
+   - Nettoyage des anciennes fenêtres modales popover devenues obsolètes (`#course-html-css`, `#course-js`, `#course-git`).
+5. **Section FAQ Anti-Objections (6 Questions Cibles)** :
+   - Remplacement des questions précédentes par les 6 réponses ciblées levant les objections réelles (débutant complet, maths démythifiées, accès à vie, financement et rassurance parents, garantie 14 jours, paiement en plusieurs fois).
+6. **Styles & Performance Client** :
+   - Ajout des règles CSS pour `.card-package`, `.card-featured` et `.tool-badge` dans `frontend/styles/pages/homepage/courses.css`.
+   - Recompilation et minification de `homepage.min.css` via `node build.js`.
+   - Versioning des assets mis à jour à `?v=sprint15` sur `index.html`.
+7. **Validation Locale & Tests** :
+   - Exécution complète des 132 tests Spring Boot réussie (`mvnw.cmd test` : 0 échec, 0 erreur).
+
 
