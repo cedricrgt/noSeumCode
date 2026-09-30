@@ -48,13 +48,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `fix/promo-banner-workshops-cta`
-## Current State: Sprints 1 à 15 validés. Fix bouton Découvrir les Ateliers du bandeau promo complété (pause du marquee sur survol/focus/touch, élimination de l'échec de hit-testing du navigateur, résolution de chemin `resolveAssetPath("workshops.html")`, écouteurs click/touchend robustes, repositionnement non-bloquant de `#dev-env-indicator` en bas de page sur develop, bundles CSS/JS régénérés).
-## Active Branch: `fix/hero-blob-text-contour`
-## Current State: Sprints 1 à 15 validés. Fix animation du texte sur contour SVG Hero rétabli (défilement fluide et continu sur le tracé de la blob étudiante smiling girl via textPath SMIL, élimination de la rotation asymétrique décalée, respect de prefers-reduced-motion, bundles CSS/JS recompilés).
-## Active Branch: `fix/wcag-contrast-ratios-compliance`
-## Current State: Sprints 1 à 15 validés. Fix accessibilité & ratios de contraste couleurs WCAG 2.2 AA / AAA complété (ADR-021, Règle 21 : respect strict des seuils 4.5:1 pour texte normal et 3:1 pour composants interactifs/grand texte sur surfaces claires et sombres, harmonisation cartes offres, trustbar, popovers, markdown cours et dashboard, bundles CSS régénérés).
-## Next Steps: Lancement du Sprint 16 (Tunnel Lead Magnet, Onboarding Apprenant & Cocon Blog : sécurisation thanks.html avec liens PDF réparés et upsell doux, onboarding post-achat success.html en 3 étapes, gabarit sémantique article.html et recette globale PageSpeed CWV).
+## Active Branch: `feat/sprint-16-lead-magnet-onboarding-blog`
+## Current State: Sprints 1 à 16 validés. Sprint 16 complété (Tunnel Lead Magnet thanks.html avec liens PDF réparés et boîte d'upsell doux vers les packs, onboarding post-achat success.html en 3 étapes avec intégration Discord, gabarit sémantique article.html avec fil d'ariane, carte auteur, CTA contextuel et balisage Schema.org Article / BreadcrumbList).
+## Next Steps: Implémentation des articles de blog SEO spécialisés (Faut-il être bon en maths pour apprendre à coder ?).
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN

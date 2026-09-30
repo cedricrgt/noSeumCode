@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Paiement Réussi ! - NoSeumCode</title>
+  <title>Paiement Confirmé ! Bienvenue sur NoSeumCode</title>
   <meta name="description" content="Confirmation de paiement et accès à vos cours NoSeumCode." />
   <meta name="robots" content="noindex, nofollow" />
   <link rel="canonical" href="https://noseumcode.fr/success.html" />
@@ -13,13 +13,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preload" as="style"
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Bangers&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Bangers&display=swap"
     onload="this.onload=null;this.rel='stylesheet'" />
   <noscript>
     <link rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Bangers&display=swap" />
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Bangers&display=swap" />
   </noscript>
-  <link rel="stylesheet" href="styles/dist/thanks.min.css" />
+  <link rel="stylesheet" href="styles/dist/thanks.min.css?v=sprint16" />
   <style>
     .success-summary {
       background: rgba(0, 255, 135, 0.05);
@@ -66,27 +66,26 @@
 
   <main id="success-content" class="thanks-container">
     <span class="thanks__icon" aria-hidden="true">🎉</span>
-    <h1 class="thanks__title bangers-regular">Paiement Validé&nbsp;!</h1>
+    <h1 class="thanks__title bangers-regular">Inscription Validée !</h1>
     <p class="thanks__message poppins-regular">
-      Félicitations ! Ton inscription a bien été enregistrée et ton accès complet est désormais actif.
+      Félicitations ! Ton accès complet est désormais activé. Un reçu détaillé ainsi que tes accès ont été envoyés à ton adresse email.
     </p>
 
     <div class="success-summary">
-      <h3 class="bangers-regular">Ce qui est maintenant débloqué :</h3>
+      <h3 class="bangers-regular">Tes 3 étapes pour bien démarrer :</h3>
       <ul>
-        <li>✅ Accès illimité à tous les chapitres et vidéos du cours</li>
-        <li>✅ Exercices pratiques et ressources de formation</li>
-        <li>✅ Suivi de progression en temps réel sur ton tableau de bord</li>
-        <li>✅ Accès permanent aux futures mises à jour du cours</li>
+        <li>1️⃣ <strong>Accède à ton espace étudiant</strong> : Retrouve l'ensemble de tes chapitres et vidéos sur ton tableau de bord.</li>
+        <li>2️⃣ <strong>Rejoins la communauté Discord</strong> : Viens te présenter dans le salon <code>#nouveaux-élèves</code> pour débloquer tes accès.</li>
+        <li>3️⃣ <strong>Configure ton éditeur</strong> : Suis le module d'installation pour préparer VS Code en moins de 10 minutes.</li>
       </ul>
     </div>
 
     <div class="success-actions">
       <a href="dashboard.html" class="button button__primary bangers-regular" id="btn-goto-dashboard">
-        Accéder à mon Espace Étudiant 🚀
+        Accéder à Mon Espace de Cours 🚀
       </a>
-      <a href="parcours.html" class="button button__secondary bangers-regular" id="btn-goto-course">
-        Voir mes cours
+      <a href="https://discord.gg/noseumcode" target="_blank" rel="noopener noreferrer" class="button button__secondary bangers-regular" id="btn-goto-discord">
+        Rejoindre le Discord Privé
       </a>
     </div>
 
@@ -97,8 +96,8 @@
 
   <div id="footer-placeholder"></div>
 
-  <script src="js/analytics.js"></script>
-  <script src="js/header.js"></script>
+  <script src="js/analytics.js?v=sprint16"></script>
+  <script src="js/header.min.js?v=sprint16"></script>
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
       try {
@@ -108,12 +107,10 @@
         const token = localStorage.getItem("noseum_token");
 
         if (courseId) {
-          const btnCourse = document.getElementById("btn-goto-course");
-          if (btnCourse) {
-            btnCourse.href = `parcours.html?id=${encodeURIComponent(courseId)}`;
-            btnCourse.textContent = "Commencer la formation immédiatement 🚀";
-            btnCourse.classList.remove("button__secondary");
-            btnCourse.classList.add("button__primary");
+          const btnDashboard = document.getElementById("btn-goto-dashboard");
+          if (btnDashboard) {
+            btnDashboard.href = `parcours.html?id=${encodeURIComponent(courseId)}`;
+            btnDashboard.textContent = "Commencer la formation immédiatement 🚀";
           }
         }
 

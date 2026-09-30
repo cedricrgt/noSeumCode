@@ -24,7 +24,7 @@
 | **Sprint 13** | **Socle Technique, Sécurité Serveur & Assets** | Déblocage CSP HubSpot, cache Apache étendu, SEO technique (robots.txt, sitemap), compression WebP (>5 Mo) et 3 pages légales | ✅ **Terminé** |
 | **Sprint 14** | **Nouvelle Architecture des Offres (3 Packages)** | Modélisation catalogue `cours.js` (Starter 89 €, Web Pro 179 €, VIP 389 €), alignement Stripe, navigation `header.html` et page parcours | ✅ **Terminé** |
 | **Sprint 15** | **Refonte Copywriting Homepage & SEO Sémantique** | Copywriting validé, H1/Hero percutant, suppression du double regard, grille des 3 offres `#parcours`, FAQ 6 questions et mots-clés cibles | ✅ **Terminé** |
-| **Sprint 16** | **Tunnel Lead Magnet, Onboarding & Cocon Blog** | Sécurisation `thanks.html` (liens PDF + upsell), onboarding `success.html`, gabarit cocon blog (`article.html`) et recette globale | 📋 **Planifié** |
+| **Sprint 16** | **Tunnel Lead Magnet, Onboarding & Cocon Blog** | Sécurisation `thanks.html` (liens PDF + upsell), onboarding `success.html`, gabarit cocon blog (`article.html`) et recette globale | ✅ **Terminé** |
 
 ---
 
@@ -121,10 +121,10 @@ gantt
     FAQ 6 Questions Anti-Objections (15.5)   :done, s15_5, 2026-09-30, 2026-09-30
 
     section Sprint 16 : Conversion, Lead Magnet & QA
-    Lead Magnet thanks.html & Upsell (16.1)  :s16_1, 2026-10-04, 2026-10-05
-    Onboarding success.html (16.2)           :s16_2, 2026-10-04, 2026-10-05
-    Gabarit Cocon Blog & Maillage (16.3)     :s16_3, 2026-10-04, 2026-10-05
-    Recette E2E & Audit PageSpeed CWV (16.4) :s16_4, 2026-10-04, 2026-10-05
+    Lead Magnet thanks.html & Upsell (16.1)  :done, s16_1, 2026-09-30, 2026-09-30
+    Onboarding success.html (16.2)           :done, s16_2, 2026-09-30, 2026-09-30
+    Gabarit Cocon Blog & Maillage (16.3)     :done, s16_3, 2026-09-30, 2026-09-30
+    Recette E2E & Audit PageSpeed CWV (16.4) :done, s16_4, 2026-09-30, 2026-09-30
 ```
 
 ---
@@ -359,7 +359,7 @@ gantt
 
 ---
 
-### Sprint 16 : Tunnel Lead Magnet, Onboarding Apprenant & Cocon Blog (Planifié)
+### Sprint 16 : Tunnel Lead Magnet, Onboarding Apprenant & Cocon Blog (Terminé)
 - **16.1 Optimisation Lead Magnet & Upsell Doux (`frontend/thanks.html`)** :
   - Métadonnées `<meta name="robots" content="noindex, nofollow">` et titre optimisé.
   - Réparation des 4 liens de téléchargement de documents PDF : `documents/programme-complet.pdf` (suppression de l'espace), `documents/Cours-HTML-CSS.pdf`, `documents/Premiers-pas-avec-JavaScript.pdf`, `documents/git&github.pdf` (lien réparé).

@@ -103,6 +103,20 @@
   color: var(--gradient-end);
 }
 
+.upsell-box {
+  margin-top: 3.5rem;
+  background: rgba(0, 255, 135, 0.08);
+  border: 1px solid rgba(0, 255, 135, 0.3);
+  border-radius: var(--radius-lg, 16px);
+  padding: 2.25rem 1.5rem;
+  text-align: center;
+  transition: transform var(--transition-normal), border-color var(--transition-normal);
+}
+
+.upsell-box:hover {
+  border-color: rgba(0, 255, 135, 0.5);
+}
+
 @media (max-width: 768px) {
   .thanks__title {
     font-size: 3rem;

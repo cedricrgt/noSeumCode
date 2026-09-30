@@ -1117,5 +1117,29 @@ _Chronologique — plus récent en bas_
    - Recompilation réussie de tous les bundles CSS/JS minifiés (`node build.js`).
    - Compilation et validation des tests backend Java réussies (`mvnw.cmd test-compile`).
 
+---
+
+### 2026-09-30 — Sprint 16 : Tunnel Lead Magnet, Onboarding Apprenant & Cocon Blog
+**Conversation**: `bee834aa-93e8-46e7-b63c-62b3900ccf51`  
+**Branche**: `feat/sprint-16-lead-magnet-onboarding-blog`
+
+#### Ce qui a changé :
+1. **Lead Magnet & Upsell Doux (`frontend/thanks.html`, `frontend/styles/pages/thanks.css`)** :
+   - Métadonnées `<title>Ton programme est en route ! | NoSeumCode</title>` et `<meta name="robots" content="noindex, nofollow" />`.
+   - Vérification et sécurisation des 4 liens de téléchargement de documents PDF (`documents/Cours-HTML-CSS.pdf`, `documents/Premiers-pas-avec-JavaScript.pdf`, `documents/git&github.pdf`, `documents/programme-complet.pdf`).
+   - Intégration de la boîte d'upsell doux (`.upsell-box`) vers la grille des 3 offres `#parcours` avec styles dédiés et contrastes WCAG AAA.
+2. **Onboarding Post-Achat & Réassurance Immédiate (`frontend/success.html`)** :
+   - Titre optimisé `<title>Paiement Confirmé ! Bienvenue sur NoSeumCode</title>`.
+   - Séquence d'accueil en 3 étapes d'onboarding (accès espace étudiant, adhésion Discord au salon `#nouveaux-élèves`, configuration de l'éditeur VS Code).
+   - Boutons d'action prioritaires vers le tableau de bord et Discord, avec préservation du script asynchrone de confirmation de session Stripe.
+3. **Structure & Gabarit du Cocon Sémantique Blog (`frontend/article.html`, `frontend/styles/pages/article.css`, `frontend/js/article.js`)** :
+   - Gabarit d'article de blog responsive et sémantique avec fil d'ariane (Breadcrumbs), métadonnées d'article (auteur, date, durée de lecture).
+   - Encadré d'appel à l'action contextuel (`.article-cta-box`) vers les packs et le téléchargement du programme PDF.
+   - Carte de présentation de l'auteur (`.article-author-card`) mettant en valeur le profil de Cédric Ragot (ingénieur senior et formateur).
+   - Injection automatique des données structurées Schema.org JSON-LD (`Article`, `BreadcrumbList`).
+4. **Rebuild & Recette** :
+   - Recompilation réussie de l'ensemble des bundles CSS et JS (`homepage.min.css`, `thanks.min.css`, `article.min.css`, `workshops.min.css`, `formations.min.css`, scripts JS minifiés).
+
+
 
 
