@@ -887,4 +887,23 @@ _Chronologique — plus récent en bas_
    - Suppression de l'appel vers `js/footer.js` (fichier inexistant) dans `workshops.html` et remplacement de `js/popovers.js` (inexistant) par `js/popover-hubspot.min.js` dans les pages de formations.
 5. **Validation & Tests** :
    - Exécution du script de build `npm run build` dans `frontend/` (recompilation et minification sans erreur).
-   - Suite complète Spring Boot validée via `mvnw.cmd test` : 132 tests réussis (`BUILD SUCCESS`, 0 erreur, 0 échec).
+   - Suite complète Spring Boot validée via `mvnw.cmd test` : 132 tests réussis (`BUILD SUCCESS`, 0 erreur, 0 échec).
+
+---
+
+### 2026-09-30 — Planification des Sprints 13 à 16 : Refonte SEO, Copywriting & Offres NoSeumCode
+**Conversation**: `d2701bcf-ed1f-4e38-bb5e-52a921b4ec35`  
+**Branche**: `docs/roadmap-sprints-seo-copywriting-offers`
+
+#### Ce qui a changé :
+1. **Découpage en 4 Sprints autonomes et séquentiels** :
+   - **Sprint 13** : Socle Technique, Sécurité Serveur & Assainissement des Assets (CSP HubSpot `.htaccess`, cache `mod_expires` 1 an, `robots.txt` & `sitemap.xml`, compression WebP de `git.webp` et `javascript.webp` >5 Mo gagnés, création de `mentions-legales.html`, `cgv.html`, `confidentialite.html`).
+   - **Sprint 14** : Nouvelle Architecture des Offres (Les 3 Packages) & Refonte Navigation (catalogue `cours.js` avec Starter 89 €, Web Pro 179 €, Mentorat VIP 389 €, alignement Stripe backend, page `parcours.html`, navigation `header.html`).
+   - **Sprint 15** : Refonte Copywriting Homepage & Optimisation Sémantique SEO (métadonnées `<head>`, H1 percutant sans le seum, Trustbar outils pros, suppression du double regard Parents/Jeunes au profit des 3 piliers, intégration de la grille des 3 offres `#parcours`, FAQ 6 questions cibles).
+   - **Sprint 16** : Tunnel Lead Magnet, Onboarding Apprenant & Cocon Blog (sécurisation `thanks.html` avec liens PDF réparés et upsell doux, onboarding `success.html` en 3 étapes, structure sémantique blog `article.html`, plan de test global et audit PageSpeed LCP < 2,5s).
+2. **Mise à jour de la mémoire projet (`docs/ai/ROADMAP.md` & `PROJECT_CONTEXT.md`)** :
+   - Sprint 12 clôturé et marqué `Terminé`.
+   - Tableau récapitulatif, diagramme de Gantt Mermaid et spécifications détaillées page par page enrichis pour les Sprints 13 à 16.
+3. **Synchronisation du Kanban GitHub Projects (Projet 1)** :
+   - Sprint 12 passé à `Done`.
+   - Création des Draft Issues pour les Sprints 13, 14, 15 et 16 avec statut `Todo`.
