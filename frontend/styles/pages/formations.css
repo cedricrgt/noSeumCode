@@ -537,7 +537,16 @@
 
   .mentor-card {
     flex-direction: column;
+    text-align: left;
+    align-items: center;
+  }
+
+  .mentor-info h4 {
     text-align: center;
+  }
+
+  .mentor-info p {
+    text-align: left;
   }
 
   .formation-cta-btn {

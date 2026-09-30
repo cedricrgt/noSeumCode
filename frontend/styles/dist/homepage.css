@@ -220,6 +220,7 @@ section[id], div[id] {
   gap: var(--gap);
   justify-content: center;
   grid-template-columns: repeat(auto-fit, minmax(var(--min-column-size), 1fr));
+  text-align: left;
 }
 
 .section {
@@ -341,6 +342,7 @@ html {
   transition: transform var(--transition-normal), box-shadow var(--transition-normal);
   display: flex;
   flex-direction: column;
+  text-align: left;
 }
 
 .card:hover {
@@ -431,11 +433,13 @@ html {
   font-size: 1.5rem;
   font-weight: 700;
   color: inherit;
+  text-align: left;
 }
 
 .card__paragraphe {
   font-size: 1rem;
   line-height: 1.7;
+  text-align: left;
   flex: 1;
 }
 
@@ -1698,7 +1702,7 @@ html {
 
 .card-package {
   padding: 2.25rem 1.75rem;
-  text-align: center;
+  text-align: left;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -1716,6 +1720,34 @@ html {
   font-size: 0.8rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
+}
+
+.card-package .package-title {
+  text-align: center;
+}
+
+.card-package .package-tagline {
+  text-align: left;
+  line-height: 1.6;
+}
+
+.card-package .package-price {
+  text-align: center;
+}
+
+.card-package .package-features {
+  text-align: left;
+  list-style: none;
+  padding: 0;
+  line-height: 1.8;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-package .package-reassurance {
+  text-align: center;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
 }
 
 .card-featured {
@@ -1847,6 +1879,7 @@ html {
   line-height: 1.7;
   color: #cbd5e1;
   margin: 0;
+  text-align: left;
 }
 
 .mentor__badges {
@@ -1914,6 +1947,7 @@ html {
   color: #94a3b8;
   line-height: 1.6;
   margin: 0;
+  text-align: left;
 }
 
 .mentor__vip-cta {
@@ -1952,11 +1986,17 @@ html {
   font-size: 0.95rem;
   line-height: 1.6;
   margin: 0;
+  text-align: left;
 }
 
 @media (max-width: 900px) {
   .mentor__hero {
     grid-template-columns: 1fr;
+    text-align: left;
+  }
+
+  .mentor__name,
+  .mentor__role {
     text-align: center;
   }
   
@@ -1970,6 +2010,15 @@ html {
   
   .mentor__vip-cta {
     flex-direction: column;
+    text-align: left;
+  }
+
+  .mentor__vip-info {
+    text-align: left;
+  }
+
+  .mentor__vip-tag,
+  .mentor__vip-title {
     text-align: center;
   }
 }

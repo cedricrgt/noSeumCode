@@ -143,3 +143,26 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 - Conserver un cache de 30 jours sans versioning sur CSS/JS : rejetée car pénalisée par les audits d'efficacité de cache Lighthouse et susceptible de laisser subsister du code JavaScript ou CSS obsolète chez l'utilisateur lors de correctifs urgents.
 **Conséquence**: Navigation retour/avance instantanée (0 ms), satisfaction intégrale des audits de politique de cache Lighthouse, élimination des requêtes 404 parasites et réduction significative du payload réseau initial.
 
+## ADR-020 — Règles d'Ergonomie de Lecture et Alignement Typographique Strict
+**Status**: Actif
+**Décision**: 
+1. **Mur d'ancrage visuel gauche (LTR)** : En lecture occidentale de gauche à droite, garantir un point de repère vertical fixe sur l'axe X gauche en interdisant le centrage des paragraphes descriptifs, argumentatifs, des listes à puces et des contenus longs.
+2. **Exceptions strictement bornées au centrage (<= 3 lignes)** :
+   - Sous-titres d'accroche Hero sous H1 (1 à 2 lignes).
+   - Micro-réassurance sous les boutons CTA (1 ligne : `✓ Accès immédiat • Garantie 14 jours`).
+   - Bannières d'action / empty states (icône + titre + 1 phrase + bouton CTA).
+   - Citations ou témoignages isolés courts entre guillemets.
+   - Titres majeurs de sections (H1, H2), badges pillules de technologies et boutons d'action.
+3. **Interdiction formelle de centrage (`text-align: left` obligatoire)** :
+   - Corps de texte des chapitres et articles de blog (`max-width: 75ch`, `line-height: 1.7` à `1.85`).
+   - Réponses de FAQ (lecture en scan F/Z).
+   - Listes à puces et checklists des fonctionnalités des packs d'offres (`.package-features`).
+   - Cartes explicatives et blocs feature (les 3 piliers de La Méthode `.card__paragraphe`).
+   - Descriptions et argumentaires des packs de cours (`.package-tagline`, bio et piliers mentor).
+4. **Préservation stricte sur mobile** : Dans les requêtes `@media (max-width: ...)`, préserver impérativement l'alignement à gauche des paragraphes descriptifs afin d'éviter la formation de colonnes hachées en "dents de scie".
+**Alternative rejetée**: 
+- Centrer l'ensemble des conteneurs de cartes ou sections par défaut pour des raisons d'esthétique symétrique abstraite (rejetée car cela perturbe la fixation oculaire, augmente la charge cognitive et dégrade les taux de complétion et de conversion).
+- Forcer le centrage des textes descriptifs sur mobile sous prétexte de centrer l'avatar ou le bouton (rejetée car la colonne étroite accentue dramatiquement l'effort de lecture).
+**Conséquence**: Amélioration de la lisibilité et de la vitesse de scan, confort de lecture accru sur mobile et desktop, et standardisation pérenne formalisée dans la règle projet `.agents/rules/rule-20-typography-readability.md`.
+
+

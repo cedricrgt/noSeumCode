@@ -91,6 +91,7 @@ section[id], div[id] {
   gap: var(--gap);
   justify-content: center;
   grid-template-columns: repeat(auto-fit, minmax(var(--min-column-size), 1fr));
+  text-align: left;
 }
 
 .section {

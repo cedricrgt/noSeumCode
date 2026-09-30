@@ -220,6 +220,7 @@ section[id], div[id] {
   gap: var(--gap);
   justify-content: center;
   grid-template-columns: repeat(auto-fit, minmax(var(--min-column-size), 1fr));
+  text-align: left;
 }
 
 .section {
@@ -341,6 +342,7 @@ html {
   transition: transform var(--transition-normal), box-shadow var(--transition-normal);
   display: flex;
   flex-direction: column;
+  text-align: left;
 }
 
 .card:hover {
@@ -431,11 +433,13 @@ html {
   font-size: 1.5rem;
   font-weight: 700;
   color: inherit;
+  text-align: left;
 }
 
 .card__paragraphe {
   font-size: 1rem;
   line-height: 1.7;
+  text-align: left;
   flex: 1;
 }
 
