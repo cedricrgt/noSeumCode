@@ -48,6 +48,8 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
+## Active Branch: `fix/promo-banner-workshops-cta`
+## Current State: Sprints 1 à 15 validés. Fix bouton Découvrir les Ateliers du bandeau promo complété (pause du marquee sur survol/focus/touch, élimination de l'échec de hit-testing du navigateur, résolution de chemin `resolveAssetPath("workshops.html")`, écouteurs click/touchend robustes, repositionnement non-bloquant de `#dev-env-indicator` en bas de page sur develop, bundles CSS/JS régénérés).
 ## Active Branch: `fix/hero-blob-text-contour`
 ## Current State: Sprints 1 à 15 validés. Fix animation du texte sur contour SVG Hero rétabli (défilement fluide et continu sur le tracé de la blob étudiante smiling girl via textPath SMIL, élimination de la rotation asymétrique décalée, respect de prefers-reduced-motion, bundles CSS/JS recompilés).
 ## Active Branch: `fix/wcag-contrast-ratios-compliance`

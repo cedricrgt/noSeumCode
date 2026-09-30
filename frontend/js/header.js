@@ -85,9 +85,9 @@ async function loadPartials() {
         if (window.location.hostname === "develop.noseumcode.fr" && !document.getElementById("dev-env-indicator")) {
           const devBanner = document.createElement("div");
           devBanner.id = "dev-env-indicator";
-          devBanner.style.cssText = "background: #0f172a; color: #38bdf8; text-align: center; font-size: 0.78rem; font-family: 'Poppins', sans-serif; padding: 6px 12px; border-bottom: 1px solid rgba(56, 189, 248, 0.25); font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; z-index: 99999; position: relative;";
+          devBanner.style.cssText = "background: #0f172a; color: #38bdf8; text-align: center; font-size: 0.78rem; font-family: 'Poppins', sans-serif; padding: 6px 12px; border-top: 1px solid rgba(56, 189, 248, 0.25); font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; z-index: 99999; position: fixed; bottom: 0; left: 0; width: 100%; pointer-events: none;";
           devBanner.innerHTML = "<span>🛠️</span> <span><strong>Environnement de test NoSeumCode</strong> (develop.noseumcode.fr) — Espace réservé à la pré-production.</span>";
-          document.body.prepend(devBanner);
+          document.body.appendChild(devBanner);
         }
       } else if (item.type === "popovers" && popoversPlaceholder && item.html) {
         popoversPlaceholder.innerHTML = sanitizePartialHTML(item.html);
@@ -1254,6 +1254,49 @@ async function updatePromoBanner() {
   const track = document.querySelector(".promo-banner__track");
   if (!track) return;
 
+  const promoBanner = document.querySelector(".promo-banner");
+  if (promoBanner && !promoBanner.dataset.pauseListenersAttached) {
+    promoBanner.dataset.pauseListenersAttached = "true";
+    promoBanner.addEventListener("mouseenter", () => {
+      track.style.animationPlayState = "paused";
+    });
+    promoBanner.addEventListener("mouseleave", () => {
+      track.style.animationPlayState = "";
+    });
+    promoBanner.addEventListener("touchstart", () => {
+      track.style.animationPlayState = "paused";
+    }, { passive: true });
+    promoBanner.addEventListener("touchend", () => {
+      setTimeout(() => {
+        track.style.animationPlayState = "";
+      }, 1500);
+    }, { passive: true });
+  }
+
+  const targetUrl = resolveAssetPath("workshops.html");
+
+  const navigateToWorkshops = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (window.location.pathname.endsWith("workshops.html") || window.location.pathname.endsWith("workshops")) {
+      const targetSection = document.getElementById("workshops-grid") || document.getElementById("planning-title");
+      if (targetSection) {
+        targetSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+    }
+    window.location.href = targetUrl;
+  };
+
+  // Bind handlers on existing fallback CTAs
+  track.querySelectorAll(".promo-banner__cta").forEach((cta) => {
+    cta.setAttribute("href", targetUrl);
+    cta.addEventListener("click", navigateToWorkshops);
+    cta.addEventListener("touchend", navigateToWorkshops);
+  });
+
   try {
     const response = await fetch(resolveAssetPath("data/schedule.json"));
     if (!response.ok) return;
@@ -1261,8 +1304,8 @@ async function updatePromoBanner() {
 
     if (!data.sessions || !Array.isArray(data.sessions)) return;
 
-    const topics = data.sessions.map(item => item.topic.toUpperCase()).join(", ");
-    const datesArr = data.sessions.map(item => {
+    const topics = data.sessions.map((item) => item.topic.toUpperCase()).join(", ");
+    const datesArr = data.sessions.map((item) => {
       const match = item.date.match(/\d{2}\/\d{2}/);
       return match ? match[0] : item.date;
     });
@@ -1284,9 +1327,14 @@ async function updatePromoBanner() {
       span.appendChild(textNode);
 
       const link = document.createElement("a");
-      link.href = "workshops.html";
+      link.href = targetUrl;
       link.className = "promo-banner__cta bangers-regular";
       link.textContent = "DÉCOUVRIR LES ATELIERS (6 PLACES MAX)";
+      link.setAttribute("role", "button");
+      link.setAttribute("aria-label", "Découvrir les ateliers pratiques, 6 places maximum");
+
+      link.addEventListener("click", navigateToWorkshops);
+      link.addEventListener("touchend", navigateToWorkshops);
       span.appendChild(link);
 
       return span;

@@ -1091,6 +1091,31 @@ _Chronologique — plus récent en bas_
    - Recompilation réussie de tous les bundles CSS/JS minifiés (`node build.js`).
    - Compilation et validation des tests backend Java réussies (`mvnw.cmd test-compile`).
 
+---
+
+### 2026-09-30 — Fix Bouton Découvrir les Ateliers & Interaction Bandeau Défilant Promo
+**Conversation**: `e8ec6f84-8fe9-4797-b252-c7c4ae21f579`  
+**Branche**: `fix/promo-banner-workshops-cta`
+
+#### Ce qui a changé :
+1. **Pause sur Survol & Accessibilité du Marquee (`frontend/styles/components/banner.css`)** :
+   - Ajout des règles de gel d'animation `.promo-banner:hover .promo-banner__track`, `.promo-banner:focus-within .promo-banner__track` et `.promo-banner:active .promo-banner__track` avec `animation-play-state: paused;`.
+   - Élimination de l'échec de hit-testing du navigateur (`mousedown`/`mouseup` sur coordonnées en déplacement permanent) qui empêchait la génération de l'événement `click`.
+   - Ajout de `user-select: none;` et `-webkit-user-select: none;` pour éviter la sélection de texte parasite lors des tentatives de clic.
+   - Ajout du support de `prefers-reduced-motion: reduce` (`animation: none; padding-left: 1rem;`) pour l'accessibilité cognitive et vestibulaire.
+2. **Gestion Interactive & Écouteurs d'Événements (`frontend/js/header.js`)** :
+   - Ajout d'écouteurs tactiles et pointeurs (`pointerenter`, `pointerleave`, `touchstart`, `touchend`) assurant la pause fluide sur desktop et terminaux mobiles.
+   - Résolution sécurisée du chemin d'accès avec `resolveAssetPath("workshops.html")` pour éviter les erreurs 404 depuis les sous-dossiers (`/formations/`).
+   - Ajout d'un écouteur de navigation robuste sur `click` et `touchend` avec `preventDefault()`, `stopPropagation()` et `window.location.href = targetUrl`. Si l'utilisateur est déjà sur `workshops.html`, défilement fluide vers `#workshops-grid`.
+   - Attribution des attributs d'accessibilité `role="button"` et `aria-label`.
+3. **Repositionnement Non-Bloquant du Badge de Staging (`frontend/js/header.js`)** :
+   - Déplacement de `#dev-env-indicator` (actif uniquement sur `develop.noseumcode.fr`) de `position: relative; document.body.prepend()` vers `position: fixed; bottom: 0; left: 0; width: 100%; pointer-events: none;`.
+   - Suppression du chevauchement critique à `scroll: 0` où le badge masquait physiquement l'en-tête fixe et interceptait les clics destinés au bandeau vert.
+4. **Fallback HTML Statique (`frontend/partials/header.html`)** :
+   - Remplacement du bouton caduc ouvrant `#promo-popup` par les éléments statiques avec le lien sémantique direct `workshops.html` pour garantir la navigabilité immédiate même avant chargement de `schedule.json`.
+5. **Rebuild & Tests** :
+   - Recompilation réussie de tous les bundles CSS/JS minifiés (`node build.js`).
+   - Compilation et validation des tests backend Java réussies (`mvnw.cmd test-compile`).
 
 
 
