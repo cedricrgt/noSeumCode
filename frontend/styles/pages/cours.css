@@ -220,8 +220,8 @@
   margin-bottom: 0.85rem;
 }
 
-.rendered-markdown h1 { font-size: 1.9rem; color: #00a85a; }
-.rendered-markdown h2 { font-size: 1.6rem; color: #0284c7; }
+.rendered-markdown h1 { font-size: 1.9rem; color: #047857; }
+.rendered-markdown h2 { font-size: 1.6rem; color: #0369a1; }
 .rendered-markdown h3 { font-size: 1.35rem; color: #0a1628; }
 
 .rendered-markdown p {

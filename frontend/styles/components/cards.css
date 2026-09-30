@@ -141,7 +141,7 @@
 }
 
 .card__chevron-darken {
-  stroke: var(--primary-green);
+  stroke: #047857;
 }
 
 .card__link:hover .card__chevron,

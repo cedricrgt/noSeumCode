@@ -55,7 +55,7 @@
 
 .popover__tagline {
   font-size: 1.1rem;
-  color: #2ecc71;
+  color: #047857;
   font-weight: 600;
 }
 
@@ -63,7 +63,7 @@
   font-size: 1.2rem;
   margin-bottom: 1rem;
   color: #1a1a1a;
-  border-bottom: 2px solid #2ecc71;
+  border-bottom: 2px solid #047857;
   display: inline-block;
   padding-bottom: 0.2rem;
 }
@@ -87,7 +87,7 @@
 }
 
 .popover__syllabus-icon {
-  color: #2ecc71;
+  color: #047857;
   flex-shrink: 0;
   margin-top: 0.2rem;
 }
@@ -120,12 +120,12 @@
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: #999;
+  color: #475569;
   transition: color 0.3s;
 }
 
 .popover__close:hover {
-  color: #333;
+  color: #0a1628;
 }
 #hubspot-popover {
   max-width: 600px;

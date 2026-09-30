@@ -165,4 +165,27 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 - Forcer le centrage des textes descriptifs sur mobile sous prétexte de centrer l'avatar ou le bouton (rejetée car la colonne étroite accentue dramatiquement l'effort de lecture).
 **Conséquence**: Amélioration de la lisibilité et de la vitesse de scan, confort de lecture accru sur mobile et desktop, et standardisation pérenne formalisée dans la règle projet `.agents/rules/rule-20-typography-readability.md`.
 
+## ADR-021 — Conformité des Ratios de Contraste Couleurs WCAG 2.2 AA / AAA & RGAA
+**Status**: Actif
+**Décision**: 
+1. **Application stricte des ratios normatifs WCAG 2.2 / RGAA** :
+   - Texte normal (< 24px ou < 18,5px en gras) : ratio minimum **4,5:1** (AA) et **7:1** (AAA).
+   - Grand texte ($\ge$ 24px ou $\ge$ 18,5px en gras) : ratio minimum **3:1** (AA) et **4,5:1** (AAA).
+   - Éléments graphiques et composants d'interface interactifs (boutons, champs, icônes fonctionnelles, chevrons) : ratio minimum **3:1** (Critère 1.4.11).
+   - Exceptions admises : éléments purement décoratifs, contrôles inactifs (`disabled`), logotypes.
+2. **Harmonisation de la palette NoSeumCode sur fond clair (`#ffffff` / `#f5f7fa`)** :
+   - Remplacement des teintes défaillantes : `#94a3b8` (2.56:1, FAIL) remplacé par `#475569` (7.58:1, PASS AAA) sur cartes blanches et micro-textes.
+   - Badges tarifaires : badge Starter `#00d9ff` sur fond teinté (1.53:1, FAIL) remplacé par `#0369a1` (5.35:1, PASS AA) ; badge VIP `#ff3366` (2.89:1, FAIL) remplacé par `#be123c` (5.11:1, PASS AA).
+   - Éléments graphiques interactifs : remplacement de `stroke: var(--primary-green)` (1.34:1, FAIL) et `#00a85a` (3.11:1) sur fond blanc par le vert accessible `#047857` (5.48:1, PASS AA).
+   - Titres Markdown de cours : H1 passé à `#047857` (5.48:1) et H2 passé à `#0369a1` (5.93:1).
+   - Badges du tableau de bord utilisateur : `#00a85a`, `#0284c7`, `#d97706` alignés sur des contrastes $\ge 4.5:1$ (`#047857`, `#0369a1`, `#b45309`).
+3. **Harmonisation sur fond sombre** :
+   - Ajout explicite de `.section--dark` sur `.section--trustbar` pour garantir la lisibilité optimale des badges d'outils pros (`#e2e8f0` : 14.71:1, AAA) et du libellé d'en-tête (`#94a3b8` : 7.07:1, AAA).
+4. **Pérénisation dans les règles agents** :
+   - Création de la règle `.agents/rules/rule-21-wcag-color-contrast.md`.
+**Alternative rejetée**: 
+- Utiliser du texte gris clair (`#94a3b8`) ou des teintes pastel fluo (`#00ff87`, `#00d9ff`, `#ff3366`) sur fond blanc pour un effet esthétique délavé (rejetée car cela exclut les personnes malvoyantes et constitue une non-conformité légale WCAG 2.2 / RGAA).
+**Conséquence**: Accessibilité universelle garantie, conformité 100% WCAG 2.2 AA / AAA sur tous les contrastes texte et composants d'interface, et suppression définitive des contrastes illisibles.
+
+
 

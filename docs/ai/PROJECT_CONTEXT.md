@@ -48,8 +48,8 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `fix/typography-text-alignment-rules`
-## Current State: Sprints 1 à 15 validés. Fix typographique & ergonomie de lecture complété (ADR-020, Règle 20 : mur d'ancrage LTR gauche pour paragraphes et listes, isolation card-grid et packages, préservation de l'alignement gauche sur mobile, bundles CSS régénérés).
+## Active Branch: `fix/wcag-contrast-ratios-compliance`
+## Current State: Sprints 1 à 15 validés. Fix accessibilité & ratios de contraste couleurs WCAG 2.2 AA / AAA complété (ADR-021, Règle 21 : respect strict des seuils 4.5:1 pour texte normal et 3:1 pour composants interactifs/grand texte sur surfaces claires et sombres, harmonisation cartes offres, trustbar, popovers, markdown cours et dashboard, bundles CSS régénérés).
 ## Next Steps: Lancement du Sprint 16 (Tunnel Lead Magnet, Onboarding Apprenant & Cocon Blog : sécurisation thanks.html avec liens PDF réparés et upsell doux, onboarding post-achat success.html en 3 étapes, gabarit sémantique article.html et recette globale PageSpeed CWV).
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
