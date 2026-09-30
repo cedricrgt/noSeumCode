@@ -1042,5 +1042,35 @@ _Chronologique — plus récent en bas_
    - Recompilation réussie de tous les bundles CSS/JS minifiés (`node build.js`).
    - Compilation et validation des tests backend Java réussies (`mvnw.cmd test-compile`).
 
+---
+
+### 2026-09-30 — Fix Accessibilité & Ratios de Contraste Couleurs (WCAG 2.2 AA / AAA & Règle 21)
+**Conversation**: `e8ec6f84-8fe9-4797-b252-c7c4ae21f579`  
+**Branche**: `fix/wcag-contrast-ratios-compliance`
+
+#### Ce qui a changé :
+1. **Création de la règle projet d'accessibilité visuelle (`.agents/rules/rule-21-wcag-color-contrast.md`)** :
+   - Formalisation des exigences normatives WCAG 2.2 / RGAA : texte normal $\ge 4.5:1$ (AA) et $\ge 7:1$ (AAA), grand texte $\ge 3:1$ (AA) et $\ge 4.5:1$ (AAA), composants interactifs et graphiques informatifs $\ge 3:1$.
+   - Définition exhaustive des palettes validées NoSeumCode sur fonds sombres et fonds clairs, avec liste explicite des anti-patterns interdits.
+2. **Audit & Correctifs Couleurs Frontend (`index.html`, CSS)** :
+   - `frontend/index.html` :
+     * Ajout de `section--dark` sur `.section--trustbar` pour garantir un contraste AAA pour les badges d'outils pros (`#e2e8f0` : 14.71:1) et le sous-titre (`#94a3b8` : 7.07:1).
+     * Carte Starter : Badge `Idéal Débutant` réhaussé à `#0369a1` (5.35:1, PASS AA contre 1.53:1 précédemment), tagline et texte réassurance passés à `#475569` (7.58:1, PASS AAA contre 2.56:1 précédemment).
+     * Carte Web Pro : Micro-réassurance passée à `#cbd5e1` (12.21:1, PASS AAA).
+     * Carte Mentorat VIP : Badge `10 Places / Mois` réhaussé à `#be123c` (5.11:1, PASS AA contre 2.89:1 précédemment), tagline et texte réassurance passés à `#475569` (7.58:1, PASS AAA).
+   - `frontend/styles/pages/homepage/courses.css` : Définition des couleurs accessibles pour `.package-tagline` et `.package-reassurance` sur cartes blanches (`#475569`) et cartes sombres (`#cbd5e1`).
+   - `frontend/styles/components/cards.css` : `.card__chevron-darken` aligné sur le vert accessible `#047857` (5.48:1, PASS AA).
+   - `frontend/styles/components/popover.css` : `.popover__tagline`, `.popover__content h4`, `.popover__syllabus-icon` passés à `#047857` (5.48:1, PASS AA) et `.popover__close` à `#475569` (7.58:1, PASS AAA).
+   - `frontend/styles/pages/article.css` : `.back-link:hover` passé à `#047857` (5.48:1, PASS AA).
+   - `frontend/styles/pages/cours.css` : Titres de leçons markdown H1 (`#047857`, 5.48:1) et H2 (`#0369a1`, 5.93:1).
+   - `frontend/styles/pages/dashboard.css` : Rôles badges et statuts alignés sur les seuils WCAG AA (`#047857`, `#0369a1`, `#b45309`, `#be123c`).
+3. **Décision Architecturale (ADR-021)** :
+   - Rédaction et enregistrement d'ADR-021 dans `docs/ai/DECISIONS.md`.
+4. **Validation Locale & Tests** :
+   - Vérification scriptée de 100% des combinaisons de couleurs (toutes $\ge 4.5:1$ pour le texte normal et $\ge 3:1$ pour les composants).
+   - Recompilation réussie de tous les bundles CSS/JS minifiés (`node build.js`).
+   - Compilation et validation des tests backend Java réussies (`mvnw.cmd test-compile`).
+
+
 
 
