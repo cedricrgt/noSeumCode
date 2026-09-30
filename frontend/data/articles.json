@@ -70,5 +70,41 @@
     ],
     "conclusion": "Git n'est pas juste un outil, c'est un langage de collaboration universel. Rejoignez-nous pour apprendre à gérer vos projets comme les meilleurs ingénieurs du monde.",
     "cta_link": "https://share.hsforms.com/votre-formulaire-git"
+  },
+  "faut-il-etre-bon-en-maths-pour-apprendre-a-coder": {
+    "title": "Faut-il être bon en maths pour coder ? Réponse d'un ingénieur",
+    "subtitle": "Tu penses qu'il faut être un génie des maths pour coder ? Spoiler : tu n'as pas besoin de ton cours de terminale.",
+    "description": "Tu penses qu'il faut être un génie des maths pour coder ? Un ingénieur senior te répond franchement. Spoiler : tu n'as pas besoin de ton cours de terminale.",
+    "image": "images/blogCards/blog-js.webp",
+    "tags": ["Apprendre le Code", "Débutant Pro", "Orientation & Métier", "Sans le Seum"],
+    "intro": "C'est la question que tout le monde se pose avant de commencer, et personne ne répond vraiment franchement. J'ai vu des dizaines de personnes abandonner l'idée d'apprendre à coder à cause d'une conviction qu'elles portaient depuis le lycée : 'Je suis nul en maths, donc la programmation c'est pas pour moi.' Spoiler : c'est faux. Et je vais t'expliquer pourquoi.",
+    "sections": [
+      {
+        "heading": "D'où vient cette idée ?",
+        "text": "L'association entre maths et code vient de l'histoire de l'informatique. Les premiers ordinateurs servaient au calcul balistique et à la physique théorique. Les filières académiques (prépas, écoles d'ingénieurs) continuent d'imposer des maths théoriques pour former des chercheurs en IA ou en cryptographie. Mais le développement web moderne n'a rien à voir avec tout cela."
+      },
+      {
+        "heading": "Ce que tu fais vraiment quand tu codes un site",
+        "text": "Tu écris des instructions en anglais simplifié, tu structures du contenu avec des balises sémantiques et tu résous des petits problèmes de logique séquentielle. Aucune équation différentielle, aucune intégrale. La logique ressemble à celle d'un jeu de société ou d'une recette de cuisine."
+      },
+      {
+        "heading": "Mais attend — les maths, ça sert quand alors ?",
+        "text": "Les mathématiques poussées servent en intelligence artificielle fondamentale (modèles de deep learning), en moteurs de jeux vidéo 3D (physique vectorielle) et en cryptographie de sécurité. Ces domaines ne concernent pas les 90% des développeurs web et applications."
+      },
+      {
+        "heading": "Ce que les bons développeurs ont en commun (et ce n'est pas les maths)",
+        "text": "La curiosité face aux bugs, la patience méthodique face aux erreurs et l'aptitude à décomposer un problème complexe en sous-étapes simples. Ces compétences s'acquièrent par la pratique, quel que soit ton passé scolaire."
+      },
+      {
+        "heading": "Le vrai truc qui bloque les débutants",
+        "text": "Le tutoriel hell (regarder des vidéos sans jamais coder par soi-même), l'absence d'aide directe quand une simple faute de syntaxe bloque l'écran, les ressources en anglais et les exercices académiques déconnectés du concret."
+      },
+      {
+        "heading": "Alors, par où commencer concrètement ?",
+        "text": "Commence par HTML et CSS pour un feedback visuel immédiat dans le navigateur. Ajoute ensuite JavaScript pour introduire progressivement la logique interactive (DOM, conditions, boucles, API)."
+      }
+    ],
+    "conclusion": "Non, tu n'as pas besoin d'être fort en maths pour apprendre à coder et devenir développeur web. Rejoins nos parcours d'apprentissage par la pratique dès 89 € avec garantie 14 jours satisfait ou remboursé.",
+    "cta_link": "index.html#parcours"
   }
 }

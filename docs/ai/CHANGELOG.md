@@ -1140,6 +1140,28 @@ _Chronologique — plus récent en bas_
 4. **Rebuild & Recette** :
    - Recompilation réussie de l'ensemble des bundles CSS et JS (`homepage.min.css`, `thanks.min.css`, `article.min.css`, `workshops.min.css`, `formations.min.css`, scripts JS minifiés).
 
+---
+
+### 2026-09-30 — Article Blog : Faut-il être bon en maths pour apprendre à coder ?
+**Conversation**: `bee834aa-93e8-46e7-b63c-62b3900ccf51`  
+**Branche**: `feat/sprint-16-lead-magnet-onboarding-blog`
+
+#### Ce qui a changé :
+1. **Création de la page statique sémantique (`frontend/blog/faut-il-etre-bon-en-maths-pour-apprendre-a-coder.html`)** :
+   - Contenu complet rédigé sous la plume de Cédric Ragot (ingénieur senior & formateur NoSeumCode), démystifiant l'amalgame historique entre mathématiques de pointe et développement web moderne.
+   - Balisage Schema.org JSON-LD complet intégrant `Article`, `BreadcrumbList` et `FAQPage` (reprise des 6 sous-titres H2 en questions/réponses indexables).
+   - Métadonnées SEO `<title>`, meta description, balises Open Graph, Twitter Cards et balise canonique.
+   - Encadré d'appel à l'action contextuel (`.article-cta-box`) vers les 3 packs et le téléchargement du programme PDF.
+   - Carte de présentation de l'auteur senior (`.article-author-card`).
+2. **Réécriture d'URL Propre Apache (`frontend/.htaccess`)** :
+   - Ajout des règles de réécriture transparente pour le cocon blog : `RewriteRule ^blog/([a-zA-Z0-9_-]+)/?$ blog/$1.html [L,QSA]` et fallback `/blog` vers `index.html#blog`.
+3. **Maillage Interne & Découvrabilité** :
+   - Homepage (`frontend/index.html`) : Ajout du lien vers l'article dans la réponse FAQ n°2 et insertion d'une 4e carte d'article dans la grille `.blogCards__cards`.
+   - Catalogue Parcours (`frontend/js/cours.js`) : Insertion d'un encart réassurance « Pour qui sont faits nos parcours ? » avec lien direct vers l'article.
+   - Base de données locale (`frontend/data/articles.json`) : Enregistrement de la fiche article complète.
+   - Sitemap XML (`frontend/sitemap.xml`) : Déclaration de l'URL canonique avec priorité 0.8.
+
+
 
 
 
