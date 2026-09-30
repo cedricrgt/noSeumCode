@@ -286,6 +286,9 @@ gantt
 
 ---
 
+> 📖 **Spécifications Détaillées & Textes Validés (Sprints 13 à 16)** :  
+> L'ensemble des textes validés, blocs HTML prêts au copier-coller, JSON Stripe, CSP et matrice de mots-clés sont consignés dans [`docs/specs/2026-09-briefing-offres-seo-copywriting.md`](file:///d:/Archive-mac/dev/code-bangers/docs/specs/2026-09-briefing-offres-seo-copywriting.md).
+
 ### Sprint 13 : Socle Technique, Sécurité Serveur & Assainissement des Assets (Planifié)
 - **13.1 Déblocage CSP HubSpot & Directives de Cache Apache (`frontend/.htaccess`)** :
   - Mise à jour stricte du Content-Security-Policy autorisant l'affichage et la soumission du popover HubSpot sans erreur bloquante en console :
