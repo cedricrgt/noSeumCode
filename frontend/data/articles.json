@@ -70,5 +70,105 @@
     ],
     "conclusion": "Git n'est pas juste un outil, c'est un langage de collaboration universel. Rejoignez-nous pour apprendre à gérer vos projets comme les meilleurs ingénieurs du monde.",
     "cta_link": "https://share.hsforms.com/votre-formulaire-git"
+  },
+  "faut-il-etre-bon-en-maths-pour-apprendre-a-coder": {
+    "title": "Faut-il être bon en maths pour coder ? Réponse d'un ingénieur",
+    "subtitle": "Tu penses qu'il faut être un génie des maths pour coder ? Spoiler : tu n'as pas besoin de ton cours de terminale.",
+    "description": "Tu penses qu'il faut être un génie des maths pour coder ? Un ingénieur senior te répond franchement. Spoiler : tu n'as pas besoin de ton cours de terminale.",
+    "image": "images/blogCards/blog-js.webp",
+    "tags": ["Apprendre le Code", "Débutant Pro", "Orientation & Métier", "Sans le Seum"],
+    "intro": "C'est la question que tout le monde se pose avant de commencer, et personne ne répond vraiment franchement. J'ai vu des dizaines de personnes abandonner l'idée d'apprendre à coder à cause d'une conviction qu'elles portaient depuis le lycée : 'Je suis nul en maths, donc la programmation c'est pas pour moi.' Spoiler : c'est faux. Et je vais t'expliquer pourquoi.",
+    "sections": [
+      {
+        "heading": "D'où vient cette idée ?",
+        "text": "L'association entre maths et code vient de l'histoire de l'informatique. Les premiers ordinateurs servaient au calcul balistique et à la physique théorique. Les filières académiques (prépas, écoles d'ingénieurs) continuent d'imposer des maths théoriques pour former des chercheurs en IA ou en cryptographie. Mais le développement web moderne n'a rien à voir avec tout cela."
+      },
+      {
+        "heading": "Ce que tu fais vraiment quand tu codes un site",
+        "text": "Tu écris des instructions en anglais simplifié, tu structures du contenu avec des balises sémantiques et tu résous des petits problèmes de logique séquentielle. Aucune équation différentielle, aucune intégrale. La logique ressemble à celle d'un jeu de société ou d'une recette de cuisine."
+      },
+      {
+        "heading": "Mais attend — les maths, ça sert quand alors ?",
+        "text": "Les mathématiques poussées servent en intelligence artificielle fondamentale (modèles de deep learning), en moteurs de jeux vidéo 3D (physique vectorielle) et en cryptographie de sécurité. Ces domaines ne concernent pas les 90% des développeurs web et applications."
+      },
+      {
+        "heading": "Ce que les bons développeurs ont en commun (et ce n'est pas les maths)",
+        "text": "La curiosité face aux bugs, la patience méthodique face aux erreurs et l'aptitude à décomposer un problème complexe en sous-étapes simples. Ces compétences s'acquièrent par la pratique, quel que soit ton passé scolaire."
+      },
+      {
+        "heading": "Le vrai truc qui bloque les débutants",
+        "text": "Le tutoriel hell (regarder des vidéos sans jamais coder par soi-même), l'absence d'aide directe quand une simple faute de syntaxe bloque l'écran, les ressources en anglais et les exercices académiques déconnectés du concret."
+      },
+      {
+        "heading": "Alors, par où commencer concrètement ?",
+        "text": "Commence par HTML et CSS pour un feedback visuel immédiat dans le navigateur. Ajoute ensuite JavaScript pour introduire progressivement la logique interactive (DOM, conditions, boucles, API)."
+      }
+    ],
+    "conclusion": "Non, tu n'as pas besoin d'être fort en maths pour apprendre à coder et devenir développeur web. Rejoins nos parcours d'apprentissage par la pratique dès 89 € avec garantie 14 jours satisfait ou remboursé.",
+    "cta_link": "index.html#parcours"
+  },
+  "setup-vscode-debutant-plugins-utiles": {
+    "title": "Mon setup VS Code pour débuter — sans plugins inutiles",
+    "subtitle": "VS Code a 50 000 extensions. Je te montre lesquelles installer vraiment quand tu débutes en HTML, CSS et JavaScript.",
+    "description": "VS Code a 50 000 extensions. Je te montre lesquelles installer vraiment quand tu débutes en HTML, CSS et JavaScript. Mon setup exact, rien de plus.",
+    "image": "images/blogCards/blog-html.webp",
+    "tags": ["VS Code", "Outils de Dev", "Débutant Pro", "Productivité"],
+    "intro": "Quand tu ouvres VS Code pour la première fois, tu tombes rapidement sur cette recommandation : 'installe des extensions, ça va changer ta vie.' Et tu te retrouves avec 15 plugins actifs, un éditeur qui rame et des suggestions partout. Voici mon setup réel — celui que j'utilise et recommande pour débuter proprement en HTML, CSS et JavaScript.",
+    "sections": [
+      {
+        "heading": "Pourquoi VS Code et pas autre chose ?",
+        "text": "C'est l'éditeur de référence du développement web mondial. Communauté massive, documentation abondante, intégration parfaite avec le terminal et les navigateurs, gratuit et open-source."
+      },
+      {
+        "heading": "La configuration de base (avant toute extension)",
+        "text": "Active la sauvegarde automatique (Auto Save: afterDelay) pour ne plus jamais perdre de temps à rafraîchir une page sans voir tes changements. Configure une police lisible (taille 14 ou 16) et un thème contrasté reposant pour les yeux."
+      },
+      {
+        "heading": "Les 5 seules extensions indispensables",
+        "text": "Prettier pour le formatage automatique à chaque sauvegarde, Live Server pour le rechargement à chaud dans le navigateur, Auto Rename Tag pour synchroniser les balises HTML, Color Highlight pour prévisualiser les codes hexadécimaux et One Dark Pro pour le confort visuel."
+      },
+      {
+        "heading": "Les extensions que tu dois absolument éviter au début",
+        "text": "Les linters trop stricts comme ESLint qui noient les débutants sous des alertes rouges frustrantes, et les assistants IA omniprésents qui écrivent le code à ta place avant même que tu n'aies compris la syntaxe."
+      },
+      {
+        "heading": "Mon fichier settings.json minimaliste",
+        "text": "Format on save activé, minimap désactivée pour gagner 15% de largeur d'écran, linkedEditing activé pour éditer les balises sans plugin supplémentaire."
+      }
+    ],
+    "conclusion": "Ce n'est pas ton éditeur ou tes plugins qui feront de toi un bon développeur. Un bon setup prend 10 minutes à régler au début, puis s'oublie complètement pour te concentrer sur l'essentiel : coder.",
+    "cta_link": "formations/starter"
+  },
+  "git-explique-debutant-versioning": {
+    "title": "Git expliqué à quelqu'un qui n'a jamais entendu parler de versioning",
+    "subtitle": "Tu as déjà nommé un fichier projet_final_v2_vrai_final.zip ? Git est là pour ça. Explication simple, sans jargon et avec de vrais exemples.",
+    "description": "Tu as déjà nommé un fichier projet_final_v2_vrai_final.zip ? Git est là pour ça. Explication simple, sans jargon et avec de vrais exemples.",
+    "image": "images/courses/git.webp",
+    "tags": ["Git", "GitHub", "Versioning", "Débutant Pro"],
+    "intro": "Si tu débutes dans la programmation, tu as forcément croisé ces deux mots partout : Git et GitHub. Les développeurs en parlent comme d'une évidence, mais personne ne prend le temps de t'expliquer ce que c'est sans t'assommer de jargon technique. On va réparer ça tout de suite.",
+    "sections": [
+      {
+        "heading": "Le problème que tout le monde a déjà vécu",
+        "text": "Le dossier rempli de copies manuelles type projet_final_v2, la mauvaise manipulation qui efface 3 heures de travail ou la clé USB perdue. Git a été créé exactement pour éliminer cette angoisse."
+      },
+      {
+        "heading": "La métaphore du jeu vidéo : Git c'est tes points de sauvegarde",
+        "text": "Chaque commit est un point de sauvegarde horodaté avec un message descriptif. Si un boss te terrasse ou si ton code plante, tu peux revenir en arrière en une seconde chrono sans rien perdre."
+      },
+      {
+        "heading": "Git vs GitHub : quelle est la vraie différence ?",
+        "text": "Git est l'outil installé en local sur ton ordinateur qui gère l'historique de tes fichiers. GitHub est la plateforme cloud en ligne qui héberge tes projets, permet de les partager et sert de vitrine professionnelle pour tes futurs employeurs."
+      },
+      {
+        "heading": "Les 6 commandes Git que tu utiliseras 95% du temps",
+        "text": "git init (créer le point de sauvegarde), git status (vérifier l'état), git add (sélectionner les fichiers), git commit -m (valider la sauvegarde), git push (envoyer sur GitHub) et git log --oneline (consulter l'historique)."
+      },
+      {
+        "heading": "Pourquoi Git fait peur aux débutants et pourquoi ton GitHub intéresse les recruteurs",
+        "text": "La peur vient du terminal et de son écran noir, mais elle s'efface après quelques heures de pratique guidée. Pour un recruteur, un profil GitHub propre avec des commits réguliers vaut bien plus que n'importe quel diplôme théorique."
+      }
+    ],
+    "conclusion": "Git et GitHub ne sont pas des outils réservés aux experts de la Silicon Valley : ce sont tes meilleurs alliés pour coder sans le seum et prouver ton savoir-faire professionnel dès le premier jour.",
+    "cta_link": "formations/starter"
   }
 }

@@ -470,6 +470,22 @@ function renderCourseCatalog() {
           `;
         }).join("")}
       </div>
+
+      <!-- Section Pour qui c'est fait ? (Reassurance & Maillage Interne Blog) -->
+      <div style="margin-top: 3.5rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 2.25rem 2rem; text-align: left;">
+        <h3 class="bangers-regular" style="font-size: 1.8rem; color: var(--dark-navy); margin-bottom: 0.75rem;">
+          Pour qui sont faits nos parcours ?
+        </h3>
+        <p style="color: #475569; font-size: 1rem; line-height: 1.7; margin-bottom: 1rem;">
+          Nos formations s'adressent à toute personne motivée (débutant complet, lycéen, étudiant ou adulte en reconversion) désirant créer de vrais projets web sans perdre son temps dans des cours théoriques interminables.
+        </p>
+        <div style="background: rgba(0, 255, 135, 0.1); border-left: 4px solid #00a85a; padding: 0.9rem 1.25rem; border-radius: 0 8px 8px 0; margin-top: 1rem;">
+          <strong style="color: var(--dark-navy);">Tu te demandes s'il faut être fort en maths pour réussir ?</strong>
+          <span style="color: #334155; display: block; font-size: 0.95rem; margin-top: 0.25rem;">
+            Spoiler : aucune équation n'est demandée pour coder des sites web. <a href="blog/faut-il-etre-bon-en-maths-pour-apprendre-a-coder" style="color: #047857; font-weight: 700; text-decoration: underline;">Lire l'analyse complète de notre ingénieur formateur →</a>
+          </span>
+        </div>
+      </div>
     </div>
   `;
 }

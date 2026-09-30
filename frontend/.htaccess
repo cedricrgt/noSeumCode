@@ -64,6 +64,15 @@ RewriteRule ^confidentialite/?$ confidentialite.html [L,QSA]
 
 RewriteRule ^politique-confidentialite(\.html)?$ /confidentialite.html [R=301,L]
 
+# 5. Réécriture propre du blog (Sprint 16 & Cocon Sémantique)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^blog/([a-zA-Z0-9_-]+)/?$ blog/$1.html [L,QSA]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^blog/?$ index.html#blog [L,QSA]
+
 
 # ----------------------------------------------------------------------
 # Redirection "En construction" (supprimer ce bloc quand le site est prêt)

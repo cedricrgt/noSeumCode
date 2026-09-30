@@ -1117,5 +1117,74 @@ _Chronologique — plus récent en bas_
    - Recompilation réussie de tous les bundles CSS/JS minifiés (`node build.js`).
    - Compilation et validation des tests backend Java réussies (`mvnw.cmd test-compile`).
 
+---
+
+### 2026-09-30 — Sprint 16 : Tunnel Lead Magnet, Onboarding Apprenant & Cocon Blog
+**Conversation**: `bee834aa-93e8-46e7-b63c-62b3900ccf51`  
+**Branche**: `feat/sprint-16-lead-magnet-onboarding-blog`
+
+#### Ce qui a changé :
+1. **Lead Magnet & Upsell Doux (`frontend/thanks.html`, `frontend/styles/pages/thanks.css`)** :
+   - Métadonnées `<title>Ton programme est en route ! | NoSeumCode</title>` et `<meta name="robots" content="noindex, nofollow" />`.
+   - Vérification et sécurisation des 4 liens de téléchargement de documents PDF (`documents/Cours-HTML-CSS.pdf`, `documents/Premiers-pas-avec-JavaScript.pdf`, `documents/git&github.pdf`, `documents/programme-complet.pdf`).
+   - Intégration de la boîte d'upsell doux (`.upsell-box`) vers la grille des 3 offres `#parcours` avec styles dédiés et contrastes WCAG AAA.
+2. **Onboarding Post-Achat & Réassurance Immédiate (`frontend/success.html`)** :
+   - Titre optimisé `<title>Paiement Confirmé ! Bienvenue sur NoSeumCode</title>`.
+   - Séquence d'accueil en 3 étapes d'onboarding (accès espace étudiant, adhésion Discord au salon `#nouveaux-élèves`, configuration de l'éditeur VS Code).
+   - Boutons d'action prioritaires vers le tableau de bord et Discord, avec préservation du script asynchrone de confirmation de session Stripe.
+3. **Structure & Gabarit du Cocon Sémantique Blog (`frontend/article.html`, `frontend/styles/pages/article.css`, `frontend/js/article.js`)** :
+   - Gabarit d'article de blog responsive et sémantique avec fil d'ariane (Breadcrumbs), métadonnées d'article (auteur, date, durée de lecture).
+   - Encadré d'appel à l'action contextuel (`.article-cta-box`) vers les packs et le téléchargement du programme PDF.
+   - Carte de présentation de l'auteur (`.article-author-card`) mettant en valeur le profil de Cédric Ragot (ingénieur senior et formateur).
+   - Injection automatique des données structurées Schema.org JSON-LD (`Article`, `BreadcrumbList`).
+4. **Rebuild & Recette** :
+   - Recompilation réussie de l'ensemble des bundles CSS et JS (`homepage.min.css`, `thanks.min.css`, `article.min.css`, `workshops.min.css`, `formations.min.css`, scripts JS minifiés).
+
+---
+
+### 2026-09-30 — Article Blog : Faut-il être bon en maths pour apprendre à coder ?
+**Conversation**: `bee834aa-93e8-46e7-b63c-62b3900ccf51`  
+**Branche**: `feat/sprint-16-lead-magnet-onboarding-blog`
+
+#### Ce qui a changé :
+1. **Création de la page statique sémantique (`frontend/blog/faut-il-etre-bon-en-maths-pour-apprendre-a-coder.html`)** :
+   - Contenu complet rédigé sous la plume de Cédric Ragot (ingénieur senior & formateur NoSeumCode), démystifiant l'amalgame historique entre mathématiques de pointe et développement web moderne.
+   - Balisage Schema.org JSON-LD complet intégrant `Article`, `BreadcrumbList` et `FAQPage` (reprise des 6 sous-titres H2 en questions/réponses indexables).
+   - Métadonnées SEO `<title>`, meta description, balises Open Graph, Twitter Cards et balise canonique.
+   - Encadré d'appel à l'action contextuel (`.article-cta-box`) vers les 3 packs et le téléchargement du programme PDF.
+   - Carte de présentation de l'auteur senior (`.article-author-card`).
+2. **Réécriture d'URL Propre Apache (`frontend/.htaccess`)** :
+   - Ajout des règles de réécriture transparente pour le cocon blog : `RewriteRule ^blog/([a-zA-Z0-9_-]+)/?$ blog/$1.html [L,QSA]` et fallback `/blog` vers `index.html#blog`.
+3. **Maillage Interne & Découvrabilité** :
+   - Homepage (`frontend/index.html`) : Ajout du lien vers l'article dans la réponse FAQ n°2 et insertion d'une 4e carte d'article dans la grille `.blogCards__cards`.
+   - Catalogue Parcours (`frontend/js/cours.js`) : Insertion d'un encart réassurance « Pour qui sont faits nos parcours ? » avec lien direct vers l'article.
+   - Base de données locale (`frontend/data/articles.json`) : Enregistrement de la fiche article complète.
+   - Sitemap XML (`frontend/sitemap.xml`) : Déclaration de l'URL canonique avec priorité 0.8.
+
+---
+
+### 2026-09-30 — Articles Blog : Setup VS Code Débutant & Git Expliqué Sans Jargon
+**Conversation**: `bee834aa-93e8-46e7-b63c-62b3900ccf51`  
+**Branche**: `feat/sprint-16-lead-magnet-onboarding-blog`
+
+#### Ce qui a changé :
+1. **Création de la page statique sémantique Setup VS Code (`frontend/blog/setup-vscode-debutant-plugins-utiles.html`)** :
+   - Contenu complet rédigé sous la plume de Cédric Ragot détaillant la configuration minimale et les 5 seules extensions indispensables (Prettier, Live Server, Auto Rename Tag, Color Highlight, One Dark Pro) pour débuter sans surcharge ni ralentissement.
+   - Balisage Schema.org JSON-LD complet intégrant `Article`, `BreadcrumbList` et `HowTo` pour l'obtention de rich snippets Google.
+   - Métadonnées SEO `<title>`, meta description, balises Open Graph, Twitter Cards et balise canonique.
+   - Encadré CTA contextuel vers le Pack Starter et le programme PDF, et carte auteur senior.
+2. **Création de la page statique sémantique Git pour Débutant (`frontend/blog/git-explique-debutant-versioning.html`)** :
+   - Contenu complet sous la plume de Cédric Ragot expliquant le versioning par la métaphore des points de sauvegarde de jeux vidéo, clarifiant la distinction Git vs GitHub, et détaillant les 6 commandes indispensables (`init`, `status`, `add`, `commit`, `push`, `log`).
+   - Balisage Schema.org JSON-LD complet (`Article`, `BreadcrumbList`, `HowTo`).
+   - Métadonnées SEO, encadré CTA contextuel vers le Pack Starter, et carte auteur senior.
+3. **Maillage Interne & Découvrabilité** :
+   - Interconnexion bidirectionnelle entre les 3 articles du cocon blog (`faut-il-etre-bon-en-maths-pour-apprendre-a-coder.html`, `setup-vscode-debutant-plugins-utiles.html`, `git-explique-debutant-versioning.html`).
+   - Page formation Pack Starter (`frontend/formations/starter.html`) : Ajout de liens vers le guide Git dans la section syllabus et vers le guide VS Code dans la FAQ débutant.
+   - Base de données locale (`frontend/data/articles.json`) : Déclaration des deux nouveaux articles.
+   - Homepage (`frontend/index.html`) : Mise à jour de la carte Git vers la nouvelle URL propre `/blog/git-explique-debutant-versioning` et ajout d'une carte dédiée pour le guide VS Code.
+   - Plan de site XML (`frontend/sitemap.xml`) : Enregistrement des deux URLs canoniques avec priorité 0.8.
+
+
+
 
 

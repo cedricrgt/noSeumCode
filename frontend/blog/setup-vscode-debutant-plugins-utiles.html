@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+
+    <title>Mon setup VS Code pour débuter — sans plugins inutiles</title>
+    <meta
+      name="description"
+      content="VS Code a 50 000 extensions. Je te montre lesquelles installer vraiment quand tu débutes en HTML, CSS et JavaScript. Mon setup exact, rien de plus."
+    />
+    <meta
+      name="keywords"
+      content="setup VS Code débutant, extensions VS Code débutant, VS Code HTML CSS JavaScript, meilleurs plugins VS Code, configurer VS Code pour coder, apprendre à coder VS Code"
+    />
+    <meta name="author" content="Cédric Ragot" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://noseumcode.fr/blog/setup-vscode-debutant-plugins-utiles" />
+    <link rel="icon" type="image/png" href="images/favicon.png" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="NoSeumCode" />
+    <meta property="og:title" content="Mon setup VS Code pour débuter — sans plugins inutiles" />
+    <meta
+      property="og:description"
+      content="VS Code a 50 000 extensions. Je te montre lesquelles installer vraiment quand tu débutes en HTML, CSS et JavaScript. Mon setup exact, rien de plus."
+    />
+    <meta property="og:url" content="https://noseumcode.fr/blog/setup-vscode-debutant-plugins-utiles" />
+    <meta property="og:image" content="https://noseumcode.fr/images/blogCards/blog-html.webp" />
+    <meta property="article:published_time" content="2026-09-30T14:00:00+02:00" />
+    <meta property="article:author" content="Cédric Ragot" />
+    <meta property="article:section" content="Outils de Développement" />
+    <meta property="article:tag" content="VS Code" />
+    <meta property="article:tag" content="Développement Web" />
+    <meta property="article:tag" content="Productivité" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Mon setup VS Code pour débuter — sans plugins inutiles" />
+    <meta
+      name="twitter:description"
+      content="VS Code a 50 000 extensions. Je te montre lesquelles installer vraiment quand tu débutes en HTML, CSS et JavaScript. Mon setup exact, rien de plus."
+    />
+    <meta name="twitter:image" content="https://noseumcode.fr/images/blogCards/blog-html.webp" />
+
+    <!-- Plausible Analytics Cookieless & RGPD (Sprint 9 / ADR-015) -->
+    <script>
+      window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments); };
+      window.addEventListener('load', function() {
+        (window.requestIdleCallback || function(cb) { setTimeout(cb, 1); })(function() {
+          var s = document.createElement('script');
+          s.defer = true;
+          s.setAttribute('data-domain', 'noseumcode.fr');
+          s.src = 'https://plausible.io/js/script.tagged-events.outbound-links.js';
+          document.head.appendChild(s);
+        });
+      });
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Bangers&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Bangers&display=swap"
+      />
+    </noscript>
+
+    <link rel="stylesheet" href="styles/dist/article.min.css?v=sprint16" />
+
+    <!-- Schema.org JSON-LD (Article + BreadcrumbList + HowTo) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Accueil",
+              "item": "https://noseumcode.fr/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Blog",
+              "item": "https://noseumcode.fr/index.html#blog"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Mon setup VS Code débutant",
+              "item": "https://noseumcode.fr/blog/setup-vscode-debutant-plugins-utiles"
+            }
+          ]
+        },
+        {
+          "@type": "Article",
+          "headline": "Mon setup VS Code pour coder proprement quand on débute (sans plugins inutiles)",
+          "description": "VS Code a 50 000 extensions. Je te montre lesquelles installer vraiment quand tu débutes en HTML, CSS et JavaScript. Mon setup exact, rien de plus.",
+          "image": "https://noseumcode.fr/images/blogCards/blog-html.webp",
+          "author": {
+            "@type": "Person",
+            "name": "Cédric Ragot",
+            "jobTitle": "Ingénieur Senior & Formateur NoSeumCode",
+            "url": "https://noseumcode.fr/"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "NoSeumCode",
+            "url": "https://noseumcode.fr",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://noseumcode.fr/images/favicon.png"
+            }
+          },
+          "datePublished": "2026-09-30T14:00:00+02:00",
+          "dateModified": "2026-09-30T14:00:00+02:00",
+          "mainEntityOfPage": "https://noseumcode.fr/blog/setup-vscode-debutant-plugins-utiles"
+        },
+        {
+          "@type": "HowTo",
+          "name": "Comment configurer VS Code pour débuter en développement web",
+          "description": "Configuration minimale et efficace de Visual Studio Code en 10 minutes avec les 5 seules extensions indispensables.",
+          "step": [
+            {
+              "@type": "HowToStep",
+              "name": "Activer l'Auto Save",
+              "text": "Ouvrir Paramètres (Ctrl+,) puis régler Files: Auto Save sur 'afterDelay' avec un délai de 1000ms."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "Installer Prettier - Code Formatter",
+              "text": "Installer l'extension Prettier pour formater automatiquement l'indentation et les guillemets à chaque sauvegarde."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "Installer Live Server",
+              "text": "Installer l'extension Live Server pour recharger instantanément le navigateur à chaque modification de code."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "Installer HTML CSS Support et Error Lens",
+              "text": "Ajouter l'autocomplétion des classes CSS et l'affichage des erreurs directement en bout de ligne."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "Configurer settings.json",
+              "text": "Copier la configuration minimale optimisée dans le fichier settings.json de l'utilisateur."
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+  </head>
+
+  <body class="article-page poppins-regular">
+    <a href="#article-content" class="skip-link">Aller au contenu principal</a>
+
+    <!-- Header injecté dynamiquement -->
+    <div id="header-placeholder"></div>
+
+    <main id="article-content">
+      <!-- Article Hero Header -->
+      <section class="article-hero">
+        <img
+          src="images/blogCards/blog-html.webp"
+          alt="Configuration minimale de Visual Studio Code pour débutant"
+          class="article-hero__image"
+          width="1200"
+          height="400"
+          loading="eager"
+          decoding="async"
+        />
+        <div class="article-hero__content">
+          <h1 class="article-hero__title bangers-regular">
+            Mon setup VS Code pour coder proprement quand on débute
+          </h1>
+          <p class="article-hero__subtitle poppins-regular">
+            5 extensions utiles, zéro superflu : l'environnement exact d'un ingénieur senior pour avancer sans se perdre.
+          </p>
+        </div>
+      </section>
+
+      <div class="article-container">
+        <!-- Fil d'Ariane SEO -->
+        <nav aria-label="Fil d'Ariane" class="breadcrumb">
+          <ol class="breadcrumb__list">
+            <li class="breadcrumb__item">
+              <a href="index.html" class="breadcrumb__link">Accueil</a>
+            </li>
+            <li class="breadcrumb__separator" aria-hidden="true">/</li>
+            <li class="breadcrumb__item">
+              <a href="index.html#blog" class="breadcrumb__link">Blog</a>
+            </li>
+            <li class="breadcrumb__separator" aria-hidden="true">/</li>
+            <li class="breadcrumb__item" aria-current="page">
+              Setup VS Code Débutant
+            </li>
+          </ol>
+        </nav>
+
+        <article>
+          <!-- Métadonnées & Auteur -->
+          <div class="article-meta">
+            <div class="article-meta__author">
+              <img
+                src="images/mentor-cedric.webp"
+                alt="Cédric Ragot, formateur NoSeumCode"
+                class="article-meta__avatar"
+                width="34"
+                height="34"
+                loading="lazy"
+              />
+              <span>Par Cédric Ragot — ingénieur senior, formateur chez NoSeumCode</span>
+            </div>
+            <div class="article-meta__item">
+              <span aria-hidden="true">•</span>
+              <time datetime="2026-09-30">30 septembre 2026</time>
+            </div>
+            <div class="article-meta__item">
+              <span aria-hidden="true">•</span>
+              <span>Temps de lecture : ~6 min</span>
+            </div>
+          </div>
+
+          <!-- Tags thématiques -->
+          <div class="article-tags">
+            <span class="article-tag">Outils Dev</span>
+            <span class="article-tag">VS Code</span>
+            <span class="article-tag">HTML &amp; CSS</span>
+            <span class="article-tag">Productivité</span>
+          </div>
+
+          <!-- Introduction -->
+          <p class="article-intro">
+            Quand tu ouvres Visual Studio Code pour la toute première fois, tu tombes immédiatement sur ce conseil omniprésent : <em>"Installe des extensions, ça va révolutionner ta vie de développeur."</em>
+            <br /><br />
+            Résultat classique ? Tu te retrouves avec 20 plugins actifs, un éditeur qui met 10 secondes à s'ouvrir, des popups et des suggestions d'autocomplétion qui clignotent partout sur ton écran, et tu ne sais même plus si c'est ton code ou l'extension qui a modifié ton fichier.
+            <br /><br />
+            Je vois ce piège se répéter chez presque tous mes élèves au démarrage. Alors voici mon setup réel : celui que j'utilise au quotidien pour coder en production et celui que je configure systématiquement avec mes élèves pour démarrer sereinement en HTML, CSS et JavaScript.
+          </p>
+
+          <div class="article-body">
+            <!-- Section 1 -->
+            <section class="article-section">
+              <h2 class="bangers-regular">Pourquoi VS Code et pas un autre éditeur ?</h2>
+              <p>
+                Avant de plonger dans les réglages, posons la question franchement : pourquoi choisir <strong>Visual Studio Code</strong> plutôt qu'un autre outil ?
+              </p>
+              <p>
+                Parce que c'est aujourd'hui le standard absolu de l'industrie du développement web. Il est développé par Microsoft, gratuit, open-source, et soutenu par une communauté gigantesque. Si tu rencontres un problème ou une interrogation, la solution existe déjà en ligne.
+              </p>
+              <p>
+                Sublime Text est ultra-léger et rapide. WebStorm de JetBrains est un monstre de puissance. Notepad++ dépanne. Mais si tu débutes et que tu cherches un éditeur moderne qui va grandir avec toi — depuis tes premières balises HTML jusqu'à tes applications fullstack complexes avec Git et des serveurs Node.js — VS Code est le choix le plus rationnel.
+              </p>
+            </section>
+
+            <!-- Section 2 -->
+            <section class="article-section">
+              <h2 class="bangers-regular">La configuration de base (avant toute extension)</h2>
+              <p>
+                Avant de te précipiter dans l'onglet des extensions, il y a deux réglages intégrés à faire dans les paramètres natifs de VS Code qui vont t'économiser des heures d'énervement :
+              </p>
+              <ol>
+                <li>
+                  <strong>Active la sauvegarde automatique (Auto Save) :</strong><br />
+                  Va dans <code>Fichier → Préférences → Paramètres</code> (ou <code>Ctrl + ,</code> / <code>Cmd + ,</code>), cherche <em>Auto Save</em> et choisis <code>afterDelay</code>.
+                  <p>
+                    Pourquoi ? Parce que l'erreur la plus fréquente du débutant est de modifier du CSS, de retourner sur son navigateur, de rafraîchir en boucle et de paniquer parce que rien ne change... tout simplement parce que le fichier n'avait pas été sauvegardé. Même des développeurs expérimentés perdent encore du temps avec ça. Avec <code>afterDelay</code>, chaque modification est enregistrée automatiquement 1 seconde après la frappe.
+                  </p>
+                </li>
+                <li>
+                  <strong>Ajuste la taille de police et le confort visuel :</strong><br />
+                  Tu vas passer des centaines d'heures devant cet éditeur. Régler une taille de police lisible (14px ou 16px selon la résolution de ton moniteur) et activer le retour à la ligne automatique (<code>editor.wordWrap: "on"</code>) évite de devoir scroller horizontalement pour lire ton code. Un bon contraste réduit la fatigue oculaire de moitié.
+                </li>
+              </ol>
+            </section>
+
+            <!-- Section 3 -->
+            <section class="article-section">
+              <h2 class="bangers-regular">Les 5 extensions indispensables (et uniquement celles-là)</h2>
+              <p>
+                Sur le marketplace de VS Code, il y a plus de 50 000 extensions disponibles. Pour débuter efficacement sans polluer ton espace de travail, <strong>tu n'en as besoin que de 5</strong>. Pas une de plus.
+              </p>
+
+              <h3>1. Prettier — Code Formatter</h3>
+              <p>
+                <strong>Ce que ça fait :</strong> Prettier réindente et formate ton code automatiquement à chaque sauvegarde. Les espaces manquants, les balises décalées, les guillemets simples ou doubles : tout est aligné au millimètre selon les règles du clean code.
+              </p>
+              <p>
+                <strong>Pourquoi c'est vital quand on débute :</strong> tu peux te concentrer à 100% sur la logique de ton code plutôt que de passer 15 minutes à aligner des balises à la main avec la touche tabulation. Et un code propre te permet de repérer instantanément une balise mal fermée.
+              </p>
+
+              <h3>2. Live Server</h3>
+              <p>
+                <strong>Ce que ça fait :</strong> Live Server lance un mini serveur web local sur ton ordinateur et recharge automatiquement la page dans ton navigateur dès que tu modifies un fichier HTML, CSS ou JavaScript.
+              </p>
+              <p>
+                <strong>Pourquoi c'est vital quand on débute :</strong> le feedback visuel instantané est le premier moteur de motivation. Tu changes une marge ou une couleur dans ton CSS, tu sauvegardes, et le résultat apparaît instantanément à l'écran sans que tu aies besoin de cliquer sur le bouton "Recharger" du navigateur.
+              </p>
+
+              <h3>3. HTML CSS Support</h3>
+              <p>
+                <strong>Ce que ça fait :</strong> cette extension analyse tes feuilles de style CSS et propose l'autocomplétion de tes noms de classes quand tu écris tes attributs <code>class="..."</code> dans ton fichier HTML.
+              </p>
+              <p>
+                <strong>Pourquoi c'est vital quand on débute :</strong> la faute de frappe est la cause n°1 des bugs invisibles. Si tu as nommé ta classe <code>.card-feature</code> dans ton CSS et que tu tapes <code>class="card-features"</code> dans ton HTML avec un "s", ton style ne s'appliquera pas et tu chercheras pourquoi pendant 40 minutes. Cette extension élimine ce problème à la racine.
+              </p>
+
+              <h3>4. Error Lens</h3>
+              <p>
+                <strong>Ce que ça fait :</strong> au lieu de masquer les avertissements et les erreurs de syntaxe dans un petit onglet "Problèmes" discret tout en bas de l'écran, Error Lens affiche le message d'erreur directement à droite de la ligne concernée, surligné en rouge ou en orange.
+              </p>
+              <p>
+                <strong>Pourquoi c'est vital quand on débute :</strong> tu vois immédiatement où se trouve l'accolade manquante ou la coquille de syntaxe sans avoir à fouiller dans un panneau de logs.
+              </p>
+
+              <h3>5. One Dark Pro (Thème visuel)</h3>
+              <p>
+                <strong>Ce que ça fait :</strong> applique une palette de couleurs sombres soignée et une coloration syntaxique ultra-lisible.
+              </p>
+              <p>
+                <strong>Pourquoi c'est vital quand on débute :</strong> la coloration syntaxique n'est pas juste un gadget esthétique. Elle t'aide visuellement à faire la différence entre un sélecteur CSS, une propriété, une chaîne de caractères (string) et un nombre. One Dark Pro offre un contraste équilibré qui respecte les yeux.
+              </p>
+            </section>
+
+            <!-- Section 4 -->
+            <section class="article-section">
+              <h2 class="bangers-regular">Ce que je n'installe surtout pas — et pourquoi</h2>
+              <p>
+                Savoir quoi <em>ne pas installer</em> est presque plus important que la liste des plugins utiles. Voici ce que je refuse catégoriquement d'installer sur les postes des débutants :
+              </p>
+              <ul>
+                <li>
+                  <strong>GitHub Copilot ou assistants IA intégrés :</strong> quand tu apprends à coder, générer du code par IA que tu es incapable de lire ou d'expliquer est le meilleur moyen de rester coincé au niveau zéro. L'IA dans l'éditeur t'empêche de développer ta propre mémoire musculaire. Apprends d'abord à écrire tes boucles et tes balises toi-même ; les assistants IA ne deviendront utiles que lorsque tu sauras relire et corriger leurs propositions.
+                </li>
+                <li>
+                  <strong>Emmet :</strong> inutile de l'installer, VS Code intègre déjà toute la syntaxe Emmet nativement ! Tu tapes <code>div.card>h2+p</code> puis Tab, et ton squelette HTML est généré d'office.
+                </li>
+                <li>
+                  <strong>Bracket Pair Colorizer :</strong> cette extension était très populaire il y a quelques années, mais elle a été entièrement intégrée de façon native dans le cœur de VS Code (depuis la version 1.60). L'installer aujourd'hui ne fait que ralentir ton éditeur.
+                </li>
+                <li>
+                  <strong>Auto Rename Tag :</strong> cette fonctionnalité est également disponible nativement dans les réglages de VS Code via l'option <code>editor.linkedEditing</code>. Pas besoin d'extension externe.
+                </li>
+                <li>
+                  <strong>ESLint :</strong> un outil fantastique pour les projets d'équipe en entreprise, mais une usine à gaz pour un débutant complet. Au début, tu vas passer plus de temps à te battre contre les règles de formatage d'ESLint qu'à apprendre à manipuler le DOM en JavaScript.
+                </li>
+              </ul>
+            </section>
+
+            <!-- Section 5 -->
+            <section class="article-section">
+              <h2 class="bangers-regular">Mon settings.json complet pour débutant</h2>
+              <p>
+                Pour appliquer ces réglages en 30 secondes, ouvre la palette de commandes avec <code>Ctrl + Shift + P</code> (ou <code>Cmd + Shift + P</code> sur Mac), tape <strong>"Preferences: Open User Settings (JSON)"</strong> et colle cette configuration propre :
+              </p>
+
+              <pre><code style="display:block; padding: 1.25rem; background: #070e18; color: #00ff87; border-radius: 8px; font-family: monospace; font-size: 0.9rem; line-height: 1.6; overflow-x: auto;">{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.fontSize": 14,
+  "editor.tabSize": 2,
+  "editor.wordWrap": "on",
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.linkedEditing": true,
+  "editor.minimap.enabled": false,
+  "workbench.colorTheme": "One Dark Pro"
+}</code></pre>
+
+              <p>
+                <strong>Deux détails capitaux dans cette config :</strong>
+              </p>
+              <ul>
+                <li>
+                  <code>editor.minimap.enabled: false</code> : la mini-carte de code affichée tout à droite ne sert strictement à rien sur des fichiers de moins de 300 lignes. La désactiver te fait gagner 15% de largeur d'écran utile.
+                </li>
+                <li>
+                  <code>editor.linkedEditing: true</code> : renomme automatiquement la balise fermante quand tu modifies la balise ouvrante correspondante, sans aucune extension tierce.
+                </li>
+              </ul>
+            </section>
+
+            <!-- Section 6 -->
+            <section class="article-section">
+              <h2 class="bangers-regular">Un dernier truc qui change tout</h2>
+              <p>
+                Garde toujours cette réalité en tête : <strong>ce n'est pas ton éditeur ou tes extensions qui feront de toi un bon développeur</strong>. Ce qui compte, c'est ce que tu codes avec.
+              </p>
+              <p>
+                J'ai vu des personnes passer deux journées entières à customiser des icônes, tester 12 polices d'écriture avec ligatures et configurer des plugins ésotériques sans jamais écrire une seule ligne de HTML fonctionnelle. Et à l'inverse, j'ai vu des élèves ouvrir le simple bloc-notes et coder leur première landing page en une après-midi.
+              </p>
+              <p>
+                Un bon setup doit se faire oublier. Il doit prendre 10 minutes à régler au début, et ensuite tu fermes le panneau des extensions pour ne plus jamais y penser.
+              </p>
+              <p>
+                Une fois ton éditeur prêt, il te reste un dernier outil indispensable à apprivoiser dans le terminal intégré de VS Code : le gestionnaire de versions. Si ce mot te semble barbare, découvre notre guide pas à pas : <a href="blog/git-explique-debutant-versioning" style="color: #047857; font-weight: 600; text-decoration: underline;">Git expliqué à quelqu'un qui n'a jamais entendu parler de versioning</a>.
+              </p>
+              <p>
+                Et si tu te demandes encore si tu as les capacités intellectuelles pour te lancer ou si ton passé scolaire va te bloquer, lis notre mise au point honnête : <a href="blog/faut-il-etre-bon-en-maths-pour-apprendre-a-coder" style="color: #047857; font-weight: 600; text-decoration: underline;">Faut-il être bon en maths pour apprendre à coder ? (Réponse d'un ingénieur)</a>.
+              </p>
+            </section>
+
+            <!-- Encadré d'appel à l'action contextuel -->
+            <aside class="article-cta-box">
+              <div class="article-cta-box__content">
+                <span class="section-tag" style="background: rgba(0, 255, 135, 0.15); color: #00ff87;">Passe à l'action</span>
+                <h3 class="bangers-regular">Prêt à coder tes premiers vrais projets ?</h3>
+                <p class="poppins-regular">
+                  Dans le Pack Starter NoSeumCode, on installe VS Code ensemble dès la première heure et tu construis 2 projets complets de portfolio guidé par un ingénieur senior.
+                </p>
+                <div class="article-cta-box__buttons">
+                  <a href="formations/starter" class="button button__primary bangers-regular">
+                    Découvrir le Pack Starter (89 €) →
+                  </a>
+                  <button type="button" popovertarget="hubspot-popover" class="button button__secondary bangers-regular">
+                    Télécharger le Programme (PDF)
+                  </button>
+                </div>
+              </div>
+            </aside>
+          </div>
+
+          <!-- Carte Auteur Senior -->
+          <section class="article-author-card">
+            <div class="article-author-card__avatar">
+              <img
+                src="images/mentor-cedric.webp"
+                alt="Cédric Ragot, formateur et mentor NoSeumCode"
+                width="80"
+                height="80"
+                loading="lazy"
+              />
+            </div>
+            <div class="article-author-card__info">
+              <h3 class="bangers-regular">Cédric Ragot</h3>
+              <p class="article-author-card__role">Ingénieur Senior &amp; Formateur NoSeumCode</p>
+              <p class="article-author-card__bio">
+                Ingénieur senior et formateur, il a conçu et déployé des plateformes web complexes en production. Il accompagne aujourd'hui les débutants qui veulent apprendre à coder proprement avec des outils professionnels, sans gadgets inutiles et sans le seum.
+              </p>
+            </div>
+          </section>
+
+          <!-- Liens de navigation bas de page -->
+          <div style="margin-top: 3.5rem; text-align: center;">
+            <a href="index.html#blog" class="back-link bangers-regular" style="font-size: 1.15rem;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+              ← Voir tous les articles du blog
+            </a>
+          </div>
+        </article>
+      </div>
+    </main>
+
+    <!-- Footer injecté dynamiquement -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Modales & Popovers partagés -->
+    <div id="popovers-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="js/analytics.js?v=sprint16"></script>
+    <script src="js/header.min.js?v=sprint16"></script>
+    <script src="js/popover-hubspot.min.js?v=sprint16"></script>
+  </body>
+</html>

@@ -38,9 +38,27 @@
   </url>
   <url>
     <loc>https://noseumcode.fr/article.html</loc>
-    <lastmod>2026-09-28</lastmod>
+    <lastmod>2026-09-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://noseumcode.fr/blog/faut-il-etre-bon-en-maths-pour-apprendre-a-coder</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://noseumcode.fr/blog/setup-vscode-debutant-plugins-utiles</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://noseumcode.fr/blog/git-explique-debutant-versioning</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://noseumcode.fr/mentions-legales.html</loc>
