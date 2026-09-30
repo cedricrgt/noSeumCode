@@ -1161,6 +1161,29 @@ _Chronologique — plus récent en bas_
    - Base de données locale (`frontend/data/articles.json`) : Enregistrement de la fiche article complète.
    - Sitemap XML (`frontend/sitemap.xml`) : Déclaration de l'URL canonique avec priorité 0.8.
 
+---
+
+### 2026-09-30 — Articles Blog : Setup VS Code Débutant & Git Expliqué Sans Jargon
+**Conversation**: `bee834aa-93e8-46e7-b63c-62b3900ccf51`  
+**Branche**: `feat/sprint-16-lead-magnet-onboarding-blog`
+
+#### Ce qui a changé :
+1. **Création de la page statique sémantique Setup VS Code (`frontend/blog/setup-vscode-debutant-plugins-utiles.html`)** :
+   - Contenu complet rédigé sous la plume de Cédric Ragot détaillant la configuration minimale et les 5 seules extensions indispensables (Prettier, Live Server, Auto Rename Tag, Color Highlight, One Dark Pro) pour débuter sans surcharge ni ralentissement.
+   - Balisage Schema.org JSON-LD complet intégrant `Article`, `BreadcrumbList` et `HowTo` pour l'obtention de rich snippets Google.
+   - Métadonnées SEO `<title>`, meta description, balises Open Graph, Twitter Cards et balise canonique.
+   - Encadré CTA contextuel vers le Pack Starter et le programme PDF, et carte auteur senior.
+2. **Création de la page statique sémantique Git pour Débutant (`frontend/blog/git-explique-debutant-versioning.html`)** :
+   - Contenu complet sous la plume de Cédric Ragot expliquant le versioning par la métaphore des points de sauvegarde de jeux vidéo, clarifiant la distinction Git vs GitHub, et détaillant les 6 commandes indispensables (`init`, `status`, `add`, `commit`, `push`, `log`).
+   - Balisage Schema.org JSON-LD complet (`Article`, `BreadcrumbList`, `HowTo`).
+   - Métadonnées SEO, encadré CTA contextuel vers le Pack Starter, et carte auteur senior.
+3. **Maillage Interne & Découvrabilité** :
+   - Interconnexion bidirectionnelle entre les 3 articles du cocon blog (`faut-il-etre-bon-en-maths-pour-apprendre-a-coder.html`, `setup-vscode-debutant-plugins-utiles.html`, `git-explique-debutant-versioning.html`).
+   - Page formation Pack Starter (`frontend/formations/starter.html`) : Ajout de liens vers le guide Git dans la section syllabus et vers le guide VS Code dans la FAQ débutant.
+   - Base de données locale (`frontend/data/articles.json`) : Déclaration des deux nouveaux articles.
+   - Homepage (`frontend/index.html`) : Mise à jour de la carte Git vers la nouvelle URL propre `/blog/git-explique-debutant-versioning` et ajout d'une carte dédiée pour le guide VS Code.
+   - Plan de site XML (`frontend/sitemap.xml`) : Enregistrement des deux URLs canoniques avec priorité 0.8.
+
 
 
 
