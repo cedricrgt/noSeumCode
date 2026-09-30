@@ -479,7 +479,7 @@ html {
 }
 
 .card__chevron-darken {
-  stroke: var(--primary-green);
+  stroke: #047857;
 }
 
 .card__link:hover .card__chevron,
@@ -549,7 +549,7 @@ html {
 
 .popover__tagline {
   font-size: 1.1rem;
-  color: #2ecc71;
+  color: #047857;
   font-weight: 600;
 }
 
@@ -557,7 +557,7 @@ html {
   font-size: 1.2rem;
   margin-bottom: 1rem;
   color: #1a1a1a;
-  border-bottom: 2px solid #2ecc71;
+  border-bottom: 2px solid #047857;
   display: inline-block;
   padding-bottom: 0.2rem;
 }
@@ -581,7 +581,7 @@ html {
 }
 
 .popover__syllabus-icon {
-  color: #2ecc71;
+  color: #047857;
   flex-shrink: 0;
   margin-top: 0.2rem;
 }
@@ -614,12 +614,12 @@ html {
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: #999;
+  color: #475569;
   transition: color 0.3s;
 }
 
 .popover__close:hover {
-  color: #333;
+  color: #0a1628;
 }
 #hubspot-popover {
   max-width: 600px;
@@ -1713,6 +1713,11 @@ html {
 .card-package .package-tagline {
   text-align: left;
   line-height: 1.6;
+  color: #475569;
+}
+
+.card-featured .package-tagline {
+  color: #cbd5e1;
 }
 
 .card-package .package-price {
@@ -1732,6 +1737,11 @@ html {
   text-align: center;
   font-size: 0.75rem;
   margin-top: 0.5rem;
+  color: #475569;
+}
+
+.card-featured .package-reassurance {
+  color: #cbd5e1;
 }
 
 .card-featured {
