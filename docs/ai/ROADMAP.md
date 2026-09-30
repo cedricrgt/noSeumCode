@@ -21,7 +21,7 @@
 | **Sprint 10** | **Optimisation PageSpeed & Core Web Vitals** | LCP < 1.5s, éradication CLS 0.175 sur Hero, déferrement Stripe & GPU compositing | ✅ **Terminé** |
 | **Sprint 11** | **Intégration Discord & Communauté** | OAuth2 Discord (`identify`, `email`, `guilds.join`), liaison compte, auto-join guild et synchronisation dynamique des rôles selon le palier (Starter, Web, VIP) | ✅ **Terminé** |
 | **Sprint 12** | **Web Performance, BFCache & Cache Policy** | Déblocage BFCache (.htaccess), cache 1 an CSS/JS, versioning assets, élagage Google Fonts (-35Ko) | ✅ **Terminé** |
-| **Sprint 13** | **Socle Technique, Sécurité Serveur & Assets** | Déblocage CSP HubSpot, cache Apache étendu, SEO technique (robots.txt, sitemap), compression WebP (>5 Mo) et 3 pages légales | 📋 **Planifié** |
+| **Sprint 13** | **Socle Technique, Sécurité Serveur & Assets** | Déblocage CSP HubSpot, cache Apache étendu, SEO technique (robots.txt, sitemap), compression WebP (>5 Mo) et 3 pages légales | ✅ **Terminé** |
 | **Sprint 14** | **Nouvelle Architecture des Offres (3 Packages)** | Modélisation catalogue `cours.js` (Starter 89 €, Web Pro 179 €, VIP 389 €), alignement Stripe, navigation `header.html` et page parcours | 📋 **Planifié** |
 | **Sprint 15** | **Refonte Copywriting Homepage & SEO Sémantique** | Copywriting validé, H1/Hero percutant, suppression du double regard, grille des 3 offres `#parcours`, FAQ 6 questions et mots-clés cibles | 📋 **Planifié** |
 | **Sprint 16** | **Tunnel Lead Magnet, Onboarding & Cocon Blog** | Sécurisation `thanks.html` (liens PDF + upsell), onboarding `success.html`, gabarit cocon blog (`article.html`) et recette globale | 📋 **Planifié** |
@@ -103,10 +103,10 @@ gantt
     Élagage Fonts & Suppression 404(12.3):done, s12_3, 2026-09-29, 2026-09-30
 
     section Sprint 13 : Socle Technique & Assets
-    Déblocage CSP HubSpot & Cache (13.1) :active, s13_1, 2026-09-30, 2026-10-01
-    Hygiène SEO robots.txt/sitemap (13.2):s13_2, 2026-09-30, 2026-10-01
-    Compression WebP & Favicon (13.3)    :s13_3, 2026-09-30, 2026-10-01
-    Pages Légales & Footer (13.4)        :s13_4, 2026-09-30, 2026-10-01
+    Déblocage CSP HubSpot & Cache (13.1) :done, s13_1, 2026-09-30, 2026-09-30
+    Hygiène SEO robots.txt/sitemap (13.2):done, s13_2, 2026-09-30, 2026-09-30
+    Compression WebP & Favicon (13.3)    :done, s13_3, 2026-09-30, 2026-09-30
+    Pages Légales & Footer (13.4)        :done, s13_4, 2026-09-30, 2026-09-30
 
     section Sprint 14 : Nouvelle Gamme 3 Packages
     Modèle Catalogue cours.js & Stripe (14.1):s14_1, 2026-10-01, 2026-10-02
@@ -289,7 +289,7 @@ gantt
 > 📖 **Spécifications Détaillées & Textes Validés (Sprints 13 à 16)** :  
 > L'ensemble des textes validés, blocs HTML prêts au copier-coller, JSON Stripe, CSP et matrice de mots-clés sont consignés dans [`docs/specs/2026-09-briefing-offres-seo-copywriting.md`](file:///d:/Archive-mac/dev/code-bangers/docs/specs/2026-09-briefing-offres-seo-copywriting.md).
 
-### Sprint 13 : Socle Technique, Sécurité Serveur & Assainissement des Assets (Planifié)
+### Sprint 13 : Socle Technique, Sécurité Serveur & Assainissement des Assets (Terminé)
 - **13.1 Déblocage CSP HubSpot & Directives de Cache Apache (`frontend/.htaccess`)** :
   - Mise à jour stricte du Content-Security-Policy autorisant l'affichage et la soumission du popover HubSpot sans erreur bloquante en console :
     - `script-src` : ajout de `https://js.stripe.com`, `https://js-eu1.hsforms.net`, `https://js.hsforms.net`.
