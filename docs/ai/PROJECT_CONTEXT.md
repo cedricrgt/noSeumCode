@@ -1,6 +1,6 @@
 # PROJECT_CONTEXT.md — NoSeumCode
 
-_Last updated: 2026-09-29 | Conversation: e1260507-cd0d-4086-9f94-d405535e6d71_
+_Last updated: 2026-09-30 | Conversation: d2701bcf-ed1f-4e38-bb5e-52a921b4ec35_
 
 ## Project Overview
 
@@ -48,9 +48,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `feat/web-performance-caching-bfcache`
-## Current State: Sprints 1 à 11 validés. Sprint 12 en cours : Optimisations Web Performance, déblocage BFCache sur Apache, cache 1 an sur les assets statiques, versioning d'assets et élagage des polices Google Fonts. 132 tests Spring Boot réussis (0 échec).
-## Next Steps: Finalisation Sprint 12, merge PR, déploiement sur staging et contrôle du nouveau score GTmetrix.
+## Active Branch: `docs/roadmap-sprints-seo-copywriting-offers`
+## Current State: Sprints 1 à 12 validés (PR #94 mergée). Planification des Sprints 13 à 16 : Refonte SEO, Copywriting & Offres NoSeumCode (3 Packages, déblocage technique CSP/cache Apache, assainissement images et pages légales). Kanban GitHub Project 1 mis à jour avec les 4 nouveaux Sprints en statut Todo.
+## Next Steps: Lancement du Sprint 13 dans une conversation dédiée (Socle technique, CSP HubSpot, cache Apache, SEO robots/sitemap, compression WebP et 3 pages légales).
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN

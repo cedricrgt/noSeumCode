@@ -1,6 +1,6 @@
 # ROADMAP.md — Feuille de Route Commerciale NoSeumCode
 
-> _Dernière mise à jour : 2026-09-27_  
+> _Dernière mise à jour : 2026-09-30_  
 > _Objectif : Transformer le MVP NoSeumCode en produit final, sécurisé, commercialisable et prêt pour la production._
 
 ---
@@ -20,7 +20,11 @@
 | **Sprint 9** | **Copywriting & Rassurance Parents/Jeunes** | Refonte Hero, section Ton Mentor, rassurance parents, Analytics RGPD cookieless | ✅ **Terminé** |
 | **Sprint 10** | **Optimisation PageSpeed & Core Web Vitals** | LCP < 1.5s, éradication CLS 0.175 sur Hero, déferrement Stripe & GPU compositing | ✅ **Terminé** |
 | **Sprint 11** | **Intégration Discord & Communauté** | OAuth2 Discord (`identify`, `email`, `guilds.join`), liaison compte, auto-join guild et synchronisation dynamique des rôles selon le palier (Starter, Web, VIP) | ✅ **Terminé** |
-| **Sprint 12** | **Web Performance, BFCache & Cache Policy** | Déblocage BFCache (.htaccess), cache 1 an CSS/JS, versioning assets, élagage Google Fonts (-35Ko) | 🔄 **En cours** |
+| **Sprint 12** | **Web Performance, BFCache & Cache Policy** | Déblocage BFCache (.htaccess), cache 1 an CSS/JS, versioning assets, élagage Google Fonts (-35Ko) | ✅ **Terminé** |
+| **Sprint 13** | **Socle Technique, Sécurité Serveur & Assets** | Déblocage CSP HubSpot, cache Apache étendu, SEO technique (robots.txt, sitemap), compression WebP (>5 Mo) et 3 pages légales | 📋 **Planifié** |
+| **Sprint 14** | **Nouvelle Architecture des Offres (3 Packages)** | Modélisation catalogue `cours.js` (Starter 89 €, Web Pro 179 €, VIP 389 €), alignement Stripe, navigation `header.html` et page parcours | 📋 **Planifié** |
+| **Sprint 15** | **Refonte Copywriting Homepage & SEO Sémantique** | Copywriting validé, H1/Hero percutant, suppression du double regard, grille des 3 offres `#parcours`, FAQ 6 questions et mots-clés cibles | 📋 **Planifié** |
+| **Sprint 16** | **Tunnel Lead Magnet, Onboarding & Cocon Blog** | Sécurisation `thanks.html` (liens PDF + upsell), onboarding `success.html`, gabarit cocon blog (`article.html`) et recette globale | 📋 **Planifié** |
 
 ---
 
@@ -94,9 +98,33 @@ gantt
     Dashboard UI & Unlink/Sync (11.4)    :done, s11_4, 2026-09-28, 2026-09-28
 
     section Sprint 12 : Web Performance & BFCache
-    Déblocage BFCache Apache (12.1)      :active, s12_1, 2026-09-29, 2026-09-30
-    Cache 1 an CSS/JS & Versioning (12.2):active, s12_2, 2026-09-29, 2026-09-30
-    Élagage Fonts & Suppression 404(12.3):active, s12_3, 2026-09-29, 2026-09-30
+    Déblocage BFCache Apache (12.1)      :done, s12_1, 2026-09-29, 2026-09-30
+    Cache 1 an CSS/JS & Versioning (12.2):done, s12_2, 2026-09-29, 2026-09-30
+    Élagage Fonts & Suppression 404(12.3):done, s12_3, 2026-09-29, 2026-09-30
+
+    section Sprint 13 : Socle Technique & Assets
+    Déblocage CSP HubSpot & Cache (13.1) :active, s13_1, 2026-09-30, 2026-10-01
+    Hygiène SEO robots.txt/sitemap (13.2):s13_2, 2026-09-30, 2026-10-01
+    Compression WebP & Favicon (13.3)    :s13_3, 2026-09-30, 2026-10-01
+    Pages Légales & Footer (13.4)        :s13_4, 2026-09-30, 2026-10-01
+
+    section Sprint 14 : Nouvelle Gamme 3 Packages
+    Modèle Catalogue cours.js & Stripe (14.1):s14_1, 2026-10-01, 2026-10-02
+    Refonte Page Parcours & Niveaux (14.2)   :s14_2, 2026-10-01, 2026-10-02
+    Navigation Globale & Header (14.3)       :s14_3, 2026-10-01, 2026-10-02
+
+    section Sprint 15 : Copywriting & SEO Homepage
+    Métadonnées & Matrice Mots-Clés (15.1)   :s15_1, 2026-10-02, 2026-10-04
+    Hero H1 Sans le Seum & Trustbar (15.2)   :s15_2, 2026-10-02, 2026-10-04
+    La Méthode 3 Piliers (15.3)              :s15_3, 2026-10-02, 2026-10-04
+    Grille 3 Packages #parcours (15.4)       :s15_4, 2026-10-02, 2026-10-04
+    FAQ 6 Questions Anti-Objections (15.5)   :s15_5, 2026-10-02, 2026-10-04
+
+    section Sprint 16 : Conversion, Lead Magnet & QA
+    Lead Magnet thanks.html & Upsell (16.1)  :s16_1, 2026-10-04, 2026-10-05
+    Onboarding success.html (16.2)           :s16_2, 2026-10-04, 2026-10-05
+    Gabarit Cocon Blog & Maillage (16.3)     :s16_3, 2026-10-04, 2026-10-05
+    Recette E2E & Audit PageSpeed CWV (16.4) :s16_4, 2026-10-04, 2026-10-05
 ```
 
 ---
@@ -244,7 +272,7 @@ gantt
 
 ---
 
-### Sprint 12 : Optimisations Web Performance, BFCache & Cache Apache (En cours)
+### Sprint 12 : Optimisations Web Performance, BFCache & Cache Apache (Terminé)
 - **12.1 Déblocage BFCache sur Apache (`.htaccess`)** :
   - Remplacement de `no-store` par `no-cache, must-revalidate` sur les fichiers HTML pour débloquer la restauration instantanée (0 ms) en mémoire vive lors des navigations Précédent/Suivant, tout en garantissant la fraîcheur du contenu via revalidation HTTP 304.
   - Élimination de la transmission de l'en-tête `no-store` sur les requêtes partielles (`fetch("partials/*.html")`).
@@ -255,4 +283,99 @@ gantt
 - **12.3 Allègement des Web Fonts & Éradication des 404** :
   - Élagage des graisses superflues de Poppins (`300` et `500`) pour ne charger que `wght@400;600;700` et `Bangers` (gain estimé : ~35-40 Ko).
   - Nettoyage des appels de scripts inexistants (`js/footer.js` dans `workshops.html`, `js/popovers.js` dans les pages de formations remplacé par `js/popover-hubspot.min.js`).
+
+---
+
+### Sprint 13 : Socle Technique, Sécurité Serveur & Assainissement des Assets (Planifié)
+- **13.1 Déblocage CSP HubSpot & Directives de Cache Apache (`frontend/.htaccess`)** :
+  - Mise à jour stricte du Content-Security-Policy autorisant l'affichage et la soumission du popover HubSpot sans erreur bloquante en console :
+    - `script-src` : ajout de `https://js.stripe.com`, `https://js-eu1.hsforms.net`, `https://js.hsforms.net`.
+    - `frame-src` : `https://js.stripe.com`, `https://hooks.stripe.com`, `https://forms.eu1.hsforms.com`, `https://forms.hubspot.com`.
+    - `connect-src` : `https://api.stripe.com`, `https://api.hsforms.com`, `https://forms.hubspot.com`.
+    - `img-src` : `https://*.stripe.com`, `https://forms.hubspot.com`.
+  - Complétion des règles `mod_expires` pour le cache à 1 an (`access plus 1 year`) sur `image/webp`, `image/avif`, `image/svg+xml` et `font/woff2`.
+- **13.2 Hygiène SEO Technique (`frontend/robots.txt` & `frontend/sitemap.xml`)** :
+  - `robots.txt` : interdiction formelle d'exploration des pages privées, documents et données transactionnelles (`Disallow: /dashboard.html`, `Disallow: /thanks.html`, `Disallow: /success.html`, `Disallow: /reset-password.html`, `Disallow: /documents/`, `Disallow: /data/`), maintien de `Allow: /` et déclaration sitemap.
+  - `sitemap.xml` : suppression de `/dashboard.html` et correction canonique de la racine (`<loc>https://noseumcode.fr/</loc>` au lieu de `index.html`).
+- **13.3 Compression Lourde des Assets Graphiques & Favicon (Gain > 5 Mo)** :
+  - Remplacement de `frontend/images/courses/git.webp` (2,73 Mo) et `frontend/images/courses/javascript.webp` (1,52 Mo) par de vraies images WebP compressées à 75% de qualité (taille cible : 45 à 65 Ko).
+  - Remplacement de `frontend/images/favicon.png` (235 Ko) par une icône optimisée (<15 Ko).
+- **13.4 Création des Pages Légales & Conformité RGPD (`frontend/mentions-legales.html`, `cgv.html`, `confidentialite.html`)** :
+  - Création des 3 pages légales complètes : Mentions Légales (Éditeur, SIRET, hébergeur o2switch), CGV (Tarifs 3 packs, droit de rétractation 14 jours, médiation de la consommation), Politique de Confidentialité (RGPD, Stripe, Brevo).
+  - Mise à jour des liens du pied de page (`frontend/partials/footer.html`) pour pointer vers ces pages réelles au lieu d'ancres `index.html`.
+
+---
+
+### Sprint 14 : Nouvelle Architecture des Offres (Les 3 Packages) & Refonte Navigation (Planifié)
+- **14.1 Modélisation Catalogue des 3 Packages (`frontend/js/cours.js` & Backend Stripe)** :
+  - Abandon de la vente éclatée au profit de 3 Packages progressifs :
+    - `pack-starter` : 89 € (8900 cts), slug `pack-starter`, niveau `DEBUTANT`, Stripe `price_starter_89`, 4 modules (HTML5, CSS3, Flexbox/Grid, Responsive), 2 projets portfolio, non-mentoré.
+    - `pack-web-pro` : 179 € (17900 cts) ou 2x 95 € sans frais, slug `pack-web-pro`, niveau `INTERMEDIAIRE`, Stripe `price_webpro_179`, Starter + JS ES6+, DOM, Fetch/Async + Bonus Git & GitHub offert, 6 projets.
+    - `pack-mentorat-vip` : 389 € (38900 cts) ou 3x 135 € sans frais, slug `pack-mentorat-vip`, niveau `ACCOMPAGNE`, Stripe `price_vip_389`, Web Pro + 4h visio One-to-One, revue de code, coaching CV/GitHub, salon Discord VIP privé, 10 places/mois.
+  - Vérification de l'API Stripe Checkout backend et de `PaymentService` pour mapper ces nouveaux IDs de prix et supporter les échéanciers sans frais.
+- **14.2 Harmonisation Sémantique & Page Catalogue (`frontend/parcours.html` / `cours.html`)** :
+  - Bannissement des termes vieillots ou académiques (« Cursus », « Formations », « Nos cours ») au profit de « Nos Parcours » ou « Nos Packs ».
+  - Rendu dynamique ou statique des 3 fiches de formation avec badges de clarté, mise en valeur du Pack Web Pro (Recommandé) et options de paiement fractionné.
+- **14.3 Navigation Principale & Parcours Utilisateur (`frontend/partials/header.html` & `header.js`)** :
+  - Alignement des liens du menu principal : Accueil (`index.html`), Nos Parcours (`index.html#parcours`), La Méthode (`index.html#services`), FAQ (`index.html#faq`).
+  - Boutons d'action harmonisés : Bouton secondaire « Se connecter » et bouton primaire « Télécharger le programme ».
+
+---
+
+### Sprint 15 : Refonte Copywriting Homepage & Optimisation Sémantique SEO (Planifié)
+- **15.1 Métadonnées SEO `<head>` & Cocon Sémantique (`frontend/index.html`)** :
+  - Balise `<title>` : `NoSeumCode | Apprends le Développement Web Sans le Seum (HTML, CSS, JS)`.
+  - Meta description orientée bénéfices réels (de zéro aux premiers sites web en ligne, projets concrets, mentorat direct, garantie 14 jours).
+  - Balise canonique `https://noseumcode.fr/` et métadonnées Open Graph complètes (`og:image`, `og:title`, `og:description`, `og:url`).
+  - Intégration de la matrice sémantique : short-tail (*apprendre à coder*, *cours javascript*, *cours html css*, *créer son site web*, *formation git github*), middle-tail et long-tail.
+- **15.2 Refonte Hero & Trustbar Preuve Sociale (`frontend/index.html`)** :
+  - Tag : `<span class="section-tag">Formations Web Débutant & Intermédiaire</span>`.
+  - H1 percutant : `Apprends à coder pour de vrai. <span class="gradient-text">Sans le seum.</span>`.
+  - Paragraphe sous-titre anti-théorie et boutons CTA directs (*Voir les 3 Packs d'Apprentissage ↓* vers `#parcours`, *Télécharger le Programme (PDF)* via popover HubSpot).
+  - Puces de rassurance immédiate : *✓ Projets 100% pratiques • ✓ Accès à vie aux mises à jour • ✓ Garantie 14 jours satisfait ou remboursé*.
+  - Nouvelle Trustbar des technologies maîtrisées : HTML5 Sémantique, CSS3 & Flexbox, JavaScript ES6+, Git & GitHub, VS Code, Responsive Design.
+- **15.3 Section « La Méthode NoSeumCode » & Abandon du Double Regard** :
+  - Suppression de la scission artificielle en deux colonnes « Pour toi le jeune » vs « Pour vous les parents ». Voix unique directe, jeune, tutoyante et orientée création.
+  - Déploiement des 3 piliers :
+    1. *Zéro théorie inutile, 100% de création* (outils pro dès la première heure, interfaces réelles).
+    2. *Des projets que tu seras fier de montrer* (code en ligne, Git/GitHub, portfolio recruteurs/clients).
+    3. *Un mentor et une communauté à tes côtés* (Discord privé, support réactif, zéro blocage).
+- **15.4 Section Offres : Grille des 3 Packages (`#parcours`)** :
+  - Remplacement de l'ancienne section `#courses` par l'ID `#parcours` avec balisage exact :
+    - *Pack Starter (89 €)* : Tag « Idéal Débutant », liste à puces, bouton `initiateCourseEnrollment('pack-starter')`.
+    - *Pack Web Pro (179 €)* : Tag « Le Plus Populaire » (featured bordure verte), mention « ou 2x 95 € », bonus Git/GitHub offert, bouton `initiateCourseEnrollment('pack-web-pro')`.
+    - *Pack Mentorat VIP (389 €)* : Tag « 10 Places / Mois », mention « ou 3x 135 € », 4h mentorat visio 1-to-1, revue de code, salon Discord VIP privé.
+- **15.5 Section FAQ Anti-Objections (6 Questions Cibles)** :
+  - Remplacement des questions actuelles par les 6 réponses levant les freins réels :
+    1. Jamais codé de ma vie / débutant complet.
+    2. Faut-il être bon en maths (démystification).
+    3. Durée d'accès aux cours (accès à vie et mises à jour gratuites).
+    4. Rassurance parents (financement parent + email élève, environnement sécurisé et encadré).
+    5. Garantie 14 jours satisfait ou remboursé.
+    6. Modalités du paiement en plusieurs fois sans frais (2x et 3x via Stripe).
+
+---
+
+### Sprint 16 : Tunnel Lead Magnet, Onboarding Apprenant & Cocon Blog (Planifié)
+- **16.1 Optimisation Lead Magnet & Upsell Doux (`frontend/thanks.html`)** :
+  - Métadonnées `<meta name="robots" content="noindex, nofollow">` et titre optimisé.
+  - Réparation des 4 liens de téléchargement de documents PDF : `documents/programme-complet.pdf` (suppression de l'espace), `documents/Cours-HTML-CSS.pdf`, `documents/Premiers-pas-avec-JavaScript.pdf`, `documents/git&github.pdf` (lien réparé).
+  - Intégration de la boîte d'upsell doux sous la grille (*Envie de passer directement à la pratique ? Rejoins nos parcours dès 89 €*).
+- **16.2 Onboarding Post-Achat & Réassurance Immédiate (`frontend/success.html`)** :
+  - Métadonnées `<meta name="robots" content="noindex, nofollow">` et titre de confirmation.
+  - Séquence d'accueil en 3 étapes :
+    1. Accès à l'espace étudiant (dashboard).
+    2. Rejoindre la communauté Discord (`#nouveaux-élèves`).
+    3. Configuration de l'éditeur VS Code en moins de 10 minutes.
+  - Boutons d'action prioritaires vers le tableau de bord et Discord.
+- **16.3 Structure & Gabarit du Cocon Sémantique Blog (`frontend/article.html`)** :
+  - Modèle d'article de blog responsive et sémantique avec balisage Schema.org `Article`.
+  - Intégration de la matrice de mots-clés : requêtes pratiques apprenants (portfolio débutant, maths & code) et requêtes cibles parents/lycéens (spécialité NSI, orientation numérique).
+  - Encadré d'appel à l'action contextuel vers les packs et le téléchargement du programme.
+- **16.4 Plan de Test Global, Recette & Audit Core Web Vitals** :
+  - Test Formulaire HubSpot : popover sans erreur CSP console et réception effective de l'email.
+  - Test Téléchargements : validation HTTP 200 sur les 4 fichiers PDF dans `documents/`.
+  - Test Tunnel Stripe : vérification des montants transmis (89 €, 179 €, 389 €) pour chaque session Stripe Checkout.
+  - Audit PageSpeed & Mobile CWV : validation LCP < 2,5s sur mobile, CLS ~0.00 et persistance BFCache.
+
 
