@@ -1053,10 +1053,11 @@ _Chronologique — plus récent en bas_
    - Suppression du conteneur en rotation globale `<g class="hero__blob-text-rotate">` qui faisait tourner l'intégralité du tracé vectoriel asymétrique (`#heroBlobPath`), causant une désynchronisation géométrique majeure avec l'image statique rognée par `#heroBlobClip` (le texte traversait le visage ou flottait au loin).
    - Rétablissement du tracé statique `#heroBlobPath` parfaitement calé sur le contour géométrique de l'image étudiante.
    - Restauration des deux balises SVG natives `<textPath>` animées en continu via SMIL `<animate attributeName="startOffset">` (de 100% à 0% et de 0% à -100% sur 20s), recréant le carrousel infini fluide et parfaitement ajusté au périmètre organique du blob.
-2. **Nettoyage & Sécurisation CSS (`frontend/styles/pages/homepage/hero.css`)** :
-   - Suppression de l'animation de rotation CSS `.hero__blob-text-rotate` et `@keyframes heroBlobRotate`.
-   - Suppression de la transformation isolée au survol `#heroBlobClip { transform: scale(1.08); }` qui provoquait un débordement artificiel de l'image hors du contour du texte au hover (l'agrandissement fluide `scale(1.02)` s'applique harmonieusement sur l'ensemble du SVG parent `.hero__blob-svg:hover`).
-   - Suppression de `mix-blend-mode: overlay` sur `.hero__blob-text` au hover au profit d'une lueur néon verte (`filter: drop-shadow(0 0 6px rgba(0, 255, 135, 0.8))`) garantissant une lisibilité et un contraste constants.
+2. **Rétablissement du Comportement Initial Hover (`main`) & Rehaussement du Contraste (`frontend/styles/pages/homepage/hero.css`)** :
+   - Suppression définitive de la rotation globale `.hero__blob-text-rotate`.
+   - Restauration du comportement hover initial de `main` : agrandissement dynamique du masque de découpe `#heroBlobClip` (`scale(1.08)` avec `transform-box: view-box; transform-origin: center; transition: transform 0.4s ease-out;`). L'image s'étend ainsi vers l'extérieur de 8% et le texte défile fluidement **à l'intérieur** de l'image.
+   - Élimination de `mix-blend-mode: overlay` qui rendait le texte vert clair illisible sur le fond blanc et les teintes claires de la photo.
+   - Transition de contraste rehaussée au survol : le texte bascule en bleu nuit foncé (`fill: #070e18`) avec un contour vert néon (`stroke: var(--primary-green); stroke-width: 0.35px; paint-order: stroke fill;`) et une double ombre portée (`filter: drop-shadow(0 0 3px rgba(0, 255, 135, 0.8)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6))`), conférant un contraste maximal et une lisibilité irréprochable sur toute la surface de la photo.
 3. **Respect de l'Accessibilité & Mouvement Réduit (`frontend/js/script.js`)** :
    - Intégration de la mise en pause conditionnelle automatique des animations SMIL du SVG via `heroBlobSvg.pauseAnimations()` lorsque `prefers-reduced-motion: reduce` est actif.
 4. **Validation & Rebuild** :
