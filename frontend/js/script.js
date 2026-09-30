@@ -18,6 +18,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   cards.forEach((card) => observer.observe(card));
   sections.forEach((section) => observer.observe(section));
+
+  if (prefersReducedMotion) {
+    const heroBlobSvg = document.querySelector(".hero__blob-svg");
+    if (heroBlobSvg && typeof heroBlobSvg.pauseAnimations === "function") {
+      heroBlobSvg.pauseAnimations();
+    }
+  }
 });
 
 

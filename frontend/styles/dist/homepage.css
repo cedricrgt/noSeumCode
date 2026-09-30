@@ -1401,6 +1401,7 @@ html {
 }
 
 .hero__blob-svg #heroBlobClip {
+  transform-box: view-box;
   transform-origin: center;
   transition: transform 0.4s ease-out;
 }
@@ -1416,32 +1417,15 @@ html {
   letter-spacing: 2px;
   text-transform: uppercase;
   fill: var(--primary-green);
-  transition: fill 0.5s ease;
-}
-
-.hero__blob-text-rotate {
-  transform-origin: 100px 100px;
-  animation: heroBlobRotate 25s linear infinite;
-}
-
-@keyframes heroBlobRotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero__blob-text-rotate {
-    animation: none;
-  }
+  transition: fill 0.4s ease, stroke 0.4s ease, filter 0.4s ease;
 }
 
 .hero__blob-svg:hover .hero__blob-text {
-  fill: var(--primary-green);
-  mix-blend-mode: overlay;
+  fill: #070e18;
+  stroke: var(--primary-green);
+  stroke-width: 0.35px;
+  paint-order: stroke fill;
+  filter: drop-shadow(0 0 3px rgba(0, 255, 135, 0.8)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
 }
 
 .circles-container {

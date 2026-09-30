@@ -1044,6 +1044,26 @@ _Chronologique — plus récent en bas_
 
 ---
 
+### 2026-09-30 — Fix Animation Texte Contours Visuel Hero (Smiling Girl Blob TextPath)
+**Conversation**: `e8ec6f84-8fe9-4797-b252-c7c4ae21f579`  
+**Branche**: `fix/hero-blob-text-contour`
+
+#### Ce qui a changé :
+1. **Rétablissement du Défilement Continu le Long du Contour SVG (`frontend/index.html`)** :
+   - Suppression du conteneur en rotation globale `<g class="hero__blob-text-rotate">` qui faisait tourner l'intégralité du tracé vectoriel asymétrique (`#heroBlobPath`), causant une désynchronisation géométrique majeure avec l'image statique rognée par `#heroBlobClip` (le texte traversait le visage ou flottait au loin).
+   - Rétablissement du tracé statique `#heroBlobPath` parfaitement calé sur le contour géométrique de l'image étudiante.
+   - Restauration des deux balises SVG natives `<textPath>` animées en continu via SMIL `<animate attributeName="startOffset">` (de 100% à 0% et de 0% à -100% sur 20s), recréant le carrousel infini fluide et parfaitement ajusté au périmètre organique du blob.
+2. **Rétablissement du Comportement Initial Hover (`main`) & Rehaussement du Contraste (`frontend/styles/pages/homepage/hero.css`)** :
+   - Suppression définitive de la rotation globale `.hero__blob-text-rotate`.
+   - Restauration du comportement hover initial de `main` : agrandissement dynamique du masque de découpe `#heroBlobClip` (`scale(1.08)` avec `transform-box: view-box; transform-origin: center; transition: transform 0.4s ease-out;`). L'image s'étend ainsi vers l'extérieur de 8% et le texte défile fluidement **à l'intérieur** de l'image.
+   - Élimination de `mix-blend-mode: overlay` qui rendait le texte vert clair illisible sur le fond blanc et les teintes claires de la photo.
+   - Transition de contraste rehaussée au survol : le texte bascule en bleu nuit foncé (`fill: #070e18`) avec un contour vert néon (`stroke: var(--primary-green); stroke-width: 0.35px; paint-order: stroke fill;`) et une double ombre portée (`filter: drop-shadow(0 0 3px rgba(0, 255, 135, 0.8)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6))`), conférant un contraste maximal et une lisibilité irréprochable sur toute la surface de la photo.
+3. **Respect de l'Accessibilité & Mouvement Réduit (`frontend/js/script.js`)** :
+   - Intégration de la mise en pause conditionnelle automatique des animations SMIL du SVG via `heroBlobSvg.pauseAnimations()` lorsque `prefers-reduced-motion: reduce` est actif.
+4. **Validation & Rebuild** :
+   - Bundles CSS et JS minifiés régénérés avec succès (`node build.js`).
+   - Contrôle syntaxique Node.js validé (`node -c`).
+   - Tests backend Java compilés avec succès (`mvnw.cmd test-compile`).
 ### 2026-09-30 — Fix Accessibilité & Ratios de Contraste Couleurs (WCAG 2.2 AA / AAA & Règle 21)
 **Conversation**: `e8ec6f84-8fe9-4797-b252-c7c4ae21f579`  
 **Branche**: `fix/wcag-contrast-ratios-compliance`
@@ -1096,4 +1116,6 @@ _Chronologique — plus récent en bas_
 5. **Rebuild & Tests** :
    - Recompilation réussie de tous les bundles CSS/JS minifiés (`node build.js`).
    - Compilation et validation des tests backend Java réussies (`mvnw.cmd test-compile`).
-
+
+
+
