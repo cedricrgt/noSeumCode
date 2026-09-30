@@ -115,6 +115,16 @@
   transform: scale(1.02);
 }
 
+.hero__blob-svg #heroBlobClip {
+  transform-box: view-box;
+  transform-origin: center;
+  transition: transform 0.4s ease-out;
+}
+
+.hero__blob-svg:hover #heroBlobClip {
+  transform: scale(1.08) translate(0%, 0%);
+}
+
 .hero__blob-text {
   font-family: "Bangers", cursive;
   font-size: 9px;
@@ -122,12 +132,15 @@
   letter-spacing: 2px;
   text-transform: uppercase;
   fill: var(--primary-green);
-  transition: fill 0.5s ease;
+  transition: fill 0.4s ease, stroke 0.4s ease, filter 0.4s ease;
 }
 
 .hero__blob-svg:hover .hero__blob-text {
-  fill: var(--primary-green);
-  filter: drop-shadow(0 0 6px rgba(0, 255, 135, 0.8));
+  fill: #070e18;
+  stroke: var(--primary-green);
+  stroke-width: 0.35px;
+  paint-order: stroke fill;
+  filter: drop-shadow(0 0 3px rgba(0, 255, 135, 0.8)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
 }
 
 .circles-container {
