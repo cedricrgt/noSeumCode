@@ -934,4 +934,41 @@ _Chronologique — plus récent en bas_
 5. **Validation Locale & Tests** :
    - Recompilation et minification des bundles CSS et JS sans erreur (`node build.js`).
    - Suite complète Spring Boot validée via `.\mvnw.cmd test` : 132 tests réussis (`BUILD SUCCESS`, 0 erreur, 0 échec).
+
+---
+
+### 2026-09-30 — Sprint 14 : Nouvelle Architecture des Offres (Les 3 Packages) & Refonte Navigation
+**Conversation**: `e8ec6f84-8fe9-4797-b252-c7c4ae21f579`  
+**Branche**: `feat/sprint-14-offers-architecture-navigation`
+
+#### Ce qui a changé :
+1. **Modélisation Catalogue & Base de Données des 3 Packages (`V017__align_three_packages_catalog_pricing.sql`)** :
+   - Migration Flyway V017 alignant les 3 offres officielles progressives :
+     * **Pack Starter** (`pack-starter`, 89 € / `price_in_cents = 8900`, niveau `DEBUTANT`, tier `STARTER`) : structure HTML5, design CSS3, Flexbox & Grid, responsive mobile et 2 projets portfolio complets.
+     * **Pack Web Pro** (`pack-web-pro`, 179 € / `price_in_cents = 17900`, niveau `INTERMEDIAIRE`, tier `WEB`) : tout le Pack Starter + JavaScript ES6+, manipulation du DOM, requêtes API et bonus Git & GitHub offert (6 projets portfolio).
+     * **Pack Mentorat VIP** (`pack-mentorat-vip`, 389 € / `price_in_cents = 38900`, niveau `ACCOMPAGNE`, tier `VIP`) : tout le Pack Web Pro + 4h de mentorat individuel en visio, revues de code ligne par ligne et coaching carrière (10 places max/mois).
+2. **Backend Stripe & Passerelle de Paiement (`StripeGatewayImpl.java` & `PaymentCheckoutServiceTest.java`)** :
+   - Synchronisation des montants de repli dans `StripeGatewayImpl.java` (VIP: 38900L, STARTER: 8900L, WEB: 17900L).
+   - Prise en charge native de Klarna pour les paiements fractionnés (2x 95 € sans frais et 3x 135 € sans frais).
+   - Mise à jour et validation des tests unitaires `PaymentCheckoutServiceTest` (Starter 89 €, Web Pro 179 €, 16 tests passants).
+3. **Composant Catalogue Frontend & Salle de Cours (`frontend/js/cours.js`)** :
+   - Mise à jour de `formatCoursePrice` (Starter 89 €, Web Pro 179 €, Mentorat VIP 389 €).
+   - Alignement du mapping API et du seed de repli `allCourses` sur les 3 nouveaux packages.
+   - Refonte de `renderCourseCatalog()` : mise en valeur du Pack Web Pro (Recommandé / Le Plus Populaire avec bordure verte et shadow dédiée), affichage des options de paiement en plusieurs fois Klarna, badges de niveau clairs et listes de bénéfices concrets.
+   - Support des nouveaux slugs dans le sélecteur de chapitres de `loadSingleCourse`.
+4. **Tunnel de Vente & Paywall In-App (`frontend/js/header.js`)** :
+   - Ajout des slugs `pack-starter`, `pack-web-pro`, `pack-mentorat-vip` dans `COURSE_SLUG_MAP`.
+   - Heuristiques de détection de niveau et prix dans `openStripePaywall` (89 €, 179 €, 389 €).
+   - Réécriture complète de `getPaywallSyllabusHtml(tier)` pour refléter fidèlement le contenu modulaire des 3 nouveaux packages.
+   - Prise en charge de la route `parcours.html` dans `setActiveNavLink()`.
+5. **Navigation Principale & En-tête (`frontend/partials/header.html`)** :
+   - Alignement des liens du menu de navigation : Accueil (`index.html`), Nos Parcours (`index.html#parcours`), La Méthode (`index.html#services`), FAQ (`index.html#faq`).
+   - Boutons d'action unifiés : « Se connecter » (secondaire) et « Télécharger le programme » (primaire popover).
+6. **Harmonisation Sémantique de la Page Parcours (`frontend/parcours.html`)** :
+   - Remplacement des termes académiques (« cursus », « formations ») par « Nos Parcours ».
+   - Métadonnées SEO `<head>` et Open Graph alignées sur les 3 packages d'apprentissage.
+   - Versioning des assets mis à jour à `?v=sprint14`.
+7. **Validation Locale & Tests** :
+   - Compilation et minification des assets clients (`node build.js`).
+   - Suite complète des 132 tests Spring Boot exécutée et validée avec succès (`mvnw.cmd test` : 0 échec, 0 erreur).
 

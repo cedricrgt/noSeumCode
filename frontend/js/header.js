@@ -365,19 +365,23 @@ function clearGlobalAuthAlert() {
 // ========================================================
 
 const COURSE_SLUG_MAP = {
+  "pack-starter": "c1000000-0000-0000-0000-000000000001",
+  "starter": "c1000000-0000-0000-0000-000000000001",
   "html-css": "c1000000-0000-0000-0000-000000000001",
   "fondations": "c1000000-0000-0000-0000-000000000001",
   "pack-fondations": "c1000000-0000-0000-0000-000000000001",
-  "starter": "c1000000-0000-0000-0000-000000000001",
+  "pack-web-pro": "c2000000-0000-0000-0000-000000000002",
+  "web-pro": "c2000000-0000-0000-0000-000000000002",
   "javascript": "c2000000-0000-0000-0000-000000000002",
   "dynamique": "c2000000-0000-0000-0000-000000000002",
   "pack-dynamique": "c2000000-0000-0000-0000-000000000002",
   "web": "c2000000-0000-0000-0000-000000000002",
-  "git-github": "c3000000-0000-0000-0000-000000000003",
+  "pack-web": "c2000000-0000-0000-0000-000000000002",
   "pack-mentorat-vip": "c3000000-0000-0000-0000-000000000003",
   "mentorat-vip": "c3000000-0000-0000-0000-000000000003",
   "vip": "c3000000-0000-0000-0000-000000000003",
   "pack-vip": "c3000000-0000-0000-0000-000000000003",
+  "git-github": "c3000000-0000-0000-0000-000000000003",
   "goat": "c3000000-0000-0000-0000-000000000003"
 };
 
@@ -463,7 +467,7 @@ function getPaywallSyllabusHtml(tier) {
   if (tier === "STARTER") {
     return `
       <div style="margin-bottom: 0.85rem; font-weight: 600; color: #60a5fa; font-size: 0.95rem;">
-        🧱 Cursus Complet : Starter Pack Fondations (HTML5, CSS3 & Git)
+        🧱 Pack Starter – Les Fondations du Web (HTML5 & CSS3 Moderne)
       </div>
       <div style="display: flex; flex-direction: column; gap: 0.75rem;">
         <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
@@ -475,76 +479,80 @@ function getPaywallSyllabusHtml(tier) {
           <span style="color: #94a3b8; font-size: 0.83rem;">Cascade, spécificité et Custom Properties (variables CSS). Conception d'interfaces élégantes avec Flexbox pour l'alignement et CSS Grid pour les layouts complexes. Maîtrise du responsive design mobile-first (smartphones, tablettes, 4K).</span>
         </div>
         <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
-          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Module 3 : Git & GitHub – Le Workflow du Développeur Pro</strong>
-          <span style="color: #94a3b8; font-size: 0.83rem;">Dépôts locaux, commits atomiques conventionnels, branches, merge et résolution de conflits. Sauvegarde et travail collaboratif sur GitHub. Déploiement automatisé d'un premier site en ligne avec GitHub Pages.</span>
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Module 3 : Responsive Design & Expérience Mobile</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">Media queries, adaptabilité fluide, typographie responsive et performance d'affichage sur tous les écrans.</span>
         </div>
         <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
-          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Module 4 : Projet Fil Rouge & Revue de Code Bienveillante</strong>
-          <span style="color: #94a3b8; font-size: 0.83rem;">Création complète d'une landing page responsive professionnelle de A à Z. Débriefing collectif et revue de code ligne par ligne en direct avec ton formateur Cédric.</span>
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Module 4 : 2 Projets de Portfolio Complets</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">Création et déploiement de deux projets concrets : une page Bio-Link personnalisée et une Landing Page produit responsive professionnelle.</span>
         </div>
       </div>
       <div style="margin-top: 0.85rem; padding: 0.65rem 0.85rem; background: rgba(37, 99, 235, 0.12); border: 1px solid rgba(37, 99, 235, 0.3); border-radius: 8px; font-size: 0.82rem; color: #93c5fd;">
-        ✨ <strong>Inclus :</strong> 6 semaines de cours en direct (promo de 6 élèves max) • Replay à vie garanti • Discord privé 7j/7 • Éligible Klarna 3x ou 4x sans frais.
+        ✨ <strong>Inclus :</strong> Accès immédiat et mises à jour à vie • Communauté Discord d'entraide • Garantie 14 jours satisfait ou remboursé.
       </div>
     `;
   } else if (tier === "VIP") {
     return `
       <div style="margin-bottom: 0.85rem; font-weight: 600; color: #fbbf24; font-size: 0.95rem;">
-        👑 Accompagnement d'Excellence : Pack Mentorat VIP (Pack Dynamique + 4h Coaching 1-to-1)
+        👑 Accompagnement Sur-Mesure : Pack Mentorat VIP (Pack Web Pro + 4h Mentorat 1-to-1)
       </div>
       <div style="display: flex; flex-direction: column; gap: 0.75rem;">
         <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
-          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Tronc Commun Complet Fondations & Dynamique</strong>
-          <span style="color: #94a3b8; font-size: 0.83rem;">HTML5 sémantique, CSS3 moderne (Flexbox/Grid), Git/GitHub, JavaScript moderne (ES6+), manipulation du DOM, asynchronisme et consommation d'APIs REST avec projets réels déployés.</span>
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">L'intégralité du Pack Web Pro Inclus</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">HTML5, CSS3, JavaScript moderne (ES6+), manipulation du DOM, requêtes API Fetch & Async, 6 projets réels et le bonus Git & GitHub offert.</span>
         </div>
         <div style="background: rgba(217, 119, 6, 0.1); border: 1px solid rgba(217, 119, 6, 0.35); border-radius: 8px; padding: 0.75rem 0.9rem;">
-          <strong style="color: #fbbf24; display: block; margin-bottom: 0.25rem;">4 Heures de Coaching Individuel One-to-One avec Cédric</strong>
+          <strong style="color: #fbbf24; display: block; margin-bottom: 0.25rem;">4 Heures de Mentorat Individuel (1-to-1) en Visio Privée</strong>
           <ul style="margin: 0.25rem 0 0 0; padding-left: 1.1rem; color: #e2e8f0; font-size: 0.82rem;">
-            <li><strong>Session 1 (1h) :</strong> Diagnostic de tes compétences & élaboration d'une feuille de route technique sur-mesure.</li>
-            <li><strong>Session 2 (1h) :</strong> Revue approfondie de ton code, refactoring et conseils d'architecture logicielle pro.</li>
-            <li><strong>Session 3 (1h) :</strong> Déblocage technique en direct sur tes projets personnels ou professionnels complexes.</li>
-            <li><strong>Session 4 (1h) :</strong> Préparation aux entretiens d'embauche, optimisation de ton CV et mise en valeur de ton GitHub.</li>
+            <li><strong>Session 1 (1h) :</strong> Diagnostic de compétences & feuille de route technique personnalisée.</li>
+            <li><strong>Session 2 (1h) :</strong> Revue de code ligne par ligne, refactoring et bonnes pratiques d'architecture.</li>
+            <li><strong>Session 3 (1h) :</strong> Déblocage technique direct en visio sur tes projets personnels ou professionnels.</li>
+            <li><strong>Session 4 (1h) :</strong> Coaching carrière, préparation aux entretiens tech et optimisation CV / GitHub.</li>
           </ul>
         </div>
         <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
-          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Canal Privé Prioritaire & Audit de Portfolio</strong>
-          <span style="color: #94a3b8; font-size: 0.83rem;">Accès direct 7j/7 avec ton mentor sur Discord sans attente, audit complet de ton portfolio et lettre de recommandation professionnelle Lead Developer.</span>
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Salon Discord VIP Privé & Suivi Dédié</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">Canal privé direct avec ton mentor sur Discord 7j/7 sans attente, réponse garantie sous 24h ouvrées et audit approfondi de portfolio.</span>
         </div>
       </div>
       <div style="margin-top: 0.85rem; padding: 0.65rem 0.85rem; background: rgba(217, 119, 6, 0.15); border: 1px solid rgba(217, 119, 6, 0.4); border-radius: 8px; font-size: 0.82rem; color: #fde68a;">
-        ✨ <strong>Inclus :</strong> Promotion de 6 élèves max • 4 sessions privées individuelles • Replays à vie illimités • Éligible Klarna 3x ou 4x sans frais.
+        ✨ <strong>Inclus :</strong> Limité à 10 places par mois • 4 sessions privées individuelles • Replays à vie • Éligible Klarna 3x 135 € sans frais • 100% garanti.
       </div>
     `;
   } else {
-    // WEB (Pack Dynamique)
+    // WEB (Pack Web Pro)
     return `
-      <div style="margin-bottom: 0.85rem; font-weight: 600; color: #a78bfa; font-size: 0.95rem;">
-        ⚡ Cursus Complet : Pack Dynamique (Fondations + JavaScript ES6+ & APIs REST)
+      <div style="margin-bottom: 0.85rem; font-weight: 600; color: #00ff87; font-size: 0.95rem;">
+        ⚡ Pack Web Pro – L'Autonomie Complète (Pack Starter + JS ES6+ + Bonus Git)
       </div>
       <div style="display: flex; flex-direction: column; gap: 0.75rem;">
         <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
-          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Tronc Commun Fondations Intégral</strong>
-          <span style="color: #94a3b8; font-size: 0.83rem;">Tout le contenu du Pack Fondations : HTML5 sémantique, CSS3 moderne (Flexbox, Grid) et Git & GitHub professionnel.</span>
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Tout le Pack Starter Inclus</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">HTML5 sémantique, CSS3 moderne, Flexbox, Grid, responsive design et 2 premiers projets.</span>
         </div>
         <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
           <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">JavaScript Moderne (ES6+) & Algorithmique</strong>
-          <span style="color: #94a3b8; font-size: 0.83rem;">Variables (const, let), structures conditionnelles, boucles, fonctions fléchées, manipulation avancée des tableaux (map, filter, reduce, find).</span>
+          <span style="color: #94a3b8; font-size: 0.83rem;">Variables modernes (const, let), structures logiques, boucles, fonctions fléchées, tableaux (map, filter, reduce).</span>
         </div>
         <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
-          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Interactivité & Manipulation Dynamique du DOM</strong>
-          <span style="color: #94a3b8; font-size: 0.83rem;">Sélection d'éléments, gestion des événements (clics, formulaires, frappes clavier), modification du contenu en temps réel, validation côté client.</span>
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Manipulation du DOM & Animations Interactives</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">Gestion des événements utilisateurs (clics, formulaires, frappes clavier), modification du contenu en temps réel.</span>
         </div>
         <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
-          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">APIs REST, Asynchronisme & Données Réelles</strong>
-          <span style="color: #94a3b8; font-size: 0.83rem;">Protocole HTTP, Promesses et async/await. Consommation d'APIs externes avec fetch, gestion du chargement et affichage dynamique des données.</span>
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">APIs REST, Async/Await & Données en Temps Réel</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">Protocole HTTP, Promesses et async/await. Connexion d'APIs externes avec fetch, gestion du chargement et affichage dynamique.</span>
+        </div>
+        <div style="background: rgba(0, 255, 135, 0.08); border: 1px solid rgba(0, 255, 135, 0.25); border-radius: 8px; padding: 0.75rem 0.9rem;">
+          <strong style="color: #00ff87; display: block; margin-bottom: 0.25rem;">🎁 BONUS OFFERT : Formation Git & GitHub (valeur 49 €)</strong>
+          <span style="color: #cbd5e1; font-size: 0.83rem;">Dépôts locaux, commits conventionnels, branches, merge et travail collaboratif GitHub comme en entreprise.</span>
         </div>
         <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
-          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Persistance & Web App Complète</strong>
-          <span style="color: #94a3b8; font-size: 0.83rem;">Sauvegarde d'état dans le navigateur via localStorage. Réalisation et déploiement d'une application dynamique complète prête pour ton portfolio.</span>
+          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">6 Projets Portfolio Prêts à Être Présentés</strong>
+          <span style="color: #94a3b8; font-size: 0.83rem;">4 projets dynamiques additionnels (dont un Dashboard Gaming interactif) hébergés en ligne.</span>
         </div>
       </div>
-      <div style="margin-top: 0.85rem; padding: 0.65rem 0.85rem; background: rgba(124, 58, 237, 0.12); border: 1px solid rgba(124, 58, 237, 0.3); border-radius: 8px; font-size: 0.82rem; color: #c4b5fd;">
-        ✨ <strong>Inclus :</strong> Cursus complet Fondations + JS en promotion de 6 élèves max • Replay à vie • Discord dédié • Éligible Klarna 3x ou 4x sans frais.
+      <div style="margin-top: 0.85rem; padding: 0.65rem 0.85rem; background: rgba(0, 255, 135, 0.12); border: 1px solid rgba(0, 255, 135, 0.3); border-radius: 8px; font-size: 0.82rem; color: #a7f3d0;">
+        ✨ <strong>Inclus :</strong> Tout le Pack Starter + JS + Bonus Git/GitHub • Accès prioritaire Discord • Éligible Klarna 2x 95 € sans frais • Garantie 14 jours.
       </div>
     `;
   }
@@ -557,9 +565,9 @@ async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortI
   if (!tier) {
     const t = (courseTitle || "").toLowerCase();
     const p = (priceText || "").toLowerCase();
-    if (t.includes("vip") || t.includes("goat") || p.includes("879")) {
+    if (t.includes("vip") || t.includes("goat") || p.includes("389") || p.includes("879")) {
       tier = "VIP";
-    } else if (t.includes("fondation") || t.includes("starter") || p.includes("279")) {
+    } else if (t.includes("starter") || t.includes("fondation") || p.includes("89") || p.includes("279")) {
       tier = "STARTER";
     } else {
       tier = "WEB";
@@ -1312,7 +1320,7 @@ function setActiveNavLink() {
       link.classList.add("active");
     } else if (currentPath.includes("dashboard") && href && href.includes("dashboard")) {
       link.classList.add("active");
-    } else if (currentPath.includes("cours") && href && href.includes("cours")) {
+    } else if ((currentPath.includes("cours") || currentPath.includes("parcours")) && href && (href.includes("cours") || href.includes("parcours"))) {
       link.classList.add("active");
     } else if (currentPath.includes("workshops") && href && href.includes("workshops")) {
       link.classList.add("active");

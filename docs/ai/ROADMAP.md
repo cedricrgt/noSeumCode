@@ -22,7 +22,7 @@
 | **Sprint 11** | **Intégration Discord & Communauté** | OAuth2 Discord (`identify`, `email`, `guilds.join`), liaison compte, auto-join guild et synchronisation dynamique des rôles selon le palier (Starter, Web, VIP) | ✅ **Terminé** |
 | **Sprint 12** | **Web Performance, BFCache & Cache Policy** | Déblocage BFCache (.htaccess), cache 1 an CSS/JS, versioning assets, élagage Google Fonts (-35Ko) | ✅ **Terminé** |
 | **Sprint 13** | **Socle Technique, Sécurité Serveur & Assets** | Déblocage CSP HubSpot, cache Apache étendu, SEO technique (robots.txt, sitemap), compression WebP (>5 Mo) et 3 pages légales | ✅ **Terminé** |
-| **Sprint 14** | **Nouvelle Architecture des Offres (3 Packages)** | Modélisation catalogue `cours.js` (Starter 89 €, Web Pro 179 €, VIP 389 €), alignement Stripe, navigation `header.html` et page parcours | 📋 **Planifié** |
+| **Sprint 14** | **Nouvelle Architecture des Offres (3 Packages)** | Modélisation catalogue `cours.js` (Starter 89 €, Web Pro 179 €, VIP 389 €), alignement Stripe, navigation `header.html` et page parcours | ✅ **Terminé** |
 | **Sprint 15** | **Refonte Copywriting Homepage & SEO Sémantique** | Copywriting validé, H1/Hero percutant, suppression du double regard, grille des 3 offres `#parcours`, FAQ 6 questions et mots-clés cibles | 📋 **Planifié** |
 | **Sprint 16** | **Tunnel Lead Magnet, Onboarding & Cocon Blog** | Sécurisation `thanks.html` (liens PDF + upsell), onboarding `success.html`, gabarit cocon blog (`article.html`) et recette globale | 📋 **Planifié** |
 
@@ -109,9 +109,9 @@ gantt
     Pages Légales & Footer (13.4)        :done, s13_4, 2026-09-30, 2026-09-30
 
     section Sprint 14 : Nouvelle Gamme 3 Packages
-    Modèle Catalogue cours.js & Stripe (14.1):s14_1, 2026-10-01, 2026-10-02
-    Refonte Page Parcours & Niveaux (14.2)   :s14_2, 2026-10-01, 2026-10-02
-    Navigation Globale & Header (14.3)       :s14_3, 2026-10-01, 2026-10-02
+    Modèle Catalogue cours.js & Stripe (14.1):done, s14_1, 2026-09-30, 2026-09-30
+    Refonte Page Parcours & Niveaux (14.2)   :done, s14_2, 2026-09-30, 2026-09-30
+    Navigation Globale & Header (14.3)       :done, s14_3, 2026-09-30, 2026-09-30
 
     section Sprint 15 : Copywriting & SEO Homepage
     Métadonnées & Matrice Mots-Clés (15.1)   :s15_1, 2026-10-02, 2026-10-04
@@ -309,7 +309,7 @@ gantt
 
 ---
 
-### Sprint 14 : Nouvelle Architecture des Offres (Les 3 Packages) & Refonte Navigation (Planifié)
+### Sprint 14 : Nouvelle Architecture des Offres (Les 3 Packages) & Refonte Navigation (Terminé)
 - **14.1 Modélisation Catalogue des 3 Packages (`frontend/js/cours.js` & Backend Stripe)** :
   - Abandon de la vente éclatée au profit de 3 Packages progressifs :
     - `pack-starter` : 89 € (8900 cts), slug `pack-starter`, niveau `DEBUTANT`, Stripe `price_starter_89`, 4 modules (HTML5, CSS3, Flexbox/Grid, Responsive), 2 projets portfolio, non-mentoré.

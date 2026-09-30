@@ -48,9 +48,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `feat/sprint-13-technical-foundation-seo-assets`
-## Current State: Sprints 1 à 13 validés. Sprint 13 complété avec succès (déblocage CSP HubSpot dans .htaccess, directives cache mod_expires 1 an et clean URLs, hygiène SEO robots.txt et sitemap.xml, compression WebP git.webp à 47.9 Ko, pages légales mentions-legales.html avec SIRET, cgv.html avec tarifs 3 packs et garanties, confidentialite.html avec conformité RGPD/Stripe/Brevo).
-## Next Steps: Lancement du Sprint 14 (Nouvelle Architecture des Offres en 3 Packages : modélisation catalogue cours.js, alignement Stripe backend, refonte parcours.html et navigation header).
+## Active Branch: `feat/sprint-14-offers-architecture-navigation`
+## Current State: Sprints 1 à 14 validés. Sprint 14 complété avec succès (migration Flyway V017 alignant les 3 packages et tarifs 89 € / 179 € / 389 €, fallback StripeGatewayImpl et tests unitaires, modélisation catalogue cours.js avec Pack Web Pro mis en avant et Klarna 2x/3x sans frais, navigation principale header.html avec liens Accueil, Nos Parcours, La Méthode, FAQ, boutons Se connecter et Télécharger le programme, refonte sémantique parcours.html et régénération des bundles CSS/JS).
+## Next Steps: Lancement du Sprint 15 (Refonte Copywriting Homepage & Optimisation Sémantique SEO : H1/Hero percutant sans le seum, Trustbar outils pros, 3 piliers de la méthode, grille des 3 offres #parcours, FAQ 6 questions anti-objections et cocon sémantique).
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN
