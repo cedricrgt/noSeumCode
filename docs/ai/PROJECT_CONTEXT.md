@@ -48,6 +48,8 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
+## Active Branch: `fix/hero-blob-text-contour`
+## Current State: Sprints 1 à 15 validés. Fix animation du texte sur contour SVG Hero rétabli (défilement fluide et continu sur le tracé de la blob étudiante smiling girl via textPath SMIL, élimination de la rotation asymétrique décalée, respect de prefers-reduced-motion, bundles CSS/JS recompilés).
 ## Active Branch: `fix/wcag-contrast-ratios-compliance`
 ## Current State: Sprints 1 à 15 validés. Fix accessibilité & ratios de contraste couleurs WCAG 2.2 AA / AAA complété (ADR-021, Règle 21 : respect strict des seuils 4.5:1 pour texte normal et 3:1 pour composants interactifs/grand texte sur surfaces claires et sombres, harmonisation cartes offres, trustbar, popovers, markdown cours et dashboard, bundles CSS régénérés).
 ## Next Steps: Lancement du Sprint 16 (Tunnel Lead Magnet, Onboarding Apprenant & Cocon Blog : sécurisation thanks.html avec liens PDF réparés et upsell doux, onboarding post-achat success.html en 3 étapes, gabarit sémantique article.html et recette globale PageSpeed CWV).
