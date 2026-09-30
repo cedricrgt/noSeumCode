@@ -108,12 +108,12 @@ function formatCoursePrice(course) {
   }
   const tier = course && (course.requiredTier || "").toUpperCase();
   if (tier === "VIP" || (course && (course.slug === "pack-mentorat-vip" || (course.title && (course.title.toLowerCase().includes("vip") || course.title.toLowerCase().includes("goat")))))) {
-    return "879 €";
+    return "389 €";
   }
-  if (tier === "STARTER" || (course && (course.slug === "html-css" || (course.title && course.title.toLowerCase().includes("fondation"))))) {
-    return "279 €";
+  if (tier === "STARTER" || (course && (course.slug === "pack-starter" || course.slug === "html-css" || (course.title && course.title.toLowerCase().includes("starter"))))) {
+    return "89 €";
   }
-  return "579 €";
+  return "179 €";
 }
 
 async function loadInitialData() {
@@ -121,77 +121,101 @@ async function loadInitialData() {
   const coursesRes = await coursApiFetch("/api/courses");
   if (coursesRes && coursesRes.ok) {
     const rawCourses = await coursesRes.json();
-    // Aligner le 3ème pack sur le Pack Mentorat VIP (ADR-013 & ADR-014)
+    // Aligner sur les 3 Packages officiels (ADR-013, Sprint 14 & Briefing 2026-09)
     allCourses = rawCourses.map(course => {
       const slug = (course.slug || "").toLowerCase();
       const title = (course.title || "").toLowerCase();
-      if (slug === "git-github" || (title.includes("git & github") && !title.includes("fondation"))) {
+      if (course.id === "c1000000-0000-0000-0000-000000000001" || slug === "html-css" || slug === "pack-starter" || title.includes("starter") || title.includes("fondation")) {
+        return {
+          ...course,
+          slug: "pack-starter",
+          title: "Pack Starter – Les Fondations du Web",
+          description: "Les fondations indispensables du web moderne : structure HTML5, design CSS3, Flexbox & Grid, responsive mobile et 2 projets portfolio complets.",
+          priceInCents: course.priceInCents || 8900,
+          requiredTier: "STARTER",
+          level: "DEBUTANT",
+          imageUrl: course.imageUrl || "images/courses/html.webp"
+        };
+      }
+      if (course.id === "c2000000-0000-0000-0000-000000000002" || slug === "javascript" || slug === "pack-web-pro" || slug === "pack-web" || title.includes("web pro") || title.includes("dynamique")) {
+        return {
+          ...course,
+          slug: "pack-web-pro",
+          title: "Pack Web Pro – L'Autonomie Complète",
+          description: "Deviens un développeur web frontend autonome : tout le Pack Starter + JavaScript ES6+, manipulation du DOM, requêtes API et bonus Git & GitHub offert.",
+          priceInCents: course.priceInCents || 17900,
+          requiredTier: "WEB",
+          level: "INTERMEDIAIRE",
+          imageUrl: course.imageUrl || "images/courses/javascript.webp"
+        };
+      }
+      if (course.id === "c3000000-0000-0000-0000-000000000003" || slug === "git-github" || slug === "pack-mentorat-vip" || title.includes("vip") || title.includes("mentorat")) {
         return {
           ...course,
           slug: "pack-mentorat-vip",
-          title: "Pack Mentorat VIP – Coaching Individuel & Accompagnement Sur Mesure",
-          description: "L'excellence NoSeumCode : Tout le Pack Dynamique (HTML/CSS, JS, APIs) plus 4 heures de coaching individuel 1-to-1 avec Cédric, revues de code dédiées et préparation aux entretiens techniques.",
-          priceInCents: 87900,
+          title: "Pack Mentorat VIP – L'Accompagnement Sur-Mesure",
+          description: "L'accélération ultime avec un formateur senior dédié : tout le Pack Web Pro + 4h de mentorat individuel en visio, revues de code et coaching carrière.",
+          priceInCents: course.priceInCents || 38900,
           requiredTier: "VIP",
-          level: "AVANCÉ",
+          level: "ACCOMPAGNE",
           imageUrl: course.imageUrl || "images/courses/javascript.webp"
         };
       }
       return course;
     });
   } else {
-    // Fallback seed packs officiels (Fondations 279 €, Dynamique 579 €, Mentorat VIP 879 €)
+    // Fallback seed 3 packs officiels (Starter 89 €, Web Pro 179 €, Mentorat VIP 389 €)
     allCourses = [
       {
         id: "c1000000-0000-0000-0000-000000000001",
-        slug: "html-css",
-        title: "Starter Pack Fondations – HTML5, CSS3 & Git",
-        description: "Apprends à structurer tes pages en HTML5 sémantique et à créer des designs modernes, responsives et accessibles avec CSS3, Flexbox, Grid et la maîtrise de Git.",
+        slug: "pack-starter",
+        title: "Pack Starter – Les Fondations du Web",
+        description: "Les fondations indispensables du web moderne : structure HTML5, design CSS3, Flexbox & Grid, responsive mobile et 2 projets portfolio complets.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
         createdByName: "Admin CodeBangers",
         updatedByName: "Admin CodeBangers",
         imageUrl: "images/courses/html.webp",
-        priceInCents: 27900,
+        priceInCents: 8900,
         currency: "EUR",
         level: "DEBUTANT",
         requiredTier: "STARTER",
         isPublished: true,
-        chaptersCount: 3
+        chaptersCount: 4
       },
       {
         id: "c2000000-0000-0000-0000-000000000002",
-        slug: "javascript",
-        title: "Pack Dynamique – JavaScript ES6+ & APIs REST",
-        description: "Donne vie à tes créations web : manipulation du DOM, requêtes API asynchrones, animations dynamiques et logique applicative complète en cohortes de 6 élèves max.",
+        slug: "pack-web-pro",
+        title: "Pack Web Pro – L'Autonomie Complète",
+        description: "Deviens un développeur web frontend autonome : tout le Pack Starter + JavaScript ES6+, manipulation du DOM, requêtes API et bonus Git & GitHub offert.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 25).toISOString(),
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
         createdByName: "Admin CodeBangers",
         updatedByName: "Admin CodeBangers",
         imageUrl: "images/courses/javascript.webp",
-        priceInCents: 57900,
+        priceInCents: 17900,
         currency: "EUR",
         level: "INTERMEDIAIRE",
         requiredTier: "WEB",
         isPublished: true,
-        chaptersCount: 3
+        chaptersCount: 6
       },
       {
         id: "c3000000-0000-0000-0000-000000000003",
         slug: "pack-mentorat-vip",
-        title: "Pack Mentorat VIP – Coaching Individuel & Accompagnement Sur Mesure",
-        description: "L'excellence NoSeumCode : Tout le Pack Dynamique plus 4 heures de coaching individuel 1-to-1 avec Cédric, revues de code dédiées et préparation aux entretiens techniques.",
+        title: "Pack Mentorat VIP – L'Accompagnement Sur-Mesure",
+        description: "L'accélération ultime avec un formateur senior dédié : tout le Pack Web Pro + 4h de mentorat individuel en visio, revues de code et coaching carrière.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 20).toISOString(),
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4).toISOString(),
         createdByName: "Cédric Ragot",
         updatedByName: "Cédric Ragot",
         imageUrl: "images/courses/javascript.webp",
-        priceInCents: 87900,
+        priceInCents: 38900,
         currency: "EUR",
-        level: "AVANCÉ",
+        level: "ACCOMPAGNE",
         requiredTier: "VIP",
         isPublished: true,
-        chaptersCount: 3
+        chaptersCount: 6
       }
     ];
   }
@@ -238,29 +262,29 @@ function renderCourseCatalog() {
             </svg>
             Retour à l'accueil
           </a>
-          <h1 class="course-title" style="font-size: 2.8rem; margin: 0.5rem 0; color: var(--dark-navy);">Nos Parcours de Formation</h1>
-          <p style="color: #64748b; font-size: 1.05rem; margin: 0;">Rejoins une promotion de 6 élèves max et choisis le pack adapté à tes ambitions.</p>
+          <h1 class="course-title" style="font-size: 2.8rem; margin: 0.5rem 0; color: var(--dark-navy);">Nos Parcours</h1>
+          <p style="color: #64748b; font-size: 1.05rem; margin: 0;">Accès immédiat, vidéos courtes et percutantes, exercices corrigés et garantie satisfait ou remboursé.</p>
         </div>
         <div>
           ${roleHeaderTag}
           ${currentRole === "TEACHER" || currentRole === "ADMIN" ? `
             <button class="button button__primary bangers-regular" style="padding: 10px 20px; font-size: 1.1rem; margin-left: 0.75rem;" onclick="openCreateCourseModal()">
-              + Créer une formation
+              + Créer un parcours
             </button>
           ` : ""}
         </div>
       </div>
 
-      <!-- Bannière Cohortes & Klarna BNPL -->
+      <!-- Bannière Les 3 Packs & Klarna BNPL -->
       <div style="background: rgba(0, 255, 135, 0.08); border: 1px solid rgba(0, 255, 135, 0.3); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
         <div style="display: flex; align-items: center; gap: 0.75rem;">
           <span style="font-size: 1.5rem;">🔥</span>
           <div>
-            <strong style="color: var(--dark-navy); font-size: 1.05rem;">Nouvelle Promotion : Cohortes limitées à 6 étudiants max (ADR-013)</strong>
-            <p style="margin: 0; font-size: 0.88rem; color: #475569;">Paiement fractionné 3x ou 4x sans frais disponible avec <strong>Klarna</strong> • Replay à vie garanti sur le Pack Fondations.</p>
+            <strong style="color: var(--dark-navy); font-size: 1.05rem;">Nouvelle Offre NoSeumCode : Les 3 Packs d'Apprentissage Web</strong>
+            <p style="margin: 0; font-size: 0.88rem; color: #475569;">Paiement fractionné en 2x ou 3x sans frais disponible avec <strong>Klarna</strong> • Accès à vie et garantie 14 jours satisfait ou remboursé.</p>
           </div>
         </div>
-        <span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">Paiement Klarna 3x/4x</span>
+        <span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">Paiement Klarna 2x/3x</span>
       </div>
 
       <div class="card-grid">
@@ -271,11 +295,67 @@ function renderCourseCatalog() {
           }
 
           const price = formatCoursePrice(course);
-          const level = course.level || "TOUS NIVEAUX";
-          const tier = (course.requiredTier || (course.slug === "javascript" ? "WEB" : "STARTER")).toUpperCase();
-          const tierLabel = tier === "STARTER" ? "Pack Fondations" : (tier === "VIP" ? "Pack Mentorat VIP" : "Pack Dynamique");
-          const tierColor = tier === "STARTER" ? "#2563eb" : (tier === "VIP" ? "#d97706" : "#7c3aed");
-          const tierBg = tier === "STARTER" ? "rgba(37, 99, 235, 0.12)" : (tier === "VIP" ? "rgba(217, 119, 6, 0.12)" : "rgba(124, 58, 237, 0.12)");
+          const rawTier = (course.requiredTier || "").toUpperCase();
+          const slug = (course.slug || "").toLowerCase();
+          
+          let tier = "STARTER";
+          let tierLabel = "Pack Starter";
+          let levelLabel = "Débutant";
+          let tierColor = "#0284c7";
+          let tierBg = "rgba(2, 132, 199, 0.12)";
+          let popularBadge = `<span style="background: rgba(0, 217, 255, 0.15); color: #00d9ff; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;">Idéal Débutant</span>`;
+          let installmentHtml = `<div style="font-size: 0.8rem; color: #64748b; margin-top: 0.4rem;">Paiement unique • Accès immédiat</div>`;
+          let featuresHtml = `
+            <ul class="package-features poppins-regular" style="text-align: left; list-style: none; padding: 0; line-height: 1.6; font-size: 0.82rem; margin: 0.75rem 0; color: #475569;">
+              <li>✓ <strong>Formation HTML5 Complète</strong> (Structure & SEO)</li>
+              <li>✓ <strong>Formation CSS3 Moderne</strong> (Flexbox & Grid)</li>
+              <li>✓ <strong>Responsive Design</strong> (Mobile-First)</li>
+              <li>✓ <strong>2 Projets de Portfolio</strong> (Bio-Link + Landing Page)</li>
+              <li>✓ <strong>Accès Communauté Discord</strong> d'entraide</li>
+            </ul>
+          `;
+          let isFeatured = false;
+          let btnText = `Choisir le Pack Starter • 89 €`;
+
+          if (rawTier === "VIP" || slug === "pack-mentorat-vip" || slug === "git-github" || (course.title && course.title.toLowerCase().includes("vip"))) {
+            tier = "VIP";
+            tierLabel = "Pack Mentorat VIP";
+            levelLabel = "Accompagné";
+            tierColor = "#d97706";
+            tierBg = "rgba(217, 119, 6, 0.12)";
+            popularBadge = `<span style="background: rgba(255, 51, 102, 0.15); color: #ff3366; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;">10 Places / Mois</span>`;
+            installmentHtml = `<div style="font-size: 0.8rem; color: #334155; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem;"><span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.68rem; padding: 1px 5px; border-radius: 3px;">Klarna</span> ou <strong>3x 135 €</strong> sans frais</div>`;
+            featuresHtml = `
+              <ul class="package-features poppins-regular" style="text-align: left; list-style: none; padding: 0; line-height: 1.6; font-size: 0.82rem; margin: 0.75rem 0; color: #475569;">
+                <li>✓ <strong>L'intégralité du Pack Web Pro</strong> + Git & GitHub</li>
+                <li>🎯 <strong>4H de Mentorat Individuel (1-to-1)</strong> en visio</li>
+                <li>🔍 <strong>Revue de Code Ligne par Ligne</strong> de tes projets</li>
+                <li>💼 <strong>Coaching Carrière & Audit Portfolio</strong> (CV + GitHub)</li>
+                <li>💬 <strong>Canal Privé Direct avec ton Mentor</strong> sur Discord</li>
+              </ul>
+            `;
+            btnText = `Postuler au Pack VIP • 389 €`;
+          } else if (rawTier === "WEB" || slug === "pack-web-pro" || slug === "javascript" || (course.title && (course.title.toLowerCase().includes("web pro") || course.title.toLowerCase().includes("dynamique")))) {
+            tier = "WEB";
+            tierLabel = "Pack Web Pro (Recommandé)";
+            levelLabel = "Intermédiaire";
+            tierColor = "#059669";
+            tierBg = "rgba(16, 185, 129, 0.15)";
+            popularBadge = `<span style="background: #00ff87; color: #070e18; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;">Le Plus Populaire</span>`;
+            installmentHtml = `<div style="font-size: 0.8rem; color: #334155; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem;"><span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.68rem; padding: 1px 5px; border-radius: 3px;">Klarna</span> ou <strong>2x 95 €</strong> sans frais</div>`;
+            featuresHtml = `
+              <ul class="package-features poppins-regular" style="text-align: left; list-style: none; padding: 0; line-height: 1.6; font-size: 0.82rem; margin: 0.75rem 0; color: #475569;">
+                <li>✓ <strong>Tout le Pack Starter inclus</strong> (HTML5 + CSS3)</li>
+                <li>✓ <strong>Formation JavaScript Moderne (ES6+)</strong></li>
+                <li>✓ <strong>Manipulation du DOM & Animations</strong></li>
+                <li>✓ <strong>Connexion API & Données en direct</strong> (Fetch/Async)</li>
+                <li>🎁 <strong>BONUS OFFERT : Formation Git & GitHub</strong></li>
+                <li>✓ <strong>6 Projets de Portfolio au total</strong></li>
+              </ul>
+            `;
+            isFeatured = true;
+            btnText = `Rejoindre le Pack Web Pro • 179 €`;
+          }
 
           let accessBadge = "";
           let actionBtn = "";
@@ -285,7 +365,7 @@ function renderCourseCatalog() {
             accessBadge = `<span style="background: rgba(0, 255, 135, 0.15); color: #00a85a; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(0, 255, 135, 0.4);">✓ Accès Édition</span>`;
             actionBtn = `
               <a href="parcours.html?id=${course.id}" class="card__link bangers-regular">
-                Gérer le cours
+                Gérer le parcours
                 <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -297,7 +377,7 @@ function renderCourseCatalog() {
               actionBtn = `
                 <div style="display:flex; gap:0.5rem; flex-wrap:wrap; width:100%;">
                   <button class="button button__primary bangers-regular" style="flex:1; padding: 8px 12px; font-size: 1rem; cursor:pointer;" onclick="initiateStripeCheckout('${course.id}')">
-                    💳 Acheter (${price})
+                    💳 ${btnText}
                   </button>
                   <button class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; cursor:pointer;" onclick="handleEnroll('${course.id}')">
                     Aperçu
@@ -310,7 +390,7 @@ function renderCourseCatalog() {
                 accessBadge = `<span style="background: rgba(0, 255, 135, 0.15); color: #00a85a; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(0, 255, 135, 0.4);">✓ Inscrit • Payé</span>`;
                 actionBtn = `
                   <a href="parcours.html?id=${course.id}" class="card__link bangers-regular">
-                    Continuer la formation
+                    Continuer le parcours
                     <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -336,7 +416,7 @@ function renderCourseCatalog() {
             actionBtn = `
               <div style="display:flex; gap:0.5rem; flex-wrap:wrap; width:100%;">
                 <button class="button button__primary bangers-regular" style="flex:1; padding: 8px 12px; font-size: 1rem; cursor:pointer;" onclick="initiateStripeCheckout('${course.id}')">
-                  💳 Découvrir (${price})
+                  💳 ${btnText}
                 </button>
                 <a href="parcours.html?id=${course.id}" class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; text-decoration:none; display:inline-flex; align-items:center;">
                   Aperçu
@@ -345,8 +425,10 @@ function renderCourseCatalog() {
             `;
           }
 
+          const featuredBorder = isFeatured ? 'style="border: 2px solid #00ff87; position: relative; box-shadow: 0 8px 30px rgba(0, 255, 135, 0.12);"' : '';
+
           return `
-            <article class="card card-white card-paddingtop">
+            <article class="card card-white card-paddingtop" ${featuredBorder}>
               <header class="card__imageContainer">
                 <img
                   class="card__image"
@@ -362,8 +444,9 @@ function renderCourseCatalog() {
                 <div class="card__header">
                   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.4rem;">
                     <div style="display:flex; gap:0.4rem; align-items:center; flex-wrap:wrap;">
-                      <span class="section-tag" style="font-size: 0.72rem; margin-bottom: 0;">📚 ${escapeHtml(level)}</span>
+                      <span class="section-tag" style="font-size: 0.72rem; margin-bottom: 0;">📚 ${escapeHtml(levelLabel)}</span>
                       <span style="background: ${tierBg}; color: ${tierColor}; font-size: 0.72rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">${tierLabel}</span>
+                      ${popularBadge}
                       <span class="price-tag bangers-regular" style="font-size: 1.15rem; color: #008744; background: rgba(0, 255, 135, 0.15); padding: 2px 8px; border-radius: 6px; font-weight: 700;">${price}</span>
                     </div>
                     ${accessBadge}
@@ -373,11 +456,10 @@ function renderCourseCatalog() {
                 <p class="card__paragraphe card__textGreen poppins-regular">
                   ${escapeHtml(course.description)}
                 </p>
-                <div style="font-size: 0.78rem; color: #475569; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem;">
-                  <span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.68rem; padding: 1px 5px; border-radius: 3px;">Klarna</span> 3x ou 4x sans frais disponible
-                </div>
+                ${featuresHtml}
+                ${installmentHtml}
                 <div style="display:flex; justify-content:space-between; align-items:center; font-size: 0.82rem; color: #64748b; margin-top: auto; padding-top: 0.75rem; border-top: 1px solid rgba(0,0,0,0.06);">
-                  <span>👤 ${escapeHtml(course.createdByName || "Admin")}</span>
+                  <span>👤 ${escapeHtml(course.createdByName || "Cédric Ragot")}</span>
                   <span>📅 ${new Date(course.updatedAt || Date.now()).toLocaleDateString("fr-FR")}</span>
                 </div>
                 <div style="margin-top: 0.75rem;">
@@ -468,7 +550,7 @@ async function loadSingleCourse(courseId, requestedChapterId) {
     courseChapters = await chapRes.json();
   } else {
     // Fallback chapters
-    if (currentCourse.id === "c1000000-0000-0000-0000-000000000001" || currentCourse.slug === "html-css") {
+    if (currentCourse.id === "c1000000-0000-0000-0000-000000000001" || currentCourse.slug === "pack-starter" || currentCourse.slug === "html-css") {
       courseChapters = [
         {
           id: "c1000001-0000-0000-0000-000000000001",
@@ -498,7 +580,7 @@ async function loadSingleCourse(courseId, requestedChapterId) {
           content: `# 📱 Responsive Web Design & Animations\n\nAssure une expérience irréprochable sur mobile, tablette et desktop.`
         }
       ];
-    } else if (currentCourse.id === "c2000000-0000-0000-0000-000000000002" || currentCourse.slug === "javascript") {
+    } else if (currentCourse.id === "c2000000-0000-0000-0000-000000000002" || currentCourse.slug === "pack-web-pro" || currentCourse.slug === "javascript") {
       courseChapters = [
         {
           id: "c2000001-0000-0000-0000-000000000001",
@@ -528,7 +610,7 @@ async function loadSingleCourse(courseId, requestedChapterId) {
           content: `# 🌐 API Fetch & Asynchronisme\n\nConnecte ton application à des données externes et des serveurs backend.`
         }
       ];
-    } else if (currentCourse.id === "c3000000-0000-0000-0000-000000000003" || currentCourse.slug === "git-github") {
+    } else if (currentCourse.id === "c3000000-0000-0000-0000-000000000003" || currentCourse.slug === "pack-mentorat-vip" || currentCourse.slug === "git-github") {
       courseChapters = [
         {
           id: "c3000001-0000-0000-0000-000000000001",
