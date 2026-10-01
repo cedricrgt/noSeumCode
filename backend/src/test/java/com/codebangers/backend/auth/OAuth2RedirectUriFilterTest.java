@@ -30,6 +30,7 @@ class OAuth2RedirectUriFilterTest {
         assertTrue(filter.isAuthorizedRedirect("https://noseumcode.fr/dashboard.html"));
         assertTrue(filter.isAuthorizedRedirect("https://test.noseumcode.fr/dashboard.html"));
         assertTrue(filter.isAuthorizedRedirect("http://localhost:3000/dashboard.html"));
+        assertTrue(filter.isAuthorizedRedirect("http://127.0.0.1:3000/dashboard.html"));
         assertTrue(filter.isAuthorizedRedirect("http://localhost:5500/dashboard.html"));
         assertTrue(filter.isAuthorizedRedirect("http://127.0.0.1:5500/dashboard.html"));
     }

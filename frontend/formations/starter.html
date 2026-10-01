@@ -421,7 +421,7 @@
           }
         }
 
-        const apiBase = window.API_BASE_URL || "";
+        const apiBase = window.API_BASE_URL || "https://api.noseumcode.fr";
         fetch(apiBase + "/api/cohorts/current")
           .then(function(res) {
             if (res.ok) return res.json();

@@ -1236,3 +1236,21 @@ _Chronologique — plus récent en bas_
 5. **Recompilation & Validation** :
    - Recompilation des scripts frontend (node frontend/build.js) mettant à jour header.min.js.
    - Exécution complète des tests backend (CohortControllerTest, PaywallSecurityTest, PaymentCheckoutServiceTest, PaymentWebhookSecurityTest) : 43 tests passés avec succès.
+
+---
+
+### 2026-10-01 — Connexion API Oracle Cloud VM par Défaut pour le Frontend Local (Port 3000)
+**Conversation**: bee834aa-93e8-46e7-b63c-62b3900ccf51  
+**Branche**: fix/local-oracle-api-connection
+
+#### Ce qui a changé :
+1. **Frontend — Cible API par Défaut vers la VM Oracle (`https://api.noseumcode.fr`)** :
+   - Mise à jour de `initApiBaseUrl()` dans `header.js` et `getApiBaseUrl()` dans `dashboard.js` : suppression du forçage systématique de `localhost:8080` lorsque le frontend est servi sur `localhost` ou `127.0.0.1` (port 3000, 5500, etc.). Le frontend pointe désormais par défaut sur `https://api.noseumcode.fr` afin de pouvoir tester l'ensemble des flux (authentification, cohorte mentor, paywall Stripe, catalogue) contre les vraies données sans nécessiter de backend Java local en cours d'exécution.
+   - Mécanisme d'override local conservé : support du paramètre URL `?api=local` ou de la clé `localStorage.setItem('noseum_api_target', 'local')` pour pointer sur `http://localhost:8080` au besoin.
+   - Harmonisation des fallbacks API dans `frontend/js/cours.js`, `frontend/formations/starter.html`, `frontend/formations/pack-web.html`, `frontend/suivi-mentor.html`, `frontend/success.html`, et `frontend/reset-password.html`.
+2. **Backend & Sécurité CORS** :
+   - Ajout explicite de `http://127.0.0.1:3000`, `http://localhost:5500` et `http://127.0.0.1:5500` dans les origines CORS autorisées (`SecurityConfig.java` et `application.properties`).
+   - Ajout de `http://127.0.0.1:3000` dans la liste blanche des redirections OAuth2 (`OAuth2RedirectUriFilter.java`) et mise à jour du test unitaire `OAuth2RedirectUriFilterTest.java`.
+   - Alignement de la variable d'environnement `CORS_ALLOWED_ORIGINS` dans `.github/workflows/deploy.yml`.
+3. **Recompilation Frontend** :
+   - Recompilation des bundles de scripts et styles via `node frontend/build.js` (`header.min.js`).

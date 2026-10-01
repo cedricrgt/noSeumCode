@@ -1,14 +1,39 @@
 // Configuration globale de l'API
-const isLocalDev =
-  window.location.hostname === "localhost" ||
-  window.location.hostname === "127.0.0.1" ||
-  window.location.hostname.startsWith("192.168.") ||
-  window.location.hostname.startsWith("10.") ||
-  window.location.hostname.endsWith(".local");
+// Par défaut, le frontend communique avec le backend déployé sur la VM Oracle Cloud (https://api.noseumcode.fr).
+// Cela permet de tester les fonctionnalités en local (ex: port 3000) directement avec les vraies données Oracle.
+// Possibilité d'orienter vers un backend local (localhost:8080) via :
+// - Paramètre URL: ?api=local ou ?backend=local
+// - Commande console: localStorage.setItem('noseum_api_target', 'local')
+(function initApiBaseUrl() {
+  if (typeof window === "undefined") return;
 
-window.API_BASE_URL = isLocalDev
-  ? `http://${window.location.hostname}:8080`
-  : "https://api.noseumcode.fr"; // Production backend URL
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const queryTarget = params.get("api") || params.get("backend");
+    if (queryTarget === "local") {
+      localStorage.setItem("noseum_api_target", "local");
+    } else if (queryTarget === "oracle" || queryTarget === "prod" || queryTarget === "remote") {
+      localStorage.removeItem("noseum_api_target");
+      localStorage.removeItem("noseum_api_url");
+    }
+  } catch (_) {}
+
+  const customUrl = typeof localStorage !== "undefined" ? localStorage.getItem("noseum_api_url") : null;
+  if (customUrl) {
+    window.API_BASE_URL = customUrl;
+    return;
+  }
+
+  const target = typeof localStorage !== "undefined" ? localStorage.getItem("noseum_api_target") : null;
+  if (target === "local") {
+    const host = window.location.hostname || "localhost";
+    window.API_BASE_URL = `http://${host}:8080`;
+    return;
+  }
+
+  // Par défaut (local port 3000, 5500, develop ou prod) : Oracle Cloud VM API
+  window.API_BASE_URL = "https://api.noseumcode.fr";
+})();
 
 
 /**

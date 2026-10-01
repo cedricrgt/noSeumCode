@@ -51,6 +51,9 @@ public class SecurityConfig {
                 origins.add("https://develop.noseumcode.fr");
                 origins.add("https://*.noseumcode.fr");
                 origins.add("http://localhost:3000");
+                origins.add("http://127.0.0.1:3000");
+                origins.add("http://localhost:5500");
+                origins.add("http://127.0.0.1:5500");
                 origins.add("http://localhost:8080");
                 this.allowedOrigins = new java.util.ArrayList<>(origins);
         }
