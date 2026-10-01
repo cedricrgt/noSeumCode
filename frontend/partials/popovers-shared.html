@@ -259,7 +259,7 @@
     </h3>
     <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
       <span id="paywall-course-price" class="bangers-regular" style="background: linear-gradient(135deg, #00ff87, #00d9ff); color: #070e18; font-size: 1.25rem; padding: 2px 14px; border-radius: 20px; letter-spacing: 0.5px;">
-        579 €
+        299 €
       </span>
       <span style="background: rgba(0, 255, 135, 0.12); border: 1px solid rgba(0, 255, 135, 0.35); color: #00ff87; font-size: 0.78rem; padding: 4px 10px; border-radius: 20px; font-weight: 600;">
         ⚡ Accès illimité à vie
@@ -288,6 +288,14 @@
       </div>
     </details>
 
+        <!-- Rappel discret Suivi Mentor si non sélectionné (Section 2.3 & 4.3) -->
+    <div id="paywall-mentor-reminder" style="display: none; background: rgba(0, 255, 135, 0.06); border: 1px solid rgba(0, 255, 135, 0.25); border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.88rem; color: #cbd5e1; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;">
+      <span>Tu n'as pas ajouté le Suivi Mentor — <strong id="paywall-mentor-slots" style="color: #00ff87;">3 places restantes</strong>.</span>
+      <button type="button" id="btn-paywall-show-mentor-drawer" onclick="openMentorDrawer()" style="background: none; border: none; color: #00ff87; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0; font-size: 0.88rem;">
+        Voir l'option →
+      </button>
+    </div>
+
     <!-- Loader pendant l'initialisation Stripe Embedded -->
     <div id="paywall-loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 280px; gap: 1rem; color: #a0aec0; text-align: center;">
       <div style="width: 42px; height: 42px; border: 3px solid rgba(0, 255, 135, 0.2); border-top-color: #00ff87; border-radius: 50%; animation: paywallSpin 0.9s linear infinite;"></div>
@@ -310,35 +318,49 @@
 
 
 
-<!-- Modale Downsell Mentorat -->
+<!-- Modale Downsell Mentorat (Section 2.4 & 4.4) -->
 <div id="mentor-downsell-modal" class="auth-popover-box" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; background: #070e18; border: 1px solid rgba(0,255,135,0.3); border-radius: 12px; padding: 2rem; max-width: 500px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
-  <h3 style="color: #00ff87; font-size: 1.5rem; margin-top: 0; font-family: 'Bangers', cursive; letter-spacing: 1px;">Attends, tu vas �tre seul devant ton code...</h3>
-  <p style="color: #e2e8f0; font-size: 1rem; line-height: 1.5; margin-bottom: 1.5rem;">
-    Apprendre � coder en solo, c'est dur. Bloquer 3 heures sur une erreur de syntaxe, c'est frustrant.
-    <br><br>
-    Je te propose <strong>2 sessions de mentorat individuel</strong> (au lieu de 4 dans l'add-on complet) pour d�bloquer tes probl�mes techniques et faire des code reviews ensemble.
-  </p>
-  <div style="display: flex; flex-direction: column; gap: 1rem;">
-    <button id="btn-accept-downsell" class="button button__primary bangers-regular" style="font-size: 1.2rem; padding: 12px;">
-      ?? Ajouter 2 sessions pour 89 �
+  <h3 style="color: #00ff87; font-size: 1.5rem; margin-top: 0; font-family: 'Bangers', cursive; letter-spacing: 0.5px;">Avant de payer — une question rapide</h3>
+  <div style="color: #e2e8f0; font-size: 0.95rem; line-height: 1.55; margin-bottom: 1.5rem;">
+    <p style="margin-top: 0;">Tu n'as pas ajouté le suivi individuel.</p>
+    <p>Si tu hésites parce que tu ne sais pas si le format te conviendra, il y a une option à mi-chemin : <strong>2 sessions solo à 89 €</strong>.</p>
+    <p style="margin-bottom: 0; color: #94a3b8; font-size: 0.88rem;">Même format que les 4 sessions — mais avec un engagement moindre pour commencer.</p>
+  </div>
+  <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+    <button id="btn-accept-downsell" type="button" class="button button__primary bangers-regular" style="font-size: 1.2rem; padding: 12px; width: 100%;">
+      Ajouter 2 sessions pour 89 €
     </button>
-    <button id="btn-reject-downsell" class="button button__secondary bangers-regular" style="font-size: 1.1rem; padding: 10px; background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #cbd5e0;">
-      Non merci, continuer sans mentorat
+    <button id="btn-reject-downsell" type="button" class="button button__secondary bangers-regular" style="font-size: 1rem; padding: 10px; background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #cbd5e0; width: 100%; cursor: pointer;">
+      Continuer sans le suivi
     </button>
   </div>
 </div>
 
-<!-- Drawer Mentorat -->
+<!-- Drawer Mentorat (Section 2.3 & 4.3) -->
 <div id="mentor-addon-drawer" style="display: none; position: fixed; top: 0; right: -400px; width: 400px; max-width: 100%; height: 100%; background: #070e18; border-left: 1px solid rgba(0,255,135,0.3); z-index: 10001; transition: right 0.3s ease; padding: 2rem; box-shadow: -5px 0 30px rgba(0,0,0,0.5); overflow-y: auto;">
-  <button onclick="closeMentorDrawer()" style="position: absolute; top: 1rem; right: 1rem; background: transparent; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;">&times;</button>
-  <h3 style="color: #00ff87; font-size: 1.8rem; margin-top: 1rem; font-family: 'Bangers', cursive;">Suivi Mentor (4 sessions)</h3>
-  <p style="color: #e2e8f0; font-size: 1rem; line-height: 1.5; margin-bottom: 1.5rem;">
-    Acc�l�re ta progression avec 4 sessions de mentorat individuel d'une heure avec C�dric.
-  </p>
-  <div style="background: rgba(0,255,135,0.05); border: 1px solid rgba(0,255,135,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-    <span style="font-size: 1.5rem; font-weight: bold; color: #fff;">+199 �</span>
+  <button type="button" onclick="closeMentorDrawer()" aria-label="Fermer" style="position: absolute; top: 1rem; right: 1rem; background: transparent; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;">&times;</button>
+  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 1rem; margin-bottom: 0.5rem;">
+    <h3 style="color: #00ff87; font-size: 1.6rem; margin: 0; font-family: 'Bangers', cursive; letter-spacing: 0.5px;">Suivi Mentor</h3>
+    <span style="font-size: 1.3rem; font-weight: 700; color: #00ff87;">+199 €</span>
   </div>
-  <button id="btn-drawer-add-mentor" class="button button__primary bangers-regular" style="width: 100%; font-size: 1.2rem; padding: 12px;">
-    Ajouter � ma commande
+  <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.5; margin-bottom: 1rem;">
+    4 sessions individuelles de 1h avec Cédric.<br>
+    On regarde ton code. On débloque ce qui bloque.
+  </p>
+  <div style="background: rgba(0,255,135,0.06); border: 1px solid rgba(0,255,135,0.25); padding: 0.85rem; border-radius: 8px; margin-bottom: 1.25rem;">
+    <div style="color: #00ff87; font-weight: 600; font-size: 0.85rem;" id="drawer-mentor-slots">
+      Places limitées : 3 places restantes pour cette cohorte
+    </div>
+    <div style="color: #94a3b8; font-size: 0.8rem; margin-top: 0.25rem;">
+      Remboursé si la 1ère session ne te convient pas.
+    </div>
+  </div>
+  <button id="btn-drawer-add-mentor" type="button" class="button button__primary bangers-regular" style="width: 100%; font-size: 1.2rem; padding: 12px; margin-bottom: 0.75rem;">
+    Ajouter à ma commande
   </button>
+  <div style="text-align: center;">
+    <button type="button" onclick="closeMentorDrawer()" style="background: none; border: none; color: #94a3b8; text-decoration: underline; font-size: 0.88rem; cursor: pointer;">
+      Non merci
+    </button>
+  </div>
 </div>

@@ -157,11 +157,11 @@ async function loadArticle() {
               <span class="section-tag" style="background: rgba(0, 255, 135, 0.15); color: #00ff87;">Passe à l'action</span>
               <h3 class="bangers-regular">Prêt à construire tes propres projets web ?</h3>
               <p class="poppins-regular">
-                Rejoins nos parcours interactifs dès 89 € avec garantie 14 jours satisfait ou remboursé, ou télécharge notre programme complet de formation.
+                Rejoins nos parcours interactifs dès 299 € (ou 3x 99 € sans frais) avec garantie 14 jours satisfait ou remboursé, ou télécharge notre programme complet de formation.
               </p>
               <div class="article-cta-box__buttons">
                 <a href="index.html#parcours" class="button button__primary bangers-regular">
-                  Découvrir les 3 Packs NoSeumCode →
+                  Découvrir les Packs NoSeumCode →
                 </a>
                 <button type="button" popovertarget="hubspot-popover" class="button button__secondary bangers-regular">
                   Télécharger le Programme (PDF)

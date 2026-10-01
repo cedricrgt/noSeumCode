@@ -51,6 +51,15 @@ public class Cohort {
     @Column(name = "status", nullable = false, length = 50)
     private CohortStatus status = CohortStatus.OPEN;
 
+    @Column(name = "mentor_slots_total", nullable = false)
+    private Integer mentorSlotsTotal = 3;
+
+    @Column(name = "mentor_slots_remaining", nullable = false)
+    private Integer mentorSlotsRemaining = 3;
+
+    @Column(name = "session_1_completed", nullable = false)
+    private Boolean session1Completed = false;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -157,6 +166,30 @@ public class Cohort {
 
     public void setStatus(CohortStatus status) {
         this.status = status;
+    }
+
+    public Integer getMentorSlotsTotal() {
+        return mentorSlotsTotal;
+    }
+
+    public void setMentorSlotsTotal(Integer mentorSlotsTotal) {
+        this.mentorSlotsTotal = mentorSlotsTotal;
+    }
+
+    public Integer getMentorSlotsRemaining() {
+        return mentorSlotsRemaining;
+    }
+
+    public void setMentorSlotsRemaining(Integer mentorSlotsRemaining) {
+        this.mentorSlotsRemaining = mentorSlotsRemaining;
+    }
+
+    public Boolean getSession1Completed() {
+        return session1Completed;
+    }
+
+    public void setSession1Completed(Boolean session1Completed) {
+        this.session1Completed = session1Completed;
     }
 
     public LocalDateTime getCreatedAt() {

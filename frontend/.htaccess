@@ -73,6 +73,11 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^blog/?$ index.html#blog [L,QSA]
 
+# 6. Réécriture propre Suivi Mentor
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^suivi-mentor/?$ suivi-mentor.html [L,QSA]
+
 
 # ----------------------------------------------------------------------
 # Redirection "En construction" (supprimer ce bloc quand le site est prêt)

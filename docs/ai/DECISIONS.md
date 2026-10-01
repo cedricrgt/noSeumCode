@@ -187,5 +187,20 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 - Utiliser du texte gris clair (`#94a3b8`) ou des teintes pastel fluo (`#00ff87`, `#00d9ff`, `#ff3366`) sur fond blanc pour un effet esthétique délavé (rejetée car cela exclut les personnes malvoyantes et constitue une non-conformité légale WCAG 2.2 / RGAA).
 **Conséquence**: Accessibilité universelle garantie, conformité 100% WCAG 2.2 AA / AAA sur tous les contrastes texte et composants d'interface, et suppression définitive des contrastes illisibles.
 
-
+## ADR-022 — Architecture des Offres : 2 Packs de Base (299 € & 449 €) + 1 Option Add-on Suivi Mentor (+199 € / Downsell 89 €)
+**Status**: Actif
+**Décision**: 
+1. **Abandon définitif de l'offre éclatée en 3 packs distincts (Starter / Web Pro / VIP)** :
+   - Le catalogue se concentre sur 2 packs de formation : **Pack Starter** (299 € ou 3× 99 € sans frais via Klarna) et **Pack Web Pro** (449 € ou 3× 149 € sans frais via Klarna).
+   - Le mentorat individuel n'est plus un 3e pack isolé mais un **Add-on transverse** (+199 € pour 4 sessions de 1h avec Cédric Ragot), cumulable avec n'importe lequel des deux packs de base (Starter + Mentor = 498 €, Web Pro + Mentor = 648 €).
+2. **Gestion de la Rareté & des Quotas (3 places max par cohorte par pack)** :
+   - Stock physique limité à 3 places par cohorte par pack. Les compteurs sont alimentés dynamiquement par l'API backend `GET /api/cohorts/current`.
+   - La décrémentation des stocks n'a lieu qu'à la confirmation de paiement réelle (webhook Stripe `checkout.session.completed` / `confirmCheckoutSession`).
+3. **Mécanique de Conversion au Checkout** :
+   - Rappel discret non bloquant au checkout Stripe si l'option n'est pas sélectionnée, avec ouverture d'un drawer latéral sans rechargement de page.
+   - Modale downsell non culpabilisante proposant 2 sessions pour 89 € au moment de la validation, affichée une seule fois par session (`sessionStorage`).
+**Alternative rejetée**: 
+- Maintenir un 3e pack "Mentorat VIP" à 879 € ou 389 € (rejetée car cela dilue le positionnement, impose un ticket d'entrée élevé inaccessible, et complique la logistique des cohortes séquentielles).
+- Décrémenter les places restantes au simple clic "ajouter au panier" (rejetée car cela génère des faux stocks épuisés et des abandons de panier bloquants).
+**Conséquence**: Augmentation du panier moyen et du taux de conversion (CRO), valorisation transparente du temps de mentorat individuel, et alignement parfait entre frontend, backend Spring Boot et Stripe Embedded Checkout.
 

@@ -36,6 +36,13 @@ public interface StripeGateway {
     CheckoutSessionResponse createCheckoutSession(User user, Course course, String successUrl, String cancelUrl, boolean embedded, String returnUrl, com.codebangers.backend.course.model.EnrollmentTier tier, java.util.UUID cohortId);
 
     /**
+     * Crée une session de paiement Stripe Checkout avec tier, cohorte et add-on Suivi Mentor.
+     */
+    default CheckoutSessionResponse createCheckoutSession(User user, Course course, String successUrl, String cancelUrl, boolean embedded, String returnUrl, com.codebangers.backend.course.model.EnrollmentTier tier, java.util.UUID cohortId, String addon) {
+        return createCheckoutSession(user, course, successUrl, cancelUrl, embedded, returnUrl, tier, cohortId);
+    }
+
+    /**
      * Récupère une Checkout Session Stripe par son identifiant.
      *
      * @param sessionId L'identifiant de la session Stripe

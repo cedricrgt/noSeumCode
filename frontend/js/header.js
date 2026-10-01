@@ -559,29 +559,15 @@ function getPaywallSyllabusHtml(tier) {
 }
 window.getPaywallSyllabusHtml = getPaywallSyllabusHtml;
 
-async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortId) {
+async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortId, addonParam) {
   const urlParams = new URLSearchParams(window.location.search);
-  const addon = urlParams.get('addon') || sessionStorage.getItem('noseum_pending_checkout_addon');
+  const addon = addonParam || urlParams.get('addon') || sessionStorage.getItem('noseum_pending_checkout_addon');
   
   courseId = resolveCourseId(courseId);
 
-  if (!addon && sessionStorage.getItem("mentor_downsell_shown") !== "true") {
-    sessionStorage.setItem("mentor_downsell_shown", "true");
-    const modalDownsell = document.getElementById("mentor-downsell-modal");
-    if (modalDownsell) {
-      modalDownsell.style.display = "block";
-      document.getElementById("btn-accept-downsell").onclick = () => {
-        modalDownsell.style.display = "none";
-        window.location.search = "?id=" + encodeURIComponent(courseId) + "&checkout=true&addon=mentor_downsell_2sessions";
-      };
-      document.getElementById("btn-reject-downsell").onclick = () => {
-        modalDownsell.style.display = "none";
-        openStripePaywall(courseId, courseTitle, priceText, tier, cohortId);
-      };
-      return;
-    }
-  }
+  window.currentPaywallContext = { courseId, courseTitle, priceText, tier, cohortId, addon };
 
+  // 1. Modale downsell si non sélectionné (Section 2.4 & 4.4)
   if (!addon && sessionStorage.getItem("mentor_downsell_shown") !== "true") {
     sessionStorage.setItem("mentor_downsell_shown", "true");
     const modalDownsell = document.getElementById("mentor-downsell-modal");
@@ -589,24 +575,28 @@ async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortI
       modalDownsell.style.display = "block";
       const acceptBtn = document.getElementById("btn-accept-downsell");
       const rejectBtn = document.getElementById("btn-reject-downsell");
-      if (acceptBtn) acceptBtn.onclick = () => {
-        modalDownsell.style.display = "none";
-        window.location.search = "?id=" + encodeURIComponent(courseId) + "&checkout=true&addon=mentor_downsell_2sessions";
-      };
-      if (rejectBtn) rejectBtn.onclick = () => {
-        modalDownsell.style.display = "none";
-        openStripePaywall(courseId, courseTitle, priceText, tier, cohortId);
-      };
+      if (acceptBtn) {
+        acceptBtn.onclick = () => {
+          modalDownsell.style.display = "none";
+          let baseAmount = parseInt((priceText || "").replace(/[^0-9]/g, "")) || 299;
+          let newPrice = (baseAmount + 89) + " €";
+          openStripePaywall(courseId, (courseTitle || "Pack") + " + Suivi Mentor (2 sessions)", newPrice, tier, cohortId, "mentor_downsell_2sessions");
+        };
+      }
+      if (rejectBtn) {
+        rejectBtn.onclick = () => {
+          modalDownsell.style.display = "none";
+          openStripePaywall(courseId, courseTitle, priceText, tier, cohortId, null);
+        };
+      }
       return;
     }
   }
 
   if (!tier) {
     const t = (courseTitle || "").toLowerCase();
-    const p = (priceText || "").toLowerCase();
-    if (t.includes("vip") || t.includes("goat") || p.includes("389") || p.includes("879")) {
-      tier = "VIP";
-    } else if (t.includes("starter") || t.includes("fondation") || p.includes("89") || p.includes("279")) {
+    const idStr = (courseId || "").toLowerCase();
+    if (idStr.includes("starter") || t.includes("starter") || t.includes("fondation")) {
       tier = "STARTER";
     } else {
       tier = "WEB";
@@ -651,6 +641,31 @@ async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortI
   const priceEl = document.getElementById("paywall-course-price");
   if (priceEl && priceText) {
     priceEl.textContent = priceText;
+  }
+
+  // Rappel discret Suivi Mentor si non sélectionné (Section 2.3 & 4.3)
+  const reminderEl = document.getElementById("paywall-mentor-reminder");
+  if (reminderEl) {
+    if (!addon) {
+      reminderEl.style.display = "flex";
+      const apiBase = window.API_BASE_URL || "";
+      fetch(apiBase + "/api/cohorts/current")
+        .then(r => r.ok ? r.json() : Promise.reject())
+        .then(data => {
+          let slots = 3;
+          const tierKey = (tier || "starter").toLowerCase().includes("web") ? "web_pro" : "starter";
+          if (data && data[tierKey] && typeof data[tierKey].mentor_slots_remaining === "number") {
+            slots = data[tierKey].mentor_slots_remaining;
+          }
+          const slotsEl = document.getElementById("paywall-mentor-slots");
+          if (slotsEl) {
+            slotsEl.textContent = slots > 0 ? (slots + " place" + (slots > 1 ? "s" : "") + " restante" + (slots > 1 ? "s" : "")) : "complet pour cette cohorte";
+          }
+        })
+        .catch(() => {});
+    } else {
+      reminderEl.style.display = "none";
+    }
   }
 
   const loadingEl = document.getElementById("paywall-loading");
@@ -1460,19 +1475,31 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 
-window.openMentorDrawer = function(courseId) {
+window.openMentorDrawer = function() {
   const drawer = document.getElementById("mentor-addon-drawer");
   if (drawer) {
-    drawer.style.right = "0";
+    drawer.style.display = "block";
+    setTimeout(() => { drawer.style.right = "0"; }, 10);
     const btn = document.getElementById("btn-drawer-add-mentor");
-    if (btn && courseId) {
+    if (btn) {
       btn.onclick = () => {
-        window.location.search = "?id=" + encodeURIComponent(courseId) + "&checkout=true&addon=mentor_4sessions";
+        closeMentorDrawer();
+        const ctx = window.currentPaywallContext || {};
+        const courseId = ctx.courseId || "starter";
+        const basePrice = parseInt((ctx.priceText || "").replace(/[^0-9]/g, "")) || 299;
+        const newPrice = (basePrice + 199) + " €";
+        const newTitle = (ctx.courseTitle || "Pack").replace(/ \+ Suivi Mentor/g, "") + " + Suivi Mentor";
+        openStripePaywall(courseId, newTitle, newPrice, ctx.tier, ctx.cohortId, "mentor_4sessions");
       };
     }
   }
 };
+
 window.closeMentorDrawer = function() {
   const drawer = document.getElementById("mentor-addon-drawer");
-  if (drawer) drawer.style.right = "-400px";
+  if (drawer) {
+    drawer.style.right = "-400px";
+    setTimeout(() => { drawer.style.display = "none"; }, 300);
+  }
 };
+

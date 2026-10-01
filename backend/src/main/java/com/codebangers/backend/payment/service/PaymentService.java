@@ -34,13 +34,22 @@ public class PaymentService {
     private final CourseRepository courseRepository;
     private final StripeGateway stripeGateway;
     private final CohortRepository cohortRepository;
+    private final com.codebangers.backend.mentor.service.MentorService mentorService;
     private com.codebangers.backend.discord.service.DiscordService discordService;
 
     public PaymentService(UserRepository userRepository,
                           EnrollmentRepository enrollmentRepository,
                           CourseRepository courseRepository,
                           StripeGateway stripeGateway) {
-        this(userRepository, enrollmentRepository, courseRepository, stripeGateway, null, null);
+        this(userRepository, enrollmentRepository, courseRepository, stripeGateway, null, null, null);
+    }
+
+    public PaymentService(UserRepository userRepository,
+                          EnrollmentRepository enrollmentRepository,
+                          CourseRepository courseRepository,
+                          StripeGateway stripeGateway,
+                          CohortRepository cohortRepository) {
+        this(userRepository, enrollmentRepository, courseRepository, stripeGateway, cohortRepository, null, null);
     }
 
     @Autowired
@@ -48,8 +57,9 @@ public class PaymentService {
                           EnrollmentRepository enrollmentRepository,
                           CourseRepository courseRepository,
                           StripeGateway stripeGateway,
-                          @Autowired(required = false) CohortRepository cohortRepository) {
-        this(userRepository, enrollmentRepository, courseRepository, stripeGateway, cohortRepository, null);
+                          @Autowired(required = false) CohortRepository cohortRepository,
+                          @Autowired(required = false) com.codebangers.backend.mentor.service.MentorService mentorService) {
+        this(userRepository, enrollmentRepository, courseRepository, stripeGateway, cohortRepository, mentorService, null);
     }
 
     public PaymentService(UserRepository userRepository,
@@ -57,12 +67,14 @@ public class PaymentService {
                           CourseRepository courseRepository,
                           StripeGateway stripeGateway,
                           CohortRepository cohortRepository,
+                          com.codebangers.backend.mentor.service.MentorService mentorService,
                           com.codebangers.backend.discord.service.DiscordService discordService) {
         this.userRepository = userRepository;
         this.enrollmentRepository = enrollmentRepository;
         this.courseRepository = courseRepository;
         this.stripeGateway = stripeGateway;
         this.cohortRepository = cohortRepository;
+        this.mentorService = mentorService;
         this.discordService = discordService;
     }
 
@@ -156,10 +168,13 @@ public class PaymentService {
         }
 
         boolean embedded = request.getEmbedded() == null || request.getEmbedded();
-        if (request.getTier() == null && request.getCohortId() == null) {
+        if (request.getTier() == null && request.getCohortId() == null && (request.getAddon() == null || request.getAddon().isBlank())) {
             return stripeGateway.createCheckoutSession(user, course, request.getSuccessUrl(), request.getCancelUrl(), embedded, request.getReturnUrl());
         }
-        return stripeGateway.createCheckoutSession(user, course, request.getSuccessUrl(), request.getCancelUrl(), embedded, request.getReturnUrl(), request.getTier(), request.getCohortId());
+        if (request.getAddon() == null || request.getAddon().isBlank()) {
+            return stripeGateway.createCheckoutSession(user, course, request.getSuccessUrl(), request.getCancelUrl(), embedded, request.getReturnUrl(), request.getTier(), request.getCohortId());
+        }
+        return stripeGateway.createCheckoutSession(user, course, request.getSuccessUrl(), request.getCancelUrl(), embedded, request.getReturnUrl(), request.getTier(), request.getCohortId(), request.getAddon());
     }
 
     /**
@@ -173,14 +188,14 @@ public class PaymentService {
      * Traitement d'un événement Stripe avec ciblage précis du cours et de l'utilisateur par métadonnées.
      */
     public void processStripeWebhookEvent(String customerEmail, String stripeEventType, String transactionId, String courseIdStr, String userIdStr) {
-        processStripeWebhookEvent(customerEmail, stripeEventType, transactionId, courseIdStr, userIdStr, null, null);
+        processStripeWebhookEvent(customerEmail, stripeEventType, transactionId, courseIdStr, userIdStr, null, null, null);
     }
 
     /**
      * Traitement complet d'un événement Stripe avec gestion du plan (Starter, Web, VIP) et de la cohorte (ADR-013, ADR-014).
      */
     public void processStripeWebhookEvent(String customerEmail, String stripeEventType, String transactionId,
-                                          String courseIdStr, String userIdStr, String tierStr, String cohortIdStr) {
+                                          String courseIdStr, String userIdStr, String tierStr, String cohortIdStr, String addon) {
         User user = null;
         if (userIdStr != null && !userIdStr.isBlank()) {
             try {
@@ -231,6 +246,7 @@ public class PaymentService {
                             .findFirst()
                             .orElse(null);
 
+                    EnrollmentTier previousTier = enrollment != null ? enrollment.getTier() : null;
                     if (enrollment != null) {
                         enrollment.setPaymentStatus(status);
                         if (tier != null) enrollment.setTier(tier);
@@ -244,6 +260,13 @@ public class PaymentService {
                     // En cas de pack/bundle (VIP ou WEB), synchroniser les cours inclus
                     if (tier == EnrollmentTier.VIP || tier == EnrollmentTier.WEB) {
                         enrollInBundleCourses(user, tier, cohort, status);
+                    }
+
+                    if (status == PaymentStatus.PAID && mentorService != null && addon != null && !addon.isBlank()) {
+                        mentorService.processMentorAddonPurchase(user, cohort, addon, tier);
+                    }
+                    if (status == PaymentStatus.PAID && mentorService != null && previousTier == EnrollmentTier.STARTER && tier == EnrollmentTier.WEB) {
+                        mentorService.handleUpgradeToWebPro(user, cohort);
                     }
 
                     log.info("🎓 Inscription mise à jour suite à webhook Stripe pour {} sur le cours {} (Tier: {}, Cohorte: {}) -> Statut: {}",
@@ -314,12 +337,15 @@ public class PaymentService {
             } catch (Exception ignored) {}
         }
 
+        String addon = session.getMetadata() != null ? session.getMetadata().get("addon") : null;
+
         List<Enrollment> existingEnrollments = enrollmentRepository.findByUserId(user.getId());
         Enrollment enrollment = existingEnrollments.stream()
                 .filter(e -> e.getCourse() != null && e.getCourse().getId().equals(course.getId()))
                 .findFirst()
                 .orElse(null);
 
+        EnrollmentTier previousTier = enrollment != null ? enrollment.getTier() : null;
         if (enrollment != null) {
             enrollment.setPaymentStatus(PaymentStatus.PAID);
             if (tier != null) enrollment.setTier(tier);
@@ -333,6 +359,13 @@ public class PaymentService {
         // En cas de pack/bundle (VIP ou WEB), synchroniser les cours inclus
         if (tier == EnrollmentTier.VIP || tier == EnrollmentTier.WEB) {
             enrollInBundleCourses(user, tier, cohort, PaymentStatus.PAID);
+        }
+
+        if (mentorService != null && addon != null && !addon.isBlank()) {
+            mentorService.processMentorAddonPurchase(user, cohort, addon, tier);
+        }
+        if (mentorService != null && previousTier == EnrollmentTier.STARTER && tier == EnrollmentTier.WEB) {
+            mentorService.handleUpgradeToWebPro(user, cohort);
         }
 
         log.info("🎓 Inscription confirmée (synchronisation Stripe directe) pour {} sur le cours {} (Tier: {}, Cohorte: {}) -> Statut: PAID",

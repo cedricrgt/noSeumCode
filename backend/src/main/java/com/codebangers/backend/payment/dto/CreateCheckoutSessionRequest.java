@@ -11,6 +11,7 @@ public class CreateCheckoutSessionRequest {
 
     private EnrollmentTier tier;
     private UUID cohortId;
+    private String addon;
 
     private String successUrl;
     private String cancelUrl;
@@ -93,5 +94,13 @@ public class CreateCheckoutSessionRequest {
 
     public void setCohortId(UUID cohortId) {
         this.cohortId = cohortId;
+    }
+
+    public String getAddon() {
+        return addon;
+    }
+
+    public void setAddon(String addon) {
+        this.addon = addon;
     }
 }
