@@ -560,7 +560,46 @@ function getPaywallSyllabusHtml(tier) {
 window.getPaywallSyllabusHtml = getPaywallSyllabusHtml;
 
 async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortId) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const addon = urlParams.get('addon') || sessionStorage.getItem('noseum_pending_checkout_addon');
+  
   courseId = resolveCourseId(courseId);
+
+  if (!addon && sessionStorage.getItem("mentor_downsell_shown") !== "true") {
+    sessionStorage.setItem("mentor_downsell_shown", "true");
+    const modalDownsell = document.getElementById("mentor-downsell-modal");
+    if (modalDownsell) {
+      modalDownsell.style.display = "block";
+      document.getElementById("btn-accept-downsell").onclick = () => {
+        modalDownsell.style.display = "none";
+        window.location.search = "?id=" + encodeURIComponent(courseId) + "&checkout=true&addon=mentor_downsell_2sessions";
+      };
+      document.getElementById("btn-reject-downsell").onclick = () => {
+        modalDownsell.style.display = "none";
+        openStripePaywall(courseId, courseTitle, priceText, tier, cohortId);
+      };
+      return;
+    }
+  }
+
+  if (!addon && sessionStorage.getItem("mentor_downsell_shown") !== "true") {
+    sessionStorage.setItem("mentor_downsell_shown", "true");
+    const modalDownsell = document.getElementById("mentor-downsell-modal");
+    if (modalDownsell) {
+      modalDownsell.style.display = "block";
+      const acceptBtn = document.getElementById("btn-accept-downsell");
+      const rejectBtn = document.getElementById("btn-reject-downsell");
+      if (acceptBtn) acceptBtn.onclick = () => {
+        modalDownsell.style.display = "none";
+        window.location.search = "?id=" + encodeURIComponent(courseId) + "&checkout=true&addon=mentor_downsell_2sessions";
+      };
+      if (rejectBtn) rejectBtn.onclick = () => {
+        modalDownsell.style.display = "none";
+        openStripePaywall(courseId, courseTitle, priceText, tier, cohortId);
+      };
+      return;
+    }
+  }
 
   if (!tier) {
     const t = (courseTitle || "").toLowerCase();
@@ -590,6 +629,7 @@ async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortI
     sessionStorage.setItem("noseum_pending_checkout_course_title", courseTitle || "");
     sessionStorage.setItem("noseum_pending_checkout_course_price", priceText || "");
     sessionStorage.setItem("noseum_pending_checkout_tier", tier || "");
+    if (addon) sessionStorage.setItem("noseum_pending_checkout_addon", addon);
 
     openGlobalAuthModal("register");
     showGlobalAuthAlert(`🎓 Créez votre compte pour débloquer "${courseTitle || "votre formation"}" (${priceText || ""}). Le terminal de paiement sécurisé s'affichera directement après connexion.`, "info");
@@ -652,8 +692,9 @@ async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortI
         cohortId: cohortId || undefined,
         embedded: true,
         returnUrl: returnUrl,
-        successUrl: returnUrl
-      })
+        successUrl: returnUrl,
+          addon: addon
+        })
     });
 
     if (!res.ok) {
@@ -1418,3 +1459,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   initScrollEffect();
 });
 
+
+window.openMentorDrawer = function(courseId) {
+  const drawer = document.getElementById("mentor-addon-drawer");
+  if (drawer) {
+    drawer.style.right = "0";
+    const btn = document.getElementById("btn-drawer-add-mentor");
+    if (btn && courseId) {
+      btn.onclick = () => {
+        window.location.search = "?id=" + encodeURIComponent(courseId) + "&checkout=true&addon=mentor_4sessions";
+      };
+    }
+  }
+};
+window.closeMentorDrawer = function() {
+  const drawer = document.getElementById("mentor-addon-drawer");
+  if (drawer) drawer.style.right = "-400px";
+};
