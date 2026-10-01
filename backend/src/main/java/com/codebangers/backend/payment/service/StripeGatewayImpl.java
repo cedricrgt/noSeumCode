@@ -51,26 +51,44 @@ public class StripeGatewayImpl implements StripeGateway {
 
     @Override
     public CheckoutSessionResponse createCheckoutSession(User user, Course course, String successUrl, String cancelUrl, boolean embedded, String returnUrl, EnrollmentTier tier, UUID cohortId) {
+        return createCheckoutSession(user, course, successUrl, cancelUrl, embedded, returnUrl, tier, cohortId, null);
+    }
+
+    @Override
+    public CheckoutSessionResponse createCheckoutSession(User user, Course course, String successUrl, String cancelUrl, boolean embedded, String returnUrl, EnrollmentTier tier, UUID cohortId, String addon) {
         if (stripeSecretKey == null || stripeSecretKey.isBlank()) {
             throw new IllegalStateException("Stripe Secret Key non configurée. Impossible de créer une Checkout Session.");
         }
 
         long unitAmount;
         if (tier == EnrollmentTier.VIP) {
-            unitAmount = 38900L;
+            unitAmount = 44900L + 19900L;
         } else if (course.getPriceInCents() != null && course.getPriceInCents() > 0) {
             unitAmount = course.getPriceInCents();
         } else {
-            unitAmount = (tier == EnrollmentTier.STARTER) ? 8900L : 17900L;
+            unitAmount = (tier == EnrollmentTier.STARTER) ? 29900L : 44900L;
+        }
+
+        if (addon != null && !addon.isBlank()) {
+            if (addon.contains("downsell") || addon.contains("2sessions")) {
+                unitAmount += 8900L;
+            } else {
+                unitAmount += 19900L;
+            }
         }
 
         String currency = (course.getCurrency() != null && !course.getCurrency().isBlank())
                 ? course.getCurrency().toLowerCase()
                 : "eur";
 
-        String courseTitle = (tier == EnrollmentTier.VIP)
-                ? course.getTitle() + " + Mentorat VIP (4h)"
-                : course.getTitle();
+        String courseTitle = course.getTitle();
+        if (addon != null && !addon.isBlank()) {
+            courseTitle += (addon.contains("downsell") || addon.contains("2sessions"))
+                    ? " + Suivi Mentor (2 sessions)"
+                    : " + Suivi Mentor (4 sessions)";
+        } else if (tier == EnrollmentTier.VIP) {
+            courseTitle += " + Suivi Mentor (4 sessions)";
+        }
 
         String description = course.getDescription();
         if (description != null && description.length() > 250) {
@@ -95,6 +113,9 @@ public class StripeGatewayImpl implements StripeGateway {
         }
         if (cohortId != null) {
             paramsBuilder.putMetadata("cohortId", cohortId.toString());
+        }
+        if (addon != null && !addon.isBlank()) {
+            paramsBuilder.putMetadata("addon", addon);
         }
 
         paramsBuilder.addLineItem(

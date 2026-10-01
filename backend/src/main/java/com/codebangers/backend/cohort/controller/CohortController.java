@@ -39,6 +39,11 @@ public class CohortController {
         return ResponseEntity.ok(cohortService.getOpenCohorts());
     }
 
+    @GetMapping("/current")
+    public ResponseEntity<java.util.Map<String, com.codebangers.backend.cohort.dto.MentorStats>> getCurrentCohortStats() {
+        return ResponseEntity.ok(cohortService.getCurrentMentorStats());
+    }
+
     @GetMapping("/all")
     @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
     public ResponseEntity<List<CohortResponse>> getAllCohorts() {

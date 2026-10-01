@@ -1184,8 +1184,32 @@ _Chronologique — plus récent en bas_
    - Homepage (`frontend/index.html`) : Mise à jour de la carte Git vers la nouvelle URL propre `/blog/git-explique-debutant-versioning` et ajout d'une carte dédiée pour le guide VS Code.
    - Plan de site XML (`frontend/sitemap.xml`) : Enregistrement des deux URLs canoniques avec priorité 0.8.
 
+---
 
+### 2026-10-01 — Harmonisation Tarifaire (Starter 299 €, Web Pro 449 €) & Add-on Suivi Mentor (+199 € / Downsell 89 €)
+**Conversation**: `bee834aa-93e8-46e7-b63c-62b3900ccf51`  
+**Branche**: `feat/suivi-mentor`
 
-
-
+#### Ce qui a changé :
+1. **Architecture Backend & Persistence (Flyway V018 & Modèles Mentor)** :
+   - Migration `V018__add_mentor_addon.sql` : ajout des colonnes `mentor_slots_remaining` (défaut 3) sur `cohort`, création des tables `student_mentor_quota` et `student_mentor_sessions`, mise à jour des prix des cours de base (Starter 29900 cts, Web Pro 44900 cts).
+   - Contrôleur et Service Cohorte (`CohortController`, `CohortService`, `MentorStats`) exposant `GET /api/cohorts/current` avec le nombre réel de places restantes par pack (`starter`, `web_pro`).
+   - Module Mentor (`MentorService`, `StudentMentorQuota`, `StudentMentorSession`) gérant la décrémentation des places lors des paiements réels confirmés (webhook Stripe `checkout.session.completed` et synchronisation directe `confirmCheckoutSession`), la distribution des sessions par module et les montées en gamme Starter -> Web Pro.
+   - Extension de `CreateCheckoutSessionRequest`, `PaymentService`, `StripeGateway`, et `StripeGatewayImpl` pour supporter le paramètre `addon` (`mentor_4sessions`, `mentor_downsell_2sessions`) avec calcul du montant total unitaire et stockage des métadonnées Stripe.
+   - Validation par la suite complète de 138 tests backend (`BUILD SUCCESS`).
+2. **Nouvelle Page Dédiée Suivi Mentor (`frontend/suivi-mentor.html`)** :
+   - Landing page dédiée avec réécriture Apache `/suivi-mentor`, sitemap XML, métadonnées Open Graph, Twitter Cards et Schema.org JSON-LD `Service`.
+   - Rédaction intégrale basée sur la section 4.1 du briefing, compteur dynamique de places restantes via `GET /api/cohorts/current`, et CTAs renvoyant vers `formations/starter?addon=mentor` et `formations/pack-web?addon=mentor`.
+3. **Composant Add-on Interactif sur les Pages Formations (`starter.html`, `pack-web.html`)** :
+   - Intégration de l'encart add-on interactif (+199 €) avec mise à jour dynamique des prix affichés (Starter : 299 € -> 498 €, 3x 99 € -> 3x 166 € ; Web Pro : 449 € -> 648 €, 3x 149 € -> 3x 216 €).
+   - Prise en charge automatique du paramètre URL `?addon=mentor`.
+   - Interrogation dynamique de `GET /api/cohorts/current` : affichage des places restantes réelles ou grisement avec message "Complet pour cette cohorte" si capacité atteinte.
+4. **Checkout — Rappel Discret, Drawer Latéral et Modale Downsell (`popovers-shared.html`, `header.js`)** :
+   - Ligne de rappel discrète sous le récapitulatif de commande Stripe Embedded Checkout si l'option mentor n'est pas sélectionnée.
+   - Drawer latéral `#mentor-addon-drawer` avec récapitulatif de l'offre et bouton "Ajouter à ma commande" sans rechargement de page.
+   - Modale downsell `#mentor-downsell-modal` (2 sessions pour 89 €) non agressive et non culpabilisante, affichée une seule fois par session (`sessionStorage`), avec choix neutre ("Ajouter 2 sessions pour 89 €" ou "Continuer sans le suivi").
+5. **Harmonisation Tarifaire Globale & Nettoyage** :
+   - Éradication des anciens prix obsolètes (89 €, 179 €, 279 €, 389 €, 579 €, 879 €) sur l'ensemble du frontend (`index.html`, `cours.js`, `formations/index.html`, `cgv.html`, `articles.json`, `thanks.html`, `article.js`).
+   - Remplacement de la 3e carte "VIP" sur la homepage par le Bloc Add-on Suivi Mentor.
+   - Recompilation complète des assets minifiés via `frontend/build.js`.
 

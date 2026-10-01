@@ -41,6 +41,18 @@ public class CohortService {
     }
 
     @Transactional(readOnly = true)
+    public java.util.Map<String, com.codebangers.backend.cohort.dto.MentorStats> getCurrentMentorStats() {
+        List<Cohort> openCohorts = cohortRepository.findByStatusInOrderByStartDateAsc(List.of(CohortStatus.OPEN, CohortStatus.IN_PROGRESS));
+        java.util.Map<String, com.codebangers.backend.cohort.dto.MentorStats> map = new java.util.HashMap<>();
+        for (Cohort cohort : openCohorts) {
+            String key = cohort.getTier().name().toLowerCase();
+            if (key.equals("web")) key = "web_pro";
+            map.put(key, new com.codebangers.backend.cohort.dto.MentorStats(cohort.getMentorSlotsRemaining()));
+        }
+        return map;
+    }
+
+    @Transactional(readOnly = true)
     public Optional<CohortResponse> getCohortById(UUID id) {
         return cohortRepository.findById(id).map(this::mapToResponse);
     }

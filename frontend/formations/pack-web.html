@@ -70,7 +70,7 @@
           "@type": "Offer",
           "name": "Pack Web Standard",
           "category": "Paid",
-          "price": "579.00",
+          "price": "449.00",
           "priceCurrency": "EUR",
           "availability": "https://schema.org/InStock",
           "url": "https://noseumcode.fr/formations/pack-web",
@@ -300,17 +300,38 @@
             <div class="pricing-header">
               <span class="formation-badge formation-badge--vip">Offre Complète</span>
               <div class="pricing-amount pricing-amount--vip">
-                579 <span class="currency">€</span>
+                <span id="pack-price-amount">449</span> <span class="currency">€</span>
               </div>
               <div class="pricing-klarna-badge">
-                <span>ou <strong>4x 144,75 €</strong> sans frais avec <strong>Klarna</strong></span>
+                <span id="pack-klarna-text">ou <strong>3x 149 €</strong> sans frais avec <strong>Klarna</strong></span>
               </div>
-              <p style="font-size: 0.85rem; color: #a78bfa; margin-top: 0.5rem;">
-                Option Mentorat VIP (4h 1-to-1) à 879 € disponible
-              </p>
             </div>
 
-            <a href="parcours.html" class="formation-cta-btn formation-cta-btn--vip">
+            <!-- Composant Add-on Suivi Mentor (Section 2.2 & 4.2) -->
+            <div class="mentor-addon-box" id="mentor-addon-card" style="margin: 1.25rem 0; padding: 1.15rem; background: rgba(0, 255, 135, 0.05); border: 1px solid rgba(0, 255, 135, 0.25); border-radius: 12px; transition: all 0.2s ease;">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                <label for="mentor-addon-toggle" style="font-weight: 700; color: #fff; font-size: 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+                  <input type="checkbox" id="mentor-addon-toggle" style="width: 18px; height: 18px; accent-color: #00ff87; cursor: pointer;" />
+                  <span>Ajouter le Suivi Mentor</span>
+                </label>
+                <span style="font-weight: 700; color: #00ff87; font-size: 1.1rem;">+199 €</span>
+              </div>
+              <p style="color: #cbd5e1; font-size: 0.85rem; line-height: 1.45; margin: 0.5rem 0;">
+                4 sessions individuelles de 1h avec Cédric.<br>
+                On regarde ton code. On débloque ce qui bloque.
+              </p>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; margin-top: 0.6rem; padding-top: 0.5rem; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                <span id="mentor-slots-status" style="color: #00ff87; font-weight: 600;">
+                  <span id="mentor-slots-count">3</span> places restantes pour cette cohorte
+                </span>
+                <a href="suivi-mentor.html" target="_blank" style="color: #94a3b8; text-decoration: underline;">En savoir plus →</a>
+              </div>
+              <div style="color: #94a3b8; font-size: 0.75rem; margin-top: 0.35rem;">
+                Remboursé si la 1ère session ne te convient pas.
+              </div>
+            </div>
+
+            <a href="parcours.html?id=pack-web&checkout=true" id="web-cta-btn" class="formation-cta-btn formation-cta-btn--vip">
               Rejoindre la cohorte
             </a>
 
@@ -361,5 +382,96 @@
     <script src="js/analytics.js?v=sprint12"></script>
     <script src="js/header.min.js?v=sprint12"></script>
     <script src="js/popover-hubspot.min.js?v=sprint12"></script>
+  
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const toggle = document.getElementById("mentor-addon-toggle");
+        const priceAmount = document.getElementById("pack-price-amount");
+        const klarnaText = document.getElementById("pack-klarna-text");
+        const ctaBtn = document.getElementById("web-cta-btn");
+        const addonCard = document.getElementById("mentor-addon-card");
+        const slotsStatus = document.getElementById("mentor-slots-status");
+        const slotsCount = document.getElementById("mentor-slots-count");
+
+        function updateState() {
+          const checked = toggle && toggle.checked;
+          if (checked) {
+            if (priceAmount) priceAmount.textContent = "648";
+            if (klarnaText) klarnaText.innerHTML = "ou <strong>3x 216 €</strong> sans frais avec <strong>Klarna</strong>";
+            if (addonCard) addonCard.style.borderColor = "#00ff87";
+            if (ctaBtn) {
+              ctaBtn.href = "parcours.html?id=pack-web&checkout=true&addon=mentor_4sessions";
+              ctaBtn.setAttribute("data-addon", "mentor_4sessions");
+            }
+          } else {
+            if (priceAmount) priceAmount.textContent = "449";
+            if (klarnaText) klarnaText.innerHTML = "ou <strong>3x 149 €</strong> sans frais avec <strong>Klarna</strong>";
+            if (addonCard) addonCard.style.borderColor = "rgba(0, 255, 135, 0.25)";
+            if (ctaBtn) {
+              ctaBtn.href = "parcours.html?id=pack-web&checkout=true";
+              ctaBtn.removeAttribute("data-addon");
+            }
+          }
+        }
+
+        if (toggle) {
+          toggle.addEventListener("change", updateState);
+        }
+
+        if (ctaBtn) {
+          ctaBtn.addEventListener("click", function(e) {
+            if (typeof window.openStripePaywall === "function") {
+              e.preventDefault();
+              const hasAddon = toggle && toggle.checked;
+              const priceText = hasAddon ? "648 €" : "449 €";
+              const title = hasAddon ? "Pack Web Pro + Suivi Mentor" : "Pack Web Pro — L'Autonomie Complète";
+              const addon = hasAddon ? "mentor_4sessions" : null;
+              window.openStripePaywall("pack-web", title, priceText, "WEB", null, addon);
+            }
+          });
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("addon") === "mentor" || urlParams.get("addon") === "mentor_4sessions") {
+          if (toggle && !toggle.disabled) {
+            toggle.checked = true;
+            updateState();
+          }
+        }
+
+        const apiBase = window.API_BASE_URL || "";
+        fetch(apiBase + "/api/cohorts/current")
+          .then(function(res) {
+            if (res.ok) return res.json();
+            throw new Error("HTTP " + res.status);
+          })
+          .then(function(data) {
+            let slots = 3;
+            if (data && data.web_pro && typeof data.web_pro.mentor_slots_remaining === "number") {
+              slots = data.web_pro.mentor_slots_remaining;
+            }
+            if (slots <= 0) {
+              if (toggle) {
+                toggle.checked = false;
+                toggle.disabled = true;
+              }
+              if (slotsStatus) {
+                slotsStatus.textContent = "Complet pour cette cohorte — prochaine disponibilité bientôt";
+                slotsStatus.style.color = "#f87171";
+              }
+              if (addonCard) {
+                addonCard.style.opacity = "0.6";
+                addonCard.style.borderColor = "rgba(255, 255, 255, 0.1)";
+              }
+              updateState();
+            } else {
+              if (slotsCount) slotsCount.textContent = slots;
+            }
+          })
+          .catch(function(err) {
+            console.warn("Could not fetch mentor capacity:", err);
+          });
+      });
+    </script>
   </body>
 </html>

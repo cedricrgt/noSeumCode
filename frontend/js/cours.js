@@ -108,12 +108,12 @@ function formatCoursePrice(course) {
   }
   const tier = course && (course.requiredTier || "").toUpperCase();
   if (tier === "VIP" || (course && (course.slug === "pack-mentorat-vip" || (course.title && (course.title.toLowerCase().includes("vip") || course.title.toLowerCase().includes("goat")))))) {
-    return "389 €";
+    return "648 €";
   }
   if (tier === "STARTER" || (course && (course.slug === "pack-starter" || course.slug === "html-css" || (course.title && course.title.toLowerCase().includes("starter"))))) {
-    return "89 €";
+    return "299 €";
   }
-  return "179 €";
+  return "449 €";
 }
 
 async function loadInitialData() {
@@ -131,7 +131,7 @@ async function loadInitialData() {
           slug: "pack-starter",
           title: "Pack Starter – Les Fondations du Web",
           description: "Les fondations indispensables du web moderne : structure HTML5, design CSS3, Flexbox & Grid, responsive mobile et 2 projets portfolio complets.",
-          priceInCents: course.priceInCents || 8900,
+          priceInCents: course.priceInCents || 29900,
           requiredTier: "STARTER",
           level: "DEBUTANT",
           imageUrl: course.imageUrl || "images/courses/html.webp"
@@ -143,7 +143,7 @@ async function loadInitialData() {
           slug: "pack-web-pro",
           title: "Pack Web Pro – L'Autonomie Complète",
           description: "Deviens un développeur web frontend autonome : tout le Pack Starter + JavaScript ES6+, manipulation du DOM, requêtes API et bonus Git & GitHub offert.",
-          priceInCents: course.priceInCents || 17900,
+          priceInCents: course.priceInCents || 44900,
           requiredTier: "WEB",
           level: "INTERMEDIAIRE",
           imageUrl: course.imageUrl || "images/courses/javascript.webp"
@@ -155,7 +155,7 @@ async function loadInitialData() {
           slug: "pack-mentorat-vip",
           title: "Pack Mentorat VIP – L'Accompagnement Sur-Mesure",
           description: "L'accélération ultime avec un formateur senior dédié : tout le Pack Web Pro + 4h de mentorat individuel en visio, revues de code et coaching carrière.",
-          priceInCents: course.priceInCents || 38900,
+          priceInCents: course.priceInCents || 64800,
           requiredTier: "VIP",
           level: "ACCOMPAGNE",
           imageUrl: course.imageUrl || "images/courses/javascript.webp"
@@ -164,7 +164,7 @@ async function loadInitialData() {
       return course;
     });
   } else {
-    // Fallback seed 3 packs officiels (Starter 89 €, Web Pro 179 €, Mentorat VIP 389 €)
+    // Fallback seed 2 packs officiels (Starter 299 €, Web Pro 449 €)
     allCourses = [
       {
         id: "c1000000-0000-0000-0000-000000000001",
@@ -210,7 +210,7 @@ async function loadInitialData() {
         createdByName: "Cédric Ragot",
         updatedByName: "Cédric Ragot",
         imageUrl: "images/courses/javascript.webp",
-        priceInCents: 38900,
+        priceInCents: 64800,
         currency: "EUR",
         level: "ACCOMPAGNE",
         requiredTier: "VIP",
@@ -304,7 +304,7 @@ function renderCourseCatalog() {
           let tierColor = "#0284c7";
           let tierBg = "rgba(2, 132, 199, 0.12)";
           let popularBadge = `<span style="background: rgba(0, 217, 255, 0.15); color: #00d9ff; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;">Idéal Débutant</span>`;
-          let installmentHtml = `<div style="font-size: 0.8rem; color: #64748b; margin-top: 0.4rem;">Paiement unique • Accès immédiat</div>`;
+          let installmentHtml = `<div style="font-size: 0.8rem; color: #334155; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem;"><span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.68rem; padding: 1px 5px; border-radius: 3px;">Klarna</span> ou <strong>3x 99 €</strong> sans frais</div>`;
           let featuresHtml = `
             <ul class="package-features poppins-regular" style="text-align: left; list-style: none; padding: 0; line-height: 1.6; font-size: 0.82rem; margin: 0.75rem 0; color: #475569;">
               <li>✓ <strong>Formation HTML5 Complète</strong> (Structure & SEO)</li>
@@ -315,7 +315,7 @@ function renderCourseCatalog() {
             </ul>
           `;
           let isFeatured = false;
-          let btnText = `Choisir le Pack Starter • 89 €`;
+          let btnText = `Choisir le Pack Starter • 299 €`;
 
           if (rawTier === "VIP" || slug === "pack-mentorat-vip" || slug === "git-github" || (course.title && course.title.toLowerCase().includes("vip"))) {
             tier = "VIP";
@@ -334,7 +334,7 @@ function renderCourseCatalog() {
                 <li>💬 <strong>Canal Privé Direct avec ton Mentor</strong> sur Discord</li>
               </ul>
             `;
-            btnText = `Postuler au Pack VIP • 389 €`;
+            btnText = `Postuler au Pack Web Pro + Mentor • 648 €`;
           } else if (rawTier === "WEB" || slug === "pack-web-pro" || slug === "javascript" || (course.title && (course.title.toLowerCase().includes("web pro") || course.title.toLowerCase().includes("dynamique")))) {
             tier = "WEB";
             tierLabel = "Pack Web Pro (Recommandé)";
@@ -342,7 +342,7 @@ function renderCourseCatalog() {
             tierColor = "#059669";
             tierBg = "rgba(16, 185, 129, 0.15)";
             popularBadge = `<span style="background: #00ff87; color: #070e18; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;">Le Plus Populaire</span>`;
-            installmentHtml = `<div style="font-size: 0.8rem; color: #334155; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem;"><span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.68rem; padding: 1px 5px; border-radius: 3px;">Klarna</span> ou <strong>2x 95 €</strong> sans frais</div>`;
+            installmentHtml = `<div style="font-size: 0.8rem; color: #334155; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem;"><span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.68rem; padding: 1px 5px; border-radius: 3px;">Klarna</span> ou <strong>3x 149 €</strong> sans frais</div>`;
             featuresHtml = `
               <ul class="package-features poppins-regular" style="text-align: left; list-style: none; padding: 0; line-height: 1.6; font-size: 0.82rem; margin: 0.75rem 0; color: #475569;">
                 <li>✓ <strong>Tout le Pack Starter inclus</strong> (HTML5 + CSS3)</li>
@@ -354,7 +354,7 @@ function renderCourseCatalog() {
               </ul>
             `;
             isFeatured = true;
-            btnText = `Rejoindre le Pack Web Pro • 179 €`;
+            btnText = `Rejoindre le Pack Web Pro • 449 €`;
           }
 
           let accessBadge = "";
@@ -1327,7 +1327,7 @@ async function initiateStripeCheckout(courseId) {
     : (typeof currentCourse !== "undefined" ? currentCourse : null);
 
   const courseTitle = course ? course.title : "Formation NoSeumCode";
-  let priceText = "579 €";
+  let priceText = (courseId && courseId.toLowerCase().includes("starter")) ? "299 €" : "449 €";
   if (course && course.priceInCents) {
     priceText = `${(course.priceInCents / 100).toFixed(0)} €`;
   }

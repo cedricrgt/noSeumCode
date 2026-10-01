@@ -68,7 +68,7 @@
       "offers": {
         "@type": "Offer",
         "category": "Paid",
-        "price": "279.00",
+        "price": "299.00",
         "priceCurrency": "EUR",
         "availability": "https://schema.org/InStock",
         "url": "https://noseumcode.fr/formations/starter",
@@ -306,10 +306,10 @@
             <div class="pricing-header">
               <span class="formation-badge">Tarif Unique Promotion</span>
               <div class="pricing-amount">
-                279 <span class="currency">€</span>
+                299 <span class="currency">€</span>
               </div>
               <div class="pricing-klarna-badge">
-                <span>ou <strong>3x 93 €</strong> sans frais avec <strong>Klarna</strong></span>
+                <span>ou <strong>3x 99 €</strong> sans frais avec <strong>Klarna</strong></span>
               </div>
             </div>
 
@@ -364,5 +364,96 @@
     <script src="js/analytics.js?v=sprint12"></script>
     <script src="js/header.min.js?v=sprint12"></script>
     <script src="js/popover-hubspot.min.js?v=sprint12"></script>
+  
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const toggle = document.getElementById("mentor-addon-toggle");
+        const priceAmount = document.getElementById("pack-price-amount");
+        const klarnaText = document.getElementById("pack-klarna-text");
+        const ctaBtn = document.getElementById("starter-cta-btn");
+        const addonCard = document.getElementById("mentor-addon-card");
+        const slotsStatus = document.getElementById("mentor-slots-status");
+        const slotsCount = document.getElementById("mentor-slots-count");
+
+        function updateState() {
+          const checked = toggle && toggle.checked;
+          if (checked) {
+            if (priceAmount) priceAmount.textContent = "498";
+            if (klarnaText) klarnaText.innerHTML = "ou <strong>3x 166 €</strong> sans frais avec <strong>Klarna</strong>";
+            if (addonCard) addonCard.style.borderColor = "#00ff87";
+            if (ctaBtn) {
+              ctaBtn.href = "parcours.html?id=starter&checkout=true&addon=mentor_4sessions";
+              ctaBtn.setAttribute("data-addon", "mentor_4sessions");
+            }
+          } else {
+            if (priceAmount) priceAmount.textContent = "299";
+            if (klarnaText) klarnaText.innerHTML = "ou <strong>3x 99 €</strong> sans frais avec <strong>Klarna</strong>";
+            if (addonCard) addonCard.style.borderColor = "rgba(0, 255, 135, 0.25)";
+            if (ctaBtn) {
+              ctaBtn.href = "parcours.html?id=starter&checkout=true";
+              ctaBtn.removeAttribute("data-addon");
+            }
+          }
+        }
+
+        if (toggle) {
+          toggle.addEventListener("change", updateState);
+        }
+
+        if (ctaBtn) {
+          ctaBtn.addEventListener("click", function(e) {
+            if (typeof window.openStripePaywall === "function") {
+              e.preventDefault();
+              const hasAddon = toggle && toggle.checked;
+              const priceText = hasAddon ? "498 €" : "299 €";
+              const title = hasAddon ? "Pack Starter + Suivi Mentor" : "Pack Starter — Fondations Web";
+              const addon = hasAddon ? "mentor_4sessions" : null;
+              window.openStripePaywall("starter", title, priceText, "STARTER", null, addon);
+            }
+          });
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("addon") === "mentor" || urlParams.get("addon") === "mentor_4sessions") {
+          if (toggle && !toggle.disabled) {
+            toggle.checked = true;
+            updateState();
+          }
+        }
+
+        const apiBase = window.API_BASE_URL || "";
+        fetch(apiBase + "/api/cohorts/current")
+          .then(function(res) {
+            if (res.ok) return res.json();
+            throw new Error("HTTP " + res.status);
+          })
+          .then(function(data) {
+            let slots = 3;
+            if (data && data.starter && typeof data.starter.mentor_slots_remaining === "number") {
+              slots = data.starter.mentor_slots_remaining;
+            }
+            if (slots <= 0) {
+              if (toggle) {
+                toggle.checked = false;
+                toggle.disabled = true;
+              }
+              if (slotsStatus) {
+                slotsStatus.textContent = "Complet pour cette cohorte — prochaine disponibilité bientôt";
+                slotsStatus.style.color = "#f87171";
+              }
+              if (addonCard) {
+                addonCard.style.opacity = "0.6";
+                addonCard.style.borderColor = "rgba(255, 255, 255, 0.1)";
+              }
+              updateState();
+            } else {
+              if (slotsCount) slotsCount.textContent = slots;
+            }
+          })
+          .catch(function(err) {
+            console.warn("Could not fetch mentor capacity:", err);
+          });
+      });
+    </script>
   </body>
 </html>
