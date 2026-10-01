@@ -2,7 +2,7 @@
 // NoSeumCode - Reusable Course Classroom Component (RBAC)
 // ========================================================
 
-const API_BASE = window.API_BASE_URL;
+const API_BASE = (typeof window !== "undefined" && window.API_BASE_URL) ? window.API_BASE_URL : "https://api.noseumcode.fr";
 
 let allCourses = [];
 let userEnrollments = [];
@@ -35,8 +35,12 @@ async function coursApiFetch(endpoint, options = {}) {
     headers["Authorization"] = `Bearer ${token}`;
   }
 
+  const base = (typeof window !== "undefined" && window.API_BASE_URL)
+    ? window.API_BASE_URL
+    : (API_BASE || "https://api.noseumcode.fr");
+
   try {
-    const res = await fetch(`${API_BASE}${endpoint}`, {
+    const res = await fetch(`${base}${endpoint}`, {
       ...options,
       headers
     });

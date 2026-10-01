@@ -6,12 +6,14 @@ function getApiBaseUrl() {
   if (typeof window !== "undefined" && window.API_BASE_URL) {
     return window.API_BASE_URL;
   }
-  const isLocal = typeof window !== "undefined" && (
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1" ||
-    window.location.hostname.endsWith(".local")
-  );
-  return isLocal ? `http://${window.location.hostname}:8080` : "https://api.noseumcode.fr";
+  const customUrl = typeof localStorage !== "undefined" ? localStorage.getItem("noseum_api_url") : null;
+  if (customUrl) return customUrl;
+  const target = typeof localStorage !== "undefined" ? localStorage.getItem("noseum_api_target") : null;
+  if (target === "local") {
+    const host = (typeof window !== "undefined" && window.location.hostname) ? window.location.hostname : "localhost";
+    return `http://${host}:8080`;
+  }
+  return "https://api.noseumcode.fr";
 }
 
 const API_BASE = getApiBaseUrl();

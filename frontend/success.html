@@ -116,7 +116,7 @@
 
         // Synchronisation proactive du paiement si session_id est fourni
         if (sessionId && token) {
-          const apiBase = window.API_BASE_URL || "";
+          const apiBase = window.API_BASE_URL || "https://api.noseumcode.fr";
           try {
             const syncRes = await fetch(`${apiBase}/api/payments/confirm-session?session_id=${encodeURIComponent(sessionId)}`, {
               headers: { "Authorization": `Bearer ${token}` }

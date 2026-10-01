@@ -434,7 +434,7 @@
     <script>
       // Récupération dynamique des places réelles via GET /api/cohorts/current
       document.addEventListener("DOMContentLoaded", function() {
-        const apiBase = window.API_BASE_URL || "";
+        const apiBase = window.API_BASE_URL || "https://api.noseumcode.fr";
         fetch(apiBase + "/api/cohorts/current")
           .then(function(res) {
             if (res.ok) return res.json();
