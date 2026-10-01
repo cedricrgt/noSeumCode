@@ -68,7 +68,7 @@ async function initCoursPage() {
 
   if (courseId) {
     await loadSingleCourse(courseId, requestedChapterId);
-    if (autoCheckout && currentUser) {
+    if (autoCheckout) {
       setTimeout(() => {
         initiateStripeCheckout(courseId);
       }, 300);
@@ -1294,50 +1294,69 @@ async function initiateStripeCheckout(courseId) {
     }
   }
 
+  // Trouver le cours pour enrichir le paywall et le contexte d'achat
+  const course = (typeof allCourses !== "undefined" && Array.isArray(allCourses))
+    ? allCourses.find(c => c.id === courseId || c.slug === courseId)
+    : (typeof currentCourse !== "undefined" ? currentCourse : null);
+
+  const courseTitle = course ? course.title : (courseId.toLowerCase().includes("starter") ? "Pack Starter – Les Fondations du Web" : "Pack Web Pro – L'Autonomie Complète");
+
+  let tier = "WEB";
+  if (course && course.requiredTier) {
+    tier = course.requiredTier.toUpperCase();
+  } else if (courseId.toLowerCase().includes("starter") || courseTitle.toLowerCase().includes("starter")) {
+    tier = "STARTER";
+  }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const addon = urlParams.get("addon") || sessionStorage.getItem("noseum_pending_checkout_addon") || null;
+
+  let priceText = tier === "STARTER" ? "299 €" : "449 €";
+  if (addon === "mentor_4sessions") {
+    priceText = tier === "STARTER" ? "498 €" : "648 €";
+  } else if (addon === "mentor_downsell_2sessions") {
+    priceText = tier === "STARTER" ? "388 €" : "538 €";
+  } else if (course && course.priceInCents) {
+    priceText = `${(course.priceInCents / 100).toFixed(0)} €`;
+  }
+
   if (!currentUser) {
     sessionStorage.setItem("noseum_pending_checkout_course_id", courseId);
-    if (currentCourse) {
-      sessionStorage.setItem("noseum_pending_checkout_course_title", currentCourse.title || "");
-      sessionStorage.setItem("noseum_pending_checkout_course_price", formatCoursePrice(currentCourse));
+    sessionStorage.setItem("noseum_pending_checkout_course_title", courseTitle);
+    sessionStorage.setItem("noseum_pending_checkout_course_price", priceText);
+    sessionStorage.setItem("noseum_pending_checkout_tier", tier);
+    if (addon) {
+      sessionStorage.setItem("noseum_pending_checkout_addon", addon);
+    } else {
+      sessionStorage.removeItem("noseum_pending_checkout_addon");
     }
+
     if (typeof openGlobalAuthModal === "function") {
-      openGlobalAuthModal("login");
+      openGlobalAuthModal("register");
       if (typeof showGlobalAuthAlert === "function") {
-        const priceLabel = currentCourse ? ` (${formatCoursePrice(currentCourse)})` : "";
-        showGlobalAuthAlert(`🎓 Connectez-vous ou créez votre compte pour acheter cette formation${priceLabel}. Vous serez redirigé automatiquement vers le paiement sécurisé dès validation.`, "info");
+        showGlobalAuthAlert(`🎓 Connectez-vous ou créez votre compte pour acheter "${courseTitle}" (${priceText}). Le paiement sécurisé s'affichera directement après connexion.`, "info");
       }
     } else if (typeof openAuthModal === "function") {
-      openAuthModal("login");
+      openAuthModal("register");
     } else {
       alert("Veuillez vous connecter ou créer un compte pour acheter cette formation.");
     }
     return;
   }
 
-  // Visual feedback on button
+  // Visual feedback on button if clicked
   let clickedBtn = null;
   let originalHtml = "";
   if (typeof window !== "undefined" && window.event && window.event.target) {
     clickedBtn = window.event.target.closest("button");
   }
 
-  // Trouver le cours pour enrichir le paywall
-  const course = (typeof allCourses !== "undefined" && Array.isArray(allCourses))
-    ? allCourses.find(c => c.id === courseId)
-    : (typeof currentCourse !== "undefined" ? currentCourse : null);
-
-  const courseTitle = course ? course.title : "Formation NoSeumCode";
-  let priceText = (courseId && courseId.toLowerCase().includes("starter")) ? "299 €" : "449 €";
-  if (course && course.priceInCents) {
-    priceText = `${(course.priceInCents / 100).toFixed(0)} €`;
-  }
-
   if (typeof window.openStripePaywall === "function") {
-    await window.openStripePaywall(courseId, courseTitle, priceText);
+    await window.openStripePaywall(courseId, courseTitle, priceText, tier, null, addon);
   } else if (typeof window.openAuthModal === "function" && !currentUser) {
     window.openAuthModal("login");
   } else {
-    window.location.href = `parcours.html?id=${encodeURIComponent(courseId)}&checkout=true`;
+    window.location.href = `parcours.html?id=${encodeURIComponent(courseId)}&checkout=true${addon ? `&addon=${encodeURIComponent(addon)}` : ''}`;
   }
 }
 

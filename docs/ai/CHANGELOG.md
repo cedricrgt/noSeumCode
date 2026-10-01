@@ -1213,3 +1213,26 @@ _Chronologique — plus récent en bas_
    - Remplacement de la 3e carte "VIP" sur la homepage par le Bloc Add-on Suivi Mentor.
    - Recompilation complète des assets minifiés via `frontend/build.js`.
 
+
+---
+
+### 2026-10-01 — Correctif Tunnel de Vente, Authentification & Modale Downsell (Exit-Intent)
+**Conversation**: bee834aa-93e8-46e7-b63c-62b3900ccf51  
+**Branche**: feat/suivi-mentor
+
+#### Ce qui a changé :
+1. **Intégration Top-Layer & Hiérarchie Modale (popovers-shared.html)** :
+   - Déplacement de #mentor-downsell-modal et #mentor-addon-drawer à l'intérieur de #stripe-paywall-modal pour partager le contexte top-layer de l'API HTML Popover (popover).
+   - Positionnement en overlay absolu centré sur le terminal de paiement avec fond sombre occultant.
+2. **Tunnel d'Achat Post-Connexion (header.js, cours.js, dashboard.html)** :
+   - Priorisation stricte de la vérification d'authentification avant toute logique downsell dans openStripePaywall() : les utilisateurs non connectés sont immédiatement invités à se connecter ou créer un compte avec mise en mémoire (sessionStorage) du cours, tarif, tier et addon demandé.
+   - Restauration de l'ouverture automatique du paywall sécurisé (openStripePaywall) dès validation de la connexion (handleGlobalEmailLogin, handleGlobalEmailRegister) ou retour OAuth Google/GitHub (dashboard.html).
+   - cours.js : Déclenchement automatique de initiateStripeCheckout même pour un utilisateur déconnecté avec ?checkout=true, mémorisant l'intention et guidant l'utilisateur vers l'inscription.
+3. **Câblage Exit-Intent Downsell (header.js)** :
+   - La modale downsell (2 sessions pour 89 €) n'intercepte plus prématurément le flux d'achat initial : elle se déclenche uniquement en sortie (clic sur la fermeture du terminal paywall sans addon sélectionné ou clic "Non merci" dans le drawer mentor).
+   - Ajout d'un écouteur d'événement toggle sur #stripe-paywall-modal pour assurer la destruction propre de l'instance Stripe Embedded en cas de fermeture par touche Échap ou clic externe.
+4. **Correction Bouton CTA Starter (starter.html)** :
+   - Ajout de l'identifiant id="starter-cta-btn" sur le bouton CTA de la page Starter, permettant le binding JavaScript dynamique et le lancement direct du paywall Stripe sans saut de page.
+5. **Recompilation & Validation** :
+   - Recompilation des scripts frontend (node frontend/build.js) mettant à jour header.min.js.
+   - Exécution complète des tests backend (CohortControllerTest, PaywallSecurityTest, PaymentCheckoutServiceTest, PaymentWebhookSecurityTest) : 43 tests passés avec succès.

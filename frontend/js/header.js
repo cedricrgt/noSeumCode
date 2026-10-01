@@ -422,8 +422,24 @@ window.ensureStripeJsLoaded = ensureStripeJsLoaded;
 
 /**
  * Ferme le Paywall intégré et détruit proprement l'instance Stripe Embedded Checkout.
+ * Intercepte la fermeture (post-abandon) avec la proposition downsell si aucun add-on mentor n'a été choisi.
  */
 function closeStripePaywall() {
+  const ctx = window.currentPaywallContext || {};
+  if (!ctx.addon && sessionStorage.getItem("mentor_downsell_shown") !== "true") {
+    const modalDownsell = document.getElementById("mentor-downsell-modal");
+    if (modalDownsell) {
+      showMentorDownsellModal(() => {
+        executeCloseStripePaywall();
+      });
+      return;
+    }
+  }
+  executeCloseStripePaywall();
+}
+window.closeStripePaywall = closeStripePaywall;
+
+function executeCloseStripePaywall() {
   const modal = document.getElementById("stripe-paywall-modal");
   if (modal) {
     if (typeof modal.hidePopover === "function" && modal.matches && modal.matches(":popover-open")) {
@@ -432,6 +448,12 @@ function closeStripePaywall() {
       modal.style.display = "none";
     }
   }
+
+  const modalDownsell = document.getElementById("mentor-downsell-modal");
+  if (modalDownsell) modalDownsell.style.display = "none";
+
+  const drawer = document.getElementById("mentor-addon-drawer");
+  if (drawer) drawer.style.display = "none";
 
   if (currentStripeEmbeddedInstance) {
     try {
@@ -456,16 +478,60 @@ function closeStripePaywall() {
     alertEl.textContent = "";
   }
 }
-window.closeStripePaywall = closeStripePaywall;
+
+/**
+ * Affiche la modale downsell pour proposer 2 sessions pour 89 €.
+ */
+function showMentorDownsellModal(onRejectCallback) {
+  if (sessionStorage.getItem("mentor_downsell_shown") === "true") {
+    if (typeof onRejectCallback === "function") onRejectCallback();
+    return;
+  }
+  sessionStorage.setItem("mentor_downsell_shown", "true");
+
+  const modalDownsell = document.getElementById("mentor-downsell-modal");
+  if (!modalDownsell) {
+    if (typeof onRejectCallback === "function") onRejectCallback();
+    return;
+  }
+
+  modalDownsell.style.display = "flex";
+
+  const acceptBtn = document.getElementById("btn-accept-downsell");
+  const rejectBtn = document.getElementById("btn-reject-downsell");
+
+  if (acceptBtn) {
+    acceptBtn.onclick = () => {
+      modalDownsell.style.display = "none";
+      const ctx = window.currentPaywallContext || {};
+      const courseId = ctx.courseId || "starter";
+      const baseAmount = parseInt((ctx.priceText || "").replace(/[^0-9]/g, "")) || (ctx.tier === "STARTER" ? 299 : 449);
+      const newPrice = (baseAmount + 89) + " €";
+      const baseTitle = (ctx.courseTitle || "Pack").replace(/ \+ Suivi Mentor.*/g, "");
+      openStripePaywall(courseId, baseTitle + " + Suivi Mentor (2 sessions)", newPrice, ctx.tier, ctx.cohortId, "mentor_downsell_2sessions");
+    };
+  }
+
+  if (rejectBtn) {
+    rejectBtn.onclick = () => {
+      modalDownsell.style.display = "none";
+      if (typeof onRejectCallback === "function") {
+        onRejectCallback();
+      }
+    };
+  }
+}
+window.showMentorDownsellModal = showMentorDownsellModal;
 
 /**
  * Ouvre le Paywall NoSeumCode intégré directement dans la page.
  * Utilise Stripe Embedded Checkout pour garder l'utilisateur sur le site noseumcode.fr.
  */
 
-function getPaywallSyllabusHtml(tier) {
+function getPaywallSyllabusHtml(tier, addon) {
+  let syllabusHtml = "";
   if (tier === "STARTER") {
-    return `
+    syllabusHtml = `
       <div style="margin-bottom: 0.85rem; font-weight: 600; color: #60a5fa; font-size: 0.95rem;">
         🧱 Pack Starter – Les Fondations du Web (HTML5 & CSS3 Moderne)
       </div>
@@ -488,40 +554,12 @@ function getPaywallSyllabusHtml(tier) {
         </div>
       </div>
       <div style="margin-top: 0.85rem; padding: 0.65rem 0.85rem; background: rgba(37, 99, 235, 0.12); border: 1px solid rgba(37, 99, 235, 0.3); border-radius: 8px; font-size: 0.82rem; color: #93c5fd;">
-        ✨ <strong>Inclus :</strong> Accès immédiat et mises à jour à vie • Communauté Discord d'entraide • Garantie 14 jours satisfait ou remboursé.
-      </div>
-    `;
-  } else if (tier === "VIP") {
-    return `
-      <div style="margin-bottom: 0.85rem; font-weight: 600; color: #fbbf24; font-size: 0.95rem;">
-        👑 Accompagnement Sur-Mesure : Pack Mentorat VIP (Pack Web Pro + 4h Mentorat 1-to-1)
-      </div>
-      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
-          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">L'intégralité du Pack Web Pro Inclus</strong>
-          <span style="color: #94a3b8; font-size: 0.83rem;">HTML5, CSS3, JavaScript moderne (ES6+), manipulation du DOM, requêtes API Fetch & Async, 6 projets réels et le bonus Git & GitHub offert.</span>
-        </div>
-        <div style="background: rgba(217, 119, 6, 0.1); border: 1px solid rgba(217, 119, 6, 0.35); border-radius: 8px; padding: 0.75rem 0.9rem;">
-          <strong style="color: #fbbf24; display: block; margin-bottom: 0.25rem;">4 Heures de Mentorat Individuel (1-to-1) en Visio Privée</strong>
-          <ul style="margin: 0.25rem 0 0 0; padding-left: 1.1rem; color: #e2e8f0; font-size: 0.82rem;">
-            <li><strong>Session 1 (1h) :</strong> Diagnostic de compétences & feuille de route technique personnalisée.</li>
-            <li><strong>Session 2 (1h) :</strong> Revue de code ligne par ligne, refactoring et bonnes pratiques d'architecture.</li>
-            <li><strong>Session 3 (1h) :</strong> Déblocage technique direct en visio sur tes projets personnels ou professionnels.</li>
-            <li><strong>Session 4 (1h) :</strong> Coaching carrière, préparation aux entretiens tech et optimisation CV / GitHub.</li>
-          </ul>
-        </div>
-        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
-          <strong style="color: #fff; display: block; margin-bottom: 0.25rem;">Salon Discord VIP Privé & Suivi Dédié</strong>
-          <span style="color: #94a3b8; font-size: 0.83rem;">Canal privé direct avec ton mentor sur Discord 7j/7 sans attente, réponse garantie sous 24h ouvrées et audit approfondi de portfolio.</span>
-        </div>
-      </div>
-      <div style="margin-top: 0.85rem; padding: 0.65rem 0.85rem; background: rgba(217, 119, 6, 0.15); border: 1px solid rgba(217, 119, 6, 0.4); border-radius: 8px; font-size: 0.82rem; color: #fde68a;">
-        ✨ <strong>Inclus :</strong> Limité à 10 places par mois • 4 sessions privées individuelles • Replays à vie • Éligible Klarna 3x 135 € sans frais • 100% garanti.
+        ✨ <strong>Inclus :</strong> Accès immédiat et mises à jour à vie • Communauté Discord d'entraide • Éligible Klarna 3x 99 € sans frais • Garantie 14 jours satisfait ou remboursé.
       </div>
     `;
   } else {
     // WEB (Pack Web Pro)
-    return `
+    syllabusHtml = `
       <div style="margin-bottom: 0.85rem; font-weight: 600; color: #00ff87; font-size: 0.95rem;">
         ⚡ Pack Web Pro – L'Autonomie Complète (Pack Starter + JS ES6+ + Bonus Git)
       </div>
@@ -552,46 +590,36 @@ function getPaywallSyllabusHtml(tier) {
         </div>
       </div>
       <div style="margin-top: 0.85rem; padding: 0.65rem 0.85rem; background: rgba(0, 255, 135, 0.12); border: 1px solid rgba(0, 255, 135, 0.3); border-radius: 8px; font-size: 0.82rem; color: #a7f3d0;">
-        ✨ <strong>Inclus :</strong> Tout le Pack Starter + JS + Bonus Git/GitHub • Accès prioritaire Discord • Éligible Klarna 2x 95 € sans frais • Garantie 14 jours.
+        ✨ <strong>Inclus :</strong> Tout le Pack Starter + JS + Bonus Git/GitHub • Accès prioritaire Discord • Éligible Klarna 3x 149 € sans frais • Garantie 14 jours.
       </div>
     `;
   }
+
+  if (addon === "mentor_4sessions") {
+    syllabusHtml += `
+      <div style="margin-top: 0.85rem; background: rgba(0, 255, 135, 0.08); border: 1px solid rgba(0, 255, 135, 0.35); border-radius: 8px; padding: 0.75rem 0.9rem;">
+        <strong style="color: #00ff87; display: block; margin-bottom: 0.25rem;">✨ Suivi Mentor Inclus (4 sessions individuelles de 1h)</strong>
+        <span style="color: #cbd5e1; font-size: 0.83rem;">4 sessions individuelles en visio 1-to-1 avec Cédric Ragot : diagnostic personnalisé, revues de code ligne par ligne, déblocage direct et coaching carrière. Garantie satisfait ou remboursé dès la 1ère session.</span>
+      </div>
+    `;
+  } else if (addon === "mentor_downsell_2sessions") {
+    syllabusHtml += `
+      <div style="margin-top: 0.85rem; background: rgba(0, 255, 135, 0.08); border: 1px solid rgba(0, 255, 135, 0.35); border-radius: 8px; padding: 0.75rem 0.9rem;">
+        <strong style="color: #00ff87; display: block; margin-bottom: 0.25rem;">✨ Suivi Mentor Inclus (2 sessions individuelles de 1h)</strong>
+        <span style="color: #cbd5e1; font-size: 0.83rem;">2 sessions individuelles en visio 1-to-1 avec Cédric Ragot : revue de code et déblocage personnalisé sur tes projets.</span>
+      </div>
+    `;
+  }
+
+  return syllabusHtml;
 }
 window.getPaywallSyllabusHtml = getPaywallSyllabusHtml;
 
 async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortId, addonParam) {
   const urlParams = new URLSearchParams(window.location.search);
-  const addon = addonParam || urlParams.get('addon') || sessionStorage.getItem('noseum_pending_checkout_addon');
+  const addon = addonParam || urlParams.get('addon') || sessionStorage.getItem('noseum_pending_checkout_addon') || null;
   
-  courseId = resolveCourseId(courseId);
-
-  window.currentPaywallContext = { courseId, courseTitle, priceText, tier, cohortId, addon };
-
-  // 1. Modale downsell si non sélectionné (Section 2.4 & 4.4)
-  if (!addon && sessionStorage.getItem("mentor_downsell_shown") !== "true") {
-    sessionStorage.setItem("mentor_downsell_shown", "true");
-    const modalDownsell = document.getElementById("mentor-downsell-modal");
-    if (modalDownsell) {
-      modalDownsell.style.display = "block";
-      const acceptBtn = document.getElementById("btn-accept-downsell");
-      const rejectBtn = document.getElementById("btn-reject-downsell");
-      if (acceptBtn) {
-        acceptBtn.onclick = () => {
-          modalDownsell.style.display = "none";
-          let baseAmount = parseInt((priceText || "").replace(/[^0-9]/g, "")) || 299;
-          let newPrice = (baseAmount + 89) + " €";
-          openStripePaywall(courseId, (courseTitle || "Pack") + " + Suivi Mentor (2 sessions)", newPrice, tier, cohortId, "mentor_downsell_2sessions");
-        };
-      }
-      if (rejectBtn) {
-        rejectBtn.onclick = () => {
-          modalDownsell.style.display = "none";
-          openStripePaywall(courseId, courseTitle, priceText, tier, cohortId, null);
-        };
-      }
-      return;
-    }
-  }
+  courseId = resolveCourseId(courseId) || "c1000000-0000-0000-0000-000000000001";
 
   if (!tier) {
     const t = (courseTitle || "").toLowerCase();
@@ -603,35 +631,71 @@ async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortI
     }
   }
 
+  if (!courseTitle) {
+    if (tier === "STARTER") {
+      courseTitle = addon === "mentor_4sessions" ? "Pack Starter + Suivi Mentor" : (addon === "mentor_downsell_2sessions" ? "Pack Starter + Suivi Mentor (2 sessions)" : "Pack Starter — Fondations Web");
+    } else {
+      courseTitle = addon === "mentor_4sessions" ? "Pack Web Pro + Suivi Mentor" : (addon === "mentor_downsell_2sessions" ? "Pack Web Pro + Suivi Mentor (2 sessions)" : "Pack Web — JavaScript & APIs");
+    }
+  }
+
+  if (!priceText) {
+    if (tier === "STARTER") {
+      priceText = addon === "mentor_4sessions" ? "498 €" : (addon === "mentor_downsell_2sessions" ? "388 €" : "299 €");
+    } else {
+      priceText = addon === "mentor_4sessions" ? "648 €" : (addon === "mentor_downsell_2sessions" ? "538 €" : "449 €");
+    }
+  }
+
+  window.currentPaywallContext = { courseId, courseTitle, priceText, tier, cohortId, addon };
+
+  // 1. VÉRIFICATION D'AUTHENTIFICATION EN PREMIER LIEU
+  const token = localStorage.getItem("noseum_token");
+  const userStr = localStorage.getItem("noseum_user");
+
+  if (!token || !userStr) {
+    sessionStorage.setItem("noseum_pending_checkout_course_id", courseId);
+    sessionStorage.setItem("noseum_pending_checkout_course_title", courseTitle || "");
+    sessionStorage.setItem("noseum_pending_checkout_course_price", priceText || "");
+    sessionStorage.setItem("noseum_pending_checkout_tier", tier || "");
+    if (addon) {
+      sessionStorage.setItem("noseum_pending_checkout_addon", addon);
+    } else {
+      sessionStorage.removeItem("noseum_pending_checkout_addon");
+    }
+
+    openGlobalAuthModal("register");
+    showGlobalAuthAlert(`🎓 Connectez-vous ou créez votre compte pour acheter "${courseTitle}" (${priceText}). Le paiement sécurisé s'affichera directement après connexion.`, "info");
+    return;
+  }
+
+  // 2. Vérifier que la modale paywall est disponible dans le DOM (attente si loadPartials est en cours)
+  let modal = document.getElementById("stripe-paywall-modal");
+  if (!modal) {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    modal = document.getElementById("stripe-paywall-modal");
+  }
+  if (!modal) {
+    console.warn("Modale paywall #stripe-paywall-modal introuvable, redirection vers le catalogue.");
+    window.location.href = `parcours.html?id=${encodeURIComponent(courseId)}&checkout=true${addon ? `&addon=${encodeURIComponent(addon)}` : ''}`;
+    return;
+  }
+
+  if (!modal.dataset.toggleListenerAttached) {
+    modal.dataset.toggleListenerAttached = "true";
+    modal.addEventListener("toggle", (e) => {
+      if (e.newState === "closed") {
+        executeCloseStripePaywall();
+      }
+    });
+  }
+
   // Fermer les popovers de cours et d'authentification
   document.querySelectorAll("[popover]").forEach(p => {
     if (p.id && (p.id.startsWith("course-") || p.id === "auth-popover") && p.matches && p.matches(":popover-open")) {
       try { p.hidePopover(); } catch (_) { }
     }
   });
-
-  const token = localStorage.getItem("noseum_token");
-  const userStr = localStorage.getItem("noseum_user");
-
-  // Si non connecté : mémoriser et ouvrir la modale d'inscription
-  if (!token || !userStr) {
-    sessionStorage.setItem("noseum_pending_checkout_course_id", courseId);
-    sessionStorage.setItem("noseum_pending_checkout_course_title", courseTitle || "");
-    sessionStorage.setItem("noseum_pending_checkout_course_price", priceText || "");
-    sessionStorage.setItem("noseum_pending_checkout_tier", tier || "");
-    if (addon) sessionStorage.setItem("noseum_pending_checkout_addon", addon);
-
-    openGlobalAuthModal("register");
-    showGlobalAuthAlert(`🎓 Créez votre compte pour débloquer "${courseTitle || "votre formation"}" (${priceText || ""}). Le terminal de paiement sécurisé s'affichera directement après connexion.`, "info");
-    return;
-  }
-
-  const modal = document.getElementById("stripe-paywall-modal");
-  if (!modal) {
-    console.warn("Modale paywall #stripe-paywall-modal introuvable, redirection classique.");
-    window.location.href = `parcours.html?id=${encodeURIComponent(courseId)}&checkout=true`;
-    return;
-  }
 
   // Mettre à jour les informations du cours dans la modale
   const titleEl = document.getElementById("paywall-course-title");
@@ -642,6 +706,17 @@ async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortI
   if (priceEl && priceText) {
     priceEl.textContent = priceText;
   }
+
+  const syllabusContent = document.getElementById("paywall-syllabus-content");
+  if (syllabusContent) {
+    syllabusContent.innerHTML = getPaywallSyllabusHtml(tier, addon);
+  }
+
+  // Masquer tout overlay downsell ou drawer précédemment ouvert
+  const modalDownsell = document.getElementById("mentor-downsell-modal");
+  if (modalDownsell) modalDownsell.style.display = "none";
+  const drawer = document.getElementById("mentor-addon-drawer");
+  if (drawer) drawer.style.display = "none";
 
   // Rappel discret Suivi Mentor si non sélectionné (Section 2.3 & 4.3)
   const reminderEl = document.getElementById("paywall-mentor-reminder");
@@ -708,8 +783,8 @@ async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortI
         embedded: true,
         returnUrl: returnUrl,
         successUrl: returnUrl,
-          addon: addon
-        })
+        addon: addon || undefined
+      })
     });
 
     if (!res.ok) {
@@ -904,15 +979,17 @@ async function handleGlobalEmailLogin(e) {
         const pendingTitle = sessionStorage.getItem("noseum_pending_checkout_course_title") || "";
         const pendingPrice = sessionStorage.getItem("noseum_pending_checkout_course_price") || "";
         const pendingTier = sessionStorage.getItem("noseum_pending_checkout_tier") || "";
+        const pendingAddon = sessionStorage.getItem("noseum_pending_checkout_addon") || null;
         sessionStorage.removeItem("noseum_pending_checkout_course_id");
         sessionStorage.removeItem("noseum_pending_checkout_course_title");
         sessionStorage.removeItem("noseum_pending_checkout_course_price");
         sessionStorage.removeItem("noseum_pending_checkout_tier");
+        sessionStorage.removeItem("noseum_pending_checkout_addon");
 
         showGlobalAuthAlert("💳 Connexion réussie ! Ouverture du terminal de paiement sécurisé...", "success");
         setTimeout(async () => {
           closeGlobalAuthModal();
-          await openStripePaywall(pendingCourseId, pendingTitle, pendingPrice, pendingTier);
+          await openStripePaywall(pendingCourseId, pendingTitle, pendingPrice, pendingTier, null, pendingAddon);
         }, 400);
       } else {
         showGlobalAuthAlert("✅ Connexion réussie ! Redirection vers votre espace...", "success");
@@ -1158,15 +1235,17 @@ async function handleGlobalEmailRegister(e) {
         const pendingTitle = sessionStorage.getItem("noseum_pending_checkout_course_title") || "";
         const pendingPrice = sessionStorage.getItem("noseum_pending_checkout_course_price") || "";
         const pendingTier = sessionStorage.getItem("noseum_pending_checkout_tier") || "";
+        const pendingAddon = sessionStorage.getItem("noseum_pending_checkout_addon") || null;
         sessionStorage.removeItem("noseum_pending_checkout_course_id");
         sessionStorage.removeItem("noseum_pending_checkout_course_title");
         sessionStorage.removeItem("noseum_pending_checkout_course_price");
         sessionStorage.removeItem("noseum_pending_checkout_tier");
+        sessionStorage.removeItem("noseum_pending_checkout_addon");
 
         showGlobalAuthAlert("🎉 Compte créé ! Ouverture du terminal de paiement sécurisé...", "success");
         setTimeout(async () => {
           closeGlobalAuthModal();
-          await openStripePaywall(pendingCourseId, pendingTitle, pendingPrice, pendingTier);
+          await openStripePaywall(pendingCourseId, pendingTitle, pendingPrice, pendingTier, null, pendingAddon);
         }, 400);
       } else {
         showGlobalAuthAlert("🎉 Compte créé avec succès ! Bienvenue sur NoSeumCode.", "success");
@@ -1486,9 +1565,9 @@ window.openMentorDrawer = function() {
         closeMentorDrawer();
         const ctx = window.currentPaywallContext || {};
         const courseId = ctx.courseId || "starter";
-        const basePrice = parseInt((ctx.priceText || "").replace(/[^0-9]/g, "")) || 299;
+        const basePrice = parseInt((ctx.priceText || "").replace(/[^0-9]/g, "")) || (ctx.tier === "STARTER" ? 299 : 449);
         const newPrice = (basePrice + 199) + " €";
-        const newTitle = (ctx.courseTitle || "Pack").replace(/ \+ Suivi Mentor/g, "") + " + Suivi Mentor";
+        const newTitle = (ctx.courseTitle || "Pack").replace(/ \+ Suivi Mentor.*/g, "") + " + Suivi Mentor";
         openStripePaywall(courseId, newTitle, newPrice, ctx.tier, ctx.cohortId, "mentor_4sessions");
       };
     }
@@ -1500,6 +1579,12 @@ window.closeMentorDrawer = function() {
   if (drawer) {
     drawer.style.right = "-400px";
     setTimeout(() => { drawer.style.display = "none"; }, 300);
+  }
+  const ctx = window.currentPaywallContext || {};
+  if (!ctx.addon && sessionStorage.getItem("mentor_downsell_shown") !== "true") {
+    setTimeout(() => {
+      showMentorDownsellModal();
+    }, 350);
   }
 };
 
