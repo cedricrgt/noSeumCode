@@ -204,3 +204,9 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 - Décrémenter les places restantes au simple clic "ajouter au panier" (rejetée car cela génère des faux stocks épuisés et des abandons de panier bloquants).
 **Conséquence**: Augmentation du panier moyen et du taux de conversion (CRO), valorisation transparente du temps de mentorat individuel, et alignement parfait entre frontend, backend Spring Boot et Stripe Embedded Checkout.
 
+
+## ADR-023 — Obligation du Test-Driven Development (TDD) pour les Agents
+**Status**: Actif
+**Décision**: Rendre obligatoire l'utilisation de l'approche Test-Driven Development (TDD) pour toute implémentation ou correction de bug réalisée par les agents IA. Les agents doivent écrire les tests avant le code métier (cycle Red-Green-Refactor).
+**Alternative rejetée**: Tests a posteriori ou développement "code-first" — rejeté car favorise la dette technique, la sur-conception (violation de YAGNI) et diminue la couverture fonctionnelle des cas aux limites.
+**Conséquence**: Amélioration de la fiabilité du code (notamment sur le backend Spring Boot), tests comme documentation vivante, et renforcement de l'architecture par la testabilité dès la conception. La règle a été formellement encodée dans .agents/rules/rule-23-test-driven-development.md.
