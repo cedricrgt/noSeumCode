@@ -624,11 +624,15 @@
 
         // Si une intention d'achat était en attente, redirige directement vers le paiement du cours
         const pendingCourseId = sessionStorage.getItem("noseum_pending_checkout_course_id");
+        const pendingAddon = sessionStorage.getItem("noseum_pending_checkout_addon");
         if (pendingCourseId) {
           sessionStorage.removeItem("noseum_pending_checkout_course_id");
           sessionStorage.removeItem("noseum_pending_checkout_course_title");
           sessionStorage.removeItem("noseum_pending_checkout_course_price");
-          window.location.href = `parcours.html?id=${encodeURIComponent(pendingCourseId)}&auto_checkout=true`;
+          sessionStorage.removeItem("noseum_pending_checkout_tier");
+          sessionStorage.removeItem("noseum_pending_checkout_addon");
+          const addonParam = pendingAddon ? `&addon=${encodeURIComponent(pendingAddon)}` : '';
+          window.location.href = `parcours.html?id=${encodeURIComponent(pendingCourseId)}&auto_checkout=true${addonParam}`;
           return;
         }
       }
