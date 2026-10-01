@@ -309,3 +309,36 @@
 </div>
 
 
+
+<!-- Modale Downsell Mentorat -->
+<div id="mentor-downsell-modal" class="auth-popover-box" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; background: #070e18; border: 1px solid rgba(0,255,135,0.3); border-radius: 12px; padding: 2rem; max-width: 500px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+  <h3 style="color: #00ff87; font-size: 1.5rem; margin-top: 0; font-family: 'Bangers', cursive; letter-spacing: 1px;">Attends, tu vas être seul devant ton code...</h3>
+  <p style="color: #e2e8f0; font-size: 1rem; line-height: 1.5; margin-bottom: 1.5rem;">
+    Apprendre à coder en solo, c'est dur. Bloquer 3 heures sur une erreur de syntaxe, c'est frustrant.
+    <br><br>
+    Je te propose <strong>2 sessions de mentorat individuel</strong> (au lieu de 4 dans l'add-on complet) pour débloquer tes problèmes techniques et faire des code reviews ensemble.
+  </p>
+  <div style="display: flex; flex-direction: column; gap: 1rem;">
+    <button id="btn-accept-downsell" class="button button__primary bangers-regular" style="font-size: 1.2rem; padding: 12px;">
+      ?? Ajouter 2 sessions pour 89 €
+    </button>
+    <button id="btn-reject-downsell" class="button button__secondary bangers-regular" style="font-size: 1.1rem; padding: 10px; background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #cbd5e0;">
+      Non merci, continuer sans mentorat
+    </button>
+  </div>
+</div>
+
+<!-- Drawer Mentorat -->
+<div id="mentor-addon-drawer" style="display: none; position: fixed; top: 0; right: -400px; width: 400px; max-width: 100%; height: 100%; background: #070e18; border-left: 1px solid rgba(0,255,135,0.3); z-index: 10001; transition: right 0.3s ease; padding: 2rem; box-shadow: -5px 0 30px rgba(0,0,0,0.5); overflow-y: auto;">
+  <button onclick="closeMentorDrawer()" style="position: absolute; top: 1rem; right: 1rem; background: transparent; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;">&times;</button>
+  <h3 style="color: #00ff87; font-size: 1.8rem; margin-top: 1rem; font-family: 'Bangers', cursive;">Suivi Mentor (4 sessions)</h3>
+  <p style="color: #e2e8f0; font-size: 1rem; line-height: 1.5; margin-bottom: 1.5rem;">
+    Accélère ta progression avec 4 sessions de mentorat individuel d'une heure avec Cédric.
+  </p>
+  <div style="background: rgba(0,255,135,0.05); border: 1px solid rgba(0,255,135,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+    <span style="font-size: 1.5rem; font-weight: bold; color: #fff;">+199 €</span>
+  </div>
+  <button id="btn-drawer-add-mentor" class="button button__primary bangers-regular" style="width: 100%; font-size: 1.2rem; padding: 12px;">
+    Ajouter à ma commande
+  </button>
+</div>
