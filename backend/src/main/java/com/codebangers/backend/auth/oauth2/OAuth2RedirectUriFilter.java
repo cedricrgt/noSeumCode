@@ -48,11 +48,22 @@ public class OAuth2RedirectUriFilter extends OncePerRequestFilter {
         origins.add("https://www.noseumcode.fr");
         origins.add("https://develop.noseumcode.fr");
         origins.add("https://*.noseumcode.fr");
-        origins.add("http://localhost:3000");
-        origins.add("http://127.0.0.1:3000");
-        origins.add("http://localhost:5500");
-        origins.add("http://127.0.0.1:5500");
-        origins.add("http://localhost:8080");
+        origins.add("http://localhost");
+        origins.add("http://localhost:*");
+        origins.add("https://localhost");
+        origins.add("https://localhost:*");
+        origins.add("http://127.0.0.1");
+        origins.add("http://127.0.0.1:*");
+        origins.add("https://127.0.0.1");
+        origins.add("https://127.0.0.1:*");
+        origins.add("http://192.168.*");
+        origins.add("https://192.168.*");
+        origins.add("http://10.*");
+        origins.add("https://10.*");
+        for (int i = 16; i <= 31; i++) {
+            origins.add("http://172." + i + ".*");
+            origins.add("https://172." + i + ".*");
+        }
         this.authorizedOrigins = new ArrayList<>(origins);
     }
 
@@ -155,6 +166,10 @@ public class OAuth2RedirectUriFilter extends OncePerRequestFilter {
             if (allowedNorm.startsWith("https://*.")) {
                 String baseDomain = allowedNorm.substring("https://*.".length());
                 if (normalized.startsWith("https://") && (normalized.substring(8).endsWith("." + baseDomain) || normalized.substring(8).equals(baseDomain))) {
+                    return true;
+                }
+            } else if (allowedNorm.contains("*")) {
+                if (org.springframework.util.PatternMatchUtils.simpleMatch(allowedNorm, normalized)) {
                     return true;
                 }
             } else if (normalized.equals(allowedNorm)) {

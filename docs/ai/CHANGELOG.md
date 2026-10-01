@@ -1254,3 +1254,22 @@ _Chronologique — plus récent en bas_
    - Alignement de la variable d'environnement `CORS_ALLOWED_ORIGINS` dans `.github/workflows/deploy.yml`.
 3. **Recompilation Frontend** :
    - Recompilation des bundles de scripts et styles via `node frontend/build.js` (`header.min.js`).
+
+---
+
+### 2026-10-01 — Support CORS & OAuth2 des IP Locales Réseau (LAN 192.168.*, 10.*, 172.16-31.*)
+**Conversation**: bee834aa-93e8-46e7-b63c-62b3900ccf51  
+**Branche**: fix/lan-cors-origins
+
+#### Ce qui a changé :
+1. **Backend & Sécurité CORS (SecurityConfig.java)** :
+   - Élargissement des patterns d'origines autorisées (`allowedOriginPatterns`) pour supporter l'ensemble des adresses IP privées RFC 1918 et les ports locaux arbitraires : `http://localhost:*`, `http://127.0.0.1:*`, `http://192.168.*`, `http://10.*`, et `http://172.16.*` à `http://172.31.*` (avec variantes HTTPS).
+   - Résolution du blocage CORS `HTTP 403 Invalid CORS request` lors des requêtes d'authentification (`/api/auth/login`) ou d'accès API émises depuis un serveur de développement local accédé via l'IP réseau (ex. `http://192.168.1.9:3000`).
+2. **Filtre de Redirection OAuth2 (OAuth2RedirectUriFilter.java)** :
+   - Intégration de `PatternMatchUtils.simpleMatch` dans `isAuthorizedOrigin` pour valider dynamiquement les origines de redirection contenant des jokers `*`.
+   - Autorisation des redirections OAuth2 (Google, Discord, GitHub) vers `http://192.168.*`, `http://10.*`, `http://localhost:*`, etc.
+3. **Configuration & CI/CD** :
+   - Alignement de `app.cors.allowed-origins` dans `backend/src/main/resources/application.properties`.
+   - Alignement de la variable d'environnement `CORS_ALLOWED_ORIGINS` dans `.github/workflows/deploy.yml`.
+4. **Tests Unitaires** :
+   - `OAuth2RedirectUriFilterTest` étendu pour valider les redirections LAN (`http://192.168.1.9:3000`, `http://10.0.0.1:3000`, etc.) et la configuration CORS complète de `SecurityConfig.corsConfigurationSource()`.
