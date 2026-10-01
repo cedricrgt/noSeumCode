@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+
+    <title>Git expliqué simplement — sans jargon, dès le début</title>
+    <meta
+      name="description"
+      content="Git fait peur à tous les débutants. Voilà une explication simple, avec des analogies concrètes, pour comprendre à quoi ça sert et comment ça marche vraiment."
+    />
+    <meta
+      name="keywords"
+      content="git expliqué débutant, apprendre git github débutant, c'est quoi git, formation git github, comprendre git simplement, git pour débutant sans jargon"
+    />
+    <meta name="author" content="Cédric Ragot" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://noseumcode.fr/blog/git-explique-debutant-versioning" />
+    <link rel="icon" type="image/png" href="images/favicon.png" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="NoSeumCode" />
+    <meta property="og:title" content="Git expliqué simplement — sans jargon, dès le début" />
+    <meta
+      property="og:description"
+      content="Git fait peur à tous les débutants. Voilà une explication simple, avec des analogies concrètes, pour comprendre à quoi ça sert et comment ça marche vraiment."
+    />
+    <meta property="og:url" content="https://noseumcode.fr/blog/git-explique-debutant-versioning" />
+    <meta property="og:image" content="https://noseumcode.fr/images/courses/git.webp" />
+    <meta property="article:published_time" content="2026-09-30T16:00:00+02:00" />
+    <meta property="article:author" content="Cédric Ragot" />
+    <meta property="article:section" content="Gestion de Version" />
+    <meta property="article:tag" content="Git" />
+    <meta property="article:tag" content="GitHub" />
+    <meta property="article:tag" content="Débutant" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Git expliqué simplement — sans jargon, dès le début" />
+    <meta
+      name="twitter:description"
+      content="Git fait peur à tous les débutants. Voilà une explication simple, avec des analogies concrètes, pour comprendre à quoi ça sert et comment ça marche vraiment."
+    />
+    <meta name="twitter:image" content="https://noseumcode.fr/images/courses/git.webp" />
+
+    <!-- Plausible Analytics Cookieless & RGPD (Sprint 9 / ADR-015) -->
+    <script>
+      window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments); };
+      window.addEventListener('load', function() {
+        (window.requestIdleCallback || function(cb) { setTimeout(cb, 1); })(function() {
+          var s = document.createElement('script');
+          s.defer = true;
+          s.setAttribute('data-domain', 'noseumcode.fr');
+          s.src = 'https://plausible.io/js/script.tagged-events.outbound-links.js';
+          document.head.appendChild(s);
+        });
+      });
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Bangers&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Bangers&display=swap"
+      />
+    </noscript>
+
+    <link rel="stylesheet" href="styles/dist/article.min.css?v=sprint16" />
+
+    <!-- Schema.org JSON-LD (Article + BreadcrumbList + HowTo) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Accueil",
+              "item": "https://noseumcode.fr/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Blog",
+              "item": "https://noseumcode.fr/index.html#blog"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Git expliqué simplement",
+              "item": "https://noseumcode.fr/blog/git-explique-debutant-versioning"
+            }
+          ]
+        },
+        {
+          "@type": "Article",
+          "headline": "Git expliqué à quelqu'un qui n'a jamais entendu parler de versioning",
+          "description": "Git fait peur à tous les débutants. Voilà une explication simple, avec des analogies concrètes, pour comprendre à quoi ça sert et comment ça marche vraiment.",
+          "image": "https://noseumcode.fr/images/courses/git.webp",
+          "author": {
+            "@type": "Person",
+            "name": "Cédric Ragot",
+            "jobTitle": "Ingénieur Senior & Formateur NoSeumCode",
+            "url": "https://noseumcode.fr/"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "NoSeumCode",
+            "url": "https://noseumcode.fr",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://noseumcode.fr/images/favicon.png"
+            }
+          },
+          "datePublished": "2026-09-30T16:00:00+02:00",
+          "dateModified": "2026-09-30T16:00:00+02:00",
+          "mainEntityOfPage": "https://noseumcode.fr/blog/git-explique-debutant-versioning"
+        },
+        {
+          "@type": "HowTo",
+          "name": "Les 6 commandes Git indispensables pour débuter",
+          "description": "Apprendre le cycle de travail Git essentiel : initialiser, vérifier l'état, préparer, sauvegarder et synchroniser sur GitHub.",
+          "step": [
+            {
+              "@type": "HowToStep",
+              "name": "1. Initialiser le dépôt",
+              "text": "Exécuter 'git init' dans le dossier racine du projet pour démarrer le suivi des modifications."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "2. Vérifier l'état des fichiers",
+              "text": "Exécuter 'git status' pour voir quels fichiers ont été ajoutés, modifiés ou supprimés."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "3. Préparer les fichiers modifiés",
+              "text": "Exécuter 'git add .' pour placer toutes les modifications en zone de préparation (staging)."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "4. Créer un point de sauvegarde (Commit)",
+              "text": "Exécuter 'git commit -m \"message explicite\"' pour sceller une version stable dans l'historique."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "5. Envoyer sur GitHub",
+              "text": "Exécuter 'git push' pour sauvegarder et partager son historique de code dans le cloud."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "6. Consulter l'historique",
+              "text": "Exécuter 'git log --oneline' pour parcourir la liste chronologique de toutes les sauvegardes."
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+  </head>
+
+  <body class="article-page poppins-regular">
+    <a href="#article-content" class="skip-link">Aller au contenu principal</a>
+
+    <!-- Header injecté dynamiquement -->
+    <div id="header-placeholder"></div>
+
+    <main id="article-content">
+      <!-- Article Hero Header -->
+      <section class="article-hero">
+        <img
+          src="images/courses/git.webp"
+          alt="Comprendre Git et le versioning de code pour débutant"
+          class="article-hero__image"
+          width="1200"
+          height="400"
+          loading="eager"
+          decoding="async"
+        />
+        <div class="article-hero__content">
+          <h1 class="article-hero__title bangers-regular">
+            Git expliqué à quelqu'un qui n'a jamais entendu parler de versioning
+          </h1>
+          <p class="article-hero__subtitle poppins-regular">
+            Fini le jargon incompréhensible : découvre enfin pourquoi et comment Git sauve ton code sans prise de tête.
+          </p>
+        </div>
+      </section>
+
+      <div class="article-container">
+        <!-- Fil d'Ariane SEO -->
+        <nav aria-label="Fil d'Ariane" class="breadcrumb">
+          <ol class="breadcrumb__list">
+            <li class="breadcrumb__item">
+              <a href="index.html" class="breadcrumb__link">Accueil</a>
+            </li>
+            <li class="breadcrumb__separator" aria-hidden="true">/</li>
+            <li class="breadcrumb__item">
+              <a href="index.html#blog" class="breadcrumb__link">Blog</a>
+            </li>
+            <li class="breadcrumb__separator" aria-hidden="true">/</li>
+            <li class="breadcrumb__item" aria-current="page">
+              Git Expliqué Simplement
+            </li>
+          </ol>
+        </nav>
+
+        <article>
+          <!-- Métadonnées & Auteur -->
+          <div class="article-meta">
+            <div class="article-meta__author">
+              <img
+                src="images/mentor-cedric.webp"
+                alt="Cédric Ragot, formateur NoSeumCode"
+                class="article-meta__avatar"
+                width="34"
+                height="34"
+                loading="lazy"
+              />
+              <span>Par Cédric Ragot — ingénieur senior, formateur chez NoSeumCode</span>
+            </div>
+            <div class="article-meta__item">
+              <span aria-hidden="true">•</span>
+              <time datetime="2026-09-30">30 septembre 2026</time>
+            </div>
+            <div class="article-meta__item">
+              <span aria-hidden="true">•</span>
+              <span>Temps de lecture : ~8 min</span>
+            </div>
+          </div>
+
+          <!-- Tags thématiques -->
+          <div class="article-tags">
+            <span class="article-tag">Git &amp; GitHub</span>
+            <span class="article-tag">Débutant Pro</span>
+            <span class="article-tag">Clean Code</span>
+            <span class="article-tag">Sans le Seum</span>
+          </div>
+
+          <!-- Introduction -->
+          <p class="article-intro">
+            Si tu as déjà cherché à comprendre ce qu'est Git sur Google ou Wikipédia, tu es sans doute tombé sur une définition du style :
+            <br /><br />
+            <em>"Git est un logiciel de gestion de versions décentralisé permettant d'enregistrer et de tracer l'évolution d'un ensemble de fichiers informatiques dans un graphe acyclique dirigé."</em>
+            <br /><br />
+            Et là, tu as refermé ton navigateur en te disant : <strong>"OK, merci, je n'ai absolument rien compris."</strong>
+            <br /><br />
+            Alors on va reprendre tout ça depuis zéro. Sans jargon élitiste, sans formules mathématiques inutiles, avec des analogies de la vraie vie, en commençant par le pourquoi avant de parler de la moindre commande technique.
+          </p>
+
+          <div class="article-body">
+            <!-- Section 1 -->
+            <section class="article-section">
+              <h2 class="bangers-regular">Le problème universel que Git vient résoudre</h2>
+              <p>
+                Imagine que tu travailles sur ton premier site web. Tu crées une page d'accueil, elle s'affiche correctement, le design te plaît. Et là, tu as envie de tenter un truc plus complexe : modifier les couleurs, tester une mise en page différente avec CSS Grid.
+              </p>
+              <p>
+                Tu modifies ton code, tu testes... et là, catastrophe : tout est cassé. Le menu a disparu, les blocs se superposent n'importe comment, et tu ne sais plus du tout ce que tu as changé par rapport à 10 minutes plus tôt.
+              </p>
+              <p>
+                Tu veux faire <code>Ctrl + Z</code>, mais tu as déjà fermé ton éditeur. Ton ancienne version qui marchait si bien n'existe plus. Elle a été écrasée.
+              </p>
+              <p>
+                Pour éviter ce cauchemar, tout le monde est passé par cette méthode artisanale et chaotique :
+              </p>
+              <ul>
+                <li><code>projet-site.html</code></li>
+                <li><code>projet-site-v2.html</code></li>
+                <li><code>projet-site-VRAIMENT-FINAL.html</code></li>
+                <li><code>projet-site-version-qui-marche-enfin.html</code></li>
+              </ul>
+              <p>
+                Ton bureau se retrouve envahi de 15 fichiers presque identiques, et tu es incapable de savoir lequel est le bon.
+              </p>
+              <p>
+                <strong>Git est né pour tuer cette pagaille.</strong> C'est tout simplement une machine à voyager dans le temps pour ton code. Il enregistre l'état exact de tes dossiers à des moments choisis, proprement, automatiquement, et te permet de revenir en arrière d'un claquement de doigts.
+              </p>
+            </section>
+
+            <!-- Section 2 -->
+            <section class="article-section">
+              <h2 class="bangers-regular">L'analogie qui fait tout comprendre : la sauvegarde de jeu vidéo</h2>
+              <p>
+                Pense à Git exactement comme au système de sauvegarde d'un jeu vidéo RPG (comme Pokémon, Zelda ou The Witcher).
+              </p>
+              <p>
+                Dans un jeu, tu sauvegardes ta partie avant d'affronter un boss difficile. Si ton personnage est éliminé, tu ne recommences pas le jeu depuis le début : tu recharges ta sauvegarde précédente et tu réessaies avec une stratégie différente. Tu peux aussi garder plusieurs emplacements de sauvegarde pour rejouer un passage mémorable.
+              </p>
+              <p>
+                Git fonctionne de la même manière pour tes projets web. Chaque "point de sauvegarde" porte un nom : <strong>un commit</strong>. Tu travailles, tu écris du code, et dès que tu atteins une étape qui fonctionne proprement, tu crées un commit.
+              </p>
+              <p>
+                Si demain tu introduis un bug en voulant tester une fonctionnalité, tu peux faire revenir ton projet à l'exact état d'hier matin à 10h42.
+              </p>
+            </section>
+
+            <!-- Section 3 -->
+            <section class="article-section">
+              <h2 class="bangers-regular">Les trois mots indispensables à retenir</h2>
+              <p>
+                Dans le monde Git, il y a trois termes fondamentaux que tout le monde confond au début :
+              </p>
+              <ol>
+                <li>
+                  <strong>Le Repository (ou "Repo") :</strong> c'est tout simplement le dossier de ton projet sur ton ordinateur, mais sous surveillance active de Git. Quand tu actives Git dans ton dossier, Git crée un dossier invisible (<code>.git</code>) qui va mémoriser l'historique complet de toutes tes modifications.
+                </li>
+                <li>
+                  <strong>Le Commit :</strong> c'est ta sauvegarde scellée dans le temps. C'est une photographie instantanée de tous tes fichiers. Chaque commit est accompagné d'un message rédigé par tes soins décrivant ce que tu as accompli (par exemple : <em>"Création du formulaire de contact"</em>).
+                </li>
+                <li>
+                  <strong>La Branch (Branche) :</strong> imagine que tu veuilles tester une idée un peu folle (changer complètement la charte graphique de ton site) sans risquer de bousiller ta version stable. Une branche te permet de créer un univers parallèle. Tu t'amuses sur ta branche test. Si le résultat est génial, tu fusionnes ta branche avec ta version principale ; si c'est raté, tu la supprimes sans que ta version principale n'ait été touchée.
+                </li>
+              </ol>
+            </section>
+
+            <!-- Section 4 -->
+            <section class="article-section">
+              <h2 class="bangers-regular">Git et GitHub : la confusion n°1 clarifiée</h2>
+              <p>
+                Attention, beaucoup de débutants croient que Git et GitHub sont la même chose. C'est faux :
+              </p>
+              <ul>
+                <li>
+                  <strong>Git est un logiciel :</strong> il est installé localement sur ton ordinateur. Il n'a même pas besoin d'une connexion internet pour fonctionner. Il gère tes sauvegardes et ton historique hors ligne.
+                </li>
+                <li>
+                  <strong>GitHub est un service web dans le cloud :</strong> c'est une plateforme en ligne (rachetée par Microsoft) qui te permet d'héberger une copie de ton repository Git sur internet.
+                </li>
+              </ul>
+              <p>
+                Pourquoi envoyer ton code sur GitHub ? Pour trois raisons majeures :
+              </p>
+              <ol>
+                <li><strong>La sauvegarde externe :</strong> si ton ordinateur portable tombe par terre ou rend l'âme, tout ton historique de travail est en sécurité sur les serveurs de GitHub.</li>
+                <li><strong>Le travail en équipe :</strong> deux développeurs peuvent travailler sur le même projet à distance sans s'envoyer des fichiers zip par email ou sur Discord.</li>
+                <li><strong>Ton portfolio public :</strong> pour un recruteur ou un client, ton profil GitHub est souvent plus important que ton CV. Il permet de voir si tu écris du code propre et si tu sais travailler avec les outils du métier.</li>
+              </ol>
+            </section>
+
+            <!-- Section 5 -->
+            <section class="article-section">
+              <h2 class="bangers-regular">Les 6 seules commandes dont tu as besoin au début</h2>
+              <p>
+                Il existe des dizaines de commandes Git avancées (rebase, cherry-pick, stash...), mais au début, tu n'as besoin que de ces six-là pour faire 95% de ton travail :
+              </p>
+
+              <h3>1. Initialiser le projet</h3>
+              <pre><code style="display:block; padding: 1rem; background: #070e18; color: #00ff87; border-radius: 8px; font-family: monospace;">git init</code></pre>
+              <p>À lancer une seule fois dans le dossier de ton projet pour dire à Git : <em>"Commence à observer ce dossier."</em></p>
+
+              <h3>2. Vérifier l'état de tes fichiers</h3>
+              <pre><code style="display:block; padding: 1rem; background: #070e18; color: #00ff87; border-radius: 8px; font-family: monospace;">git status</code></pre>
+              <p>La commande réflexe. Git t'affiche la liste des fichiers modifiés, créés ou supprimés depuis ta dernière sauvegarde.</p>
+
+              <h3>3. Préparer les fichiers à sauvegarder</h3>
+              <pre><code style="display:block; padding: 1rem; background: #070e18; color: #00ff87; border-radius: 8px; font-family: monospace;">git add .</code></pre>
+              <p>Le point signifie "tout ajouter". Tu déposes tes fichiers modifiés dans le sas de chargement (le staging) avant de valider la photo.</p>
+
+              <h3>4. Créer la sauvegarde officielle</h3>
+              <pre><code style="display:block; padding: 1rem; background: #070e18; color: #00ff87; border-radius: 8px; font-family: monospace;">git commit -m "Ajout de la section avis clients"</code></pre>
+              <p>C'est ici que tu déclenches la photo. Le message entre guillemets doit résumer clairement ce que tu as accompli.</p>
+
+              <h3>5. Envoyer sur GitHub</h3>
+              <pre><code style="display:block; padding: 1rem; background: #070e18; color: #00ff87; border-radius: 8px; font-family: monospace;">git push</code></pre>
+              <p>Envoie tes commits locaux vers ton compte GitHub pour mettre à jour la version en ligne.</p>
+
+              <h3>6. Voir la liste de tes sauvegardes</h3>
+              <pre><code style="display:block; padding: 1rem; background: #070e18; color: #00ff87; border-radius: 8px; font-family: monospace;">git log --oneline</code></pre>
+              <p>Affiche ton carnet de bord : chaque commit sur une ligne avec son identifiant court et son message.</p>
+            </section>
+
+            <!-- Section 6 -->
+            <section class="article-section">
+              <h2 class="bangers-regular">Une vraie session de travail avec Git pas à pas</h2>
+              <p>
+                Concrètement, comment se déroule une session de code avec Git au quotidien ?
+              </p>
+              <p>
+                Tu allumes ton PC, tu ouvres VS Code (si ton éditeur n'est pas encore prêt, consulte notre guide : <a href="blog/setup-vscode-debutant-plugins-utiles" style="color: #047857; font-weight: 600; text-decoration: underline;">Mon setup VS Code pour débuter sans plugins inutiles</a>). Tu ajoutes un nouveau bouton dans ton fichier <code>index.html</code> et tu règles sa couleur dans <code>style.css</code>. Tu testes dans ton navigateur : tout s'affiche à la perfection.
+              </p>
+              <p>
+                Tu ouvres alors le terminal intégré de VS Code (raccourci <code>Ctrl + `</code>) et tu déroules le rituel en 15 secondes chrono :
+              </p>
+              <pre><code style="display:block; padding: 1rem; background: #070e18; color: #00ff87; border-radius: 8px; font-family: monospace;">git status
+# → Git te confirme : 2 fichiers modifiés (index.html et style.css)
+
+git add .
+# → Tu prépares tes fichiers
+
+git commit -m "Ajout du bouton d'inscription hero"
+# → Ta sauvegarde est enregistrée localement
+
+git push
+# → C'est synchronisé sur GitHub en toute sécurité !</code></pre>
+              <p>
+                Ce cycle devient une seconde nature au bout de deux jours d'utilisation.
+              </p>
+            </section>
+
+            <!-- Section 7 -->
+            <section class="article-section">
+              <h2 class="bangers-regular">À quelle fréquence faut-il faire un commit ?</h2>
+              <p>
+                C'est une des questions les plus fréquentes chez mes apprenants. Il n'y a pas de compteur fixe, mais voici la règle d'or d'un ingénieur senior :
+              </p>
+              <blockquote>
+                Fais un commit chaque fois que tu as terminé une petite unité de travail qui fonctionne. Ne commite jamais du code cassé qui fait planter ton site, et n'attends pas la fin de la semaine pour tout sauvegarder d'un bloc.
+              </blockquote>
+              <p>
+                <strong>Une astuce simple :</strong> si tu es capable de décrire en une phrase simple ce que tu viens de faire (<em>"J'ai centré le logo"</em>, <em>"J'ai réparé le lien du menu"</em>, <em>"J'ai créé le pied de page"</em>), c'est le moment idéal pour faire un commit.
+              </p>
+            </section>
+
+            <!-- Section 8 -->
+            <section class="article-section">
+              <h2 class="bangers-regular">Pourquoi Git fait peur aux débutants (et pourquoi c'est normal)</h2>
+              <p>
+                Si Git impressionne autant les débutants, ce n'est pas parce que le principe est complexe : c'est parce qu'il s'utilise majoritairement dans un <strong>terminal en ligne de commande</strong> avec un écran noir et du texte blanc.
+              </p>
+              <p>
+                Pour beaucoup de gens qui n'ont jamais manipulé que des souris et des fenêtres graphiques, taper des commandes dans un terminal donne l'impression d'être un hacker dans un film des années 90, avec la peur panique d'effacer son disque dur par erreur.
+              </p>
+              <p>
+                Et les messages d'erreur de Git (comme <code>fatal: not a git repository</code> ou <code>Your branch is ahead by 1 commit</code>) ont l'air très martiens quand on ne connaît pas encore le vocabulaire.
+              </p>
+              <p>
+                Mais rassure-toi : après 3 heures de pratique guidée sur un vrai projet, la peur du terminal s'évapore complètement. Taper <code>git status</code> devient aussi naturel que faire un double-clic sur un dossier.
+              </p>
+              <p>
+                Tout comme la fausse idée selon laquelle <a href="blog/faut-il-etre-bon-en-maths-pour-apprendre-a-coder" style="color: #047857; font-weight: 600; text-decoration: underline;">il faudrait être bon en maths pour coder</a>, la peur de Git et du terminal repose sur un malentendu. Avec la bonne méthode et un accompagnement bienveillant, chaque commande prend tout son sens.
+              </p>
+            </section>
+
+            <!-- Section 9 -->
+            <section class="article-section">
+              <h2 class="bangers-regular">Ce que ton GitHub dit de toi aux recruteurs</h2>
+              <p>
+                Voici une histoire vraie que je raconte souvent : un de mes anciens élèves en reconversion n'avait aucun diplôme d'informatique, pas même un bac scientifique.
+              </p>
+              <p>
+                Lors de son premier entretien pour un stage de développeur front-end, il n'a pas sorti un CV classique. Il a ouvert son profil GitHub. Le recruteur a pu explorer ses repositories : l'historique des commits était régulier, les messages étaient clairs, le code était propre et structuré.
+              </p>
+              <p>
+                Le recruteur a vu en 2 minutes que le candidat savait déjà travailler avec les mêmes méthodes professionnelles que son équipe en poste. Il a décroché son stage sur le champ.
+              </p>
+              <p>
+                Git et GitHub ne sont pas de simples outils de stockage : ce sont les preuves tangibles de tes compétences et de ta rigueur.
+              </p>
+            </section>
+
+            <!-- Encadré d'appel à l'action contextuel -->
+            <aside class="article-cta-box">
+              <div class="article-cta-box__content">
+                <span class="section-tag" style="background: rgba(0, 255, 135, 0.15); color: #00ff87;">Passe à l'action</span>
+                <h3 class="bangers-regular">Apprends Git sur des projets concrets avec NoSeumCode</h3>
+                <p class="poppins-regular">
+                  Dans nos parcours d'apprentissage, Git et GitHub sont intégrés dès les premières semaines. Tu repars avec un portfolio en ligne hébergé sur GitHub pour prouver tes compétences.
+                </p>
+                <div class="article-cta-box__buttons">
+                  <a href="formations/starter" class="button button__primary bangers-regular">
+                    Découvrir le Pack Starter (89 €) →
+                  </a>
+                  <button type="button" popovertarget="hubspot-popover" class="button button__secondary bangers-regular">
+                    Télécharger le Programme (PDF)
+                  </button>
+                </div>
+              </div>
+            </aside>
+          </div>
+
+          <!-- Carte Auteur Senior -->
+          <section class="article-author-card">
+            <div class="article-author-card__avatar">
+              <img
+                src="images/mentor-cedric.webp"
+                alt="Cédric Ragot, mentor NoSeumCode"
+                width="80"
+                height="80"
+                loading="lazy"
+              />
+            </div>
+            <div class="article-author-card__info">
+              <h3 class="bangers-regular">Cédric Ragot</h3>
+              <p class="article-author-card__role">Ingénieur Senior &amp; Formateur NoSeumCode</p>
+              <p class="article-author-card__bio">
+                Ingénieur senior et formateur, il utilise Git quotidiennement depuis plus de 10 ans pour piloter des projets d'envergure. Il apprend aux débutants à apprivoiser le terminal et les outils professionnels sans angoisse et sans le seum.
+              </p>
+            </div>
+          </section>
+
+          <!-- Liens de navigation bas de page -->
+          <div style="margin-top: 3.5rem; text-align: center;">
+            <a href="index.html#blog" class="back-link bangers-regular" style="font-size: 1.15rem;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+              ← Voir tous les articles du blog
+            </a>
+          </div>
+        </article>
+      </div>
+    </main>
+
+    <!-- Footer injecté dynamiquement -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Modales & Popovers partagés -->
+    <div id="popovers-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="js/analytics.js?v=sprint16"></script>
+    <script src="js/header.min.js?v=sprint16"></script>
+    <script src="js/popover-hubspot.min.js?v=sprint16"></script>
+  </body>
+</html>
