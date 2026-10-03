@@ -1273,3 +1273,12 @@ _Chronologique — plus récent en bas_
    - Alignement de la variable d'environnement `CORS_ALLOWED_ORIGINS` dans `.github/workflows/deploy.yml`.
 4. **Tests Unitaires** :
    - `OAuth2RedirectUriFilterTest` étendu pour valider les redirections LAN (`http://192.168.1.9:3000`, `http://10.0.0.1:3000`, etc.) et la configuration CORS complète de `SecurityConfig.corsConfigurationSource()`.
+## 2026-10-03 | Conversation: e0c73f84-bc39-488a-83c1-9ceaebb64b40
+
+**Type**: UI Refactor
+**Branche**: 	ask/replace-emojis-with-svg-icons`n
+**Ce qui a été fait**:
+- Remplacement intégral des emojis Unicode (qui font << IA >>, ex: fusées, lumières, checks, etc.) par des icônes SVG dans le frontend.
+- Les icônes s'intègrent à la charte graphique de NoSeumCode (vert fluo, gris ardoise, contours nets, etc.).
+- Fichiers impactés: workshops.js, script.js, popover-hubspot.js, workshops.html, parcours.html, partials/header.html, partials/popovers-shared.html, success.html, 	hanks.html, eset-password.html.
+- Re-génération des fichiers JS minifiés via uild.js.
