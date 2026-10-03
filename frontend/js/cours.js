@@ -308,7 +308,7 @@ function renderCourseCatalog() {
           let tierColor = "#0284c7";
           let tierBg = "rgba(2, 132, 199, 0.12)";
           let popularBadge = `<span style="background: rgba(0, 217, 255, 0.15); color: #00d9ff; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;">Idéal Débutant</span>`;
-          let installmentHtml = `<div style="font-size: 0.8rem; color: #334155; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem;"><span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.68rem; padding: 1px 5px; border-radius: 3px;">Klarna</span> ou <strong>3x 99 €</strong> sans frais</div>`;
+          let installmentHtml = `<div style="font-size: 0.8rem; color: #334155; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem;"><span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.68rem; padding: 1px 5px; border-radius: 3px;">Klarna</span> ou <strong>3x 109 €</strong> sans frais</div>`;
           let featuresHtml = `
             <ul class="package-features poppins-regular" style="text-align: left; list-style: none; padding: 0; line-height: 1.6; font-size: 0.82rem; margin: 0.75rem 0; color: #475569;">
               <li>✓ <strong>Formation HTML5 Complète</strong> (Structure & SEO)</li>
@@ -346,7 +346,7 @@ function renderCourseCatalog() {
             tierColor = "#059669";
             tierBg = "rgba(16, 185, 129, 0.15)";
             popularBadge = `<span style="background: #00ff87; color: #070e18; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;">Le Plus Populaire</span>`;
-            installmentHtml = `<div style="font-size: 0.8rem; color: #334155; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem;"><span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.68rem; padding: 1px 5px; border-radius: 3px;">Klarna</span> ou <strong>3x 149 €</strong> sans frais</div>`;
+            installmentHtml = `<div style="font-size: 0.8rem; color: #334155; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem;"><span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.68rem; padding: 1px 5px; border-radius: 3px;">Klarna</span> ou <strong>3x 160 €</strong> sans frais</div>`;
             featuresHtml = `
               <ul class="package-features poppins-regular" style="text-align: left; list-style: none; padding: 0; line-height: 1.6; font-size: 0.82rem; margin: 0.75rem 0; color: #475569;">
                 <li>✓ <strong>Tout le Pack Starter inclus</strong> (HTML5 + CSS3)</li>

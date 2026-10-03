@@ -1300,3 +1300,23 @@ _Chronologique — plus récent en bas_
 - Fichiers impactés: workshops.js, script.js, popover-hubspot.js, workshops.html, parcours.html, partials/header.html, partials/popovers-shared.html, success.html, 	hanks.html, 
 eset-password.html.
 - Re-génération des fichiers JS minifiés via uild.js.
+
+## 2026-10-03 — Sprint 17 : Urgences Vitales CRO & SEO
+
+**Conversation ID**: 7bfc89b0-b294-4838-993a-3338df67db42  
+**Branche**: eat/sprint-17-urgences-cro-seo  
+**Objectif**: Corriger l'aberration des prix 3x Klarna, corriger les régressions SEO et optimiser les conversions lead gen.
+
+### Réalisations & Corrections :
+1. **Correction des prix 3x Klarna** :
+   - Mise à jour des libellés dans rontend/js/cours.js, rontend/formations/starter.html, rontend/formations/pack-web.html et rontend/js/header.js pour refléter les prix corrects : Starter à 3x 109 € et Web Pro à 3x 160 €.
+2. **SEO / Redirections** :
+   - Suppression des balises <meta http-equiv="refresh"> obsolètes dans rontend/cours.html et rontend/course.html.
+   - Ajout des redirections HTTP 301 permanentes pour course et course.html vers /parcours dans rontend/.htaccess.
+3. **SEO / Indexation** :
+   - Retrait immédiat de la balise <link rel="canonical" href="https://noseumcode.fr/article.html"> cannibale sur la page générique de blog (rontend/article.html).
+4. **UX / Lead Gen** :
+   - Ajout d'un bouton Call-to-Action proéminent pointant vers la section de réservation sur la page d'atterrissage des ateliers rontend/workshops.html.
+5. **CRO Funnel / Tunnel de Remerciement** :
+   - Fusion des 4 boutons de téléchargement fragmentés sur rontend/thanks.html en un appel clair et unique : « TÉLÉCHARGER MON PACK (ZIP & PDF) ».
+   - Remontée stratégique du bloc d'upsell pour une visibilité accrue sans défilement de page.
