@@ -1,6 +1,6 @@
 # ROADMAP.md — Feuille de Route Commerciale NoSeumCode
 
-> _Dernière mise à jour : 2026-09-30_  
+> _Dernière mise à jour : 2026-10-03_  
 > _Objectif : Transformer le MVP NoSeumCode en produit final, sécurisé, commercialisable et prêt pour la production._
 
 ---
@@ -25,6 +25,9 @@
 | **Sprint 14** | **Nouvelle Architecture des Offres (3 Packages)** | Modélisation catalogue `cours.js` (Starter 89 €, Web Pro 179 €, VIP 389 €), alignement Stripe, navigation `header.html` et page parcours | ✅ **Terminé** |
 | **Sprint 15** | **Refonte Copywriting Homepage & SEO Sémantique** | Copywriting validé, H1/Hero percutant, suppression du double regard, grille des 3 offres `#parcours`, FAQ 6 questions et mots-clés cibles | ✅ **Terminé** |
 | **Sprint 16** | **Tunnel Lead Magnet, Onboarding & Cocon Blog** | Sécurisation `thanks.html` (liens PDF + upsell), onboarding `success.html`, gabarit cocon blog (`article.html`) et recette globale | ✅ **Terminé** |
+| **Sprint 17** | **Urgences Vitales CRO & SEO (24h)** | Correction prix 3x, redirections 301 (.htaccess), fix canonical blog, CTA hero workshops, pack unique `thanks.html` | 📋 **À faire** |
+| **Sprint 18** | **Optimisation Stratégique & IA / AEO (1 sem)** | Données structurées JSON-LD Course/FAQPage, Order Bump HTML Suivi Mentor (+199 €), avis preuve sociale, macaron garantie 14j | 📋 **À faire** |
+| **Sprint 19** | **Architecture Statique & SSG (1 mois)** | Suppression CSR Header/Footer via script de build Node.js, génération physique des articles (/blog/*.html), alignement sitemap.xml | 📋 **À faire** |
 
 ---
 
@@ -125,6 +128,24 @@ gantt
     Onboarding success.html (16.2)           :done, s16_2, 2026-09-30, 2026-09-30
     Gabarit Cocon Blog & Maillage (16.3)     :done, s16_3, 2026-09-30, 2026-09-30
     Recette E2E & Audit PageSpeed CWV (16.4) :done, s16_4, 2026-09-30, 2026-09-30
+
+    section Sprint 17 : Urgences Vitales CRO & SEO
+    Correction Tarifs 3x & Checkout (17.1)   :active, s17_1, 2026-10-03, 2026-10-04
+    Redirections HTTP 301 Apache (17.2)      :active, s17_2, 2026-10-03, 2026-10-04
+    Retrait Canonical article.html (17.3)    :active, s17_3, 2026-10-03, 2026-10-04
+    CTA Hero workshops.html (17.4)           :active, s17_4, 2026-10-03, 2026-10-04
+    Nettoyage Pack Unique thanks.html (17.5) :active, s17_5, 2026-10-03, 2026-10-04
+
+    section Sprint 18 : Optimisation Stratégique & IA
+    JSON-LD Schema Course & FAQPage (18.1)   :s18_1, 2026-10-05, 2026-10-08
+    Order Bump HTML Mentorat (18.2)          :s18_2, 2026-10-05, 2026-10-09
+    Preuve Sociale & Avis Réels (18.3)       :s18_3, 2026-10-06, 2026-10-09
+    Macaron Garantie 14 Jours (18.4)         :s18_4, 2026-10-07, 2026-10-10
+
+    section Sprint 19 : Architecture Statique & SSG
+    Build Script SSG Header/Footer (19.1)    :s19_1, 2026-10-12, 2026-10-20
+    Génération Physique Blog /blog/ (19.2)   :s19_2, 2026-10-15, 2026-10-25
+    Cohérence Déterministe Sitemap (19.3)    :s19_3, 2026-10-20, 2026-10-28
 ```
 
 ---
@@ -380,5 +401,57 @@ gantt
   - Test Téléchargements : validation HTTP 200 sur les 4 fichiers PDF dans `documents/`.
   - Test Tunnel Stripe : vérification des montants transmis (89 €, 179 €, 389 €) pour chaque session Stripe Checkout.
   - Audit PageSpeed & Mobile CWV : validation LCP < 2,5s sur mobile, CLS ~0.00 et persistance BFCache.
+
+---
+
+> 📖 **Spécifications Détaillées (Sprints 17 à 19)** :  
+> Le cahier des charges détaillé couvrant les 3 phases d'urgence, d'optimisation IA et d'architecture statique est consigné dans [`docs/specs/2026-10-urgences-cro-seo-architecture.md`](file:///d:/Archive-mac/dev/code-bangers/docs/specs/2026-10-urgences-cro-seo-architecture.md).
+
+### Sprint 17 : Urgences Vitales CRO & SEO (24h)
+- **17.1 Correction de la Grille Tarifaire 3x & Stripe Checkout (`cours.js`, `starter.html`, `pack-web.html`)** :
+  - Élimination de l'anomalie où le paiement fractionné 3x est moins cher que le paiement comptant (Starter à 299 € comptant vs 3x 99 € = 297 € ; Web Pro à 449 € comptant vs 3x 149 € = 447 €).
+  - Alignement sur la grille révisée avec frais de fractionnement standard : Pack Starter à 299 € comptant ou 3x 109 € (327 €) ; Pack Web Pro à 449 € comptant ou 3x 160 € (480 €).
+  - Synchronisation des libellés dans le HTML, des attributs de données `data-price-installments`, et de la création de session Stripe Checkout / Klarna.
+- **17.2 Suppression des Redirections Meta Refresh & Configuration HTTP 301 Apache (`frontend/.htaccess`, `cours.html`, `course.html`)** :
+  - Suppression définitive des balises parasites `<meta http-equiv="refresh" content="...">` dans `cours.html` et `course.html`.
+  - Configuration de redirections HTTP 301 déterministes côté serveur dans `.htaccess` vers `/parcours` afin de préserver 100% du jus SEO (PageRank) et éviter les pénalités d'indexation.
+- **17.3 Éradication de la Balise Canonical Suicidaire sur le Blog (`frontend/article.html`)** :
+  - Retrait immédiat de la balise `<link rel="canonical" href="https://noseumcode.fr/article.html">` qui ordonne aux robots d'indexation de désindexer tous les articles de blog individuels servis dynamiquement.
+- **17.4 Intégration du Bouton d'Action Hero sur la Page Workshops (`frontend/workshops.html`)** :
+  - Ajout d'un bouton CTA direct et contrasté au-dessus de la ligne de flottaison (above-the-fold) sans nécessiter de défilement, renvoyant directement vers le sélecteur d'atelier ou l'inscription.
+- **17.5 Nettoyage du Tunnel Lead Magnet & Focalisation Offre (`frontend/thanks.html`)** :
+  - Fusion des 4 boutons de téléchargement dispersés en un seul pack ressource téléchargeable (« Télécharger le Pack Complet des Guides Développeur (ZIP/PDF) »).
+  - Utilisation de l'espace libéré pour mettre en avant l'offre commerciale principale avec un appel à l'action d'inscription fort.
+
+---
+
+### Sprint 18 : Optimisation Stratégique, IA & AEO (1 semaine)
+- **18.1 Données Structurées JSON-LD Course & FAQPage (`frontend/index.html`)** :
+  - Implémentation du balisage Schema.org `Course` pour le Pack Starter et le Pack Web Pro avec instructeur, offre tarifaire et compétences visées.
+  - Ajout du balisage Schema.org `FAQPage` exhaustif sur les questions/réponses de la section FAQ pour maximiser l'éligibilité aux moteurs de réponse IA (Perplexity, ChatGPT, Claude) et Google AI Overviews.
+- **18.2 Refonte UX du Suivi Mentor en Order Bump HTML (`index.html`, `starter.html`, `pack-web.html`)** :
+  - Retrait de l'offre mentorat de la grille tarifaire principale pour simplifier le choix de premier niveau.
+  - Implémentation sous forme d'**Order Bump** (case à cocher +199 €) directement visible avant le paiement.
+  - Contrainte technique stricte : Balisage HTML initial complet (piloté par formulaires et CSS), sans injection JavaScript tardive, pour garantir la lisibilité et l'indexation par les crawlers.
+- **18.3 Activation de la Section Preuve Sociale & Témoignages Réels (`frontend/index.html`)** :
+  - Décommenter et structurer la section "Preuve Sociale" en remplacement des simples logos d'outils pros.
+  - Intégration de retours apprenants authentiques, citations vérifiées et preuves de réussite concrètes issues de la communauté Discord.
+- **18.4 Valorisation Visuelle de la Garantie 14 Jours (`frontend/index.html`, `parcours.html`)** :
+  - Extraction de la mention discrète en bas de page pour la transformer en un macaron graphique massif et valorisant (« 14 Jours Satisfait ou Remboursé Sans Question ») positionné à proximité immédiate des boutons d'achat pour inverser le risque perçu.
+
+---
+
+### Sprint 19 : Assainissement de l'Architecture & Rendu Statique SSG (1 mois)
+- **19.1 Éradication du Client-Side Rendering (CSR) Header/Footer via Script de Build Node.js** :
+  - Remplacement de l'injection JavaScript asynchrone (`<div id="header-placeholder">` / `header.js`) par une compilation statique locale.
+  - Mise en place d'un script de build Node.js léger (`build-static.js`) fusionnant `header.html`, le contenu de chaque page et `footer.html` en fichiers HTML statiques complets avant déploiement.
+  - Conservation de l'architecture Vanilla sans dépendance à un framework lourd (Next.js/Astro) tout en garantissant une visibilité 100% immédiate pour les crawlers de recherche.
+- **19.2 Rendu Statique Dédié du Blog (SSG Blog / Fiches Physiques)** :
+  - Élimination du modèle `article.html?id=...` non indexable au profit de pages physiques générées pour chaque article (ex: `/blog/apprendre-a-coder-debutant.html`).
+  - Chaque fichier généré intègre son contenu textuel en dur dans le DOM, des balises `<title>`, `<meta description>`, Open Graph et données structurées Schema.org `BlogPosting` uniques.
+- **19.3 Cohérence Déterministe du Sitemap & Routage (`frontend/sitemap.xml`, `frontend/.htaccess`)** :
+  - Alignement rigoureux des URLs déclarées dans le sitemap avec l'arborescence des fichiers statiques réellement servis.
+  - Harmonisation des règles de réécriture d'URL Apache pour garantir des URLs propres sans extension `.html` sans rupture de liens.
+
 
 
