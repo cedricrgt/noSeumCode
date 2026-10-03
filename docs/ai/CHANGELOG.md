@@ -1320,3 +1320,7 @@ eset-password.html.
 5. **CRO Funnel / Tunnel de Remerciement** :
    - Fusion des 4 boutons de téléchargement fragmentés sur rontend/thanks.html en un appel clair et unique : « TÉLÉCHARGER MON PACK (ZIP & PDF) ».
    - Remontée stratégique du bloc d'upsell pour une visibilité accrue sans défilement de page.
+6. **Réassurance & Catalogue** :
+   - Rétablissement de la page de réassurance détaillée cours.html (auparavant redirigée à tort vers l'espace classe parcours.html).
+   - Ajout des liens vers cours.html depuis le header, le footer et le CTA hero de la page d'accueil pour comparer les offres en détail.
+   - Redirection de l'ancienne page catalogue ormations/index.html vers cours.html pour éviter le contenu dupliqué.
