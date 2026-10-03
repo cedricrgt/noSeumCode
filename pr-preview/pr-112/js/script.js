@@ -197,6 +197,6 @@ console.log(
   "color: #00FF87; font-size: 20px; font-weight: bold;",
 );
 console.log(
-  "%cSite développé avec ❤️ et beaucoup de code",
+  "%cSite développé avec passion et beaucoup de code",
   "color: #00D9FF; font-size: 14px;",
 );

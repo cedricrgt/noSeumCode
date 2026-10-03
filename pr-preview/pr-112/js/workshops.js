@@ -176,7 +176,7 @@
 
       let gaugeClass = "workshop-jauge__progress";
       let seatClass = "workshop-jauge__seats--available";
-      let statusText = `🔥 Plus que ${remaining} place${remaining > 1 ? "s" : ""} disponible${remaining > 1 ? "s" : ""}`;
+      let statusText = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg> Plus que ${remaining} place${remaining > 1 ? "s" : ""} disponible${remaining > 1 ? "s" : ""}`;
 
       if (isFull) {
         gaugeClass += " workshop-jauge__progress--full";
@@ -185,7 +185,7 @@
       } else if (remaining <= 2) {
         gaugeClass += " workshop-jauge__progress--limited";
         seatClass = "workshop-jauge__seats--limited";
-        statusText = `⚡ Dernières places ! (plus que ${remaining})`;
+        statusText = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Dernières places ! (plus que ${remaining})`;
       }
 
       const card = document.createElement("article");
@@ -291,17 +291,17 @@
       } else if (response.status === 409) {
         localStorage.removeItem("noseum_pending_workshop_id");
         sessionStorage.removeItem("noseum_pending_workshop_id");
-        showToast('ℹ️ Tu es déjà inscrit(e) à cet atelier ! <a href="dashboard.html" style="color: #00e5ff; text-decoration: underline; margin-left: 8px; font-weight: 700;">Voir mon espace ➔</a>', "info");
+        showToast('<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Tu es déjà inscrit(e) à cet atelier ! <a href="dashboard.html" style="color: #00e5ff; text-decoration: underline; margin-left: 8px; font-weight: 700;">Voir mon espace ➔</a>', "info");
         await fetchWorkshops();
       } else {
         const errData = await response.json().catch(() => ({}));
         const msg = errData.message || "Impossible de réserver cette place.";
-        showToast(`❌ ${msg}`, "error");
+        showToast(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> ${msg}`, "error");
         await fetchWorkshops();
       }
     } catch (err) {
       console.error("Erreur lors de la réservation de l'atelier:", err);
-      showToast("❌ Erreur de communication avec le serveur. Veuillez réessayer.", "error");
+      showToast("<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Erreur de communication avec le serveur. Veuillez réessayer.", "error");
     }
   }
 
@@ -317,14 +317,14 @@
       });
 
       if (response.ok || response.status === 204) {
-        showToast("✅ Ta réservation a été annulée. La place a été libérée.", "info");
+        showToast("<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Ta réservation a été annulée. La place a été libérée.", "info");
         await fetchWorkshops();
       } else {
-        showToast("❌ Impossible d'annuler cette réservation.", "error");
+        showToast("<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Impossible d'annuler cette réservation.", "error");
       }
     } catch (err) {
       console.error("Erreur lors de l'annulation de l'atelier:", err);
-      showToast("❌ Erreur de communication avec le serveur.", "error");
+      showToast("<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Erreur de communication avec le serveur.", "error");
     }
   }
 
@@ -352,7 +352,7 @@
   async function downloadHubspotCsv(workshopId = null) {
     const token = localStorage.getItem("noseum_token");
     if (!token) {
-      showToast("⚠️ Veuillez vous connecter avec un compte administrateur.", "error");
+      showToast("<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Veuillez vous connecter avec un compte administrateur.", "error");
       return;
     }
     try {
@@ -366,7 +366,7 @@
       });
 
       if (!res.ok) {
-        showToast("❌ Erreur lors de l'exportation (droits administrateur requis).", "error");
+        showToast("<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Erreur lors de l'exportation (droits administrateur requis).", "error");
         return;
       }
 
@@ -380,10 +380,10 @@
       a.click();
       a.remove();
       window.URL.revokeObjectURL(downloadUrl);
-      showToast("✅ Fichier CSV HubSpot téléchargé avec succès !", "success");
+      showToast("<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Fichier CSV HubSpot téléchargé avec succès !", "success");
     } catch (err) {
       console.error("Erreur téléchargement CSV HubSpot:", err);
-      showToast("❌ Impossible de télécharger le fichier CSV.", "error");
+      showToast("<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Impossible de télécharger le fichier CSV.", "error");
     }
   }
 
@@ -404,12 +404,12 @@
         bar.style.cssText = "background: rgba(255, 122, 0, 0.12); border: 1px solid rgba(255, 122, 0, 0.4); border-radius: 14px; padding: 0.9rem 1.4rem; margin-bottom: 2.2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;";
         bar.innerHTML = `
           <div style="display: flex; align-items: center; gap: 0.6rem; color: #ffaa00; font-size: 0.95rem; font-weight: 600;">
-            <span>🛡️ Espace Staff (${user.role}) :</span>
+            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Espace Staff (${user.role}) :</span>
             <span style="color: #cbd5e1; font-weight: 400;">Supervisez les sessions et téléchargez les inscrits pour votre CRM</span>
           </div>
           <div>
             <button id="btn-export-hubspot-workshops" class="button button__primary bangers-regular" style="padding: 0.55rem 1.3rem; font-size: 0.95rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;">
-              📥 Exporter pour HubSpot (CSV)
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Exporter pour HubSpot (CSV)
             </button>
           </div>
         `;
