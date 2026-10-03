@@ -1327,3 +1327,4 @@ eset-password.html.
    - Ajout d'accordéons SEO (<details>) décrivant les modules sous les packs pour nourrir l'IA (AEO) et Google sans alourdir l'UI.
    - Redirection 301 de /cours et /formations vers la section #parcours de la homepage dans .htaccess.
    - Nettoyage des liens dans le header et le footer pour pointer sur /#parcours.
+   - Application d'un conteneur Dark UI (Dark Mode) exclusif au tableau comparatif pour garantir la lisibilité des textes clairs sur le fond blanc de la section, apportant un design premium et contrasté.
