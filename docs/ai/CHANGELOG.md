@@ -1,4 +1,4 @@
-# CHANGELOG.md — NoSeumCode
+﻿# CHANGELOG.md — NoSeumCode
 
 _Chronologique — plus récent en bas_
 
@@ -1321,6 +1321,9 @@ eset-password.html.
    - Fusion des 4 boutons de téléchargement fragmentés sur rontend/thanks.html en un appel clair et unique : « TÉLÉCHARGER MON PACK (ZIP & PDF) ».
    - Remontée stratégique du bloc d'upsell pour une visibilité accrue sans défilement de page.
 6. **Réassurance & Catalogue** :
-   - Rétablissement de la page de réassurance détaillée cours.html (auparavant redirigée à tort vers l'espace classe parcours.html).
-   - Ajout des liens vers cours.html depuis le header, le footer et le CTA hero de la page d'accueil pour comparer les offres en détail.
-   - Redirection de l'ancienne page catalogue ormations/index.html vers cours.html pour éviter le contenu dupliqué.
+   - Suppression des pages satellites de réassurance (cours.html, formations/index.html) pour éviter la fuite de visiteurs.
+   - Intégration du tableau comparatif complet directement sur la page d'accueil (index.html).
+   - Ajout d'un bouton secondaire "Télécharger le programme" sous chaque offre de la page d'accueil.
+   - Ajout d'accordéons SEO (<details>) décrivant les modules sous les packs pour nourrir l'IA (AEO) et Google sans alourdir l'UI.
+   - Redirection 301 de /cours et /formations vers la section #parcours de la homepage dans .htaccess.
+   - Nettoyage des liens dans le header et le footer pour pointer sur /#parcours.

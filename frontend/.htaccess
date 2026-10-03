@@ -27,14 +27,11 @@ RewriteRule ^api/(.*)$ https://api.noseumcode.fr/api/$1 [R=307,L,QSA]
 # ----------------------------------------------------------------------
 # Clean URLs & Route Rewrites (Sprint 6 / ADR-013 & ADR-014)
 # ----------------------------------------------------------------------
-# 1. Redirection 301 de l'ancienne route /course et /course.html vers /parcours
-RewriteRule ^course/?$ /parcours [R=301,L,QSA]
-RewriteRule ^course\.html$ /parcours [R=301,L,QSA]
-
-# Réécriture de /cours vers cours.html
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^cours/?$ cours.html [L,QSA]
+# 1. Redirection 301 de l'ancienne route /cours et /course.html vers /#parcours
+RewriteRule ^cours/?$ /#parcours [R=301,L,NE,QSA]
+RewriteRule ^cours\.html$ /#parcours [R=301,L,NE,QSA]
+RewriteRule ^course/?$ /#parcours [R=301,L,NE,QSA]
+RewriteRule ^course\.html$ /#parcours [R=301,L,NE,QSA]
 
 # 2. Réécriture propre de l'endpoint /parcours vers parcours.html
 RewriteCond %{REQUEST_FILENAME} !-f
@@ -50,7 +47,7 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^formations/pack-web/?$ formations/pack-web.html [L,QSA]
 
-RewriteRule ^formations/?$ /cours.html [R=301,L,QSA]
+RewriteRule ^formations/?$ /#parcours [R=301,L,NE,QSA]
 
 # 4. Réécriture propre des pages légales (Sprint 13)
 RewriteCond %{REQUEST_FILENAME} !-f
