@@ -1290,3 +1290,13 @@ _Chronologique — plus récent en bas_
    - Ajout des Sprints 17, 18 et 19 dans le tableau récapitulatif, extension du diagramme de Gantt Mermaid, et rédaction détaillée des tâches pour chaque sprint.
 4. **Mise à Jour de la Mémoire Projet (`docs/ai/PROJECT_CONTEXT.md`)** :
    - Synchronisation de la branche active, de l'état actuel et des prochaines étapes d'exécution sans modification de code source.
+## 2026-10-03 | Conversation: e0c73f84-bc39-488a-83c1-9ceaebb64b40
+
+**Type**: UI Refactor
+**Branche**: 	ask/replace-emojis-with-svg-icons`n
+**Ce qui a été fait**:
+- Remplacement intégral des emojis Unicode (qui font << IA >>, ex: fusées, lumières, checks, etc.) par des icônes SVG dans le frontend.
+- Les icônes s'intègrent à la charte graphique de NoSeumCode (vert fluo, gris ardoise, contours nets, etc.).
+- Fichiers impactés: workshops.js, script.js, popover-hubspot.js, workshops.html, parcours.html, partials/header.html, partials/popovers-shared.html, success.html, 	hanks.html, 
+eset-password.html.
+- Re-génération des fichiers JS minifiés via uild.js.
