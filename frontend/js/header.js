@@ -579,7 +579,7 @@ function getPaywallSyllabusHtml(tier, addon) {
         </div>
       </div>
       <div style="margin-top: 0.85rem; padding: 0.65rem 0.85rem; background: rgba(37, 99, 235, 0.12); border: 1px solid rgba(37, 99, 235, 0.3); border-radius: 8px; font-size: 0.82rem; color: #93c5fd;">
-        ✨ <strong>Inclus :</strong> Accès immédiat et mises à jour à vie • Communauté Discord d'entraide • Éligible Klarna 3x 99 € sans frais • Garantie 14 jours satisfait ou remboursé.
+        ✨ <strong>Inclus :</strong> Accès immédiat et mises à jour à vie • Communauté Discord d'entraide • Éligible Klarna 3x 109 € sans frais • Garantie 14 jours satisfait ou remboursé.
       </div>
     `;
   } else {
@@ -615,7 +615,7 @@ function getPaywallSyllabusHtml(tier, addon) {
         </div>
       </div>
       <div style="margin-top: 0.85rem; padding: 0.65rem 0.85rem; background: rgba(0, 255, 135, 0.12); border: 1px solid rgba(0, 255, 135, 0.3); border-radius: 8px; font-size: 0.82rem; color: #a7f3d0;">
-        ✨ <strong>Inclus :</strong> Tout le Pack Starter + JS + Bonus Git/GitHub • Accès prioritaire Discord • Éligible Klarna 3x 149 € sans frais • Garantie 14 jours.
+        ✨ <strong>Inclus :</strong> Tout le Pack Starter + JS + Bonus Git/GitHub • Accès prioritaire Discord • Éligible Klarna 3x 160 € sans frais • Garantie 14 jours.
       </div>
     `;
   }

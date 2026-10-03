@@ -49,8 +49,8 @@ frontend/
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
 ## Active Branch: `docs/add-sprints-17-18-19`
-## Current State: Sprints 1 à 16 validés et clôturés. Cadrage et découpage des Sprints 17 (Urgences Vitales CRO/SEO 24h), 18 (Optimisation Stratégique IA & AEO 1 sem) et 19 (Architecture Statique & SSG 1 mois) intégrés dans la roadmap, le backlog GitHub Projects et le document de spécification docs/specs/2026-10-urgences-cro-seo-architecture.md.
-## Next Steps: Démarrer le Sprint 17 dans une conversation dédiée (correction de l'aberration des prix 3x, suppression des meta refresh et configuration des 301 Apache, retrait du canonical cannibale sur article.html, ajout du CTA hero sur workshops.html, pack unique lead magnet sur thanks.html).
+## Current State: Sprint 17 (Urgences Vitales CRO & SEO) terminé.
+## Next Steps: Démarrer le Sprint 18 (Optimisation Stratégique IA & AEO 1 sem).
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN
