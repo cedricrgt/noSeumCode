@@ -1,15 +1,216 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="canonical" href="https://noseumcode.fr/parcours" />
-    <title>Redirection vers Nos Parcours - NoSeumCode</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nos Formations Web en Direct & Cohortes de 6 Ã‰lÃ¨ves | NoSeumCode</title>
+    <meta
+      name="description"
+      content="DÃ©couvre nos parcours de formation au code en direct : Pack Starter (HTML/CSS/Git en 6 semaines) et Pack Web complet (JavaScript ES6+, APIs & option VIP)."
+    />
+    <base href="/" />
+    <link rel="canonical" href="https://noseumcode.fr/formations" />
+    <link rel="icon" type="image/png" href="images/favicon.png" />
+
+    <!-- Open Graph (1200x630) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="NoSeumCode" />
+    <meta property="og:title" content="Nos Formations Web en Direct | NoSeumCode" />
+    <meta
+      property="og:description"
+      content="Des parcours immersifs en direct avec 6 Ã©lÃ¨ves max pour apprendre Ã  coder sereinement. Replays Ã  vie illimitÃ©s et paiement en 3x ou 4x sans frais."
+    />
+    <meta property="og:image" content="https://noseumcode.fr/images/og/og-main.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="https://noseumcode.fr/formations" />
+    <meta property="og:locale" content="fr_FR" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Nos Formations Web en Direct | NoSeumCode" />
+    <meta
+      name="twitter:description"
+      content="DÃ©couvre les cursus NoSeumCode en promotion de 6 Ã©lÃ¨ves max. Direct interactif, mentorat dÃ©diÃ© et replays Ã  vie."
+    />
+    <meta name="twitter:image" content="https://noseumcode.fr/images/og/og-main.png" />
+
+    <!-- Plausible Analytics Cookieless & RGPD (Sprint 9 / ADR-015) - Deferred on idle to prevent forced reflow -->
     <script>
-      const params = window.location.search || "";
-      window.location.replace("parcours.html" + params);
+      window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments); };
+      window.addEventListener('load', function() {
+        (window.requestIdleCallback || function(cb) { setTimeout(cb, 1); })(function() {
+          var s = document.createElement('script');
+          s.defer = true;
+          s.setAttribute('data-domain', 'noseumcode.fr');
+          s.src = 'https://plausible.io/js/script.tagged-events.outbound-links.js';
+          document.head.appendChild(s);
+        });
+      });
     </script>
+
+    <!-- Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Bangers&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Bangers&display=swap"
+      />
+    </noscript>
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles/dist/formations.min.css?v=sprint12" />
   </head>
-  <body style="font-family: sans-serif; background: #070e18; color: #fff; text-align: center; padding: 4rem 1rem;">
-    <p>Redirection vers <a href="parcours.html" style="color: #00ff87;">Nos Parcours de Formation</a>...</p>
+
+  <body class="formations-page poppins-regular">
+    <a href="#formations-hub" class="skip-link">Aller au contenu principal</a>
+
+    <!-- Header injectÃ© dynamiquement -->
+    <div id="header-placeholder"></div>
+
+    <main id="formations-hub" class="formations-main">
+      <div class="formations-container">
+        
+        <header class="formation-hero" style="text-align: center; margin-bottom: 3.5rem;">
+          <span class="formation-badge">Catalogue Officiel des Promotions</span>
+          <h1 class="formation-title">
+            Choisis Ton <span>Parcours de Code</span>
+          </h1>
+          <p class="formation-subtitle" style="margin-left: auto; margin-right: auto;">
+            Apprends Ã  coder en construisant de vrais projets en direct. Chaque promotion est strictement plafonnÃ©e Ã  <strong>6 apprenants</strong> pour garantir un accompagnement individuel par ton mentor.
+          </p>
+        </header>
+
+        <!-- Grille des offres -->
+        <div class="workshops-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 4rem;">
+          
+          <!-- Carte Pack Starter -->
+          <article class="workshop-card" style="background: #0d1b2e; border: 1px solid rgba(0, 255, 135, 0.25); border-radius: 20px; padding: 2.25rem; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <span class="formation-badge" style="margin-bottom: 0;">Niveau DÃ©butant</span>
+              <span style="font-family: 'Bangers', cursive; font-size: 2.2rem; color: #fff;">299 â‚¬</span>
+            </div>
+            <h2 style="font-family: 'Bangers', cursive; font-size: 2rem; color: #fff; margin-bottom: 0.75rem;">
+              Pack Starter â€” Fondations Web
+            </h2>
+            <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; flex: 1;">
+              6 semaines intensives pour maÃ®triser HTML5 sÃ©mantique, CSS3 moderne & responsive (Flexbox, Grid) et Git/GitHub. Inclus : 24h de direct et accÃ¨s Ã  vie aux replays.
+            </p>
+            <div style="margin-bottom: 1.5rem;">
+              <span class="pricing-klarna-badge" style="width: 100%; justify-content: center; box-sizing: border-box;">
+                ou 3x 99 â‚¬ sans frais avec Klarna
+              </span>
+            </div>
+            <a href="formations/starter.html" class="formation-cta-btn" style="margin-bottom: 0;">
+              DÃ©couvrir le Pack Starter â†’
+            </a>
+          </article>
+
+          <!-- Carte Pack Web -->
+          <article class="workshop-card" style="background: #0d1b2e; border: 1px solid rgba(167, 139, 250, 0.35); border-radius: 20px; padding: 2.25rem; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <span class="formation-badge formation-badge--vip" style="margin-bottom: 0;">Parcours MÃ©tier</span>
+              <span style="font-family: 'Bangers', cursive; font-size: 2.2rem; color: #fff;">449 â‚¬</span>
+            </div>
+            <h2 style="font-family: 'Bangers', cursive; font-size: 2rem; color: #fff; margin-bottom: 0.75rem;">
+              Pack Web â€” JavaScript & APIs
+            </h2>
+            <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; flex: 1;">
+              12 semaines de cursus complet pour dompter la logique de programmation, JavaScript moderne (ES6+), les requÃªtes asynchrones et l'option Suivi Mentor (+199 â‚¬ pour 4 sessions individuelles).
+            </p>
+            <div style="margin-bottom: 1.5rem;">
+              <span class="pricing-klarna-badge" style="width: 100%; justify-content: center; box-sizing: border-box;">
+                ou 3x 149 â‚¬ sans frais avec Klarna
+              </span>
+            </div>
+            <a href="formations/pack-web.html" class="formation-cta-btn formation-cta-btn--vip" style="margin-bottom: 0;">
+              DÃ©couvrir le Pack Web â†’
+            </a>
+          </article>
+
+        </div>
+
+        <!-- Tableau comparatif -->
+        <section class="formation-section" style="margin-top: 3rem;">
+          <h2 class="formation-section-title" style="justify-content: center;">
+            Tableau Comparatif des Offres
+          </h2>
+          <div class="comparison-table-wrapper">
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>CritÃ¨res & Inclus</th>
+                  <th>Pack Starter</th>
+                  <th>Pack Web</th>
+                  <th>Option Suivi Mentor</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>DurÃ©e de la promotion</strong></td>
+                  <td>6 semaines</td>
+                  <td>12 semaines</td>
+                  <td>12 semaines</td>
+                </tr>
+                <tr>
+                  <td><strong>Volume horaire en direct</strong></td>
+                  <td>24 heures</td>
+                  <td>48 heures</td>
+                  <td>+4h en tÃªte-Ã -tÃªte (4 sessions 1h)</td>
+                </tr>
+                <tr>
+                  <td><strong>Taille maximale du groupe</strong></td>
+                  <td>6 apprenants</td>
+                  <td>6 apprenants</td>
+                  <td>6 apprenants</td>
+                </tr>
+                <tr>
+                  <td><strong>AccÃ¨s aux replays vidÃ©o</strong></td>
+                  <td>Ã€ vie (tronc commun)</td>
+                  <td>Ã€ vie (cursus complet)</td>
+                  <td>Ã€ vie (cursus complet)</td>
+                </tr>
+                <tr>
+                  <td><strong>Technologies enseignÃ©es</strong></td>
+                  <td>HTML5, CSS3, Flexbox, Grid, Git</td>
+                  <td>HTML/CSS, JS ES6+, APIs, Asynchrone</td>
+                  <td>Revues de code sur tes vrais projets</td>
+                </tr>
+                <tr>
+                  <td><strong>Support Discord privÃ©</strong></td>
+                  <td>Oui (canal groupe)</td>
+                  <td>Oui (canal groupe)</td>
+                  <td>4 sessions privÃ©es + canal dÃ©diÃ©</td>
+                </tr>
+                <tr>
+                  <td><strong>Tarif & FacilitÃ©s de paiement</strong></td>
+                  <td><strong>299 â‚¬</strong> (ou 3x 99 â‚¬ Klarna)</td>
+                  <td><strong>449 â‚¬</strong> (ou 3x 149 â‚¬ Klarna)</td>
+                  <td><strong>+199 â‚¬</strong> (Starter: 498 â‚¬ / Web: 648 â‚¬)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- Footer injectÃ© dynamiquement -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Popovers partagÃ©s (Auth, Hubspot) -->
+    <div id="popovers-placeholder"></div>
+
+    <script src="js/analytics.js?v=sprint12"></script>
+    <script src="js/header.min.js?v=sprint12"></script>
+    <script src="js/popover-hubspot.min.js?v=sprint12"></script>
   </body>
 </html>
