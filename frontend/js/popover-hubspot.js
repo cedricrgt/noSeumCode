@@ -41,7 +41,7 @@
                   if (container) {
                     container.innerHTML = `
                       <div style="text-align: center; padding: 2rem 1rem; color: #fff;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">🚀</div>
+                        <div style="font-size: 3rem; margin-bottom: 1rem; display:flex; justify-content:center;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00ff87" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
                         <h4 style="font-family: 'Bangers', cursive; font-size: 2rem; color: #00ff87; margin-bottom: 0.5rem;">C'EST DANS LA BOÎTE !</h4>
                         <p style="color: #cbd5e0; line-height: 1.5; font-size: 0.95rem;">
                           Ton programme de formation a été envoyé directement à ton adresse e-mail. Vérifie ta boîte de réception (et tes spams) !
