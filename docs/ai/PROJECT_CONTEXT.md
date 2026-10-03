@@ -1,6 +1,6 @@
 # PROJECT_CONTEXT.md — NoSeumCode
 
-_Last updated: 2026-09-30 | Conversation: e8ec6f84-8fe9-4797-b252-c7c4ae21f579_
+_Last updated: 2026-10-03 | Conversation: d2701bcf-ed1f-4e38-bb5e-52a921b4ec35_
 
 ## Project Overview
 
@@ -48,9 +48,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `feat/sprint-16-lead-magnet-onboarding-blog`
-## Current State: Sprints 1 à 16 validés. Sprint 16 complété (Tunnel Lead Magnet thanks.html avec liens PDF réparés et boîte d'upsell doux vers les packs, onboarding post-achat success.html en 3 étapes avec intégration Discord, gabarit sémantique article.html avec fil d'ariane, carte auteur, CTA contextuel et balisage Schema.org Article / BreadcrumbList).
-## Next Steps: Implémentation des articles de blog SEO spécialisés (Faut-il être bon en maths pour apprendre à coder ?).
+## Active Branch: `docs/add-sprints-17-18-19`
+## Current State: Sprints 1 à 16 validés et clôturés. Cadrage et découpage des Sprints 17 (Urgences Vitales CRO/SEO 24h), 18 (Optimisation Stratégique IA & AEO 1 sem) et 19 (Architecture Statique & SSG 1 mois) intégrés dans la roadmap, le backlog GitHub Projects et le document de spécification docs/specs/2026-10-urgences-cro-seo-architecture.md.
+## Next Steps: Démarrer le Sprint 17 dans une conversation dédiée (correction de l'aberration des prix 3x, suppression des meta refresh et configuration des 301 Apache, retrait du canonical cannibale sur article.html, ajout du CTA hero sur workshops.html, pack unique lead magnet sur thanks.html).
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN

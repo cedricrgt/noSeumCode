@@ -1273,6 +1273,23 @@ _Chronologique — plus récent en bas_
    - Alignement de la variable d'environnement `CORS_ALLOWED_ORIGINS` dans `.github/workflows/deploy.yml`.
 4. **Tests Unitaires** :
    - `OAuth2RedirectUriFilterTest` étendu pour valider les redirections LAN (`http://192.168.1.9:3000`, `http://10.0.0.1:3000`, etc.) et la configuration CORS complète de `SecurityConfig.corsConfigurationSource()`.
+
+---
+
+### 2026-10-03 — Cadrage & Planification des Sprints 17, 18 et 19 (CRO, SEO, AEO & SSG)
+**Conversation**: d2701bcf-ed1f-4e38-bb5e-52a921b4ec35  
+**Branche**: `docs/add-sprints-17-18-19`  
+
+#### Ce qui a changé :
+1. **Création du Cahier des Charges Spécifique (`docs/specs/2026-10-urgences-cro-seo-architecture.md`)** :
+   - Formalisation des 3 phases d'intervention (Phase 1 : Urgences 24h, Phase 2 : Optimisations IA 1 semaine, Phase 3 : Assainissement Architecture 1 mois).
+2. **Synchronisation du Backlog GitHub Projects (Projet #1)** :
+   - Clôture du Sprint 16 en statut `Done`.
+   - Création des items de suivi pour le Sprint 17 (Urgences Vitales CRO/SEO), Sprint 18 (Optimisation IA & AEO) et Sprint 19 (Architecture Statique SSG) en statut `Todo`.
+3. **Mise à Jour de la Roadmap Globale (`docs/ai/ROADMAP.md`)** :
+   - Ajout des Sprints 17, 18 et 19 dans le tableau récapitulatif, extension du diagramme de Gantt Mermaid, et rédaction détaillée des tâches pour chaque sprint.
+4. **Mise à Jour de la Mémoire Projet (`docs/ai/PROJECT_CONTEXT.md`)** :
+   - Synchronisation de la branche active, de l'état actuel et des prochaines étapes d'exécution sans modification de code source.
 ## 2026-10-03 | Conversation: e0c73f84-bc39-488a-83c1-9ceaebb64b40
 
 **Type**: UI Refactor
@@ -1280,5 +1297,6 @@ _Chronologique — plus récent en bas_
 **Ce qui a été fait**:
 - Remplacement intégral des emojis Unicode (qui font << IA >>, ex: fusées, lumières, checks, etc.) par des icônes SVG dans le frontend.
 - Les icônes s'intègrent à la charte graphique de NoSeumCode (vert fluo, gris ardoise, contours nets, etc.).
-- Fichiers impactés: workshops.js, script.js, popover-hubspot.js, workshops.html, parcours.html, partials/header.html, partials/popovers-shared.html, success.html, 	hanks.html, eset-password.html.
+- Fichiers impactés: workshops.js, script.js, popover-hubspot.js, workshops.html, parcours.html, partials/header.html, partials/popovers-shared.html, success.html, 	hanks.html, 
+eset-password.html.
 - Re-génération des fichiers JS minifiés via uild.js.
