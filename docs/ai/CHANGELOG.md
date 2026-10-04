@@ -1329,3 +1329,11 @@ eset-password.html.
    - Nettoyage des liens dans le header et le footer pour pointer sur /#parcours.
    - Application d'un conteneur Dark UI (Dark Mode) exclusif au tableau comparatif pour garantir la lisibilité des textes clairs sur le fond blanc de la section, apportant un design premium et contrasté.
    - Réalignement structurel du layout des cartes (Pack Starter, Pack Web Pro, Suivi Mentor) via l'écrasement de space-between en flex-start, forçant l'alignement strict et horizontal des tags, titres et sous-titres, peu importe le volume du contenu de la carte.
+
+## 2026-10-04 | Sprint 18 : Optimisation strategique IA / AEO
+- `index.html` : JSON-LD en `@graph` (Organization, Course Starter 299 EUR, Course Web Pro 449 EUR, FAQPage 6 Q/R identiques au texte visible).
+- FAQ et cartes : suppression de la mention trompeuse "3x sans frais" (3x109=327 > 299) et alignement sur 109/160 EUR.
+- Order bump Suivi Mentor (+199 EUR) : case a cocher en HTML statique dans chaque carte pack, carte "Suivi Mentor" retiree de la grille. `initiateCourseEnrollment(..., addon)` transmet `mentor_4sessions` au paywall existant (prix recalcule cote serveur, backend inchange).
+- Macaron "14 jours satisfait ou rembourse" sous chaque CTA d'achat.
+- Section `#preuves` : engagements factuels (6 eleves max, 10+ ans, 2 a 6 projets, 14 j). Aucun temoignage invente ; avis reels a ajouter apres collecte avec consentement.
+- Assets versionnes `?v=sprint18`, bundles `dist/` et `header.min.js` regeneres.

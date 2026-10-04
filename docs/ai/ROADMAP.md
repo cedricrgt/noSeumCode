@@ -1,6 +1,6 @@
 # ROADMAP.md — Feuille de Route Commerciale NoSeumCode
 
-> _Dernière mise à jour : 2026-10-03_  
+> _Dernière mise à jour : 2026-10-04_  
 > _Objectif : Transformer le MVP NoSeumCode en produit final, sécurisé, commercialisable et prêt pour la production._
 
 ---
@@ -25,8 +25,8 @@
 | **Sprint 14** | **Nouvelle Architecture des Offres (3 Packages)** | Modélisation catalogue `cours.js` (Starter 89 €, Web Pro 179 €, VIP 389 €), alignement Stripe, navigation `header.html` et page parcours | ✅ **Terminé** |
 | **Sprint 15** | **Refonte Copywriting Homepage & SEO Sémantique** | Copywriting validé, H1/Hero percutant, suppression du double regard, grille des 3 offres `#parcours`, FAQ 6 questions et mots-clés cibles | ✅ **Terminé** |
 | **Sprint 16** | **Tunnel Lead Magnet, Onboarding & Cocon Blog** | Sécurisation `thanks.html` (liens PDF + upsell), onboarding `success.html`, gabarit cocon blog (`article.html`) et recette globale | ✅ **Terminé** |
-| **Sprint 17** | **Urgences Vitales CRO & SEO (24h)** | Correction prix 3x, redirections 301 (.htaccess), fix canonical blog, CTA hero workshops, pack unique `thanks.html` | 📋 **À faire** |
-| **Sprint 18** | **Optimisation Stratégique & IA / AEO (1 sem)** | Données structurées JSON-LD Course/FAQPage, Order Bump HTML Suivi Mentor (+199 €), avis preuve sociale, macaron garantie 14j | 📋 **À faire** |
+| **Sprint 17** | **Urgences Vitales CRO & SEO (24h)** | Correction prix 3x, redirections 301 (.htaccess), fix canonical blog, CTA hero workshops, pack unique `thanks.html` | ✅ **Terminé** |
+| **Sprint 18** | **Optimisation Stratégique & IA / AEO (1 sem)** | Données structurées JSON-LD Course/FAQPage, Order Bump HTML Suivi Mentor (+199 €), avis preuve sociale, macaron garantie 14j | ✅ **Terminé** |
 | **Sprint 19** | **Architecture Statique & SSG (1 mois)** | Suppression CSR Header/Footer via script de build Node.js, génération physique des articles (/blog/*.html), alignement sitemap.xml | 📋 **À faire** |
 
 ---

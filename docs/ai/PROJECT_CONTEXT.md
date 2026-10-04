@@ -48,9 +48,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `docs/add-sprints-17-18-19`
-## Current State: Sprint 17 (Urgences Vitales CRO & SEO) terminé.
-## Next Steps: Démarrer le Sprint 18 (Optimisation Stratégique IA & AEO 1 sem).
+## Active Branch: `feat/sprint-18-aeo-order-bump-social-proof`
+## Current State: Sprint 18 (IA/AEO, order bump, preuves, garantie) terminé, PR en attente de merge.
+## Next Steps: Sprint 19 (SSG Node.js header/footer, blog statique, sitemap). Reste ouvert : "sans frais" dans cours.js et formations/*.html, avis réels à collecter.
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN
