@@ -895,18 +895,29 @@ window.redirectToStripeCheckout = redirectToStripeCheckout;
  * Déclenche l'inscription ou l'achat d'un cours depuis les popovers et boutons du site.
  * Ouvre le Paywall NoSeumCode intégré directement dans la page.
  */
-async function initiateCourseEnrollment(courseId, courseTitle, priceText, tier, cohortId) {
+async function initiateCourseEnrollment(courseId, courseTitle, priceText, tier, cohortId, addon) {
   courseId = resolveCourseId(courseId);
+  // Order bump : l'add-on est explicite, jamais hérité d'une session précédente.
+  if (addon === "mentor_4sessions") {
+    const base = parseInt(String(priceText || "").replace(/[^\d]/g, ""), 10);
+    if (courseTitle) courseTitle += " + Suivi Mentor";
+    if (!Number.isNaN(base)) priceText = (base + 199) + " €";
+    sessionStorage.setItem("noseum_pending_checkout_addon", addon);
+  } else {
+    addon = null;
+    sessionStorage.removeItem("noseum_pending_checkout_addon");
+  }
   if (typeof window.trackConversion === 'function') {
     window.trackConversion('checkout_initiate', {
       course_id: courseId,
       course_title: courseTitle,
       price: priceText,
       tier: tier || 'STANDARD',
-      cohort_id: cohortId || undefined
+      cohort_id: cohortId || undefined,
+      addon: addon || undefined
     });
   }
-  await openStripePaywall(courseId, courseTitle, priceText, tier, cohortId);
+  await openStripePaywall(courseId, courseTitle, priceText, tier, cohortId, addon);
 }
 window.initiateCourseEnrollment = initiateCourseEnrollment;
 

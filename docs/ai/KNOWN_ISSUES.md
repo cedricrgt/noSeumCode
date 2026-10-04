@@ -182,6 +182,11 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 3. Résolution dynamique d'URL avec `resolveAssetPath("workshops.html")` et binding systématique des événements `click` et `touchend` assurant une navigation directe (ou un scroll fluide vers `#workshops-grid` si déjà sur la page des ateliers).
 4. Synchronisation du fallback statique de `frontend/partials/header.html` avec les items sémantiques et le lien vers `workshops.html`.
 
+### ISSUE-030 🟡 Mention "3x sans frais" trompeuse hors homepage
+**Files**: `frontend/js/cours.js` (L.288-349), `frontend/formations/starter.html`, `frontend/formations/pack-web.html`.
+**Risk**: 3x 109 EUR = 327 EUR > 299 EUR comptant : "sans frais" est une pratique commerciale potentiellement trompeuse (Code de la consommation). Corrige sur `index.html` (Sprint 18), pas encore ailleurs.
+**Fix needed**: Remplacer par le total reel (327 / 480 EUR) ou aligner les prix pour que le fractionne soit reellement sans frais.
+
 ## Fausses Hypothèses à Éviter
 - Ne pas supposer qu'un bouton ou lien placé dans un conteneur animé en CSS continu (`@keyframes translateX(...) infinite`) peut être cliqué facilement sans pause au survol (`animation-play-state: paused`) : le déplacement permanent sous le curseur provoque une discordance de coordonnées entre `mousedown` et `mouseup`, ce qui amène le navigateur à annuler le `click` ou à tenter une sélection de texte.
 - Ne pas supposer qu'un badge inséré en `document.body.prepend()` avec `position: relative; z-index: 99999` ne perturbe pas la navigation : sur un site avec une barre d'en-tête fixe (`position: fixed; top: 0; z-index: 1000`), le badge de staging se superpose au sommet de la page à scroll 0 et vole tous les clics des éléments situés en dessous.

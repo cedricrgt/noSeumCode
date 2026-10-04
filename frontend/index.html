@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
@@ -51,22 +51,110 @@
       });
     </script>
 
-    <!-- Schema.org JSON-LD -->
+    <!-- Schema.org JSON-LD (Sprint 18.1) : Organization + Course x2 + FAQPage -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "EducationalOrganization",
-      "name": "NoSeumCode",
-      "url": "https://noseumcode.fr",
-      "logo": "https://noseumcode.fr/images/header/logo.png",
-      "description": "Formations au développement web pratique pour débutants et intermédiaires. Apprends HTML5, CSS3, JavaScript ES6+ et Git sans le seum avec projets réels et mentorat.",
-      "sameAs": [
-        "https://github.com/cedricrgt/noSeumCode"
+      "@graph": [
+        {
+          "@type": "EducationalOrganization",
+          "@id": "https://noseumcode.fr/#organization",
+          "name": "NoSeumCode",
+          "url": "https://noseumcode.fr",
+          "logo": "https://noseumcode.fr/images/header/logo.png",
+          "description": "Formations au développement web pratique pour débutants et intermédiaires. Apprends HTML5, CSS3, JavaScript ES6+ et Git sans le seum avec projets réels et mentorat.",
+          "sameAs": [
+            "https://github.com/cedricrgt/noSeumCode"
+          ]
+        },
+        {
+          "@type": "Course",
+          "@id": "https://noseumcode.fr/#pack-starter",
+          "name": "Pack Starter : HTML5, CSS3 et Responsive Design",
+          "description": "Les fondations du web moderne, depuis zéro : HTML5 sémantique, CSS3, Flexbox, CSS Grid, responsive design, Git et GitHub, mise en ligne. 2 projets de portfolio.",
+          "url": "https://noseumcode.fr/#parcours",
+          "inLanguage": "fr",
+          "educationalLevel": "Débutant",
+          "teaches": ["HTML5 sémantique", "CSS3", "Flexbox et CSS Grid", "Responsive Design", "Git et GitHub"],
+          "provider": { "@id": "https://noseumcode.fr/#organization" },
+          "instructor": { "@type": "Person", "name": "Cédric Ragot" },
+          "hasCourseInstance": {
+            "@type": "CourseInstance",
+            "courseMode": "online"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "299",
+            "priceCurrency": "EUR",
+            "availability": "https://schema.org/InStock",
+            "url": "https://noseumcode.fr/#parcours",
+            "category": "Paid"
+          }
+        },
+        {
+          "@type": "Course",
+          "@id": "https://noseumcode.fr/#pack-web-pro",
+          "name": "Pack Web Pro : du HTML/CSS à JavaScript",
+          "description": "Tout le Pack Starter plus JavaScript moderne (ES6+), manipulation du DOM, Fetch API et asynchrone, 4 projets de portfolio additionnels et la formation Git et GitHub offerte.",
+          "url": "https://noseumcode.fr/#parcours",
+          "inLanguage": "fr",
+          "educationalLevel": "Intermédiaire",
+          "teaches": ["JavaScript ES6+", "Manipulation du DOM", "Fetch API et asynchrone", "Single Page Applications", "Déploiement"],
+          "provider": { "@id": "https://noseumcode.fr/#organization" },
+          "instructor": { "@type": "Person", "name": "Cédric Ragot" },
+          "hasCourseInstance": {
+            "@type": "CourseInstance",
+            "courseMode": "online"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "449",
+            "priceCurrency": "EUR",
+            "availability": "https://schema.org/InStock",
+            "url": "https://noseumcode.fr/#parcours",
+            "category": "Paid"
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Je n'ai jamais codé de ma vie. Est-ce que je peux vraiment suivre ?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Absolument. Le Pack Starter démarre de zéro complet. Aucune connaissance préalable en programmation n'est demandée. Tout est expliqué pas à pas avec des exemples concrets." }
+            },
+            {
+              "@type": "Question",
+              "name": "Est-ce qu'il faut être bon en maths pour réussir ?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Non, c'est une légende urbaine. Le développement web fait appel à de la logique et à de la structure, pas à des intégrales ou des théorèmes mathématiques. Si tu as un peu de bon sens, tu réussiras." }
+            },
+            {
+              "@type": "Question",
+              "name": "Pendant combien de temps ai-je accès aux cours ?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Ton accès est illimité et garanti à vie. Tu avances à ton propre rythme, selon ton emploi du temps. Si nous mettons à jour le cours, tu profites des ajouts gratuitement." }
+            },
+            {
+              "@type": "Question",
+              "name": "Je suis parent, puis-je offrir cette formation à mon enfant / adolescent ?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Tout à fait. Lors du paiement, vous pouvez renseigner vos coordonnées bancaires pour le règlement et indiquer l'adresse email de votre enfant pour son accès étudiant. Nos cours sont 100% encadrés, sans publicité, et forment à des compétences techniques réelles et utiles pour ses études." }
+            },
+            {
+              "@type": "Question",
+              "name": "Que se passe-t-il si la formation ne me convient pas ?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Tu ne prends aucun risque financier grâce à notre garantie 14 jours satisfait ou remboursé. Un simple message à notre support et tu es remboursé intégralement, sans justification exigée." }
+            },
+            {
+              "@type": "Question",
+              "name": "Proposez-vous le paiement en plusieurs fois ?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Oui. Tu peux régler le Pack Starter en 3 fois (3x 109 €, soit 327 € au total) et le Pack Web Pro en 3 fois (3x 160 €, soit 480 € au total) via Klarna ou carte bancaire directement sur notre terminal sécurisé Stripe. Le paiement comptant reste le plus avantageux : 299 € et 449 €." }
+            }
+          ]
+        }
       ]
     }
     </script>
     
-    <link rel="stylesheet" href="styles/dist/homepage.min.css?v=sprint15" />
+    <link rel="stylesheet" href="styles/dist/homepage.min.css?v=sprint18" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -456,9 +544,24 @@
                 <li>✓ <strong>Accès Communauté Discord</strong> d'entraide</li>
                 <li>✓ <strong>Mises à jour à vie</strong> incluses</li>
               </ul>
-              <button type="button" class="button button__primary bangers-regular" style="width: 100%;" onclick="initiateCourseEnrollment('pack-starter', 'Pack Starter', '299 €')">
+              <label class="order-bump" for="bump-starter">
+                <input type="checkbox" id="bump-starter" class="order-bump__input" value="mentor_4sessions">
+                <span class="order-bump__body">
+                  <strong class="order-bump__title">Oui, j'ajoute le Suivi Mentor : +199 €</strong>
+                  <span class="order-bump__desc">4 sessions individuelles d'1h avec Cédric, revue de code sur tes vrais projets, résumé écrit après chaque session. Remboursé si la 1ère session ne te convient pas. 3 places max par cohorte.</span>
+                  <span class="order-bump__total">Pack Starter + Suivi Mentor = 498 €</span>
+                </span>
+              </label>
+              <button type="button" class="button button__primary bangers-regular" style="width: 100%;" onclick="initiateCourseEnrollment('pack-starter', 'Pack Starter', '299 €', null, null, document.getElementById('bump-starter').checked ? 'mentor_4sessions' : null)">
                 Choisir le Pack Starter • 299 €
               </button>
+              <div class="guarantee-seal" role="note">
+                <div class="guarantee-seal__badge" aria-hidden="true">
+                  <span class="guarantee-seal__days">14</span>
+                  <span class="guarantee-seal__unit">jours</span>
+                </div>
+                <p class="guarantee-seal__text"><strong>Satisfait ou remboursé</strong>Sans question ni justification. Un message suffit.</p>
+              </div>
               <button type="button" class="button button__secondary bangers-regular" style="width: 100%; margin-top: 0.5rem; box-sizing: border-box;" popovertarget="hubspot-popover" aria-haspopup="dialog">
                 Télécharger le programme détaillé (PDF)
               </button>
@@ -473,7 +576,7 @@
                   <strong>Module 6 :</strong> Hébergement & Mise en ligne
                 </div>
               </details>
-              <p class="package-reassurance" style="font-size: 0.75rem; color: #475569; margin-top: 1rem; text-align: center;">Soit 3x 109 € sans frais • Garantie 14 jours</p>
+              <p class="package-reassurance" style="font-size: 0.75rem; color: #475569; margin-top: 1rem; text-align: center;">Soit 3x 109 € (327 € au total) • Garantie 14 jours</p>
             </article>
 
             <!-- CARTE 2 : PACK WEB PRO (449 € — RECOMMANDÉ) -->
@@ -493,9 +596,24 @@
                 <li>🎁 <strong>BONUS OFFERT : Formation Git &amp; GitHub</strong> (valeur 49 €)</li>
                 <li>✓ <strong>Accès Prioritaire Discord</strong> &amp; salons d'entraide</li>
               </ul>
-              <button type="button" class="button button__primary bangers-regular" style="width: 100%; background: #00ff87; color: #070e18;" onclick="initiateCourseEnrollment('pack-web-pro', 'Pack Web Pro', '449 €')">
+              <label class="order-bump" for="bump-web-pro">
+                <input type="checkbox" id="bump-web-pro" class="order-bump__input" value="mentor_4sessions">
+                <span class="order-bump__body">
+                  <strong class="order-bump__title">Oui, j'ajoute le Suivi Mentor : +199 €</strong>
+                  <span class="order-bump__desc">4 sessions individuelles d'1h avec Cédric, revue de code sur tes vrais projets, résumé écrit après chaque session. Remboursé si la 1ère session ne te convient pas. 3 places max par cohorte.</span>
+                  <span class="order-bump__total">Pack Web Pro + Suivi Mentor = 648 €</span>
+                </span>
+              </label>
+              <button type="button" class="button button__primary bangers-regular" style="width: 100%; background: #00ff87; color: #070e18;" onclick="initiateCourseEnrollment('pack-web-pro', 'Pack Web Pro', '449 €', null, null, document.getElementById('bump-web-pro').checked ? 'mentor_4sessions' : null)">
                 Rejoindre le Pack Web Pro • 449 €
               </button>
+              <div class="guarantee-seal" role="note">
+                <div class="guarantee-seal__badge" aria-hidden="true">
+                  <span class="guarantee-seal__days">14</span>
+                  <span class="guarantee-seal__unit">jours</span>
+                </div>
+                <p class="guarantee-seal__text"><strong>Satisfait ou remboursé</strong>Sans question ni justification. Un message suffit.</p>
+              </div>
               <button type="button" class="button button__secondary bangers-regular" style="width: 100%; margin-top: 0.5rem; box-sizing: border-box;" popovertarget="hubspot-popover" aria-haspopup="dialog">
                 Télécharger le programme détaillé (PDF)
               </button>
@@ -510,29 +628,9 @@
                   <strong>Module 11 :</strong> Hébergement, Déploiement CI/CD & Bonnes pratiques
                 </div>
               </details>
-              <p class="package-reassurance" style="font-size: 0.75rem; color: #cbd5e1; margin-top: 1rem; text-align: center;">Soit 3x 160 € sans frais • Garantie 14 jours</p>
+              <p class="package-reassurance" style="font-size: 0.75rem; color: #cbd5e1; margin-top: 1rem; text-align: center;">Soit 3x 160 € (480 € au total) • Garantie 14 jours</p>
             </article>
 
-            <!-- BLOC ADD-ON : SUIVI MENTOR (Section 3.5) -->
-            <article class="card card-white card-package" style="border: 1px solid rgba(0, 255, 135, 0.35); background: #0d1b2e; color: #fff; justify-content: flex-start;">
-              <div class="card__tag" style="background: rgba(0, 255, 135, 0.15); color: #00ff87; border: 1px solid rgba(0, 255, 135, 0.3); margin-bottom: 0.25rem;">3 Places max / cohorte</div>
-              <h3 class="bangers-regular package-title" style="font-size: 1.8rem; margin: 0; color: #00ff87;">Suivi Mentor</h3>
-              <p class="package-tagline" style="color: #cbd5e1; font-size: 0.95rem; text-align: center; margin-top: 0.25rem;">4 sessions de 1h en tête-à-tête avec Cédric. On débloque ce qui bloque.</p>
-              <div class="package-price bangers-regular" style="font-size: 2.5rem; color: #fff; margin: 1rem 0;">
-                +199 € <span style="font-size: 0.85rem; font-family: 'Poppins'; font-weight: normal; color: #94a3b8;">option sur les 2 packs</span>
-              </div>
-              <ul class="package-features poppins-regular" style="text-align: left; list-style: none; padding: 0; line-height: 1.8; font-size: 0.9rem; margin-bottom: auto; padding-bottom: 1.5rem; color: #cbd5e1;">
-                <li>✓ <strong>4 sessions individuelles de 1h</strong> en visio privée</li>
-                <li>✓ <strong>Revue de code sur tes vrais projets</strong></li>
-                <li>✓ <strong>Planification libre</strong> sur le mois selon tes dispos</li>
-                <li>✓ <strong>Résumé écrit</strong> après chaque session</li>
-                <li>✓ <strong>Remboursé intégralement</strong> si la 1ère session ne te convient pas</li>
-              </ul>
-              <a href="suivi-mentor.html" class="button button__primary bangers-regular" style="width: 100%; display: block; text-align: center; text-decoration: none; box-sizing: border-box;">
-                Découvrir le Suivi Mentor →
-              </a>
-              <p class="package-reassurance" style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.5rem; text-align: center;" id="home-mentor-counter">Starter + Mentor = 498 € • Web Pro + Mentor = 648 €</p>
-            </article>
           </div>
 
           <!-- Tableau comparatif -->
@@ -697,6 +795,34 @@
         </section>
 
         
+        <!-- ========================================================
+             SECTION PREUVES FACTUELLES (SPRINT 18 / TASK 18.3)
+             Engagements vérifiables uniquement. Les témoignages réels seront ajoutés dès collecte (consentement écrit).
+             ======================================================== -->
+        <section id="preuves" class="proof section section--light" aria-labelledby="proof-title">
+          <div class="proof__header">
+            <span class="section-tag">Nos engagements</span>
+            <h2 id="proof-title" class="section-title">Des engagements concrets, pas des promesses en l'air</h2>
+          </div>
+          <ul class="proof__grid">
+            <li class="proof__item">
+              <span class="proof__figure bangers-regular">6</span>
+              <span class="proof__label">élèves maximum par promotion pour un suivi réel</span>
+            </li>
+            <li class="proof__item">
+              <span class="proof__figure bangers-regular">10+</span>
+              <span class="proof__label">ans d'expérience web de ton formateur, Cédric</span>
+            </li>
+            <li class="proof__item">
+              <span class="proof__figure bangers-regular">2 à 6</span>
+              <span class="proof__label">projets de portfolio en ligne selon ton pack</span>
+            </li>
+            <li class="proof__item">
+              <span class="proof__figure bangers-regular">14 j</span>
+              <span class="proof__label">pour tester : satisfait ou remboursé, sans question</span>
+            </li>
+          </ul>
+        </section>
         <section class="section section--dark">
           <h2 class="section-title section-title--light">
             🚀 Explore, Apprends, Code&nbsp;!
@@ -1004,7 +1130,7 @@
                 </svg>
               </summary>
               <div class="faq__answer">
-                Oui. Tu peux régler le Pack Starter en 3 fois sans frais (3x 99 €) et le Pack Web Pro en 3 fois sans frais (3x 149 €) sans aucun surcoût via Klarna ou carte bancaire directement sur notre terminal sécurisé Stripe.
+                Oui. Tu peux régler le Pack Starter en 3 fois (3x 109 €, soit 327 € au total) et le Pack Web Pro en 3 fois (3x 160 €, soit 480 € au total) via Klarna ou carte bancaire directement sur notre terminal sécurisé Stripe. Le paiement comptant reste le plus avantageux : 299 € et 449 €.
               </div>
             </details>
           </div>
@@ -1135,7 +1261,7 @@
 
     <script defer src="js/analytics.js?v=sprint15"></script>
     <script defer src="js/script.min.js?v=sprint15"></script>
-    <script defer src="js/header.min.js?v=sprint15"></script>
+    <script defer src="js/header.min.js?v=sprint18"></script>
     <script defer src="js/popover-hubspot.min.js?v=sprint15"></script>
 
     <div id="popovers-placeholder"></div>
