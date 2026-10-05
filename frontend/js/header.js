@@ -860,7 +860,11 @@ async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortI
     }
 
     // 3. Initialiser Stripe Embedded Checkout et le monter dans la modale
-    const publishableKey = data.publishableKey || "pk_test_2BsFfeoXfXOvjtOnGf24JH6E00S9sVcIEG";
+    const publishableKey = data.publishableKey;
+    if (!publishableKey) {
+        console.error("Clé Stripe manquante dans la réponse du backend.");
+        return;
+    }
     const stripe = StripeObj(publishableKey);
 
     const checkout = await stripe.initEmbeddedCheckout({
