@@ -1346,10 +1346,12 @@ eset-password.html.
 **Objectif**: Corriger des vulnérabilités critiques signalées (Tomcat, Spring Boot obsolète, BouncyCastle, Spring Security).
 
 ### Réalisations & Corrections :
-1. **Mise à jour Spring Boot (pom.xml)** :
-   - Mise à jour de `spring-boot-starter-parent` de la version `3.4.3` vers la dernière version stable `3.5.3`.
-   - Corrige les failles critiques sur `Apache Tomcat`, `Spring Security` et assure le support des correctifs de sécurité (plus de 9 mois d'obsolescence corrigés).
-2. **Mise à jour BouncyCastle (pom.xml)** :
+2. **Mise à jour Spring Boot (pom.xml)** :
+   - Mise à jour majeure de `spring-boot-starter-parent` vers la version `4.1.1` (car la branche 3.x est EOL).
+   - Corrige les failles critiques sur `Apache Tomcat`, `Spring Security` et assure le support des correctifs de sécurité.
+   - Surcharge explicite de `<spring-security.version>` à `7.0.7` pour pallier à 12 CVEs critiques et High reportées.
+   - Ajout explicite de la dépendance `jackson-databind` devenue nécessaire avec les changements du `spring-boot-starter-web` v4.
+3. **Mise à jour BouncyCastle (pom.xml)** :
    - Mise à jour de la dépendance cryptographique `org.bouncycastle:bcprov-jdk18on` de `1.80` vers `1.86` pour corriger la faille critique de validation d'entrée et de vérification des certificats.
 3. **Mise à jour Apache Tomcat (pom.xml)** :
    - Surcharge explicite de `<tomcat.version>` à `10.1.59` (remplaçant la version 10.1.42 fournie par Spring Boot 3.5.3) pour corriger les 35 vulnérabilités critiques identifiées par Aikido (dont CVE-2025-31651, CVE-2026-43512, etc.).
