@@ -1362,3 +1362,8 @@ eset-password.html.
    - Ajout de maven-surefire-plugin avec -XX:+EnableDynamicAgentLoading pour supprimer l'avertissement Mockito sous Java 21+.
    - Remplacement de lyway-core par spring-boot-starter-flyway pour rétablir l'auto-configuration Flyway (qui causait l'erreur missing table [cohort]).
    - Ajout de AppConfig.java déclarant explicitement @Bean ObjectMapper et @Bean RestClient.Builder suite à l'extraction de ces configurations du spring-boot-starter-web.
+
+### 2026-10-05 - Suppression clé Stripe hardcodée
+- **Auteur**: Antigravity
+- **Modification**: Suppression de la valeur de repli (fallback) hardcodée `pk_test_...` dans `frontend/js/header.js` et recompilation via `npm run build`.
+- **Raison**: Cette clé publique (publishable key) de test déclenchait des faux positifs dans le scanner de sécurité Aikido. La clé est désormais exclusivement récupérée dynamiquement depuis le backend, respectant ainsi les bonnes pratiques de configuration (12-factor).
