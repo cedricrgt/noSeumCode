@@ -1,4 +1,4 @@
-﻿# CHANGELOG.md — NoSeumCode
+# CHANGELOG.md — NoSeumCode
 
 _Chronologique — plus récent en bas_
 
@@ -1337,3 +1337,21 @@ eset-password.html.
 - Macaron "14 jours satisfait ou rembourse" sous chaque CTA d'achat.
 - Section `#preuves` : engagements factuels (6 eleves max, 10+ ans, 2 a 6 projets, 14 j). Aucun temoignage invente ; avis reels a ajouter apres collecte avec consentement.
 - Assets versionnes `?v=sprint18`, bundles `dist/` et `header.min.js` regeneres.
+
+---
+
+## 2026-10-05 — Correctif Sécurité : Mise à jour Spring Boot et BouncyCastle
+
+**Auteur**: Antigravity (Agent IA)
+**Objectif**: Corriger des vulnérabilités critiques signalées (Tomcat, Spring Boot obsolète, BouncyCastle, Spring Security).
+
+### Réalisations & Corrections :
+1. **Mise à jour Spring Boot (pom.xml)** :
+   - Mise à jour de `spring-boot-starter-parent` de la version `3.4.3` vers la dernière version stable `3.5.3`.
+   - Corrige les failles critiques sur `Apache Tomcat`, `Spring Security` et assure le support des correctifs de sécurité (plus de 9 mois d'obsolescence corrigés).
+2. **Mise à jour BouncyCastle (pom.xml)** :
+   - Mise à jour de la dépendance cryptographique `org.bouncycastle:bcprov-jdk18on` de `1.80` vers `1.86` pour corriger la faille critique de validation d'entrée et de vérification des certificats.
+3. **Mise à jour Apache Tomcat (pom.xml)** :
+   - Surcharge explicite de `<tomcat.version>` à `10.1.59` (remplaçant la version 10.1.42 fournie par Spring Boot 3.5.3) pour corriger les 35 vulnérabilités critiques identifiées par Aikido (dont CVE-2025-31651, CVE-2026-43512, etc.).
+4. **Validation & Tests** :
+   - Exécution de `mvnw clean package` pour garantir l'absence de régression liée aux mises à jour de dépendances (`BUILD SUCCESS`).
