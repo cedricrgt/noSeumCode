@@ -1357,3 +1357,8 @@ eset-password.html.
    - Surcharge explicite de `<tomcat.version>` à `10.1.59` (remplaçant la version 10.1.42 fournie par Spring Boot 3.5.3) pour corriger les 35 vulnérabilités critiques identifiées par Aikido (dont CVE-2025-31651, CVE-2026-43512, etc.).
 4. **Validation & Tests** :
    - Exécution de `mvnw clean package` pour garantir l'absence de régression liée aux mises à jour de dépendances (`BUILD SUCCESS`).
+
+5. **Corrections Tests Spring Boot 4.x** :
+   - Ajout de maven-surefire-plugin avec -XX:+EnableDynamicAgentLoading pour supprimer l'avertissement Mockito sous Java 21+.
+   - Remplacement de lyway-core par spring-boot-starter-flyway pour r�tablir l'auto-configuration Flyway (qui causait l'erreur missing table [cohort]).
+   - Ajout de AppConfig.java d�clarant explicitement @Bean ObjectMapper et @Bean RestClient.Builder suite � l'extraction de ces configurations du spring-boot-starter-web.
