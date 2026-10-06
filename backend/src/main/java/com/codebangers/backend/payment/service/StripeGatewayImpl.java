@@ -62,11 +62,11 @@ public class StripeGatewayImpl implements StripeGateway {
 
         long unitAmount;
         if (tier == EnrollmentTier.VIP) {
-            unitAmount = 44900L + 19900L;
+            unitAmount = course.getPriceInCents() != null ? course.getPriceInCents() + 19900L : 0;
         } else if (course.getPriceInCents() != null && course.getPriceInCents() > 0) {
             unitAmount = course.getPriceInCents();
         } else {
-            unitAmount = (tier == EnrollmentTier.STARTER) ? 29900L : 44900L;
+            throw new IllegalStateException("Le prix du cours doit Ǧtre dǸfini en base de donnǸes.");
         }
 
         if (addon != null && !addon.isBlank()) {

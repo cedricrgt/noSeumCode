@@ -379,9 +379,12 @@ public class PaymentService {
 
         List<Enrollment> existingEnrollments = enrollmentRepository.findByUserId(user.getId());
 
-        UUID c1Id = UUID.fromString("c1000000-0000-0000-0000-000000000001"); // Fondations
-        UUID c2Id = UUID.fromString("c2000000-0000-0000-0000-000000000002"); // Dynamique
-        UUID c3Id = UUID.fromString("c3000000-0000-0000-0000-000000000003"); // VIP
+        Course c1 = courseRepository.findBySlug("pack-starter").orElse(null);
+        UUID c1Id = c1 != null ? c1.getId() : null;
+        Course c2 = courseRepository.findBySlug("pack-web-pro").orElse(null);
+        UUID c2Id = c2 != null ? c2.getId() : null;
+        Course c3 = courseRepository.findBySlug("pack-mentorat-vip").orElse(null);
+        UUID c3Id = c3 != null ? c3.getId() : null;
 
         List<UUID> targetCourseIds = new java.util.ArrayList<>();
         if (tier == EnrollmentTier.VIP) {
