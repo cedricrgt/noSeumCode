@@ -2,6 +2,8 @@
 
 _Last updated: 2026-10-03 | Conversation: d2701bcf-ed1f-4e38-bb5e-52a921b4ec35_
 
+> ⚠️ **VERITÉ TECHNIQUE ABSOLUE** : Les agents IA intervenant sur ce projet DOIVENT considérer le code source actuel et les fichiers de configuration de l'infrastructure (comme les .yml, .htaccess, Dockerfile) comme l'unique vérité technique absolue. La documentation AI (y compris ce fichier) reflète l'intention architecturale, mais en cas de conflit apparent, c'est le code réel et les configurations du dépôt qui priment.
+
 ## Project Overview
 
 **NoSeumCode** is an online coding education platform (French-language) offering courses, workshops, and live sessions.

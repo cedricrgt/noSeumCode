@@ -1,4 +1,8 @@
-# DECISIONS.md — NoSeumCode
+# DECISIONS.md
+
+> **Statuts d'état** : Toute décision documentée ci-dessous doit porter une mention explicite de statut : [CURRENT] (actuelle/en vigueur), [ACCEPTED] (acceptée/en attente d'implémentation), ou [SUPERSEDED] (obsolète/remplacée).
+
+ — NoSeumCode
 
 _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 
