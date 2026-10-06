@@ -151,3 +151,6 @@ else
   echo "⚠️  ImageMagick not found — skipping image optimization (run: brew install imagemagick)"
 fi
 
+
+echo "Building static HTML (SSG)..."
+node "$SCRIPT_DIR/build-static.js"
