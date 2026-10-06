@@ -455,3 +455,50 @@ gantt
 
 
 
+
+
+---
+
+### Sprint 20 : Urgences Déploiement & Sécurité Infrastructure (P0)
+- **20.1 Correction du Build Docker (`backend/dockerfile`, `docker-compose.yml`)** :
+  - Renommer le fichier `backend/dockerfile` en `backend/Dockerfile`.
+  - S'assurer que le `docker-compose.yml` cible correctement le fichier en respectant la casse stricte de Linux.
+  - Valider la résolution par un run de validation CI.
+- **20.2 Sécurisation du Script de Déploiement (`.github/workflows/deploy.yml`)** :
+  - Supprimer l'attribution du privilège `SUPERUSER` au rôle PostgreSQL de l'application. Ne conserver que les droits standard de lecture/écriture.
+  - Retirer l'instruction `DELETE FROM flyway_schema_history WHERE success = false;`. Toute migration échouée doit être corrigée manuellement.
+- **20.3 Alignement CI/CD de la Base de Données (`.github/workflows/backend-ci.yml`)** :
+  - Mettre à jour l'image de base de la CI de `postgres:15` vers `postgres:16-alpine`.
+- **20.4 Assainissement de l'Environnement Frontend (`frontend/.env.example`)** :
+  - Éliminer la variable `DATABASE_URL` du fichier modèle.
+- **20.5 Structuration Typologique de la Mémoire IA (`docs/ai/`)** :
+  - Ajouter un encart de contexte global forçant les agents IA à considérer le code et les fichiers de configuration comme vérité technique absolue.
+  - Implémenter les statuts d'état (`CURRENT`, `ACCEPTED`, `SUPERSEDED`) sur l'ensemble de la documentation décisionnelle.
+
+---
+
+### Sprint 21 : Consolidation du Modèle Métier & Idempotence Stripe (P1)
+- **21.1 Éradication des Données Métier en Dur (`PaymentService.java`, `StripeGatewayImpl.java`)** :
+  - Extraire les prix codés en dur (29900L, 44900L) de l'implémentation Stripe.
+  - Remplacer les appels d'instanciation manuelle d'UUID par des recherches via `slug` ou `code_produit`.
+- **21.2 Idempotence Stricte des Webhooks Stripe (`StripeWebhookService.java`)** :
+  - Créer la table PostgreSQL `stripe_event` via Flyway (colonnes : `id`, `stripe_event_id UNIQUE`, `type`, `processed_at`).
+  - Bloquer toute exécution métier si le `stripe_event_id` a déjà été traité.
+- **21.3 Durcissement CORS et Rate Limiting (`SecurityConfig.java`)** :
+  - Substituer la politique CORS permissive de développement à une politique stricte pilotée par profil.
+  - Vérifier la bonne prise en charge de `X-Forwarded-For` avec la configuration de proxy Nginx.
+- **21.4 Feuille de Route Auth : Préparation Migration JWT** :
+  - Rédiger les spécifications pour la migration de la persistance du JWT (du `localStorage` vers un cookie `HttpOnly Secure SameSite`).
+
+---
+
+### Sprint 22 : Résorption de la Dette Technique & Architecture (P2)
+- **22.1 Découpage des Classes Centrales de Paiement (`PaymentController.java`, `PaymentService.java`)** :
+  - Scinder `PaymentController` en responsabilités REST limitées : `CheckoutController`, `StripeWebhookController`, et `AdminPaymentController`.
+  - Diviser `PaymentService` en sous-services dédiés (`CheckoutService`, `EnrollmentProvisioningService`, `PaymentStatusService`).
+- **22.2 Réorganisation Modulaire des Bounded Contexts** :
+  - Aligner progressivement l'arborescence des packages Java sur les véritables domaines d'affaires (`identity/`, `catalog/`, `commerce/`, `learning/`, `mentoring/`).
+- **22.3 Fiabilisation de l'Intégration via Testcontainers** :
+  - Introduire Testcontainers pour PostgreSQL dans le cycle de tests backend.
+- **22.4 Architecture Modulaire du Frontend Vanilla** :
+  - Structurer le répertoire client sous la forme : `core/`, `features/` et `ui/`.
