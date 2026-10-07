@@ -16,20 +16,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_DB: db
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+    # PostgreSQL is provided by Testcontainers (profile "test", see
+    # backend/src/test/resources/application-test.properties). ubuntu-latest ships a Docker daemon.
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 21
@@ -42,8 +30,5 @@ jobs:
         working-directory: backend
         env:
           SPRING_PROFILES_ACTIVE: test
-          DB_URL: jdbc:postgresql://localhost:5432/db
-          DB_USERNAME: postgres
-          DB_PASSWORD: password
           JWT_SECRET: supersecretkeythatislongenoughforhs256token123
         run: ./mvnw -B test
