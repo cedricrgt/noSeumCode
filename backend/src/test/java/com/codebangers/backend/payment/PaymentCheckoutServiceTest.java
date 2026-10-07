@@ -10,11 +10,15 @@ import com.codebangers.backend.course.model.Enrollment;
 import com.codebangers.backend.course.model.Enrollment.PaymentStatus;
 import com.codebangers.backend.course.repository.CourseRepository;
 import com.codebangers.backend.course.repository.EnrollmentRepository;
-import com.codebangers.backend.payment.controller.PaymentController;
+import com.codebangers.backend.payment.controller.CheckoutController;
+import com.codebangers.backend.payment.controller.CustomerPortalController;
 import com.codebangers.backend.payment.dto.CheckoutSessionResponse;
 import com.codebangers.backend.payment.dto.CreateCheckoutSessionRequest;
 import com.codebangers.backend.payment.security.StripeWebhookValidator;
-import com.codebangers.backend.payment.service.PaymentService;
+import com.codebangers.backend.payment.service.StripeEventService;
+import com.codebangers.backend.payment.service.CheckoutService;
+import com.codebangers.backend.payment.service.PaymentStatusService;
+import com.codebangers.backend.payment.service.EnrollmentProvisioningService;
 import com.codebangers.backend.payment.service.StripeGateway;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.service.UserService;
@@ -46,12 +50,16 @@ class PaymentCheckoutServiceTest {
     private com.codebangers.backend.user.repository.UserRepository userRepository;
     private StripeGateway stripeGateway;
     private CohortRepository cohortRepository;
-    private PaymentService paymentService;
+    private CheckoutService checkoutService;
+    private EnrollmentProvisioningService enrollmentProvisioningService;
 
     private UserService userService;
     private StripeWebhookValidator webhookValidator;
     private ObjectMapper objectMapper;
-    private PaymentController paymentController;
+    private CheckoutController checkoutController;
+    private CustomerPortalController customerPortalController;
+    private StripeEventService stripeEventService;
+    private PaymentStatusService paymentStatusService;
 
     private User testUser;
     private Course testCourse;
@@ -67,8 +75,12 @@ class PaymentCheckoutServiceTest {
         webhookValidator = mock(StripeWebhookValidator.class);
         objectMapper = new ObjectMapper();
 
-        paymentService = new PaymentService(userRepository, enrollmentRepository, courseRepository, stripeGateway, cohortRepository);
-        paymentController = new PaymentController(paymentService, userService, webhookValidator, objectMapper, mock(StripeEventRepository.class), "whsec_test");
+        checkoutService = new CheckoutService(courseRepository, enrollmentRepository, stripeGateway);
+        enrollmentProvisioningService = new EnrollmentProvisioningService(enrollmentRepository, courseRepository, cohortRepository, stripeGateway, null);
+        paymentStatusService = new PaymentStatusService(userRepository, enrollmentRepository, courseRepository, enrollmentProvisioningService);
+        stripeEventService = new StripeEventService(userRepository, enrollmentRepository, courseRepository, cohortRepository, null, enrollmentProvisioningService, paymentStatusService);
+        checkoutController = new CheckoutController(checkoutService, enrollmentProvisioningService, userService);
+        customerPortalController = new CustomerPortalController(checkoutService, userService);
 
         testUser = new User();
         testUser.setId(UUID.randomUUID());
@@ -95,7 +107,7 @@ class PaymentCheckoutServiceTest {
                 .thenReturn(expectedResponse);
 
         CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest(courseId);
-        CheckoutSessionResponse actual = paymentService.createCheckoutSession(testUser, request);
+        CheckoutSessionResponse actual = checkoutService.createCheckoutSession(testUser, request);
 
         assertNotNull(actual);
         assertEquals("cs_test_123", actual.getSessionId());
@@ -116,7 +128,7 @@ class PaymentCheckoutServiceTest {
         CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest(courseId);
 
         IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                paymentService.createCheckoutSession(testUser, request));
+                checkoutService.createCheckoutSession(testUser, request));
 
         assertTrue(exception.getMessage().contains("déjà acheté"));
         verifyNoInteractions(stripeGateway);
@@ -130,7 +142,7 @@ class PaymentCheckoutServiceTest {
         when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(new ArrayList<>());
 
         CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest(courseId);
-        CheckoutSessionResponse actual = paymentService.createCheckoutSession(testUser, request);
+        CheckoutSessionResponse actual = checkoutService.createCheckoutSession(testUser, request);
 
         assertNotNull(actual);
         assertEquals("free_course", actual.getSessionId());
@@ -147,7 +159,7 @@ class PaymentCheckoutServiceTest {
         CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest(courseId);
 
         assertThrows(IllegalStateException.class, () ->
-                paymentService.createCheckoutSession(testUser, request));
+                checkoutService.createCheckoutSession(testUser, request));
         verifyNoInteractions(stripeGateway);
     }
 
@@ -160,7 +172,7 @@ class PaymentCheckoutServiceTest {
         CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest(courseId);
 
         assertThrows(ResourceNotFoundException.class, () ->
-                paymentService.createCheckoutSession(testUser, request));
+                checkoutService.createCheckoutSession(testUser, request));
         verifyNoInteractions(stripeGateway);
     }
 
@@ -173,7 +185,7 @@ class PaymentCheckoutServiceTest {
         Enrollment existingPending = new Enrollment(testUser, testCourse, PaymentStatus.PENDING, 0);
         when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(new ArrayList<>(List.of(existingPending)));
 
-        paymentService.processStripeWebhookEvent(
+        stripeEventService.processStripeWebhookEvent(
                 testUser.getEmail(),
                 "checkout.session.completed",
                 "cs_test_999",
@@ -201,7 +213,7 @@ class PaymentCheckoutServiceTest {
         when(stripeGateway.createCheckoutSession(eq(testUser), eq(testCourse), any(), any(), anyBoolean(), any()))
                 .thenReturn(expected);
 
-        ResponseEntity<?> response = paymentController.createCheckoutSession(request, jwt);
+        ResponseEntity<?> response = checkoutController.createCheckoutSession(request, jwt);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody() instanceof CheckoutSessionResponse);
@@ -213,7 +225,7 @@ class PaymentCheckoutServiceTest {
     @Test
     void controller_createCheckoutSession_shouldReturn401WhenJwtNull() {
         CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest(testCourse.getId());
-        ResponseEntity<?> response = paymentController.createCheckoutSession(request, null);
+        ResponseEntity<?> response = checkoutController.createCheckoutSession(request, null);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
@@ -235,7 +247,7 @@ class PaymentCheckoutServiceTest {
                 .thenReturn(expectedResponse);
 
         CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest(starterCourse.getId());
-        CheckoutSessionResponse actual = paymentService.createCheckoutSession(testUser, request);
+        CheckoutSessionResponse actual = checkoutService.createCheckoutSession(testUser, request);
 
         assertNotNull(actual);
         assertEquals(29900L, actual.getAmount());
@@ -261,7 +273,7 @@ class PaymentCheckoutServiceTest {
                 .thenReturn(expectedResponse);
 
         CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest(webProCourse.getId());
-        CheckoutSessionResponse actual = paymentService.createCheckoutSession(testUser, request);
+        CheckoutSessionResponse actual = checkoutService.createCheckoutSession(testUser, request);
 
         assertNotNull(actual);
         assertEquals(44900L, actual.getAmount());
@@ -291,7 +303,7 @@ class PaymentCheckoutServiceTest {
         request.setCohortId(cohortId);
         request.setAddon("mentor_4sessions");
 
-        CheckoutSessionResponse actual = paymentService.createCheckoutSession(testUser, request);
+        CheckoutSessionResponse actual = checkoutService.createCheckoutSession(testUser, request);
 
         assertNotNull(actual);
         assertEquals(49800L, actual.getAmount());
@@ -312,7 +324,7 @@ class PaymentCheckoutServiceTest {
 
         when(stripeGateway.retrieveSession("cs_test_valid")).thenReturn(mockSession);
 
-        Enrollment enrollment = paymentService.confirmCheckoutSession(testUser, "cs_test_valid");
+        Enrollment enrollment = enrollmentProvisioningService.confirmCheckoutSession(testUser, "cs_test_valid");
 
         assertNotNull(enrollment);
         assertEquals(PaymentStatus.PAID, enrollment.getPaymentStatus());
@@ -336,7 +348,7 @@ class PaymentCheckoutServiceTest {
         Jwt jwt = mock(Jwt.class);
         when(jwt.getSubject()).thenReturn(testUser.getEmail());
 
-        ResponseEntity<?> response = paymentController.confirmCheckoutSession("cs_test_123", jwt);
+        ResponseEntity<?> response = checkoutController.confirmCheckoutSession("cs_test_123", jwt);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody() instanceof Map);
@@ -353,7 +365,7 @@ class PaymentCheckoutServiceTest {
         Jwt jwt = mock(Jwt.class);
         when(jwt.getSubject()).thenReturn(testUser.getEmail());
 
-        ResponseEntity<?> response = paymentController.createCustomerPortalSession(Map.of("returnUrl", "https://noseumcode.fr/dashboard.html"), jwt);
+        ResponseEntity<?> response = customerPortalController.createCustomerPortalSession(Map.of("returnUrl", "https://noseumcode.fr/dashboard.html"), jwt);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody() instanceof Map);
@@ -363,7 +375,7 @@ class PaymentCheckoutServiceTest {
 
     @Test
     void createCustomerPortalSession_unauthenticated_shouldReturn401() {
-        ResponseEntity<?> response = paymentController.createCustomerPortalSession(Map.of(), null);
+        ResponseEntity<?> response = customerPortalController.createCustomerPortalSession(Map.of(), null);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
@@ -382,7 +394,7 @@ class PaymentCheckoutServiceTest {
         CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest(courseId);
         request.setTier(EnrollmentTier.VIP);
         request.setCohortId(cohortId);
-        CheckoutSessionResponse actual = paymentService.createCheckoutSession(testUser, request);
+        CheckoutSessionResponse actual = checkoutService.createCheckoutSession(testUser, request);
 
         assertNotNull(actual);
         assertEquals("cs_test_vip", actual.getSessionId());
@@ -411,7 +423,7 @@ class PaymentCheckoutServiceTest {
         ));
         when(stripeGateway.retrieveSession("cs_test_vip")).thenReturn(mockSession);
 
-        Enrollment enrollment = paymentService.confirmCheckoutSession(testUser, "cs_test_vip");
+        Enrollment enrollment = enrollmentProvisioningService.confirmCheckoutSession(testUser, "cs_test_vip");
 
         assertNotNull(enrollment);
         assertEquals(PaymentStatus.PAID, enrollment.getPaymentStatus());
@@ -420,3 +432,4 @@ class PaymentCheckoutServiceTest {
         verify(enrollmentRepository).save(any(Enrollment.class));
     }
 }
+

@@ -1,8 +1,8 @@
 package com.codebangers.backend.payment;
 
-import com.codebangers.backend.payment.controller.PaymentController;
+import com.codebangers.backend.payment.controller.StripeWebhookController;
 import com.codebangers.backend.payment.security.StripeWebhookValidator;
-import com.codebangers.backend.payment.service.PaymentService;
+import com.codebangers.backend.payment.service.StripeEventService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.codebangers.backend.payment.repository.StripeEventRepository;
 import static org.mockito.Mockito.mock;
@@ -26,14 +26,14 @@ import static org.mockito.Mockito.*;
 class PaymentWebhookSecurityTest {
 
     private StripeWebhookValidator validator;
-    private PaymentService paymentService;
+    private StripeEventService StripeEventService;
     private ObjectMapper objectMapper;
     private final String secret = "whsec_test_secret_key_123456789";
 
     @BeforeEach
     void setUp() {
         validator = new StripeWebhookValidator();
-        paymentService = mock(PaymentService.class);
+        StripeEventService = mock(StripeEventService.class);
         objectMapper = new ObjectMapper();
     }
 
@@ -87,7 +87,7 @@ class PaymentWebhookSecurityTest {
 
     @Test
     void controllerShouldAcceptValidWebhookAndTriggerPaymentUpdate() {
-        PaymentController controller = new PaymentController(paymentService, validator, objectMapper, mock(StripeEventRepository.class), secret);
+        StripeWebhookController controller = new StripeWebhookController(StripeEventService, validator, objectMapper, mock(StripeEventRepository.class), secret);
 
         String payload = "{\"id\":\"evt_123\",\"type\":\"checkout.session.completed\",\"data\":{\"object\":{\"customer_email\":\"student@codebangers.fr\",\"id\":\"ch_test_123\"}}}";
         long now = Instant.now().getEpochSecond();
@@ -96,34 +96,34 @@ class PaymentWebhookSecurityTest {
         ResponseEntity<?> response = controller.handleStripeWebhook(payload, sigHeader);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(paymentService).processStripeWebhookEvent("student@codebangers.fr", "checkout.session.completed", "ch_test_123");
+        verify(StripeEventService).processStripeWebhookEvent("student@codebangers.fr", "checkout.session.completed", "ch_test_123");
     }
 
     @Test
     void controllerShouldRejectMissingSignatureWhenSecretIsConfigured() {
-        PaymentController controller = new PaymentController(paymentService, validator, objectMapper, mock(StripeEventRepository.class), secret);
+        StripeWebhookController controller = new StripeWebhookController(StripeEventService, validator, objectMapper, mock(StripeEventRepository.class), secret);
 
         String payload = "{\"type\":\"checkout.session.completed\"}";
         ResponseEntity<?> response = controller.handleStripeWebhook(payload, null);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        verifyNoInteractions(paymentService);
+        verifyNoInteractions(StripeEventService);
     }
 
     @Test
     void controllerShouldRejectInvalidSignature() {
-        PaymentController controller = new PaymentController(paymentService, validator, objectMapper, mock(StripeEventRepository.class), secret);
+        StripeWebhookController controller = new StripeWebhookController(StripeEventService, validator, objectMapper, mock(StripeEventRepository.class), secret);
 
         String payload = "{\"type\":\"checkout.session.completed\"}";
         ResponseEntity<?> response = controller.handleStripeWebhook(payload, "t=123,v1=invalidhex");
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        verifyNoInteractions(paymentService);
+        verifyNoInteractions(StripeEventService);
     }
 
     @Test
     void controllerShouldRejectMalformedJsonPayload() {
-        PaymentController controller = new PaymentController(paymentService, validator, objectMapper, mock(StripeEventRepository.class), secret);
+        StripeWebhookController controller = new StripeWebhookController(StripeEventService, validator, objectMapper, mock(StripeEventRepository.class), secret);
 
         String payload = "NOT_A_JSON_STRING";
         long now = Instant.now().getEpochSecond();
@@ -132,12 +132,12 @@ class PaymentWebhookSecurityTest {
         ResponseEntity<?> response = controller.handleStripeWebhook(payload, sigHeader);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        verifyNoInteractions(paymentService);
+        verifyNoInteractions(StripeEventService);
     }
 
     @Test
     void getWebhookHealthShouldReturnStatusUp() {
-        PaymentController controller = new PaymentController(paymentService, validator, objectMapper, mock(StripeEventRepository.class), secret);
+        StripeWebhookController controller = new StripeWebhookController(StripeEventService, validator, objectMapper, mock(StripeEventRepository.class), secret);
 
         ResponseEntity<Map<String, Object>> response = controller.getWebhookHealth();
 
