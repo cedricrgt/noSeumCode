@@ -502,3 +502,21 @@ gantt
   - Introduire Testcontainers pour PostgreSQL dans le cycle de tests backend.
 - **22.4 Architecture Modulaire du Frontend Vanilla** :
   - Structurer le répertoire client sous la forme : `core/`, `features/` et `ui/`.
+
+
+---
+
+### Sprint 23 : Finalisation Idempotence Stripe & Sécurisation Infra (P0)
+- **23.1 Entité et Repository StripeEvent** : Mapping JPA de la table `stripe_event`.
+- **23.2 Logique d'idempotence Webhook** : Extraction de `event.id` du payload Stripe, vérification de non-existence en base avant traitement, et sauvegarde de l'événement.
+- **23.3 Assainissement du script de déploiement** : Suppression du nettoyage Flyway (`DELETE FROM flyway_schema_history`) et du masquage d'erreur du healthcheck (`|| echo`).
+- **23.4 Révocation des droits DBA applicatifs** : Ajustement des requêtes de création d'utilisateur dans le déploiement pour n'octroyer que les permissions DML/DDL de base.
+- **23.5 Protection des branches GitHub** : Activation des *Branch Protection Rules* sur `develop` et `main` (PR et CI obligatoires).
+
+---
+
+### Sprint 24 : Qualité, CI/CD et Observabilité (P1 & P2)
+- **24.1 Nettoyage des scories du projet** : Suppression de `STRIPE_SECRET_KEY` du `.env.example` frontend et suppression des `.DS_Store` trackés via `git rm --cached`.
+- **24.2 Implémentation de Testcontainers** : Ajout de Testcontainers PostgreSQL pour les tests de la couche de persistance.
+- **24.3 Découpage `PaymentController` et `PaymentService`** : Refactoring pour éliminer les "God Classes" de la logique de paiement.
+- **24.4 Observabilité (Correlation ID)** : Mise en place d'un filtre interceptant ou générant un Request ID injecté dans le contexte de log (MDC) pour toutes les requêtes entrantes.
