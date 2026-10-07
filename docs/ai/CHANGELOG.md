@@ -1360,10 +1360,10 @@ eset-password.html.
 
 5. **Corrections Tests Spring Boot 4.x** :
    - Ajout de maven-surefire-plugin avec -XX:+EnableDynamicAgentLoading pour supprimer l'avertissement Mockito sous Java 21+.
-   - Remplacement de lyway-core par spring-boot-starter-flyway pour rétablir l'auto-configuration Flyway (qui causait l'erreur missing table [cohort]).
-   - Ajout de AppConfig.java déclarant explicitement @Bean ObjectMapper et @Bean RestClient.Builder suite à l'extraction de ces configurations du spring-boot-starter-web.
+   - Remplacement de lyway-core par spring-boot-starter-flyway pour rï¿½tablir l'auto-configuration Flyway (qui causait l'erreur missing table [cohort]).
+   - Ajout de AppConfig.java dï¿½clarant explicitement @Bean ObjectMapper et @Bean RestClient.Builder suite ï¿½ l'extraction de ces configurations du spring-boot-starter-web.
 
-### 2026-10-05 - Suppression clé Stripe hardcodée
+### 2026-10-05 - Suppression clï¿½ Stripe hardcodï¿½e
 - **Auteur**: Antigravity
-- **Modification**: Suppression de la valeur de repli (fallback) hardcodée `pk_test_...` dans `frontend/js/header.js` et recompilation via `npm run build`.
-- **Raison**: Cette clé publique (publishable key) de test déclenchait des faux positifs dans le scanner de sécurité Aikido. La clé est désormais exclusivement récupérée dynamiquement depuis le backend, respectant ainsi les bonnes pratiques de configuration (12-factor).
+- **Modification**: Suppression de la valeur de repli (fallback) hardcodï¿½e `pk_test_...` dans `frontend/js/header.js` et recompilation via `npm run build`.
+- **Raison**: Cette clï¿½ publique (publishable key) de test dï¿½clenchait des faux positifs dans le scanner de sï¿½curitï¿½ Aikido. La clï¿½ est dï¿½sormais exclusivement rï¿½cupï¿½rï¿½e dynamiquement depuis le backend, respectant ainsi les bonnes pratiques de configuration (12-factor).
