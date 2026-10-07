@@ -6,6 +6,9 @@ import com.codebangers.backend.payment.dto.CreateCheckoutSessionRequest;
 import com.codebangers.backend.payment.dto.PaymentStatusUpdateRequest;
 import com.codebangers.backend.payment.security.StripeWebhookValidator;
 import com.codebangers.backend.payment.service.PaymentService;
+import com.codebangers.backend.payment.repository.StripeEventRepository;
+import com.codebangers.backend.payment.model.StripeEvent;
+import java.time.LocalDateTime;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.service.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -36,13 +39,15 @@ public class PaymentController {
     private final StripeWebhookValidator stripeWebhookValidator;
     private final ObjectMapper objectMapper;
     private final String stripeWebhookSecret;
+    private final StripeEventRepository stripeEventRepository;
 
     public PaymentController(
             PaymentService paymentService,
             StripeWebhookValidator stripeWebhookValidator,
             ObjectMapper objectMapper,
+            StripeEventRepository stripeEventRepository,
             @Value("${stripe.webhook.secret:}") String stripeWebhookSecret) {
-        this(paymentService, null, stripeWebhookValidator, objectMapper, stripeWebhookSecret);
+        this(paymentService, null, stripeWebhookValidator, objectMapper, stripeEventRepository, stripeWebhookSecret);
     }
 
     @Autowired
@@ -51,11 +56,13 @@ public class PaymentController {
             UserService userService,
             StripeWebhookValidator stripeWebhookValidator,
             ObjectMapper objectMapper,
+            StripeEventRepository stripeEventRepository,
             @Value("${stripe.webhook.secret:}") String stripeWebhookSecret) {
         this.paymentService = paymentService;
         this.userService = userService;
         this.stripeWebhookValidator = stripeWebhookValidator;
         this.objectMapper = objectMapper;
+        this.stripeEventRepository = stripeEventRepository;
         this.stripeWebhookSecret = stripeWebhookSecret;
     }
 

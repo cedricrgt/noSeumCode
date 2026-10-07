@@ -19,6 +19,7 @@ import com.codebangers.backend.payment.service.StripeGateway;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.codebangers.backend.payment.repository.StripeEventRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -67,7 +68,7 @@ class PaymentCheckoutServiceTest {
         objectMapper = new ObjectMapper();
 
         paymentService = new PaymentService(userRepository, enrollmentRepository, courseRepository, stripeGateway, cohortRepository);
-        paymentController = new PaymentController(paymentService, userService, webhookValidator, objectMapper, "whsec_test");
+        paymentController = new PaymentController(paymentService, userService, webhookValidator, objectMapper, mock(StripeEventRepository.class), "whsec_test");
 
         testUser = new User();
         testUser.setId(UUID.randomUUID());

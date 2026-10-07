@@ -103,10 +103,14 @@ jobs:
             docker compose exec -T postgres psql -U postgres -d postgres -c "CREATE USER \"$DB_USERNAME\" WITH PASSWORD '$DB_PASSWORD' ;" 2>/dev/null || true
             docker compose exec -T postgres psql -U postgres -d postgres -c "ALTER USER \"$DB_USERNAME\" WITH PASSWORD '$DB_PASSWORD';" 2>/dev/null || \
             docker compose exec -T postgres psql -U "$DB_USERNAME" -d postgres -c "ALTER USER \"$DB_USERNAME\" WITH PASSWORD '$DB_PASSWORD';" 2>/dev/null || true
-            docker compose exec -T postgres psql -U postgres -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE noseumcode TO \"$DB_USERNAME\";" 2>/dev/null || true
+            docker compose exec -T postgres psql -U postgres -d noseumcode -c "GRANT CONNECT ON DATABASE noseumcode TO \"$DB_USERNAME\";"
+            docker compose exec -T postgres psql -U postgres -d noseumcode -c "GRANT USAGE, CREATE ON SCHEMA public TO \"$DB_USERNAME\";"
+            docker compose exec -T postgres psql -U postgres -d noseumcode -c "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO \"$DB_USERNAME\";"
+            docker compose exec -T postgres psql -U postgres -d noseumcode -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO \"$DB_USERNAME\";"
+            docker compose exec -T postgres psql -U postgres -d noseumcode -c "GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO \"$DB_USERNAME\";"
+            docker compose exec -T postgres psql -U postgres -d noseumcode -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO \"$DB_USERNAME\";"
 
-            # Nettoyage automatique des migrations Flyway échouées pour permettre le rejeu
-            docker compose exec -T postgres psql -U postgres -d noseumcode -c "DELETE FROM flyway_schema_history WHERE success = false;" 2>/dev/null || true
+
 
             # Rebuild et redémarrage du backend
             docker compose up -d --build --no-deps backend
@@ -120,4 +124,4 @@ jobs:
 
             # Test de l'endpoint de santé
             echo "Vérification santé HTTP Actuator..."
-            curl -f http://127.0.0.1:8080/actuator/health || echo "Avertissement: /actuator/health n'a pas encore répondu 200 OK"
+            curl -f http://127.0.0.1:8080/actuator/health

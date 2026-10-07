@@ -4,6 +4,8 @@ import com.codebangers.backend.payment.controller.PaymentController;
 import com.codebangers.backend.payment.security.StripeWebhookValidator;
 import com.codebangers.backend.payment.service.PaymentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.codebangers.backend.payment.repository.StripeEventRepository;
+import static org.mockito.Mockito.mock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -85,7 +87,7 @@ class PaymentWebhookSecurityTest {
 
     @Test
     void controllerShouldAcceptValidWebhookAndTriggerPaymentUpdate() {
-        PaymentController controller = new PaymentController(paymentService, validator, objectMapper, secret);
+        PaymentController controller = new PaymentController(paymentService, validator, objectMapper, mock(StripeEventRepository.class), secret);
 
         String payload = "{\"id\":\"evt_123\",\"type\":\"checkout.session.completed\",\"data\":{\"object\":{\"customer_email\":\"student@codebangers.fr\",\"id\":\"ch_test_123\"}}}";
         long now = Instant.now().getEpochSecond();
@@ -99,7 +101,7 @@ class PaymentWebhookSecurityTest {
 
     @Test
     void controllerShouldRejectMissingSignatureWhenSecretIsConfigured() {
-        PaymentController controller = new PaymentController(paymentService, validator, objectMapper, secret);
+        PaymentController controller = new PaymentController(paymentService, validator, objectMapper, mock(StripeEventRepository.class), secret);
 
         String payload = "{\"type\":\"checkout.session.completed\"}";
         ResponseEntity<?> response = controller.handleStripeWebhook(payload, null);
@@ -110,7 +112,7 @@ class PaymentWebhookSecurityTest {
 
     @Test
     void controllerShouldRejectInvalidSignature() {
-        PaymentController controller = new PaymentController(paymentService, validator, objectMapper, secret);
+        PaymentController controller = new PaymentController(paymentService, validator, objectMapper, mock(StripeEventRepository.class), secret);
 
         String payload = "{\"type\":\"checkout.session.completed\"}";
         ResponseEntity<?> response = controller.handleStripeWebhook(payload, "t=123,v1=invalidhex");
@@ -121,7 +123,7 @@ class PaymentWebhookSecurityTest {
 
     @Test
     void controllerShouldRejectMalformedJsonPayload() {
-        PaymentController controller = new PaymentController(paymentService, validator, objectMapper, secret);
+        PaymentController controller = new PaymentController(paymentService, validator, objectMapper, mock(StripeEventRepository.class), secret);
 
         String payload = "NOT_A_JSON_STRING";
         long now = Instant.now().getEpochSecond();
@@ -135,7 +137,7 @@ class PaymentWebhookSecurityTest {
 
     @Test
     void getWebhookHealthShouldReturnStatusUp() {
-        PaymentController controller = new PaymentController(paymentService, validator, objectMapper, secret);
+        PaymentController controller = new PaymentController(paymentService, validator, objectMapper, mock(StripeEventRepository.class), secret);
 
         ResponseEntity<Map<String, Object>> response = controller.getWebhookHealth();
 
