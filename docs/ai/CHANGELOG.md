@@ -1367,3 +1367,10 @@ eset-password.html.
 - **Auteur**: Antigravity
 - **Modification**: Suppression de la valeur de repli (fallback) hardcod�e `pk_test_...` dans `frontend/js/header.js` et recompilation via `npm run build`.
 - **Raison**: Cette cl� publique (publishable key) de test d�clenchait des faux positifs dans le scanner de s�curit� Aikido. La cl� est d�sormais exclusivement r�cup�r�e dynamiquement depuis le backend, respectant ainsi les bonnes pratiques de configuration (12-factor).
+
+## [2026-10-07] - Sprint 24 (Qualité, CI/CD, Observabilité)
+- **Sécurité et Hygiène** : Suppression de `.DS_Store` de l'index Git et nettoyage de `STRIPE_SECRET_KEY` dans le fichier `.env.example` du frontend.
+- **Testcontainers** : Ajout des dépendances org.testcontainers et de l'URL jdbc:tc:postgresql:16-alpine:///db dans les properties de test pour l'isolation de la BDD.
+- **Observabilité** : Création d'un filtre `CorrelationIdFilter` pour injecter `X-Request-ID` dans le MDC (Mapped Diagnostic Context) de SLF4J, afin de tracer l'origine des webhooks Stripe.
+- **Refactoring Architecture** : Découpage des God Classes `PaymentController` et `PaymentService` en services spécialisés (`CheckoutService`, `StripeEventService`, `EnrollmentProvisioningService`, `PaymentStatusService`, `CheckoutController`, `StripeWebhookController`, `AdminPaymentController`, `CustomerPortalController`).
+- **Fix CI (PR #131)** : src/test/resources/application.properties masquait le fichier principal sur le classpath de test (JWT secret introuvable -> echec contextLoads). Renomme en pplication-test.properties (profil 	est, surcharge uniquement la datasource jdbc:tc:). Pin Testcontainers 1.19.7 retire (version geree par le BOM Spring Boot 4.1, artefacts 	estcontainers-*). Service container PostgreSQL retire de ackend-ci.yml (redondant avec Testcontainers).
