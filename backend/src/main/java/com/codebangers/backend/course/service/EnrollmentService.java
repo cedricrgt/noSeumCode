@@ -26,22 +26,32 @@ public class EnrollmentService {
     private final EnrollmentRepository enrollmentRepository;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
+    private final com.codebangers.backend.payment.service.EnrollmentProvisioningService enrollmentProvisioningService;
     private com.codebangers.backend.discord.service.DiscordService discordService;
 
     public EnrollmentService(EnrollmentRepository enrollmentRepository,
                            CourseRepository courseRepository,
                            UserRepository userRepository) {
-        this(enrollmentRepository, courseRepository, userRepository, null);
+        this(enrollmentRepository, courseRepository, userRepository, null, null);
+    }
+
+    public EnrollmentService(EnrollmentRepository enrollmentRepository,
+                           CourseRepository courseRepository,
+                           UserRepository userRepository,
+                           com.codebangers.backend.payment.service.EnrollmentProvisioningService enrollmentProvisioningService) {
+        this(enrollmentRepository, courseRepository, userRepository, enrollmentProvisioningService, null);
     }
 
     @org.springframework.beans.factory.annotation.Autowired
     public EnrollmentService(EnrollmentRepository enrollmentRepository,
                            CourseRepository courseRepository,
                            UserRepository userRepository,
+                           @org.springframework.beans.factory.annotation.Autowired(required = false) com.codebangers.backend.payment.service.EnrollmentProvisioningService enrollmentProvisioningService,
                            @org.springframework.beans.factory.annotation.Autowired(required = false) com.codebangers.backend.discord.service.DiscordService discordService) {
         this.enrollmentRepository = enrollmentRepository;
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
+        this.enrollmentProvisioningService = enrollmentProvisioningService;
         this.discordService = discordService;
     }
 
@@ -164,7 +174,7 @@ public class EnrollmentService {
                 }
             }
         } else if (status == PaymentStatus.PAID) {
-            syncBundleEnrollmentsForTier(saved.getUser(), oldTier, saved.getCohort(), status);
+            enrollInBundleCourses(saved.getUser(), oldTier, saved.getCohort(), status);
         }
 
         syncDiscordRolesIfLinked(saved.getUser());
@@ -180,13 +190,12 @@ public class EnrollmentService {
         Enrollment saved;
         EnrollmentTier effectiveTier = tier != null ? tier : (existing.map(Enrollment::getTier).orElse(EnrollmentTier.WEB));
 
-        // Auto-detect tier from courseId if not explicitly specified
-        UUID c1Id = UUID.fromString("c1000000-0000-0000-0000-000000000001");
-        UUID c2Id = UUID.fromString("c2000000-0000-0000-0000-000000000002");
-        UUID c3Id = UUID.fromString("c3000000-0000-0000-0000-000000000003");
-        if (courseId.equals(c3Id)) {
+        // Auto-detect tier from courseId via slug if not explicitly specified
+        Course c3 = courseRepository.findBySlug("pack-mentorat-vip").orElse(null);
+        Course c2 = courseRepository.findBySlug("pack-web-pro").orElse(null);
+        if (c3 != null && courseId.equals(c3.getId())) {
             effectiveTier = EnrollmentTier.VIP;
-        } else if (courseId.equals(c2Id) && effectiveTier != EnrollmentTier.VIP) {
+        } else if (c2 != null && courseId.equals(c2.getId()) && effectiveTier != EnrollmentTier.VIP) {
             effectiveTier = EnrollmentTier.WEB;
         }
 
@@ -209,7 +218,7 @@ public class EnrollmentService {
                     }
                 }
             } else if (status == PaymentStatus.PAID) {
-                syncBundleEnrollmentsForTier(saved.getUser(), effectiveTier, cohort, status);
+                enrollInBundleCourses(saved.getUser(), effectiveTier, cohort, status);
             }
         } else {
             User user = userRepository.findById(userId)
@@ -220,27 +229,36 @@ public class EnrollmentService {
             saved = enrollmentRepository.save(newEnrollment);
 
             if (status == PaymentStatus.PAID) {
-                syncBundleEnrollmentsForTier(user, effectiveTier, cohort, status);
+                enrollInBundleCourses(user, effectiveTier, cohort, status);
             }
         }
         syncDiscordRolesIfLinked(saved.getUser());
         return saved;
     }
 
-    private void syncBundleEnrollmentsForTier(User user, EnrollmentTier tier, Cohort cohort, PaymentStatus status) {
+    private void enrollInBundleCourses(User user, EnrollmentTier tier, Cohort cohort, PaymentStatus status) {
+        if (enrollmentProvisioningService != null) {
+            enrollmentProvisioningService.enrollInBundleCourses(user, tier, cohort, status);
+            return;
+        }
         if (tier == null || user == null) return;
-        UUID c1Id = UUID.fromString("c1000000-0000-0000-0000-000000000001");
-        UUID c2Id = UUID.fromString("c2000000-0000-0000-0000-000000000002");
-        UUID c3Id = UUID.fromString("c3000000-0000-0000-0000-000000000003");
+        Course c1 = courseRepository.findBySlug("pack-starter").orElse(null);
+        UUID c1Id = c1 != null ? c1.getId() : null;
+        Course c2 = courseRepository.findBySlug("pack-web-pro").orElse(null);
+        UUID c2Id = c2 != null ? c2.getId() : null;
+        Course c3 = courseRepository.findBySlug("pack-mentorat-vip").orElse(null);
+        UUID c3Id = c3 != null ? c3.getId() : null;
 
         List<UUID> targetCourseIds = new java.util.ArrayList<>();
         if (tier == EnrollmentTier.VIP) {
-            targetCourseIds.add(c3Id);
-            targetCourseIds.add(c2Id);
-            targetCourseIds.add(c1Id);
+            if (c3Id != null) targetCourseIds.add(c3Id);
+            if (c2Id != null) targetCourseIds.add(c2Id);
+            if (c1Id != null) targetCourseIds.add(c1Id);
         } else if (tier == EnrollmentTier.WEB) {
-            targetCourseIds.add(c2Id);
-            targetCourseIds.add(c1Id);
+            if (c2Id != null) targetCourseIds.add(c2Id);
+            if (c1Id != null) targetCourseIds.add(c1Id);
+        } else if (tier == EnrollmentTier.STARTER) {
+            if (c1Id != null) targetCourseIds.add(c1Id);
         }
 
         List<Enrollment> existingEnrollments = enrollmentRepository.findByUserId(user.getId());
@@ -264,11 +282,40 @@ public class EnrollmentService {
         }
     }
 
+    public Enrollment updateProgress(UUID enrollmentId, UUID authenticatedUserId, Integer progress) {
+        if (progress == null || progress < 0 || progress > 100) {
+            throw new IllegalArgumentException("La progression doit être comprise entre 0 et 100");
+        }
+        User user = userRepository.findById(authenticatedUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", authenticatedUserId));
+
+        Enrollment enrollment;
+        if (user.getRole() == com.codebangers.backend.user.model.Role.ADMIN) {
+            enrollment = enrollmentRepository.findById(enrollmentId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Enrollment", enrollmentId));
+        } else {
+            enrollment = enrollmentRepository.findByIdAndUserId(enrollmentId, authenticatedUserId)
+                    .orElseThrow(() -> {
+                        if (enrollmentRepository.existsById(enrollmentId)) {
+                            throw new org.springframework.security.access.AccessDeniedException(
+                                    "Vous ne pouvez pas modifier la progression d'une inscription appartenant à un autre utilisateur.");
+                        }
+                        return new ResourceNotFoundException("Enrollment", enrollmentId);
+                    });
+        }
+
+        enrollment.setProgress(progress);
+        return enrollmentRepository.save(enrollment);
+    }
+
     public Enrollment updateProgress(UUID enrollmentId, Integer progress) {
+        if (progress == null || progress < 0 || progress > 100) {
+            throw new IllegalArgumentException("La progression doit être comprise entre 0 et 100");
+        }
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
             .orElseThrow(() -> new ResourceNotFoundException("Enrollment", enrollmentId));
 
-        enrollment.setProgress(Math.min(100, Math.max(0, progress)));
+        enrollment.setProgress(progress);
         return enrollmentRepository.save(enrollment);
     }
 

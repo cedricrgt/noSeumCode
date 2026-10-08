@@ -198,6 +198,27 @@ class PaymentCheckoutServiceTest {
     }
 
     @Test
+    void webhook_shouldIgnoreUnsupportedEventType() {
+        UUID courseId = testCourse.getId();
+        when(userRepository.findById(testUser.getId())).thenReturn(Optional.of(testUser));
+        when(courseRepository.findById(courseId)).thenReturn(Optional.of(testCourse));
+
+        Enrollment existingPending = new Enrollment(testUser, testCourse, PaymentStatus.PENDING, 0);
+        when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(new ArrayList<>(List.of(existingPending)));
+
+        stripeEventService.processStripeWebhookEvent(
+                testUser.getEmail(),
+                "customer.subscription.created",
+                "sub_test_123",
+                courseId.toString(),
+                testUser.getId().toString()
+        );
+
+        verify(enrollmentRepository, never()).save(any());
+        assertEquals(PaymentStatus.PENDING, existingPending.getPaymentStatus());
+    }
+
+    @Test
     void controller_createCheckoutSession_shouldReturnOkForAuthenticatedUser() {
         UUID courseId = testCourse.getId();
         CreateCheckoutSessionRequest request = new CreateCheckoutSessionRequest(courseId);
@@ -342,7 +363,10 @@ class PaymentCheckoutServiceTest {
         Session mockSession = mock(Session.class);
         when(mockSession.getPaymentStatus()).thenReturn("paid");
         when(mockSession.getStatus()).thenReturn("complete");
-        when(mockSession.getMetadata()).thenReturn(Map.of("courseId", courseId.toString()));
+        when(mockSession.getMetadata()).thenReturn(Map.of(
+                "courseId", courseId.toString(),
+                "userId", testUser.getId().toString()
+        ));
         when(stripeGateway.retrieveSession("cs_test_123")).thenReturn(mockSession);
 
         Jwt jwt = mock(Jwt.class);
@@ -355,6 +379,48 @@ class PaymentCheckoutServiceTest {
         Map<?, ?> body = (Map<?, ?>) response.getBody();
         assertEquals(true, body.get("confirmed"));
         assertEquals(PaymentStatus.PAID, body.get("paymentStatus"));
+    }
+
+    @Test
+    void confirmCheckoutSession_shouldThrowAccessDenied_whenSessionBelongsToDifferentUser() {
+        UUID courseId = testCourse.getId();
+        UUID attackerId = UUID.randomUUID();
+
+        Session mockSession = mock(Session.class);
+        when(mockSession.getPaymentStatus()).thenReturn("paid");
+        when(mockSession.getStatus()).thenReturn("complete");
+        when(mockSession.getMetadata()).thenReturn(Map.of(
+                "courseId", courseId.toString(),
+                "userId", attackerId.toString()
+        ));
+        when(stripeGateway.retrieveSession("cs_stolen_session")).thenReturn(mockSession);
+
+        assertThrows(org.springframework.security.access.AccessDeniedException.class, () ->
+                enrollmentProvisioningService.confirmCheckoutSession(testUser, "cs_stolen_session"));
+    }
+
+    @Test
+    void confirmCheckoutSession_controllerEndpoint_shouldReturn403Forbidden_whenSessionBelongsToDifferentUser() {
+        UUID courseId = testCourse.getId();
+        UUID otherUserId = UUID.randomUUID();
+
+        when(userService.getUserByEmail(testUser.getEmail())).thenReturn(Optional.of(testUser));
+
+        Session mockSession = mock(Session.class);
+        when(mockSession.getPaymentStatus()).thenReturn("paid");
+        when(mockSession.getStatus()).thenReturn("complete");
+        when(mockSession.getMetadata()).thenReturn(Map.of(
+                "courseId", courseId.toString(),
+                "userId", otherUserId.toString()
+        ));
+        when(stripeGateway.retrieveSession("cs_stolen_123")).thenReturn(mockSession);
+
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getSubject()).thenReturn(testUser.getEmail());
+
+        ResponseEntity<?> response = checkoutController.confirmCheckoutSession("cs_stolen_123", jwt);
+
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
     }
 
     @Test
@@ -418,6 +484,7 @@ class PaymentCheckoutServiceTest {
         when(mockSession.getStatus()).thenReturn("complete");
         when(mockSession.getMetadata()).thenReturn(Map.of(
                 "courseId", courseId.toString(),
+                "userId", testUser.getId().toString(),
                 "tier", "VIP",
                 "cohortId", cohortId.toString()
         ));

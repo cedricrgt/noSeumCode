@@ -85,6 +85,8 @@ public class CheckoutController {
                     "courseId", enrollment.getCourse().getId(),
                     "paymentStatus", enrollment.getPaymentStatus()
             ));
+        } catch (org.springframework.security.access.AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", e.getMessage()));
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         } catch (Exception e) {

@@ -187,6 +187,29 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Risk**: 3x 109 EUR = 327 EUR > 299 EUR comptant : "sans frais" est une pratique commerciale potentiellement trompeuse (Code de la consommation). Corrige sur `index.html` (Sprint 18), pas encore ailleurs.
 **Fix needed**: Remplacer par le total reel (327 / 480 EUR) ou aligner les prix pour que le fractionne soit reellement sans frais.
 
+### ISSUE-031 ✅ Usurpation de session Stripe dans confirm-session [RÉSOLU Sprint 25]
+**Status**: Résolu dans Sprint 25.
+**Causes racines & Solutions** : `confirm-session` validait l'achat sans vérifier à qui appartenait la session Stripe. Résolu dans `EnrollmentProvisioningService` et `CheckoutController` par l'extraction stricte de `session.metadata.userId` et comparaison avec le JWT de l'utilisateur connecté (`AccessDeniedException` HTTP 403 Forbidden en cas de discordance).
+
+### ISSUE-032 ✅ Vulnérabilités IDOR sur EnrollmentController [RÉSOLU Sprint 25]
+**Status**: Résolu dans Sprint 25.
+**Causes racines & Solutions** :
+1. `GET /api/enrollments/{id}` dépourvu de contrôle d'accès : protégé par `@PreAuthorize("hasRole('ADMIN') or @enrollmentSecurity.canAccessEnrollment(#id, authentication)")` et vérification programmatique propriétaire/ADMIN.
+2. `PUT /api/enrollments/{id}/progress` modifiable par n'importe quel token : restreint via `updateProgress(enrollmentId, authenticatedUserId, progress)` et requête JPA `findByIdAndUserId`.
+3. `POST /api/enrollments` permettant d'injecter un `userId` arbitraire : verrouillé par vérification du rôle ADMIN (un étudiant ne peut inscrire que son propre compte).
+
+### ISSUE-033 ✅ Raccordement actif de l'idempotence des webhooks Stripe [RÉSOLU Sprint 25]
+**Status**: Résolu dans Sprint 25.
+**Causes racines & Solutions** : `StripeWebhookController` parse désormais l'identifiant d'événement `id` (`root.path("id").asText()`) et tente l'insertion dans `StripeEvent` via `stripeEventRepository.saveAndFlush`. En cas de rejeu (violation de contrainte d'unicité `DataIntegrityViolationException`), l'événement est ignoré de manière idempotente avec retour immédiat HTTP 200 OK. Dans `StripeEventService`, le `default` du switch basculant le statut en `PENDING` a été supprimé au profit d'un log informatif et d'un retour sans effet de bord.
+
+### ISSUE-034 ✅ Élimination des UUID legacy hardcodés dans EnrollmentService [RÉSOLU Sprint 25]
+**Status**: Résolu dans Sprint 25.
+**Causes racines & Solutions** : Les constantes `UUID.fromString("c1000000...")`, `c2000000...`, `c3000000...` dans `EnrollmentService` ont été supprimées et remplacées par des résolutions de catalogue dynamiques par slugs (`"pack-starter"`, `"pack-web-pro"`, `"pack-mentorat-vip"`), avec délégation de l'enrôlement multi-cours à `EnrollmentProvisioningService.enrollInBundleCourses`.
+
+## Fausses Hypothèses à Éviter
+- Ne pas supposer que valider le statut `paid` d'une session Stripe Checkout suffit sans vérifier la concordance entre `session.metadata.userId` et le token JWT de l'utilisateur connecté : sans cette vérification, un attaquant peut intercepter ou deviner un `session_id` pour s'approprier le cours payé par un tiers.
+- Ne pas supposer qu'insérer dans une table d'idempotence nécessite une requête préalable de lecture (`existsBy...`) : en environnement concurrent, seule la contrainte `UNIQUE` en base de données avec interception de l'erreur d'intégrité (`DataIntegrityViolationException`) garantit une idempotence atomique sans condition de course (race condition).
+- Ne pas supposer qu'un événement Stripe inconnu doit basculer le paiement de l'utilisateur en `PENDING` : les événements non supportés doivent simplement être ignorés avec un log informatif sans altérer l'état financier ou l'accès aux cours de l'élève.
 ### ISSUE-035 ✅ Échec du déploiement VM Oracle Cloud sur /actuator/health (Actuator manquant et 404 transformé en 500) [RÉSOLU]
 **Status**: Résolu. `spring-boot-starter-actuator` n'était pas inclus dans `backend/pom.xml`, rendant l'endpoint `/actuator/health` inexistant. Spring MVC levait alors une `NoResourceFoundException`, interceptée par `@ExceptionHandler(Exception.class)` dans `GlobalExceptionHandler` qui la renvoyait en HTTP 500 au lieu de 404. De plus, `deploy.yml` utilisait un `sleep 10` statique sans polling et sans `--force-recreate` sur Docker Compose.
 **Fix**:

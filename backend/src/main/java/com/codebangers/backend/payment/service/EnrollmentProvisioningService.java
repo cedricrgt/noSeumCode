@@ -70,6 +70,14 @@ public class EnrollmentProvisioningService {
             throw new IllegalStateException("Le paiement n'a pas été validé par Stripe.");
         }
 
+        String sessionUserId = session.getMetadata() != null ? session.getMetadata().get("userId") : null;
+        if (sessionUserId == null || !sessionUserId.equals(user.getId().toString())) {
+            log.warn("Tentative d'usurpation Stripe confirm-session: sessionUserId={}, authenticatedUserId={}",
+                    sessionUserId, user.getId());
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "Cette session Stripe n'appartient pas à l'utilisateur connecté.");
+        }
+
         String courseIdStr = session.getMetadata() != null ? session.getMetadata().get("courseId") : null;
         if (courseIdStr == null || courseIdStr.isBlank()) {
             throw new IllegalStateException("Métadonnée courseId introuvable dans la session Stripe.");

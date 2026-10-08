@@ -16,6 +16,7 @@ Thumbs.db
 # Project specific
 .ftp-deploy-sync-state.json
 node_modules/
+frontend/dist/
 
 # Logs
 *.log

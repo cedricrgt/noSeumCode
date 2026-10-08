@@ -1375,6 +1375,23 @@ eset-password.html.
 - **Refactoring Architecture** : Découpage des God Classes `PaymentController` et `PaymentService` en services spécialisés (`CheckoutService`, `StripeEventService`, `EnrollmentProvisioningService`, `PaymentStatusService`, `CheckoutController`, `StripeWebhookController`, `AdminPaymentController`, `CustomerPortalController`).
 - **Fix CI (PR #131)** : src/test/resources/application.properties masquait le fichier principal sur le classpath de test (JWT secret introuvable -> echec contextLoads). Renomme en pplication-test.properties (profil 	est, surcharge uniquement la datasource jdbc:tc:). Pin Testcontainers 1.19.7 retire (version geree par le BOM Spring Boot 4.1, artefacts 	estcontainers-*). Service container PostgreSQL retire de ackend-ci.yml (redondant avec Testcontainers).
 
+---
+
+## [2026-10-08] - Sprint 25 (Sécurité Métier & Idempotence Stripe)
+- **Contrôle d'accès Stripe confirm-session (25.1)** : Extraction de `session.metadata.userId` depuis la session Stripe dans `EnrollmentProvisioningService.confirmCheckoutSession` et vérification stricte de correspondance avec `user.getId()`. En cas de session usurpée, déclenchement d'une `AccessDeniedException` et retour HTTP 403 Forbidden dans `CheckoutController`.
+- **Protection IDOR EnrollmentController (25.2)** :
+  - `GET /api/enrollments/{id}` protégé par `@PreAuthorize("hasRole('ADMIN') or @enrollmentSecurity.canAccessEnrollment(#id, authentication)")` et contrôle propriétaire/ADMIN.
+  - `PUT /api/enrollments/{id}/progress` sécurisé via `updateProgress(enrollmentId, authenticatedUserId, progress)` et requête JPA `findByIdAndUserId`.
+  - `POST /api/enrollments` sécurisé par vérification du rôle ADMIN (interdiction pour un apprenant de fournir un `userId` arbitraire).
+  - Ajout du composant `EnrollmentSecurity` et de la suite de tests `EnrollmentSecurityTest` (13 tests unitaires couvrant l'ensemble des cas d'usage et abus IDOR).
+- **Raccordement Idempotence Stripe (25.3)** :
+  - Parsing de l'identifiant Stripe `root.path("id").asText()` dans `StripeWebhookController` et tentative d'insertion dans la table `stripe_event` (`saveAndFlush`).
+  - Capture de `DataIntegrityViolationException` (contrainte UNIQUE sur `stripe_event_id`) pour acquitter immédiatement l'événement en HTTP 200 OK (`{"received": true, "idempotent": true}`) sans rejouer les effets de bord métier.
+  - Suppression de la clause `default` basculant le statut en `PENDING` dans `StripeEventService` au profit d'un log informatif (`Stripe event ignored`) et d'un retour sans mutation d'état.
+- **Élimination des UUID Legacy (25.4)** :
+  - Suppression définitive des 3 constantes UUID hardcodées dans `EnrollmentService`.
+  - Migration vers la résolution par slugs (`"pack-starter"`, `"pack-web-pro"`, `"pack-mentorat-vip"`) et délégation de l'enrôlement multi-cours à `EnrollmentProvisioningService.enrollInBundleCourses`.
+- **Validation** : 157 tests unitaires exécutés et validés avec succès (`BUILD SUCCESS`).
 
 ## 2026-10-08 — Correctif Déploiement VM Oracle : Actuator & Résilience Healthcheck
 

@@ -73,7 +73,20 @@ public class StripeWebhookController {
 
         try {
             JsonNode root = objectMapper.readTree(rawPayload);
+            String eventId = root.path("id").asText(null);
             String eventType = root.path("type").asText("");
+
+            if (eventId != null && !eventId.isBlank()) {
+                try {
+                    com.codebangers.backend.payment.model.StripeEvent event =
+                            new com.codebangers.backend.payment.model.StripeEvent(eventId, eventType, java.time.LocalDateTime.now());
+                    stripeEventRepository.saveAndFlush(event);
+                } catch (org.springframework.dao.DataIntegrityViolationException e) {
+                    log.info("Événement Stripe déjà traité (idempotence): id={}, type={}", eventId, eventType);
+                    return ResponseEntity.ok(Map.of("received", true, "idempotent", true));
+                }
+            }
+
             JsonNode dataObject = root.path("data").path("object");
 
             String customerEmail = null;
