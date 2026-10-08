@@ -33,6 +33,8 @@
 | **Sprint 22** | **Dette Technique & Architecture (P2)** | Découpage PaymentController/Service, Bounded Contexts, Testcontainers, UI core | 🚧 **À faire** |
 | **Sprint 23** | **Finalisation Idempotence Stripe & Infra (P0)** | Entité StripeEvent, logique idempotence, vérification droits DBA, branch protection | 🚧 **À faire** |
 | **Sprint 24** | **Qualité, CI/CD et Observabilité (P1 & P2)** | Nettoyage secrets env, Testcontainers PostgreSQL, refactoring métier, Correlation ID | 🚧 **À faire** |
+| **Sprint 25** | **Sécurité Métier & Idempotence Stripe (P0)** | IDOR, usurpation session, verrou idempotence Stripe DB | 🚧 **À faire** |
+| **Sprint 26** | **E2E, CORS & Hygiène (P1 & P2)** | Playwright CI, durcissement CORS, HttpOnly cookies, nettoyage repo | 🚧 **À faire** |
 
 ---
 
@@ -157,6 +159,8 @@ gantt
     Sprint 22 (Dette Technique)     :sp22, after sp21, 5d
     Sprint 23 (Idempotence & Infra) :sp23, after sp22, 2d
     Sprint 24 (Qualité & CI/CD)     :sp24, after sp23, 3d
+    Sprint 25 (Sécurité & Idempotence):sp25, after sp24, 4d
+    Sprint 26 (E2E, CORS & Nettoyage) :sp26, after sp25, 3d
 ```
 
 ---
@@ -533,3 +537,18 @@ gantt
 - **24.4 ObservabilitÃ© (Correlation ID)** : Mise en place d'un filtre interceptant ou gÃ©nÃ©rant un Request ID injectÃ© dans le contexte de log (MDC) pour toutes les requÃªtes entrantes.
 
 
+
+---
+
+### Sprint 25 : Sécurité Métier & Raccordement Idempotence Stripe (P0)
+- **25.1 Contrôle d'accès Stripe Session** : Ajouter la validation `session.metadata.userId == JWT user.id` dans `confirm-session` pour prévenir l'usurpation d'achats.
+- **25.2 Correction IDOR sur Inscriptions** : Sécuriser les accès et mises à jour du contrôleur d'enrollment (GET, PUT progress, POST). Un étudiant ne peut gérer que ses propres données.
+- **25.3 Logique d'Idempotence Stripe Branchée** : Lier `StripeEventRepository` au webhook. Exploiter l'exception d'unicité (UK) comme verrou d'idempotence et ignorer les événements non supportés.
+- **25.4 Suppression des UUID Legacy** : Retirer les constantes UUID hard-codées restantes de l'ancien `EnrollmentService`.
+
+---
+
+### Sprint 26 : Intégration E2E, CORS & Hygiène (P1/P2)
+- **26.1 Playwright CI Gate** : Ajouter l'exécution automatique des tests E2E Playwright dans la chaîne GitHub Actions.
+- **26.2 Durcissement Réseau (CORS & Auth)** : Ciblage du CORS en prod + conception de l'architecture cookies `HttpOnly` pour le JWT.
+- **26.3 Nettoyage du Bruit Git** : Supprimer les fichiers dupliqués avec des erreurs d'encodage (frontend/data, instructions) et corriger le texte du `pom.xml` (Spring Boot 4).
