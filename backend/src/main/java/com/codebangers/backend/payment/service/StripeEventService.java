@@ -92,8 +92,8 @@ public class StripeEventService {
                 status = PaymentStatus.FAILED;
                 break;
             default:
-                status = PaymentStatus.PENDING;
-                break;
+                log.info("Stripe event ignored: {}", stripeEventType);
+                return;
         }
 
         EnrollmentTier tier = tierStr != null ? EnrollmentTier.fromString(tierStr) : EnrollmentTier.WEB;

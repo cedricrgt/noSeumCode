@@ -25,6 +25,9 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, UUID> {
     @Query("SELECT e FROM Enrollment e JOIN FETCH e.user JOIN FETCH e.course WHERE e.user.id = :userId")
     List<Enrollment> findByUserId(@Param("userId") UUID userId);
 
+    @Query("SELECT e FROM Enrollment e JOIN FETCH e.user JOIN FETCH e.course WHERE e.id = :id AND e.user.id = :userId")
+    Optional<Enrollment> findByIdAndUserId(@Param("id") UUID id, @Param("userId") UUID userId);
+
     @Query("SELECT COUNT(e) FROM Enrollment e WHERE e.course.id = :courseId")
     int countEnrollmentsByCourseId(@Param("courseId") UUID courseId);
 }

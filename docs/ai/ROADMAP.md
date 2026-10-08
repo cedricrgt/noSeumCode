@@ -1,4 +1,4 @@
-﻿# ROADMAP.md â€” Feuille de Route Commerciale NoSeumCode
+# ROADMAP.md â€” Feuille de Route Commerciale NoSeumCode
 
 > _DerniÃ¨re mise Ã  jour : 2026-10-04_  
 > _Objectif : Transformer le MVP NoSeumCode en produit final, sÃ©curisÃ©, commercialisable et prÃªt pour la production._
@@ -33,7 +33,7 @@
 | **Sprint 22** | **Dette Technique & Architecture (P2)** | Découpage PaymentController/Service, Bounded Contexts, Testcontainers, UI core | 🚧 **À faire** |
 | **Sprint 23** | **Finalisation Idempotence Stripe & Infra (P0)** | Entité StripeEvent, logique idempotence, vérification droits DBA, branch protection | 🚧 **À faire** |
 | **Sprint 24** | **Qualité, CI/CD et Observabilité (P1 & P2)** | Nettoyage secrets env, Testcontainers PostgreSQL, refactoring métier, Correlation ID | 🚧 **À faire** |
-| **Sprint 25** | **Sécurité Métier & Idempotence Stripe (P0)** | IDOR, usurpation session, verrou idempotence Stripe DB | 🚧 **À faire** |
+| **Sprint 25** | **Sécurité Métier & Idempotence Stripe (P0)** | IDOR, usurpation session, verrou idempotence Stripe DB | ✅ **Terminé** |
 | **Sprint 26** | **E2E, CORS & Hygiène (P1 & P2)** | Playwright CI, durcissement CORS, HttpOnly cookies, nettoyage repo | 🚧 **À faire** |
 
 ---
@@ -159,7 +159,7 @@ gantt
     Sprint 22 (Dette Technique)     :sp22, after sp21, 5d
     Sprint 23 (Idempotence & Infra) :sp23, after sp22, 2d
     Sprint 24 (Qualité & CI/CD)     :sp24, after sp23, 3d
-    Sprint 25 (Sécurité & Idempotence):sp25, after sp24, 4d
+    Sprint 25 (Sécurité & Idempotence):done, sp25, 2026-10-08, 1d
     Sprint 26 (E2E, CORS & Nettoyage) :sp26, after sp25, 3d
 ```
 
@@ -540,7 +540,7 @@ gantt
 
 ---
 
-### Sprint 25 : Sécurité Métier & Raccordement Idempotence Stripe (P0)
+### Sprint 25 : Sécurité Métier & Raccordement Idempotence Stripe (P0) (Terminé)
 - **25.1 Contrôle d'accès Stripe Session** : Ajouter la validation `session.metadata.userId == JWT user.id` dans `confirm-session` pour prévenir l'usurpation d'achats.
 - **25.2 Correction IDOR sur Inscriptions** : Sécuriser les accès et mises à jour du contrôleur d'enrollment (GET, PUT progress, POST). Un étudiant ne peut gérer que ses propres données.
 - **25.3 Logique d'Idempotence Stripe Branchée** : Lier `StripeEventRepository` au webhook. Exploiter l'exception d'unicité (UK) comme verrou d'idempotence et ignorer les événements non supportés.

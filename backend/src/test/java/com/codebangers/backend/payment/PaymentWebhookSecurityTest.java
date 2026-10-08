@@ -136,6 +136,47 @@ class PaymentWebhookSecurityTest {
     }
 
     @Test
+    void controllerShouldHandleDuplicateEventIdempotently() {
+        StripeEventRepository eventRepository = mock(StripeEventRepository.class);
+        doThrow(new org.springframework.dao.DataIntegrityViolationException("Duplicate key"))
+                .when(eventRepository).saveAndFlush(any());
+
+        StripeWebhookController controller = new StripeWebhookController(StripeEventService, validator, objectMapper, eventRepository, secret);
+
+        String payload = "{\"id\":\"evt_duplicate_123\",\"type\":\"checkout.session.completed\",\"data\":{\"object\":{\"customer_email\":\"student@codebangers.fr\",\"id\":\"ch_test_123\"}}}";
+        long now = Instant.now().getEpochSecond();
+        String sigHeader = generateSignature(payload, now, secret);
+
+        ResponseEntity<?> response = controller.handleStripeWebhook(payload, sigHeader);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody() instanceof Map);
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        assertEquals(true, body.get("received"));
+        assertEquals(true, body.get("idempotent"));
+        verifyNoInteractions(StripeEventService);
+    }
+
+    @Test
+    void controllerShouldSaveStripeEventOnFirstOccurrence() {
+        StripeEventRepository eventRepository = mock(StripeEventRepository.class);
+        StripeWebhookController controller = new StripeWebhookController(StripeEventService, validator, objectMapper, eventRepository, secret);
+
+        String payload = "{\"id\":\"evt_first_123\",\"type\":\"checkout.session.completed\",\"data\":{\"object\":{\"customer_email\":\"student@codebangers.fr\",\"id\":\"ch_test_123\"}}}";
+        long now = Instant.now().getEpochSecond();
+        String sigHeader = generateSignature(payload, now, secret);
+
+        ResponseEntity<?> response = controller.handleStripeWebhook(payload, sigHeader);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(eventRepository).saveAndFlush(argThat(event ->
+                "evt_first_123".equals(event.getStripeEventId()) &&
+                "checkout.session.completed".equals(event.getType())
+        ));
+        verify(StripeEventService).processStripeWebhookEvent("student@codebangers.fr", "checkout.session.completed", "ch_test_123");
+    }
+
+    @Test
     void getWebhookHealthShouldReturnStatusUp() {
         StripeWebhookController controller = new StripeWebhookController(StripeEventService, validator, objectMapper, mock(StripeEventRepository.class), secret);
 
