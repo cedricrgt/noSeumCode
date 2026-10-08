@@ -28,9 +28,14 @@ jobs:
         working-directory: frontend
         run: npm ci
       - name: Install Snyk
+        if: ${{ secrets.SNYK_TOKEN != '' }}
         run: npm install -g snyk
-      - name: Authenticate Snyk
-        run: snyk auth ${{ secrets.SNYK_TOKEN }}
       - name: Run Snyk Security Scan
+        if: ${{ secrets.SNYK_TOKEN != '' }}
         working-directory: frontend
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: snyk test
+      - name: Skip Snyk (No Token)
+        if: ${{ secrets.SNYK_TOKEN == '' }}
+        run: echo "SNYK_TOKEN is not configured for this context. Skipping Snyk scan."
