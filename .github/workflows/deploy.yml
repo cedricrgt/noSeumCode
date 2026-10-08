@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Déploiement SSH sur la VM
-        uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262 # v1.0.3
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
@@ -113,15 +113,23 @@ jobs:
 
 
             # Rebuild et redémarrage du backend
-            docker compose up -d --build --no-deps backend
+            docker compose up -d --build --force-recreate --no-deps backend
             docker image prune -f
 
-            # Diagnostic post-démarrage
-            echo "Vérification du statut du backend..."
-            sleep 10
+            # Diagnostic post-démarrage et attente active du backend
+            echo "Vérification de la disponibilité du backend..."
+            for i in $(seq 1 30); do
+              if curl -sf http://127.0.0.1:8080/actuator/health > /dev/null 2>&1; then
+                echo "Backend disponible et en bonne santé !"
+                break
+              fi
+              echo "En attente du démarrage du backend ($((i * 2))s/60s)..."
+              sleep 2
+            done
+
             docker compose ps
             docker compose logs --tail=50 backend
 
-            # Test de l'endpoint de santé
+            # Validation finale de l'endpoint de santé
             echo "Vérification santé HTTP Actuator..."
             curl -f http://127.0.0.1:8080/actuator/health
