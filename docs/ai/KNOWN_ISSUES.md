@@ -187,7 +187,18 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Risk**: 3x 109 EUR = 327 EUR > 299 EUR comptant : "sans frais" est une pratique commerciale potentiellement trompeuse (Code de la consommation). Corrige sur `index.html` (Sprint 18), pas encore ailleurs.
 **Fix needed**: Remplacer par le total reel (327 / 480 EUR) ou aligner les prix pour que le fractionne soit reellement sans frais.
 
+### ISSUE-035 ✅ Échec du déploiement VM Oracle Cloud sur /actuator/health (Actuator manquant et 404 transformé en 500) [RÉSOLU]
+**Status**: Résolu. `spring-boot-starter-actuator` n'était pas inclus dans `backend/pom.xml`, rendant l'endpoint `/actuator/health` inexistant. Spring MVC levait alors une `NoResourceFoundException`, interceptée par `@ExceptionHandler(Exception.class)` dans `GlobalExceptionHandler` qui la renvoyait en HTTP 500 au lieu de 404. De plus, `deploy.yml` utilisait un `sleep 10` statique sans polling et sans `--force-recreate` sur Docker Compose.
+**Fix**:
+1. Ajout de `spring-boot-starter-actuator` dans `backend/pom.xml`.
+2. Configuration de `management.endpoints.web.exposure.include=health,info` et désactivation du `management.health.mail.enabled=false` dans `application.properties` (évite l'échec de santé quand SMTP n'est pas configuré sur la VM).
+3. Interception explicite de `NoResourceFoundException` dans `GlobalExceptionHandler` renvoyant un statut HTTP 404 avec `ApiError`.
+4. Remplacement du `sleep 10` dans `deploy.yml` par une boucle d'attente active (polling jusqu'à 60s) et ajout de `--force-recreate` sur `docker compose up -d --build`.
+
 ## Fausses Hypothèses à Éviter
+- Ne pas supposer que `/actuator/health` existe nativement dans Spring Boot sans déclarer la dépendance `spring-boot-starter-actuator` dans `pom.xml` : sans ce starter, l'endpoint est inexistant.
+- Ne pas supposer qu'un `@ExceptionHandler(Exception.class)` global préserve les statuts 404 de Spring Boot 3+ : sans gestionnaire explicite pour `NoResourceFoundException`, toute URL introuvable déclenche une exception non gérée renvoyée en HTTP 500 Internal Server Error.
+- Ne pas supposer qu'un `sleep 10` suffit pour valider la santé du backend au déploiement : le démarrage Spring Boot peut prendre 12 à 15 secondes selon la charge CPU de la VM. Toujours utiliser une boucle de polling avec timeout.
 - Ne pas supposer qu'un bouton ou lien placé dans un conteneur animé en CSS continu (`@keyframes translateX(...) infinite`) peut être cliqué facilement sans pause au survol (`animation-play-state: paused`) : le déplacement permanent sous le curseur provoque une discordance de coordonnées entre `mousedown` et `mouseup`, ce qui amène le navigateur à annuler le `click` ou à tenter une sélection de texte.
 - Ne pas supposer qu'un badge inséré en `document.body.prepend()` avec `position: relative; z-index: 99999` ne perturbe pas la navigation : sur un site avec une barre d'en-tête fixe (`position: fixed; top: 0; z-index: 1000`), le badge de staging se superpose au sommet de la page à scroll 0 et vole tous les clics des éléments situés en dessous.
 - Ne pas supposer qu'un retour précoce `if (status === 401) return;` est anodin dans les fonctions de chargement asynchrone d'UI : cela fige indéfiniment les conteneurs dans leur état de chargement initial (spinner/squelette). Il faut toujours rendre un état repli propre (ex: vue déconnectée ou invitation à l'action).

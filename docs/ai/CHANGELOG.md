@@ -1374,3 +1374,24 @@ eset-password.html.
 - **Observabilité** : Création d'un filtre `CorrelationIdFilter` pour injecter `X-Request-ID` dans le MDC (Mapped Diagnostic Context) de SLF4J, afin de tracer l'origine des webhooks Stripe.
 - **Refactoring Architecture** : Découpage des God Classes `PaymentController` et `PaymentService` en services spécialisés (`CheckoutService`, `StripeEventService`, `EnrollmentProvisioningService`, `PaymentStatusService`, `CheckoutController`, `StripeWebhookController`, `AdminPaymentController`, `CustomerPortalController`).
 - **Fix CI (PR #131)** : src/test/resources/application.properties masquait le fichier principal sur le classpath de test (JWT secret introuvable -> echec contextLoads). Renomme en pplication-test.properties (profil 	est, surcharge uniquement la datasource jdbc:tc:). Pin Testcontainers 1.19.7 retire (version geree par le BOM Spring Boot 4.1, artefacts 	estcontainers-*). Service container PostgreSQL retire de ackend-ci.yml (redondant avec Testcontainers).
+
+
+## 2026-10-08 — Correctif Déploiement VM Oracle : Actuator & Résilience Healthcheck
+
+**Branche**: `fix/actuator-healthcheck-and-deploy`
+**Objectif**: Résoudre l'échec HTTP 500 sur `/actuator/health` lors du déploiement VM Oracle Cloud et fiabiliser la vérification post-démarrage du backend.
+
+### Réalisations & Corrections :
+1. **Ajout de Spring Boot Actuator (`pom.xml`)** :
+   - Ajout de la dépendance `spring-boot-starter-actuator` pour exposer l'endpoint `/actuator/health` attendu par le workflow de déploiement.
+2. **Configuration Actuator (`application.properties`)** :
+   - Exposition de `health` et `info` via `management.endpoints.web.exposure.include=health,info`.
+   - Désactivation de `management.health.mail.enabled=false` pour éviter que l'absence de serveur SMTP configuré sur la VM ne mette l'indicateur de santé en statut `DOWN`.
+3. **Traitement d'erreur 404 dans `GlobalExceptionHandler.java`** :
+   - Capture explicite de `NoResourceFoundException` renvoyant un code HTTP 404 Not Found au lieu de laisser l'exception se propager dans le gestionnaire générique `Exception.class` (qui retournait un HTTP 500).
+4. **Attente active et re-création forcée dans `deploy.yml`** :
+   - Ajout de `--force-recreate` sur `docker compose up -d --build` pour s'assurer que le conteneur backend est toujours recréé même si le cache de couches Docker est réutilisé.
+   - Remplacement du `sleep 10` statique par une boucle de polling de 30 tentatives (toutes les 2s, timeout 60s) attendant que l'endpoint `/actuator/health` réponde avant validation finale.
+5. **Tests & Validation** :
+   - Ajout de `GlobalExceptionHandlerTest` (3 tests unitaires validant le 404 sur ressource introuvable et le 500 sur exception générique).
+   - Suite de tests validée avec succès (`BUILD SUCCESS`, 0 erreur, 0 échec).
