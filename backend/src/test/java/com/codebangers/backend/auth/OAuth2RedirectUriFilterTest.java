@@ -133,4 +133,33 @@ class OAuth2RedirectUriFilterTest {
         assertNull(cors.checkOrigin("https://evil.com"));
         assertNull(cors.checkOrigin("http://185.199.108.153:3000"));
     }
+
+    @Test
+    void shouldEnforceStrictProductionCorsOriginsInSecurityConfig() {
+        org.springframework.mock.env.MockEnvironment env = new org.springframework.mock.env.MockEnvironment();
+        env.setActiveProfiles("prod");
+
+        com.codebangers.backend.config.SecurityConfig config = new com.codebangers.backend.config.SecurityConfig(
+                null, null, null, null, null, "https://noseumcode.fr,https://www.noseumcode.fr", env
+        );
+        org.springframework.web.cors.CorsConfigurationSource source = config.corsConfigurationSource();
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI("/api/auth/login");
+        org.springframework.web.cors.CorsConfiguration cors = source.getCorsConfiguration(request);
+        assertNotNull(cors);
+
+        // Allowed production origins
+        assertEquals("https://noseumcode.fr", cors.checkOrigin("https://noseumcode.fr"));
+        assertEquals("https://www.noseumcode.fr", cors.checkOrigin("https://www.noseumcode.fr"));
+
+        // Strictly forbidden in production (wildcards, localhost, LAN IPs, arbitrary domains)
+        assertNull(cors.checkOrigin("https://evil.com"));
+        assertNull(cors.checkOrigin("https://sub.noseumcode.fr"));
+        assertNull(cors.checkOrigin("http://localhost:3000"));
+        assertNull(cors.checkOrigin("http://127.0.0.1:8080"));
+        assertNull(cors.checkOrigin("http://192.168.1.9:3000"));
+        assertNull(cors.checkOrigin("http://10.0.0.4:3000"));
+        assertNull(cors.checkOrigin("http://172.20.1.5:3000"));
+    }
 }
+

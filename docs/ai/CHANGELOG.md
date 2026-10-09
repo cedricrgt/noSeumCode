@@ -1412,3 +1412,31 @@ eset-password.html.
 5. **Tests & Validation** :
    - Ajout de `GlobalExceptionHandlerTest` (3 tests unitaires validant le 404 sur ressource introuvable et le 500 sur exception générique).
    - Suite de tests validée avec succès (`BUILD SUCCESS`, 0 erreur, 0 échec).
+
+---
+
+## 2026-10-09 — Sprint 26 : Intégration E2E, CORS & Hygiène Repo (P1/P2)
+
+**Branche**: `feat/sprint-26-e2e-cors-hygiene`  
+**Objectif**: Intégration des tests E2E Playwright dans la chaîne GitHub Actions, durcissement du CORS en production et architecture des cookies HttpOnly pour le JWT, nettoyage des artefacts d'encodage Mac/Windows et mise à jour de la description Spring Boot 4.1 dans pom.xml.
+
+### Réalisations & Livrables :
+1. **Playwright CI Gate (26.1)** :
+   - Configuration du script `"test": "playwright test"` dans `e2e/package.json`.
+   - Mise à jour de `e2e/playwright.config.js` avec retries en mode CI, rapporteur HTML, délai d'attente étendu et démarrage déterministe du serveur web.
+   - Intégration du job `playwright-e2e-tests` dans `.github/workflows/frontend-ci.yml` exécutant les tests E2E sur Chromium et téléversant le rapport de test en artefact GitHub Actions.
+   - Déclenchement automatique du workflow sur les modifications apportées à `e2e/**`.
+   - Exécution locale validée : 2 tests Playwright passés avec succès.
+2. **Durcissement Réseau (CORS & Auth) (26.2)** :
+   - Modification de `SecurityConfig.java` et `application-prod.properties` : en profil de production (`prod`), la politique CORS est strictement restreinte à `https://noseumcode.fr` et `https://www.noseumcode.fr`. Tous les domaines wildcard (`*.noseumcode.fr`), `localhost` et les plages d'adresses privées LAN (`10.*`, `192.168.*`, `172.16-31.*`) sont formellement rejetés.
+   - Ajout du test unitaire `shouldEnforceStrictProductionCorsOriginsInSecurityConfig` dans `OAuth2RedirectUriFilterTest` validant l'interdiction de ces origines sous profil `prod`.
+   - Rédaction de la spécification architecturale détaillée `docs/specs/2026-10-09-architecture-httponly-cookies-jwt.md` et adoption de l'ADR-023 documentant la transition des tokens JWT vers des cookies `HttpOnly; Secure; SameSite=Lax` avec résolveur dual-mode et en-tête de protection anti-CSRF `X-Requested-With`.
+3. **Nettoyage du Bruit Git & Encodage (26.3)** :
+   - Purgé les fichiers doublons corrompus issus de mojibake d'encodage Mac/Windows (`ÔÇô` / CP1252) dans `frontend/data/` (PDF du programme) et `.github/instructions/` (`rule-11`).
+   - Normalisation du nommage de `rule-11-ModernCSS-responsive-design-expert.md` avec un tiret ASCII strict.
+   - Mise à jour de la balise `<description>` de `backend/pom.xml` en `NoSeumCode Backend - Spring Boot 4.1 & Java 21`.
+   - Ajout des répertoires `e2e/test-results/` et `e2e/playwright-report/` dans le fichier `.gitignore` racine et désindexation de `.last-run.json`.
+4. **Validation Qualité** :
+   - Suite backend : 161 tests unitaires et d'intégration validés avec succès sous Maven (`BUILD SUCCESS`, 0 erreur, 0 échec).
+   - Suite frontend / E2E : 2 tests Playwright validés avec succès (`2 passed`).
+
