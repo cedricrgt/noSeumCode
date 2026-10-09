@@ -1,5 +1,8 @@
 package com.codebangers.backend.auth;
 
+import com.codebangers.backend.auth.oauth2.CustomOAuth2UserService;
+import com.codebangers.backend.auth.oauth2.CustomOidcUserService;
+import com.codebangers.backend.auth.oauth2.OAuth2AuthenticationSuccessHandler;
 import com.codebangers.backend.auth.oauth2.OAuth2RedirectUriFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -160,6 +163,22 @@ class OAuth2RedirectUriFilterTest {
         assertNull(cors.checkOrigin("http://192.168.1.9:3000"));
         assertNull(cors.checkOrigin("http://10.0.0.4:3000"));
         assertNull(cors.checkOrigin("http://172.20.1.5:3000"));
+    }
+
+    @Test
+    void shouldHaveAutowiredConstructorInSecurityConfig() throws NoSuchMethodException {
+        java.lang.reflect.Constructor<com.codebangers.backend.config.SecurityConfig> constructor =
+                com.codebangers.backend.config.SecurityConfig.class.getConstructor(
+                        CustomOAuth2UserService.class,
+                        CustomOidcUserService.class,
+                        OAuth2AuthenticationSuccessHandler.class,
+                        com.codebangers.backend.auth.oauth2.OAuth2AuthenticationFailureHandler.class,
+                        OAuth2RedirectUriFilter.class,
+                        String.class,
+                        org.springframework.core.env.Environment.class
+                );
+        assertNotNull(constructor);
+        assertTrue(constructor.isAnnotationPresent(org.springframework.beans.factory.annotation.Autowired.class));
     }
 }
 

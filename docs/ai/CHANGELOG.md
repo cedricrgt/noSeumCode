@@ -1436,7 +1436,7 @@ eset-password.html.
    - Normalisation du nommage de `rule-11-ModernCSS-responsive-design-expert.md` avec un tiret ASCII strict.
    - Mise à jour de la balise `<description>` de `backend/pom.xml` en `NoSeumCode Backend - Spring Boot 4.1 & Java 21`.
    - Ajout des répertoires `e2e/test-results/` et `e2e/playwright-report/` dans le fichier `.gitignore` racine et désindexation de `.last-run.json`.
-4. **Validation Qualité** :
-   - Suite backend : 161 tests unitaires et d'intégration validés avec succès sous Maven (`BUILD SUCCESS`, 0 erreur, 0 échec).
+   - Correctif CGLIB / Spring DI : annotation `@Autowired` explicite sur le constructeur canonique de `SecurityConfig.java` pour éliminer l'ambiguïté de résolution de constructeur et garantir l'instanciation des proxys Spring CGLIB dans le conteneur.
+   - Suite backend : 162 tests unitaires et d'intégration validés avec succès sous Maven (`BUILD SUCCESS`, 0 erreur, 0 échec).
    - Suite frontend / E2E : 2 tests Playwright validés avec succès (`2 passed`).
 

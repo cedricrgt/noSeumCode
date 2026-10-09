@@ -3,12 +3,14 @@ package com.codebangers.backend.config;
 import com.codebangers.backend.auth.oauth2.CustomOAuth2UserService;
 import com.codebangers.backend.auth.oauth2.CustomOidcUserService;
 import com.codebangers.backend.auth.oauth2.OAuth2AuthenticationSuccessHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.Nullable;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -34,13 +36,14 @@ public class SecurityConfig {
         private final com.codebangers.backend.auth.oauth2.OAuth2RedirectUriFilter oAuth2RedirectUriFilter;
         private final List<String> allowedOrigins;
 
+        @Autowired
         public SecurityConfig(CustomOAuth2UserService customOAuth2UserService,
                         CustomOidcUserService customOidcUserService,
                         OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler,
                         com.codebangers.backend.auth.oauth2.OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler,
                         com.codebangers.backend.auth.oauth2.OAuth2RedirectUriFilter oAuth2RedirectUriFilter,
                         @Value("${app.cors.allowed-origins:http://localhost:3000,https://noseumcode.fr,https://www.noseumcode.fr,https://develop.noseumcode.fr}") String corsOrigins,
-                        Environment environment) {
+                        @Nullable Environment environment) {
                 this.customOAuth2UserService = customOAuth2UserService;
                 this.customOidcUserService = customOidcUserService;
                 this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
