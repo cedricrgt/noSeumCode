@@ -167,6 +167,31 @@ class OAuth2RedirectUriFilterTest {
     }
 
     @Test
+    void shouldAlwaysAllowDevelopStagingEvenIfMissingFromCorsOriginsProperty() {
+        org.springframework.mock.env.MockEnvironment env = new org.springframework.mock.env.MockEnvironment();
+        env.setActiveProfiles("prod");
+
+        // corsOrigins only has prod domains, missing develop staging (e.g. from limited VM env secret)
+        com.codebangers.backend.config.SecurityConfig config = new com.codebangers.backend.config.SecurityConfig(
+                null, null, null, null, null, "https://noseumcode.fr,https://www.noseumcode.fr", env
+        );
+        org.springframework.web.cors.CorsConfigurationSource source = config.corsConfigurationSource();
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI("/api/auth/login");
+        org.springframework.web.cors.CorsConfiguration cors = source.getCorsConfiguration(request);
+        assertNotNull(cors);
+
+        // All 3 official domains MUST be unconditionally allowed
+        assertEquals("https://noseumcode.fr", cors.checkOrigin("https://noseumcode.fr"));
+        assertEquals("https://www.noseumcode.fr", cors.checkOrigin("https://www.noseumcode.fr"));
+        assertEquals("https://develop.noseumcode.fr", cors.checkOrigin("https://develop.noseumcode.fr"));
+
+        // Unauthorized domains still blocked
+        assertNull(cors.checkOrigin("https://evil.com"));
+        assertNull(cors.checkOrigin("http://localhost:3000"));
+    }
+
+    @Test
     void shouldHaveAutowiredConstructorInSecurityConfig() throws NoSuchMethodException {
         java.lang.reflect.Constructor<com.codebangers.backend.config.SecurityConfig> constructor =
                 com.codebangers.backend.config.SecurityConfig.class.getConstructor(

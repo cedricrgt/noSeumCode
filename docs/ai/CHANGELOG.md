@@ -1462,3 +1462,23 @@ eset-password.html.
    - Mise à jour du test `shouldEnforceStrictProductionCorsOriginsInSecurityConfig` dans `OAuth2RedirectUriFilterTest` validant que `https://develop.noseumcode.fr` est explicitement autorisé sous profil `prod`.
    - Suite backend complète validée : 162 tests exécutés avec succès (`BUILD SUCCESS`).
 
+---
+
+## 2026-10-09 — Correctif CORS Staging (Phase 2) : Autorisation Inconditionnelle des Frontends Officiels
+
+**Branche**: `fix/guarantee-develop-staging-cors`  
+**Objectif**: Garantir l'autorisation inconditionnelle de `https://develop.noseumcode.fr` dans la configuration CORS de production, indépendamment de toute variable d'environnement ou secret GitHub VM restrictif.
+
+### Cause Racine Identifiée :
+- Dans le précédent correctif, `SecurityConfig.java` filtrait `origins` dérivé de `corsOrigins`. Si la variable d'environnement VM ou le secret GitHub `CORS_ALLOWED_ORIGINS` ne contenait que les domaines de production (`https://noseumcode.fr,https://www.noseumcode.fr`), `prodOrigins` n'était pas vide, ce qui court-circuitait le fallback et excluait `https://develop.noseumcode.fr`.
+- Contrairement à Google OAuth2 (qui utilise des redirections de premier niveau et `OAuth2RedirectUriFilter` qui ajoute déjà inconditionnellement les 3 domaines), les requêtes AJAX/fetch d'authentification par email/mot de passe subissent le filtre CORS strict de Spring Security et étaient bloquées en 403 Forbidden.
+
+### Réalisations & Corrections :
+1. **`SecurityConfig.java`** :
+   - Initialisation inconditionnelle de `prodOrigins` avec les 3 frontends officiels NoSeumCode (`https://noseumcode.fr`, `https://www.noseumcode.fr`, `https://develop.noseumcode.fr`) sous profil `prod`.
+   - Conservation du rejet strict de tout wildcard (`*.noseumcode.fr`), `localhost` et IP privées LAN.
+2. **`OAuth2RedirectUriFilterTest.java`** :
+   - Ajout du test unitaire `shouldAlwaysAllowDevelopStagingEvenIfMissingFromCorsOriginsProperty` validant que même si la propriété injectée `app.cors.allowed-origins` omet `https://develop.noseumcode.fr`, la configuration CORS de production l'autorise obligatoirement.
+3. **Tests & Validation** :
+   - Suite backend complète : 163 tests unitaires et d'intégration validés avec succès (`BUILD SUCCESS`).
+
