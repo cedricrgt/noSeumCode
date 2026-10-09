@@ -16,8 +16,8 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Status**: Résolu dans Sprint 1 via `StripeWebhookValidator` et `PaymentController`.
 **Validation**: HMAC SHA-256 cryptographique avec protection anti-rejeu (tolérance 300s) et comparaison en temps constant contre les attaques temporelles.
 
-### ISSUE-004 ✅ CORS configuré via app.cors.allowed-origins et multi-environnements [RÉSOLU]
-**Status**: Résolu. `SecurityConfig.java` injecte `${app.cors.allowed-origins}` avec fallback dynamique et autorise explicitement `https://noseumcode.fr`, `https://www.noseumcode.fr`, `https://develop.noseumcode.fr` et `https://*.noseumcode.fr` via `setAllowedOriginPatterns`. Fallback synchronisé dans `deploy.yml`.
+### ISSUE-004 ✅ CORS durci en production et configurable [RÉSOLU Sprint 26]
+**Status**: Résolu dans Sprint 26. `SecurityConfig.java` applique une politique stricte en profil `prod` : seuls `https://noseumcode.fr` et `https://www.noseumcode.fr` sont autorisés. Les wildcards (`*.noseumcode.fr`), localhost et les sous-réseaux LAN (`10.*`, `192.168.*`, `172.16-31.*`) sont formellement rejetés en production via `application-prod.properties`. Les environnements dev/test conservent le support des origines locales.
 
 ### ISSUE-005 🔴 Credentials Google OAuth2 réels dans le .env commité
 **File**: `backend/.env` L.30-31 — `GOOGLE_CLIENT_ID` et `GOOGLE_CLIENT_SECRET` réels.
@@ -35,10 +35,10 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Note**: Acceptable pour une API stateless JWT, MAIS la gestion OAuth2 côté frontend sans vérification du `state` parameter est risquée.
 **Fix needed**: Vérifier que le paramètre OAuth2 `state` est bien validé côté callback.
 
-### ISSUE-009 🟡 Token JWT exposé en URL fragment (OAuth2 callback)
+### ISSUE-009 🟡 Token JWT exposé en URL fragment (OAuth2 callback) [Spécification & ADR-023 actés Sprint 26]
 **File**: `OAuth2AuthenticationSuccessHandler.java` L.42-48
 **Risk**: Les URL fragments peuvent être loggés par les serveurs proxy, navigateurs, CDN.
-**Fix needed**: Préférer un cookie `HttpOnly; SameSite=Strict; Secure` ou un échange via POST avec un code de session courte durée.
+**Status**: Spécification architecturale détaillée rédigée dans `docs/specs/2026-10-09-architecture-httponly-cookies-jwt.md` et ADR-023 acté. Transition vers cookies `HttpOnly; Secure; SameSite=Lax` avec résolveur dual-mode et en-tête anti-CSRF `X-Requested-With` prête pour le sprint d'implémentation.
 
 ### ISSUE-010 🟡 AdminSeeder log toute la base users à chaque démarrage
 **File**: `AdminSeeder.java` L.72-82 — `findAll().forEach(u -> log.info(...))`
@@ -218,7 +218,17 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 3. Interception explicite de `NoResourceFoundException` dans `GlobalExceptionHandler` renvoyant un statut HTTP 404 avec `ApiError`.
 4. Remplacement du `sleep 10` dans `deploy.yml` par une boucle d'attente active (polling jusqu'à 60s) et ajout de `--force-recreate` sur `docker compose up -d --build`.
 
+### ISSUE-036 ✅ Artefacts d'encodage Mac/Windows en doublon et description POM obsolète [RÉSOLU Sprint 26]
+**Status**: Résolu dans Sprint 26.
+**Causes racines & Solutions** :
+1. *Doublons d'encodage Mac/Windows (mojibake)* : L'utilisation de tirets cadratins non-ASCII (`–`) avait créé des versions dupliquées corrompues (`ÔÇô` / CP1252) dans `frontend/data/` (programme PDF) et `.github/instructions/` (`rule-11`). Les versions corrompues ont été purgées et la règle réécrite avec un tiret ASCII strict (`rule-11-ModernCSS-responsive-design-expert.md`).
+2. *Description Spring Boot 3 obsolète dans pom.xml* : `<description>` mise à jour pour refléter fidèlement le parent `Spring Boot 4.1 & Java 21`.
+3. *Playwright CI absent* : Ajout du job `playwright-e2e-tests` dans `.github/workflows/frontend-ci.yml` exécutant les tests E2E sur Chromium avec installation automatique des dépendances.
+
 ## Fausses Hypothèses à Éviter
+- Ne pas supposer que les environnements de production et de développement doivent partager la même politique CORS : en production, les wildcards (`*.noseumcode.fr`) et les origines localhost/LAN doivent impérativement être rejetés pour prévenir les attaques de cross-origin non autorisées.
+- Ne pas supposer que Playwright peut s'exécuter dans un runner CI GitHub Actions sans installer au préalable les binaires des navigateurs : `npx playwright install --with-deps chromium` est indispensable.
+- Ne pas commiter de fichiers contenant des caractères non-ASCII ou des tirets cadratins (`–`) sans vérifier la normalisation Unicode : sous Windows et Mac, cela crée des doublons avec mojibake (`ÔÇô`) et des conflits de chemins d'accès Git.
 - Ne pas supposer que `/actuator/health` existe nativement dans Spring Boot sans déclarer la dépendance `spring-boot-starter-actuator` dans `pom.xml` : sans ce starter, l'endpoint est inexistant.
 - Ne pas supposer qu'un `@ExceptionHandler(Exception.class)` global préserve les statuts 404 de Spring Boot 3+ : sans gestionnaire explicite pour `NoResourceFoundException`, toute URL introuvable déclenche une exception non gérée renvoyée en HTTP 500 Internal Server Error.
 - Ne pas supposer qu'un `sleep 10` suffit pour valider la santé du backend au déploiement : le démarrage Spring Boot peut prendre 12 à 15 secondes selon la charge CPU de la VM. Toujours utiliser une boucle de polling avec timeout.
@@ -249,4 +259,5 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 - Ne pas supposer que l'appel Discord `PUT /guilds/{guildId}/members/{userId}` accepte uniquement le jeton utilisateur : il exige impérativement l'en-tête `Authorization: Bot <bot_token>` ET le jeton d'accès OAuth2 de l'utilisateur (avec scope `guilds.join`) dans le corps JSON `{ "access_token": "..." }`. Si l'utilisateur est déjà membre de la guilde, Discord renvoie HTTP 204 No Content (et non 201 Created) sans assigner les rôles passés dans le corps ; il faut alors assigner chaque rôle individuellement via `PUT /guilds/{guildId}/members/{userId}/roles/{roleId}`.
 - Ne pas supposer que l'échec d'un appel réseau vers l'API Discord doit faire échouer la transaction d'achat Stripe ou la connexion utilisateur : l'intégration Discord doit rester résiliente et non-bloquante avec simulation gracieuse en dev/staging si les credentials du bot sont absents.
 - Ne pas supposer que Discord OAuth2 accepte des chaînes quelconques en tant que `client_id` : Discord impose un entier snowflake 64-bit strict (ex: `1554118371501412422`). Toute valeur factice (`mock-discord-client-id`) provoque immédiatement une erreur bloquante `{"client_id": ["La valeur « mock-discord-client-id » n’est pas snowflake."]}`. Les identifiants réels `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, `DISCORD_BOT_TOKEN`, `DISCORD_GUILD_ID` et les IDs de rôles doivent impérativement être injectés via GitHub Secrets dans le workflow `deploy.yml`.
+
 

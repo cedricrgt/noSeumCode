@@ -208,3 +208,15 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 - Décrémenter les places restantes au simple clic "ajouter au panier" (rejetée car cela génère des faux stocks épuisés et des abandons de panier bloquants).
 **Conséquence**: Augmentation du panier moyen et du taux de conversion (CRO), valorisation transparente du temps de mentorat individuel, et alignement parfait entre frontend, backend Spring Boot et Stripe Embedded Checkout.
 
+## ADR-023 — Architecture de Transition JWT vers Cookies HttpOnly SameSite
+**Status**: [ACCEPTED]
+**Décision**: 
+1. **Transition vers Cookies HttpOnly SameSite** : Remplacer à terme le stockage du JWT dans le `localStorage` et le fragment d'URL OAuth2 par des cookies `HttpOnly; Secure; SameSite=Lax` émis avec le domaine `.noseumcode.fr` (`noseum_jwt` pour l'access token, `noseum_refresh_token` avec `Path=/api/auth/refresh`).
+2. **Support Hybride Dual-Mode (`BearerTokenResolver`)** : Implémenter un résolveur personnalisé dans Spring Security inspectant en priorité l'en-tête `Authorization: Bearer <token>`, puis le cookie en repli, garantissant une migration sans rupture pour l'API REST et les clients externes.
+3. **Protection Anti-CSRF** : Combiner la politique native `SameSite=Lax` avec l'exigence d'un en-tête personnalisé `X-Requested-With: XMLHttpRequest` sur toutes les mutations HTTP du frontend (`apiFetch`), empêchant toute falsification de requête cross-site.
+**Alternative rejetée**: 
+- Maintenir les jetons dans `localStorage` : formellement rejeté en raison de la vulnérabilité au vol de session par injection XSS.
+- Basculer sur une session HTTP classique avec état serveur (Spring Session / Redis) : rejeté pour préserver l'architecture stateless de l'API REST et éviter les surcoûts d'infrastructure.
+**Conséquence**: Éradication du vecteur d'exfiltration de jetons par XSS, suppression du JWT des fragments d'URL lors des flux OAuth2, et protection CSRF standardisée sans remise en cause de l'architecture REST stateless.
+
+

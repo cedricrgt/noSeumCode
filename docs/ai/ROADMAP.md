@@ -34,7 +34,7 @@
 | **Sprint 23** | **Finalisation Idempotence Stripe & Infra (P0)** | Entité StripeEvent, logique idempotence, vérification droits DBA, branch protection | 🚧 **À faire** |
 | **Sprint 24** | **Qualité, CI/CD et Observabilité (P1 & P2)** | Nettoyage secrets env, Testcontainers PostgreSQL, refactoring métier, Correlation ID | 🚧 **À faire** |
 | **Sprint 25** | **Sécurité Métier & Idempotence Stripe (P0)** | IDOR, usurpation session, verrou idempotence Stripe DB | ✅ **Terminé** |
-| **Sprint 26** | **E2E, CORS & Hygiène (P1 & P2)** | Playwright CI, durcissement CORS, HttpOnly cookies, nettoyage repo | 🚧 **À faire** |
+| **Sprint 26** | **E2E, CORS & Hygiène (P1 & P2)** | Playwright CI, durcissement CORS, HttpOnly cookies, nettoyage repo | ✅ **Terminé** |
 
 ---
 
@@ -160,7 +160,7 @@ gantt
     Sprint 23 (Idempotence & Infra) :sp23, after sp22, 2d
     Sprint 24 (Qualité & CI/CD)     :sp24, after sp23, 3d
     Sprint 25 (Sécurité & Idempotence):done, sp25, 2026-10-08, 1d
-    Sprint 26 (E2E, CORS & Nettoyage) :sp26, after sp25, 3d
+    Sprint 26 (E2E, CORS & Nettoyage) :done, sp26, 2026-10-09, 1d
 ```
 
 ---
@@ -548,7 +548,7 @@ gantt
 
 ---
 
-### Sprint 26 : Intégration E2E, CORS & Hygiène (P1/P2)
-- **26.1 Playwright CI Gate** : Ajouter l'exécution automatique des tests E2E Playwright dans la chaîne GitHub Actions.
-- **26.2 Durcissement Réseau (CORS & Auth)** : Ciblage du CORS en prod + conception de l'architecture cookies `HttpOnly` pour le JWT.
-- **26.3 Nettoyage du Bruit Git** : Supprimer les fichiers dupliqués avec des erreurs d'encodage (frontend/data, instructions) et corriger le texte du `pom.xml` (Spring Boot 4).
+### Sprint 26 : Intégration E2E, CORS & Hygiène (P1/P2) (Terminé)
+- **26.1 Playwright CI Gate** : Exécution automatique des tests E2E Playwright dans la chaîne GitHub Actions (`frontend-ci.yml`), configuration de `playwright test` dans `e2e/package.json` et rapport d'artefacts.
+- **26.2 Durcissement Réseau (CORS & Auth)** : Ciblage du CORS en prod (`https://noseumcode.fr`, `https://www.noseumcode.fr`, interdiction formelle des wildcards et origines locales) + conception complète de l'architecture cookies `HttpOnly; Secure; SameSite=Lax` pour la transition JWT (ADR-023).
+- **26.3 Nettoyage du Bruit Git** : Suppression des fichiers doublons corrompus (mojibake Mac/Windows) dans `frontend/data/` et `.github/instructions/`, réécriture de `rule-11` en nommage ASCII strict, et mise à jour de la description dans `pom.xml` vers Spring Boot 4.1 & Java 21.

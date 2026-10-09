@@ -17,6 +17,8 @@ Thumbs.db
 .ftp-deploy-sync-state.json
 node_modules/
 frontend/dist/
+e2e/test-results/
+e2e/playwright-report/
 
 # Logs
 *.log
