@@ -1,0 +1,268 @@
+.courses__header {
+  margin-bottom: var(--spacing-2xl);
+  text-align: center;
+}
+
+.courses__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-xl);
+}
+
+.card-package {
+  padding: 2.25rem 1.75rem;
+  text-align: left;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: var(--radius-xl);
+}
+
+.card-package .card__tag {
+  width: auto;
+  height: auto;
+  display: inline-flex;
+  align-self: center;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.card-package .package-title {
+  text-align: center;
+}
+
+.card-package .package-tagline {
+  text-align: left;
+  line-height: 1.6;
+  color: #475569;
+}
+
+.card-featured .package-tagline {
+  color: #cbd5e1;
+}
+
+.card-package .package-price {
+  text-align: center;
+}
+
+.card-package .package-features {
+  text-align: left;
+  list-style: none;
+  padding: 0;
+  line-height: 1.8;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-package .package-reassurance {
+  text-align: center;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+  color: #475569;
+}
+
+.card-featured .package-reassurance {
+  color: #cbd5e1;
+}
+
+.card-featured {
+  box-shadow: 0 12px 48px rgba(0, 255, 135, 0.25);
+  transform: scale(1.03);
+  z-index: 2;
+}
+
+@media (max-width: 900px) {
+  .card-featured {
+    transform: none;
+  }
+}
+
+.tool-badge {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: #e2e8f0;
+  font-weight: 500;
+  display: inline-block;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.tool-badge:hover {
+  background: rgba(0, 255, 135, 0.1);
+  border-color: rgba(0, 255, 135, 0.4);
+}
+
+
+/* Macaron Garantie 14 jours (Sprint 18 / Task 18.4) */
+.guarantee-seal {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-top: 1rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius-lg);
+  border: 2px dashed #047857;
+  background: rgba(4, 120, 87, 0.08);
+  text-align: left;
+}
+
+.guarantee-seal__badge {
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #047857;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-shadow: 0 0 0 3px #fff, 0 0 0 5px #047857;
+}
+
+.guarantee-seal__days {
+  font-family: "Bangers", cursive;
+  font-size: 1.7rem;
+}
+
+.guarantee-seal__unit {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.guarantee-seal__text {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: #064e3b;
+}
+
+.guarantee-seal__text strong {
+  display: block;
+  font-size: 0.9rem;
+}
+
+.card-featured .guarantee-seal {
+  border-color: #00ff87;
+  background: rgba(0, 255, 135, 0.1);
+}
+
+.card-featured .guarantee-seal__badge {
+  background: #00ff87;
+  color: #070e18;
+  box-shadow: 0 0 0 3px #070e18, 0 0 0 5px #00ff87;
+}
+
+.card-featured .guarantee-seal__text {
+  color: #e2e8f0;
+}
+
+/* Order Bump Suivi Mentor (Sprint 18 / Task 18.2) : 100% HTML + CSS, aucune injection JS */
+.order-bump {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 1rem 0 0.75rem;
+  padding: 0.9rem 1rem;
+  border: 2px dashed #f59e0b;
+  border-radius: var(--radius-lg);
+  background: #fffbeb;
+  color: #78350f;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.order-bump:hover {
+  border-style: solid;
+}
+
+.order-bump:has(.order-bump__input:checked) {
+  border-style: solid;
+  border-color: #047857;
+  background: #ecfdf5;
+  color: #064e3b;
+}
+
+.order-bump:has(.order-bump__input:focus-visible) {
+  outline: 3px solid #0369a1;
+  outline-offset: 2px;
+}
+
+.order-bump__input {
+  flex: 0 0 auto;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin-top: 0.15rem;
+  accent-color: #047857;
+  cursor: pointer;
+}
+
+.order-bump__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.order-bump__title {
+  font-size: 0.92rem;
+}
+
+.order-bump__total {
+  font-weight: 700;
+}
+
+/* Section preuves factuelles (Sprint 18 / Task 18.3) */
+.proof {
+  padding: var(--spacing-4xl) var(--spacing-xl);
+}
+
+.proof__header {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto var(--spacing-2xl);
+}
+
+.proof__grid {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 1100px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: var(--spacing-xl);
+}
+
+.proof__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  background: #070e18;
+  border: 1px solid rgba(0, 255, 135, 0.25);
+  text-align: center;
+}
+
+.proof__figure {
+  font-size: 3rem;
+  line-height: 1;
+  color: #00ff87;
+}
+
+.proof__label {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #e2e8f0;
+}
