@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paiement Confirmé ! Bienvenue sur NoSeumCode</title>
+  <meta name="description" content="Confirmation de paiement et accès à vos cours NoSeumCode." />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="canonical" href="https://noseumcode.fr/success.html" />
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Bangers&display=swap"
+    onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Bangers&display=swap" />
+  </noscript>
+  <link rel="stylesheet" href="styles/dist/thanks.min.css?v=sprint16" />
+  <style>
+    .success-summary {
+      background: rgba(0, 255, 135, 0.05);
+      border: 1px solid rgba(0, 255, 135, 0.2);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin: 2rem auto;
+      max-width: 600px;
+      text-align: left;
+    }
+    .success-summary h3 {
+      color: var(--primary-green);
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+      letter-spacing: 1px;
+    }
+    .success-summary ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .success-summary li {
+      padding: 0.4rem 0;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+    }
+    .success-actions {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 2.5rem;
+    }
+  </style>
+</head>
+
+<body class="thanks-page poppins-regular">
+  <a href="#success-content" class="skip-link">Aller au contenu principal</a>
+
+  <div id="header-placeholder"></div>
+
+  <main id="success-content" class="thanks-container">
+    <span class="thanks__icon" aria-hidden="true"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="thanks__icon-svg"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
+    <h1 class="thanks__title bangers-regular">Inscription Validée !</h1>
+    <p class="thanks__message poppins-regular">
+      Félicitations ! Ton accès complet est désormais activé. Un reçu détaillé ainsi que tes accès ont été envoyés à ton adresse email.
+    </p>
+
+    <div class="success-summary">
+      <h3 class="bangers-regular">Tes 3 étapes pour bien démarrer :</h3>
+      <ul>
+        <li><span style="color:#00ff87; font-weight:bold;">1.</span> <strong>Accède à ton espace étudiant</strong> : Retrouve l'ensemble de tes chapitres et vidéos sur ton tableau de bord.</li>
+        <li><span style="color:#00ff87; font-weight:bold;">2.</span> <strong>Rejoins la communauté Discord</strong> : Viens te présenter dans le salon <code>#nouveaux-élèves</code> pour débloquer tes accès.</li>
+        <li><span style="color:#00ff87; font-weight:bold;">3.</span> <strong>Configure ton éditeur</strong> : Suis le module d'installation pour préparer VS Code en moins de 10 minutes.</li>
+      </ul>
+    </div>
+
+    <div class="success-actions">
+      <a href="dashboard.html" class="button button__primary bangers-regular" id="btn-goto-dashboard">
+        Accéder à Mon Espace de Cours <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="https://discord.gg/noseumcode" target="_blank" rel="noopener noreferrer" class="button button__secondary bangers-regular" id="btn-goto-discord">
+        Rejoindre le Discord Privé
+      </a>
+    </div>
+
+    <a href="index.html" class="back-home bangers-regular">
+      ← Retour à l'accueil
+    </a>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="js/analytics.js?v=sprint16"></script>
+  <script src="js/header.min.js?v=sprint16"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const courseId = params.get("course_id");
+        const sessionId = params.get("session_id");
+        const token = localStorage.getItem("noseum_token");
+
+        if (courseId) {
+          const btnDashboard = document.getElementById("btn-goto-dashboard");
+          if (btnDashboard) {
+            btnDashboard.href = `app.html?id=${encodeURIComponent(courseId)}`;
+            btnDashboard.textContent = "Commencer la formation immédiatement <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>";
+          }
+        }
+
+        // Synchronisation proactive du paiement si session_id est fourni
+        if (sessionId && token) {
+          const apiBase = window.API_BASE_URL || "https://api.noseumcode.fr";
+          try {
+            const syncRes = await fetch(`${apiBase}/api/payments/confirm-session?session_id=${encodeURIComponent(sessionId)}`, {
+              headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (syncRes.ok) {
+              const syncData = await syncRes.json();
+              console.log("Accès cours débloqué avec succès:", syncData);
+            }
+          } catch (syncErr) {
+            console.warn("Échec de la synchronisation directe Stripe (le webhook prendra le relais):", syncErr);
+          }
+        }
+      } catch (e) {
+        console.error("Erreur lecture URL params:", e);
+      }
+    });
+  </script>
+
+  <div id="popovers-placeholder"></div>
+</body>
+
+</html>
