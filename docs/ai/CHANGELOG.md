@@ -1515,3 +1515,29 @@ eset-password.html.
    - Validation 100% de la suite Playwright : 8 tests exécutés avec succès (`8 passed`).
    - Exécution complète du bundler CSS/JS (`build.sh`) et de la génération SSG (`build-static.js`) sans aucune erreur.
 
+---
+
+## 2026-10-09 — Intégration de la Boîte à Outils dans le Hero (2 colonnes & Fond transparent)
+
+**Conversation ID**: `63bf1469-09ab-48a5-abcd-0423faa44a97`  
+**Branche**: `feat/hero-integrated-tools-trustbar`  
+**Objectif**: Déplacer la section des technologies et outils professionnels ("Les technologies et outils professionnels que tu vas maîtriser") sous le hero directement à l'intérieur du hero en bas, structurée sur deux colonnes, avec un fond transparent héritant du dégradé du hero (sans rupture visuelle).
+
+### Réalisations & Corrections :
+1. **Intégration HTML (`index.html`)** :
+   - Déplacement du bloc de réassurance technologique directement au sein de `<section class="hero poppins-regular">` en bas de grille via la classe `.hero__bottom.hero__trustbar`.
+   - Organisation structurelle en deux colonnes :
+     - Colonne 1 (`.hero__trustbar-text`) : Libellé "Les technologies et outils professionnels que tu vas maîtriser :".
+     - Colonne 2 (`.hero__trustbar-tools`) : Badges des 6 outils professionnels (`HTML5 Sémantique`, `CSS3 & Flexbox`, `JavaScript ES6+`, `Git & GitHub`, `VS Code`, `Responsive Design`).
+   - Suppression intégrale de l'ancienne section détachée `<section class="section section--dark section--trustbar">` et de son conteneur externe.
+2. **Design & Responsive CSS (`hero.css`, `homepage.min.css`)** :
+   - Mise en page par grille CSS (`display: grid; grid-template-columns: 1fr 1.3fr; gap: var(--spacing-xl);`) au format desktop, parfaitement alignée sous la grille du hero.
+   - Suppression de tout arrière-plan dédié (`background: transparent; border: none;`) pour laisser transparaître le dégradé natif du Hero (`linear-gradient(135deg, #0a1628 0%, #1a2332 100%)`).
+   - Rééquilibrage du padding bas du hero (`padding-bottom: var(--spacing-2xl)` au lieu de `12rem`) pour un rythme vertical harmonieux.
+   - Repliement responsive sur mobile (`@media (max-width: 900px)`) en une colonne unique centrée et sans débordement horizontal.
+3. **Tests & Validation Automatisée** :
+   - Ajout d'un test Playwright dans `e2e/tests/cro-ux-seo.spec.js` validant la présence de la boîte à outils dans `.hero`, l'absence de l'ancienne section hors-hero, la présence des 6 badges et la transparence du fond (`rgba(0, 0, 0, 0)`).
+   - Validation 100% de la suite de tests Playwright (9/9 tests réussis).
+   - Recompilation complète des bundles CSS (`build.sh`) et du SSG.
+
+

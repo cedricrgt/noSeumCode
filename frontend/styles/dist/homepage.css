@@ -1282,7 +1282,7 @@ html {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 450px), 1fr));
   gap: var(--spacing-3xl);
   align-items: center;
-  padding: calc(var(--header-height) + var(--spacing-xl)) var(--spacing-xl) var(--spacing-4xl);
+  padding: calc(var(--header-height) + var(--spacing-xl)) var(--spacing-xl) var(--spacing-2xl);
   min-height: 90vh;
   background: linear-gradient(135deg, #0a1628 0%, #1a2332 100%);
   position: relative;
@@ -1475,6 +1475,62 @@ html {
 .hero__bottom {
   grid-column: 1 / -1;
   margin-top: var(--spacing-xl);
+}
+
+.hero__trustbar {
+  grid-column: 1 / -1;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: var(--spacing-xl);
+  align-items: center;
+  margin-top: var(--spacing-xl);
+  background: transparent;
+  border: none;
+}
+
+.hero__trustbar-text {
+  display: flex;
+  align-items: center;
+}
+
+.hero__trustbar-label {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.hero__trustbar-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+@media (max-width: 900px) {
+  .hero__trustbar {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+  }
+
+  .hero__trustbar-text {
+    justify-content: center;
+  }
+
+  .hero__trustbar-label {
+    text-align: center;
+  }
+
+  .hero__trustbar-tools {
+    justify-content: center;
+  }
 }
 
 .slider {
