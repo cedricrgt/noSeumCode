@@ -243,7 +243,7 @@ function renderCourseCatalog() {
   const contentArea = document.getElementById("cours-content");
   if (!contentArea) return;
 
-  document.title = "Nos Parcours de Formation - NoSeumCode";
+  document.title = "Espace de Formation - NoSeumCode";
 
   let roleHeaderTag = "";
   if (currentRole === "STUDENT") {
@@ -368,7 +368,7 @@ function renderCourseCatalog() {
           if (currentRole === "ADMIN" || currentRole === "TEACHER") {
             accessBadge = `<span style="background: rgba(0, 255, 135, 0.15); color: #00a85a; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(0, 255, 135, 0.4);">✓ Accès Édition</span>`;
             actionBtn = `
-              <a href="parcours.html?id=${course.id}" class="card__link bangers-regular">
+              <a href="app.html?id=${course.id}" class="card__link bangers-regular">
                 Gérer le parcours
                 <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -393,7 +393,7 @@ function renderCourseCatalog() {
               if (isPaid) {
                 accessBadge = `<span style="background: rgba(0, 255, 135, 0.15); color: #00a85a; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(0, 255, 135, 0.4);">✓ Inscrit • Payé</span>`;
                 actionBtn = `
-                  <a href="parcours.html?id=${course.id}" class="card__link bangers-regular">
+                  <a href="app.html?id=${course.id}" class="card__link bangers-regular">
                     Continuer le parcours
                     <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -407,7 +407,7 @@ function renderCourseCatalog() {
                     <button class="button button__primary bangers-regular" style="flex:1; padding: 8px 12px; font-size: 1rem; cursor:pointer;" onclick="initiateStripeCheckout('${course.id}')">
                       💳 Débloquer (${price})
                     </button>
-                    <a href="parcours.html?id=${course.id}" class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; text-decoration:none; display:inline-flex; align-items:center;">
+                    <a href="app.html?id=${course.id}" class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; text-decoration:none; display:inline-flex; align-items:center;">
                       Aperçu
                     </a>
                   </div>
@@ -422,7 +422,7 @@ function renderCourseCatalog() {
                 <button class="button button__primary bangers-regular" style="flex:1; padding: 8px 12px; font-size: 1rem; cursor:pointer;" onclick="initiateStripeCheckout('${course.id}')">
                   💳 ${btnText}
                 </button>
-                <a href="parcours.html?id=${course.id}" class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; text-decoration:none; display:inline-flex; align-items:center;">
+                <a href="app.html?id=${course.id}" class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; text-decoration:none; display:inline-flex; align-items:center;">
                   Aperçu
                 </a>
               </div>
@@ -525,7 +525,7 @@ async function loadSingleCourse(courseId, requestedChapterId) {
       <div class="access-gate-card">
         <h2 class="access-gate-title">Formation introuvable</h2>
         <p class="access-gate-desc">Le cours demandé n'existe pas ou a été supprimé.</p>
-        <a href="parcours.html" class="button button__primary bangers-regular" style="padding: 10px 24px; font-size: 1.1rem; text-decoration:none;">Retour au catalogue</a>
+        <a href="app.html" class="button button__primary bangers-regular" style="padding: 10px 24px; font-size: 1.1rem; text-decoration:none;">Retour au catalogue</a>
       </div>
     `;
     return;
@@ -756,7 +756,7 @@ function renderAccessGate(title, description, type, extraStatus = "") {
 
   contentArea.innerHTML = `
     <div class="catalog-container">
-      <a href="parcours.html" class="back-link bangers-regular">
+      <a href="app.html" class="back-link bangers-regular">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
@@ -828,7 +828,7 @@ function renderClassroom() {
     <!-- Header Banner -->
     <div class="course-header-banner">
       <div class="course-header-top">
-        <a href="parcours.html" class="back-link bangers-regular" style="margin-bottom: 0;">
+        <a href="app.html" class="back-link bangers-regular" style="margin-bottom: 0;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
@@ -1152,7 +1152,7 @@ async function handleSaveCourse(event) {
     allCourses.unshift(newCourse);
     closeCourseManageModal();
     alert("🎉 Formation créée avec succès !");
-    window.location.href = `parcours.html?id=${newCourse.id}`;
+    window.location.href = `app.html?id=${newCourse.id}`;
   }
 }
 
@@ -1282,7 +1282,7 @@ async function handleDeleteCourse(courseId) {
   });
 
   alert("🗑️ Formation supprimée.");
-  window.location.href = "parcours.html";
+  window.location.href = "app.html";
 }
 
 /**
@@ -1360,7 +1360,7 @@ async function initiateStripeCheckout(courseId) {
   } else if (typeof window.openAuthModal === "function" && !currentUser) {
     window.openAuthModal("login");
   } else {
-    window.location.href = `parcours.html?id=${encodeURIComponent(courseId)}&checkout=true${addon ? `&addon=${encodeURIComponent(addon)}` : ''}`;
+    window.location.href = `app.html?id=${encodeURIComponent(courseId)}&checkout=true${addon ? `&addon=${encodeURIComponent(addon)}` : ''}`;
   }
 }
 
@@ -1391,7 +1391,7 @@ async function handleEnroll(courseId) {
   }
 
   alert("🎉 Inscription confirmée ! Vous avez accès à l'aperçu gratuit de la section 1.");
-  window.location.href = `parcours.html?id=${courseId}`;
+  window.location.href = `app.html?id=${courseId}`;
 }
 
 function markChapterComplete(chapId) {

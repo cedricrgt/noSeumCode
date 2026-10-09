@@ -632,7 +632,7 @@
           sessionStorage.removeItem("noseum_pending_checkout_tier");
           sessionStorage.removeItem("noseum_pending_checkout_addon");
           const addonParam = pendingAddon ? `&addon=${encodeURIComponent(pendingAddon)}` : '';
-          window.location.href = `parcours.html?id=${encodeURIComponent(pendingCourseId)}&auto_checkout=true${addonParam}`;
+          window.location.href = `app.html?id=${encodeURIComponent(pendingCourseId)}&auto_checkout=true${addonParam}`;
           return;
         }
       }

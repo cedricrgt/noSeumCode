@@ -702,7 +702,7 @@ async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortI
   }
   if (!modal) {
     console.warn("Modale paywall #stripe-paywall-modal introuvable, redirection vers le catalogue.");
-    window.location.href = `parcours.html?id=${encodeURIComponent(courseId)}&checkout=true${addon ? `&addon=${encodeURIComponent(addon)}` : ''}`;
+    window.location.href = `app.html?id=${encodeURIComponent(courseId)}&checkout=true${addon ? `&addon=${encodeURIComponent(addon)}` : ''}`;
     return;
   }
 
@@ -821,7 +821,7 @@ async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortI
         }
         setTimeout(() => {
           closeStripePaywall();
-          window.location.href = `parcours.html?id=${encodeURIComponent(courseId)}`;
+          window.location.href = `app.html?id=${encodeURIComponent(courseId)}`;
         }, 1500);
         return;
       }
@@ -840,7 +840,7 @@ async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortI
       }
       setTimeout(() => {
         closeStripePaywall();
-        window.location.href = `parcours.html?id=${encodeURIComponent(courseId)}`;
+        window.location.href = `app.html?id=${encodeURIComponent(courseId)}`;
       }, 1200);
       return;
     }

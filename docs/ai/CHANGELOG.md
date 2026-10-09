@@ -1482,3 +1482,36 @@ eset-password.html.
 3. **Tests & Validation** :
    - Suite backend complète : 163 tests unitaires et d'intégration validés avec succès (`BUILD SUCCESS`).
 
+---
+
+## 2026-10-09 — Correctifs SSG Build, CRO Checkout, Hero Copywriting & Architecture LMS (app.html)
+
+**Branche**: `fix/ssg-build-ux-seo-fixes`  
+**Objectif**: Résoudre les failles critiques remontées par l'audit conjoint Marketing & SEO (build SSG, blocage de conversion checkout, fuite sous le bouton d'achat, copywriting Hero 2 packs, et incohérence sémantique/SEO de `parcours.html`).
+
+### Réalisations & Corrections :
+1. **SSG Build (`build-static.js`)** :
+   - Correction des expressions régulières pour la purge des anciens scripts de rendu client CSR (`article.js` et `header.min.js`) avec prise en charge universelle des attributs (`defer`, `async`), chemins relatifs/absolus et paramètres de version (`?v=...`).
+   - Élimination définitive de l'écrasement intempestif du contenu statique des articles de blog par le script CSR (`article.js` affichait "Article non trouvé").
+   - Préservation contrôlée de `header.min.js` sur les pages interactives (`index.html`, formations, LMS) afin de maintenir opérationnels le checkout Stripe (`initiateCourseEnrollment`), le rafraîchissement JWT et les modales d'authentification.
+   - Synchronisation de la génération SSG des 6 articles de blog dans `dist/blog/` et `frontend/blog/` pour le déploiement FTP.
+2. **Copywriting Hero (`index.html`)** :
+   - Remplacement de "Voir les 3 Packs d'Apprentissage ↓" par "Voir nos 2 Packs d'Apprentissage ↓" afin d'éliminer la dissonance cognitive avec les 2 cartes tarifaires réelles (le 3ème pack étant désormais un Order Bump optionnel).
+3. **Réactivité du Prix Checkout au clic sur l'Order Bump (`index.html`, `script.js`)** :
+   - Intégration de l'actualisation dynamique du libellé du CTA principal au basculement de la checkbox Order Bump :
+     - Pack Starter : passe immédiatement de 299 € à 498 € (et inversement).
+     - Pack Web Pro : passe immédiatement de 449 € à 648 € (et inversement).
+   - Passage des bons montants et de l'indicateur d'add-on (`mentor_4sessions`) à `initiateCourseEnrollment`.
+4. **Suppression de la fuite sous le bouton d'achat (`index.html`)** :
+   - Retrait des boutons massifs "Télécharger le programme détaillé (PDF)" situés sous les CTA d'achat dans les cartes de prix du Pack Starter et du Pack Web Pro (suppression du lead magnet concurrent à l'acte d'achat direct).
+5. **Architecture Sémantique & Hygiène SEO LMS (`app.html` & `.htaccess`)** :
+   - Création de `frontend/app.html` pour héberger l'application privée LMS avec balise `<meta name="robots" content="noindex, nofollow" />`.
+   - Transformation de `frontend/parcours.html` et `frontend/course.html` en redirections JavaScript et HTTP avec directive `noindex`.
+   - Retrait de l'URL privée `/parcours` du sitemap XML public (`sitemap.xml`).
+   - Configuration d'une redirection 301 Apache dans `.htaccess` de `/parcours` vers `/app.html` et réécriture propre pour `/app`.
+   - Mise à jour de tous les liens internes (`cours.js`, `dashboard.js`, `header.js`, `dashboard.html`, `success.html`, `formations/*.html`).
+6. **Tests & Validation Automatisée** :
+   - Création de la suite Playwright `e2e/tests/cro-ux-seo.spec.js` couvrant l'ensemble des 6 scénarios (Hero copy, purge PDF, bascule de prix dynamique Starter/Web Pro, protection `noindex` sur `app.html` et redirection).
+   - Validation 100% de la suite Playwright : 8 tests exécutés avec succès (`8 passed`).
+   - Exécution complète du bundler CSS/JS (`build.sh`) et de la génération SSG (`build-static.js`) sans aucune erreur.
+

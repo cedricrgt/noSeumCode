@@ -258,7 +258,7 @@
             <div class="hero__decorations">
               <div class="hero__buttons">
                 <a href="#parcours" class="button button__primary bangers-regular" data-track="cta_click" data-track-cta="hero_view_packages" data-track-location="hero">
-                  Voir les 3 Packs d'Apprentissage ↓
+                  Voir nos 2 Packs d'Apprentissage ↓
                 </a>
                 <button type="button" class="button button__secondary bangers-regular" popovertarget="hubspot-popover" aria-haspopup="dialog" data-track="cta_click" data-track-cta="hero_download_program" data-track-location="hero">
                   Télécharger le Programme (PDF)
@@ -514,7 +514,7 @@
         </section>
 
         <!-- ========================================================
-             SECTION OFFRES : LES 3 PACKAGES (SPRINT 15 / TASK 15.4)
+             SECTION OFFRES : LES 2 PACKS & ORDER BUMP
              ======================================================== -->
         <section id="parcours" class="section section--white">
           <div class="courses__header text-center">
@@ -552,7 +552,7 @@
                   <span class="order-bump__total">Pack Starter + Suivi Mentor = 498 €</span>
                 </span>
               </label>
-              <button type="button" class="button button__primary bangers-regular" style="width: 100%;" onclick="initiateCourseEnrollment('pack-starter', 'Pack Starter', '299 €', null, null, document.getElementById('bump-starter').checked ? 'mentor_4sessions' : null)">
+              <button type="button" id="btn-buy-starter" class="button button__primary bangers-regular" style="width: 100%;" onclick="initiateCourseEnrollment('pack-starter', 'Pack Starter', document.getElementById('bump-starter').checked ? '498 €' : '299 €', null, null, document.getElementById('bump-starter').checked ? 'mentor_4sessions' : null)">
                 Choisir le Pack Starter • 299 €
               </button>
               <div class="guarantee-seal" role="note">
@@ -562,9 +562,6 @@
                 </div>
                 <p class="guarantee-seal__text"><strong>Satisfait ou remboursé</strong>Sans question ni justification. Un message suffit.</p>
               </div>
-              <button type="button" class="button button__secondary bangers-regular" style="width: 100%; margin-top: 0.5rem; box-sizing: border-box;" popovertarget="hubspot-popover" aria-haspopup="dialog">
-                Télécharger le programme détaillé (PDF)
-              </button>
               <details style="margin-top: 1rem; padding: 1rem; background: rgba(0, 217, 255, 0.05); border: 1px solid rgba(3, 105, 161, 0.25); border-radius: 8px; text-align: left; font-family: 'Poppins', sans-serif; font-size: 0.85rem; color: #475569;">
                 <summary style="cursor: pointer; font-weight: 600; color: #0369a1; outline: none;">Programme du Pack Starter</summary>
                 <div style="margin-top: 0.75rem; line-height: 1.6;">
@@ -604,7 +601,7 @@
                   <span class="order-bump__total">Pack Web Pro + Suivi Mentor = 648 €</span>
                 </span>
               </label>
-              <button type="button" class="button button__primary bangers-regular" style="width: 100%; background: #00ff87; color: #070e18;" onclick="initiateCourseEnrollment('pack-web-pro', 'Pack Web Pro', '449 €', null, null, document.getElementById('bump-web-pro').checked ? 'mentor_4sessions' : null)">
+              <button type="button" id="btn-buy-web-pro" class="button button__primary bangers-regular" style="width: 100%; background: #00ff87; color: #070e18;" onclick="initiateCourseEnrollment('pack-web-pro', 'Pack Web Pro', document.getElementById('bump-web-pro').checked ? '648 €' : '449 €', null, null, document.getElementById('bump-web-pro').checked ? 'mentor_4sessions' : null)">
                 Rejoindre le Pack Web Pro • 449 €
               </button>
               <div class="guarantee-seal" role="note">
@@ -614,9 +611,6 @@
                 </div>
                 <p class="guarantee-seal__text"><strong>Satisfait ou remboursé</strong>Sans question ni justification. Un message suffit.</p>
               </div>
-              <button type="button" class="button button__secondary bangers-regular" style="width: 100%; margin-top: 0.5rem; box-sizing: border-box;" popovertarget="hubspot-popover" aria-haspopup="dialog">
-                Télécharger le programme détaillé (PDF)
-              </button>
               <details style="margin-top: 1rem; padding: 1rem; background: rgba(0, 255, 135, 0.05); border: 1px solid rgba(0, 255, 135, 0.35); border-radius: 8px; text-align: left; font-family: 'Poppins', sans-serif; font-size: 0.85rem; color: #cbd5e1;">
                 <summary style="cursor: pointer; font-weight: 600; color: #00ff87; outline: none;">Programme du Pack Web Pro</summary>
                 <div style="margin-top: 0.75rem; line-height: 1.6;">
@@ -1263,6 +1257,33 @@
     <script defer src="js/script.min.js?v=sprint15"></script>
     <script defer src="js/header.min.js?v=sprint18"></script>
     <script defer src="js/popover-hubspot.min.js?v=sprint15"></script>
+
+    <script>
+      (function() {
+        function initOrderBumpPricing() {
+          const bumpStarter = document.getElementById("bump-starter");
+          const btnStarter = document.getElementById("btn-buy-starter");
+          if (bumpStarter && btnStarter) {
+            bumpStarter.addEventListener("change", function() {
+              btnStarter.textContent = this.checked ? "Choisir le Pack Starter • 498 €" : "Choisir le Pack Starter • 299 €";
+            });
+          }
+
+          const bumpWebPro = document.getElementById("bump-web-pro");
+          const btnWebPro = document.getElementById("btn-buy-web-pro");
+          if (bumpWebPro && btnWebPro) {
+            bumpWebPro.addEventListener("change", function() {
+              btnWebPro.textContent = this.checked ? "Rejoindre le Pack Web Pro • 648 €" : "Rejoindre le Pack Web Pro • 449 €";
+            });
+          }
+        }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", initOrderBumpPricing);
+        } else {
+          initOrderBumpPricing();
+        }
+      })();
+    </script>
 
     <div id="popovers-placeholder"></div>
   </body>

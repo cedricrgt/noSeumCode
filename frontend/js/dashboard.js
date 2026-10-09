@@ -220,7 +220,7 @@ async function loadStoredAuth() {
     sessionStorage.removeItem("noseum_pending_checkout_course_id");
     sessionStorage.removeItem("noseum_pending_checkout_course_title");
     sessionStorage.removeItem("noseum_pending_checkout_course_price");
-    window.location.href = `parcours.html?id=${encodeURIComponent(pendingCourseId)}&auto_checkout=true`;
+    window.location.href = `app.html?id=${encodeURIComponent(pendingCourseId)}&auto_checkout=true`;
     return;
   }
 
@@ -602,7 +602,7 @@ function renderStudentCourses() {
         <p style="color: var(--dash-text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
           Vous n'êtes inscrit à aucun cours pour le moment. Parcourez notre catalogue pour démarrer votre apprentissage.
         </p>
-        <a href="parcours.html" class="button button__primary bangers-regular" style="text-decoration: none; padding: 10px 22px; font-size: 1.2rem; display: inline-block;">
+        <a href="app.html" class="button button__primary bangers-regular" style="text-decoration: none; padding: 10px 22px; font-size: 1.2rem; display: inline-block;">
           Découvrir les formations →
         </a>
       </div>
@@ -657,7 +657,7 @@ function renderStudentCourses() {
           </div>
         </div>
 
-        <a href="parcours.html?id=${course.courseId}" class="card__link bangers-regular" style="margin-top: auto;">
+        <a href="app.html?id=${course.courseId}" class="card__link bangers-regular" style="margin-top: auto;">
           Continuer la formation
           <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1709,7 +1709,7 @@ function renderAdminCourses() {
 
     tr.innerHTML = `
       <td style="padding: 1rem 1.25rem;">
-        <a href="parcours.html?id=${course.id}" class="course-title-link" target="_blank" title="Cliquez pour accéder à la formation" style="display: inline-flex; align-items: center; gap: 5px;">
+        <a href="app.html?id=${course.id}" class="course-title-link" target="_blank" title="Cliquez pour accéder à la formation" style="display: inline-flex; align-items: center; gap: 5px;">
           ${ICONS.book} ${escapeHtml(course.title)}
           <span style="font-size: 0.75rem; color: #00d9ff;">↗</span>
         </a>
@@ -2182,7 +2182,7 @@ async function loadUserCourseEnrollments(userId) {
           </td>
           <td style="padding: 0.75rem 1rem; text-align: right;">
             <div style="display: inline-flex; align-items: center; gap: 0.4rem;">
-              <a href="parcours.html?id=${course.id}" target="_blank" class="button button__secondary" style="padding: 4px 10px; font-size: 0.75rem; text-decoration: none; display: inline-block;">
+              <a href="app.html?id=${course.id}" target="_blank" class="button button__secondary" style="padding: 4px 10px; font-size: 0.75rem; text-decoration: none; display: inline-block;">
                 Accéder ↗
               </a>
               <button class="dash-btn dash-btn-danger" style="padding: 4px 8px; font-size: 0.75rem; display: inline-flex; align-items: center; justify-content: center;" onclick="handleAdminUnenrollUser('${userId}', '${enrollment.id}')" title="Désinscrire l'utilisateur de cette formation">

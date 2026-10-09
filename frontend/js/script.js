@@ -187,10 +187,30 @@ scrollToTopBtn.addEventListener("mouseleave", () => {
   }
 });
 
+// Dynamic checkout button price updating on Order Bump toggle
+function initOrderBumpPricing() {
+  const bumpStarter = document.getElementById("bump-starter");
+  const btnStarter = document.getElementById("btn-buy-starter");
+  if (bumpStarter && btnStarter) {
+    bumpStarter.addEventListener("change", () => {
+      btnStarter.textContent = bumpStarter.checked ? "Choisir le Pack Starter • 498 €" : "Choisir le Pack Starter • 299 €";
+    });
+  }
 
+  const bumpWebPro = document.getElementById("bump-web-pro");
+  const btnWebPro = document.getElementById("btn-buy-web-pro");
+  if (bumpWebPro && btnWebPro) {
+    bumpWebPro.addEventListener("change", () => {
+      btnWebPro.textContent = bumpWebPro.checked ? "Rejoindre le Pack Web Pro • 648 €" : "Rejoindre le Pack Web Pro • 449 €";
+    });
+  }
+}
 
-
-
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initOrderBumpPricing);
+} else {
+  initOrderBumpPricing();
+}
 
 console.log(
   "%cNoSeumCode - Code ton avenir!",
