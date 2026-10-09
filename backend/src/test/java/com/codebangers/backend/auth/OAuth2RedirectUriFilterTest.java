@@ -143,7 +143,7 @@ class OAuth2RedirectUriFilterTest {
         env.setActiveProfiles("prod");
 
         com.codebangers.backend.config.SecurityConfig config = new com.codebangers.backend.config.SecurityConfig(
-                null, null, null, null, null, "https://noseumcode.fr,https://www.noseumcode.fr", env
+                null, null, null, null, null, "https://noseumcode.fr,https://www.noseumcode.fr,https://develop.noseumcode.fr", env
         );
         org.springframework.web.cors.CorsConfigurationSource source = config.corsConfigurationSource();
         MockHttpServletRequest request = new MockHttpServletRequest();
@@ -151,9 +151,10 @@ class OAuth2RedirectUriFilterTest {
         org.springframework.web.cors.CorsConfiguration cors = source.getCorsConfiguration(request);
         assertNotNull(cors);
 
-        // Allowed production origins
+        // Allowed production & staging origins
         assertEquals("https://noseumcode.fr", cors.checkOrigin("https://noseumcode.fr"));
         assertEquals("https://www.noseumcode.fr", cors.checkOrigin("https://www.noseumcode.fr"));
+        assertEquals("https://develop.noseumcode.fr", cors.checkOrigin("https://develop.noseumcode.fr"));
 
         // Strictly forbidden in production (wildcards, localhost, LAN IPs, arbitrary domains)
         assertNull(cors.checkOrigin("https://evil.com"));

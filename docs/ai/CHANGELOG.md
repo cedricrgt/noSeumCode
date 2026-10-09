@@ -1440,3 +1440,25 @@ eset-password.html.
    - Suite backend : 162 tests unitaires et d'intégration validés avec succès sous Maven (`BUILD SUCCESS`, 0 erreur, 0 échec).
    - Suite frontend / E2E : 2 tests Playwright validés avec succès (`2 passed`).
 
+---
+
+## 2026-10-09 — Correctif CORS Staging : Autorisation de develop.noseumcode.fr
+
+**Branche**: `fix/allow-develop-frontend-cors`  
+**Objectif**: Rétablir l'autorisation CORS pour le frontend staging `https://develop.noseumcode.fr` sur l'API backend de production Oracle Cloud VM (`https://api.noseumcode.fr`).
+
+### Contexte & Cause Racine :
+- Lors du durcissement CORS en profil `prod` (Sprint 26), la whitelist stricte avait restreint les origines exclusivement à `https://noseumcode.fr` et `https://www.noseumcode.fr`.
+- Or, selon la topologie d'infrastructure documentée (`PROJECT_CONTEXT.md`), l'environnement de staging frontend `https://develop.noseumcode.fr` (o2switch) interroge directement l'API unique hébergée sur la VM Oracle Cloud (`https://api.noseumcode.fr`).
+- Conséquence : toute tentative d'authentification ou d'appel API depuis `https://develop.noseumcode.fr` était bloquée avec un code HTTP 403 Forbidden ("Invalid CORS request") et une absence d'en-tête `Access-Control-Allow-Origin`.
+
+### Réalisations & Corrections :
+1. **`application-prod.properties`** :
+   - Ajout de `https://develop.noseumcode.fr` dans la valeur par défaut de `app.cors.allowed-origins`.
+   - Raccordement à la variable d'environnement `${CORS_ALLOWED_ORIGINS:...}` pour permettre la surcharge par la configuration VM si nécessaire.
+2. **`SecurityConfig.java`** :
+   - Intégration de `https://develop.noseumcode.fr` dans la liste stricte des origines de production autorisées, tout en maintenant le rejet formel des domaines wildcard (`*.noseumcode.fr`), `localhost` et adresses IP LAN privées.
+3. **Tests & Validation** :
+   - Mise à jour du test `shouldEnforceStrictProductionCorsOriginsInSecurityConfig` dans `OAuth2RedirectUriFilterTest` validant que `https://develop.noseumcode.fr` est explicitement autorisé sous profil `prod`.
+   - Suite backend complète validée : 162 tests exécutés avec succès (`BUILD SUCCESS`).
+

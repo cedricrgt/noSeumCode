@@ -50,9 +50,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `feat/sprint-26-e2e-cors-hygiene`
-## Current State: Sprint 26 (Intégration E2E Playwright, CORS prod, cookies HttpOnly, nettoyage bruit Git) terminé, tests validés localement (161 tests unitaires OK, 2 tests E2E Playwright OK).
-## Next Steps: Ouverture de la PR vers develop pour validation et déploiement.
+## Active Branch: `fix/allow-develop-frontend-cors`
+## Current State: Sprint 26 livré et mergé sur develop. Correctif CORS staging autorisant https://develop.noseumcode.fr sous profil prod validé (162 tests OK).
+## Next Steps: Ouverture de la PR vers develop pour validation et déploiement VM Oracle.
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN
