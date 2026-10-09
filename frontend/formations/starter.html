@@ -118,9 +118,9 @@
         
         <!-- Fil d'Ariane -->
         <nav class="formation-breadcrumb" aria-label="Fil d'Ariane">
-          <a href="index.html">Accueil</a>
+          <a href="../index.html">Accueil</a>
           <span>/</span>
-          <a href="parcours.html">Parcours</a>
+          <a href="../index.html#parcours">Nos Offres</a>
           <span>/</span>
           <span aria-current="page">Pack Starter</span>
         </nav>
@@ -313,7 +313,7 @@
               </div>
             </div>
 
-            <a href="parcours.html?id=starter&checkout=true" id="starter-cta-btn" class="formation-cta-btn">
+            <a href="app.html?id=starter&checkout=true" id="starter-cta-btn" class="formation-cta-btn">
               Rejoindre la cohorte
             </a>
 
@@ -382,7 +382,7 @@
             if (klarnaText) klarnaText.innerHTML = "ou <strong>3x 166 €</strong> sans frais avec <strong>Klarna</strong>";
             if (addonCard) addonCard.style.borderColor = "#00ff87";
             if (ctaBtn) {
-              ctaBtn.href = "parcours.html?id=starter&checkout=true&addon=mentor_4sessions";
+              ctaBtn.href = "app.html?id=starter&checkout=true&addon=mentor_4sessions";
               ctaBtn.setAttribute("data-addon", "mentor_4sessions");
             }
           } else {
@@ -390,7 +390,7 @@
             if (klarnaText) klarnaText.innerHTML = "ou <strong>3x 109 €</strong> sans frais avec <strong>Klarna</strong>";
             if (addonCard) addonCard.style.borderColor = "rgba(0, 255, 135, 0.25)";
             if (ctaBtn) {
-              ctaBtn.href = "parcours.html?id=starter&checkout=true";
+              ctaBtn.href = "app.html?id=starter&checkout=true";
               ctaBtn.removeAttribute("data-addon");
             }
           }

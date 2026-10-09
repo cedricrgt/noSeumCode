@@ -3,63 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="/" />
+    <title>Git expliqué à quelqu'un qui n'a jamais entendu parler de versioning - NoSeumCode</title>
+    <meta name="description" id="meta-description" content="Tu as déjà nommé un fichier projet_final_v2_vrai_final.zip ? Git est là pour ça. Explication simple, sans jargon et avec de vrais exemples.">
+    
 
-    <title>Git expliqué simplement — sans jargon, dès le début</title>
-    <meta
-      name="description"
-      content="Git fait peur à tous les débutants. Voilà une explication simple, avec des analogies concrètes, pour comprendre à quoi ça sert et comment ça marche vraiment."
-    />
-    <meta
-      name="keywords"
-      content="git expliqué débutant, apprendre git github débutant, c'est quoi git, formation git github, comprendre git simplement, git pour débutant sans jargon"
-    />
-    <meta name="author" content="Cédric Ragot" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://noseumcode.fr/blog/git-explique-debutant-versioning" />
-    <link rel="icon" type="image/png" href="images/favicon.png" />
-
-    <!-- Open Graph / Facebook -->
+    <link rel="icon" type="image/png" href="../images/favicon.png" />
+    
     <meta property="og:type" content="article" />
     <meta property="og:site_name" content="NoSeumCode" />
-    <meta property="og:title" content="Git expliqué simplement — sans jargon, dès le début" />
-    <meta
-      property="og:description"
-      content="Git fait peur à tous les débutants. Voilà une explication simple, avec des analogies concrètes, pour comprendre à quoi ça sert et comment ça marche vraiment."
-    />
-    <meta property="og:url" content="https://noseumcode.fr/blog/git-explique-debutant-versioning" />
-    <meta property="og:image" content="https://noseumcode.fr/images/courses/git.webp" />
-    <meta property="article:published_time" content="2026-09-30T16:00:00+02:00" />
-    <meta property="article:author" content="Cédric Ragot" />
-    <meta property="article:section" content="Gestion de Version" />
-    <meta property="article:tag" content="Git" />
-    <meta property="article:tag" content="GitHub" />
-    <meta property="article:tag" content="Débutant" />
+    <meta property="og:title" id="og-title" content="Git expliqué à quelqu'un qui n'a jamais entendu parler de versioning">
+    <meta property="og:description" id="og-description" content="Tu as déjà nommé un fichier projet_final_v2_vrai_final.zip ? Git est là pour ça. Explication simple, sans jargon et avec de vrais exemples.">
+    <meta property="og:image" id="og-image" content="images/courses/git.webp">
+    <meta property="og:url" content="https://noseumcode.fr/article.html" />
 
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Git expliqué simplement — sans jargon, dès le début" />
-    <meta
-      name="twitter:description"
-      content="Git fait peur à tous les débutants. Voilà une explication simple, avec des analogies concrètes, pour comprendre à quoi ça sert et comment ça marche vraiment."
-    />
-    <meta name="twitter:image" content="https://noseumcode.fr/images/courses/git.webp" />
-
-    <!-- Plausible Analytics Cookieless & RGPD (Sprint 9 / ADR-015) -->
-    <script>
-      window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments); };
-      window.addEventListener('load', function() {
-        (window.requestIdleCallback || function(cb) { setTimeout(cb, 1); })(function() {
-          var s = document.createElement('script');
-          s.defer = true;
-          s.setAttribute('data-domain', 'noseumcode.fr');
-          s.src = 'https://plausible.io/js/script.tagged-events.outbound-links.js';
-          document.head.appendChild(s);
-        });
-      });
-    </script>
-
-    <!-- Google Fonts -->
+    <meta name="twitter:title" content="NoSeumCode - Article" />
+    <meta name="twitter:description" content="Découvrez nos articles sur le développement web." />
+    <meta name="twitter:image" content="https://noseumcode.fr/images/header/logo.png" />
+    
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -74,162 +35,170 @@
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Bangers&display=swap"
       />
     </noscript>
-
-    <link rel="stylesheet" href="styles/dist/article.min.css?v=sprint16" />
-
-    <!-- Schema.org JSON-LD (Article + BreadcrumbList + HowTo) -->
-    <script type="application/ld+json">
+    <link rel="stylesheet" href="../styles/dist/article.min.css?v=sprint16" />
+  
+    <script id="schema-article" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
     {
-      "@context": "https://schema.org",
-      "@graph": [
+      "@type": "BreadcrumbList",
+      "itemListElement": [
         {
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            {
-              "@type": "ListItem",
-              "position": 1,
-              "name": "Accueil",
-              "item": "https://noseumcode.fr/"
-            },
-            {
-              "@type": "ListItem",
-              "position": 2,
-              "name": "Blog",
-              "item": "https://noseumcode.fr/index.html#blog"
-            },
-            {
-              "@type": "ListItem",
-              "position": 3,
-              "name": "Git expliqué simplement",
-              "item": "https://noseumcode.fr/blog/git-explique-debutant-versioning"
-            }
-          ]
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Accueil",
+          "item": "https://noseumcode.fr/"
         },
         {
-          "@type": "Article",
-          "headline": "Git expliqué à quelqu'un qui n'a jamais entendu parler de versioning",
-          "description": "Git fait peur à tous les débutants. Voilà une explication simple, avec des analogies concrètes, pour comprendre à quoi ça sert et comment ça marche vraiment.",
-          "image": "https://noseumcode.fr/images/courses/git.webp",
-          "author": {
-            "@type": "Person",
-            "name": "Cédric Ragot",
-            "jobTitle": "Ingénieur Senior & Formateur NoSeumCode",
-            "url": "https://noseumcode.fr/"
-          },
-          "publisher": {
-            "@type": "Organization",
-            "name": "NoSeumCode",
-            "url": "https://noseumcode.fr",
-            "logo": {
-              "@type": "ImageObject",
-              "url": "https://noseumcode.fr/images/favicon.png"
-            }
-          },
-          "datePublished": "2026-09-30T16:00:00+02:00",
-          "dateModified": "2026-09-30T16:00:00+02:00",
-          "mainEntityOfPage": "https://noseumcode.fr/blog/git-explique-debutant-versioning"
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "https://noseumcode.fr/index.html#blog"
         },
         {
-          "@type": "HowTo",
-          "name": "Les 6 commandes Git indispensables pour débuter",
-          "description": "Apprendre le cycle de travail Git essentiel : initialiser, vérifier l'état, préparer, sauvegarder et synchroniser sur GitHub.",
-          "step": [
-            {
-              "@type": "HowToStep",
-              "name": "1. Initialiser le dépôt",
-              "text": "Exécuter 'git init' dans le dossier racine du projet pour démarrer le suivi des modifications."
-            },
-            {
-              "@type": "HowToStep",
-              "name": "2. Vérifier l'état des fichiers",
-              "text": "Exécuter 'git status' pour voir quels fichiers ont été ajoutés, modifiés ou supprimés."
-            },
-            {
-              "@type": "HowToStep",
-              "name": "3. Préparer les fichiers modifiés",
-              "text": "Exécuter 'git add .' pour placer toutes les modifications en zone de préparation (staging)."
-            },
-            {
-              "@type": "HowToStep",
-              "name": "4. Créer un point de sauvegarde (Commit)",
-              "text": "Exécuter 'git commit -m \"message explicite\"' pour sceller une version stable dans l'historique."
-            },
-            {
-              "@type": "HowToStep",
-              "name": "5. Envoyer sur GitHub",
-              "text": "Exécuter 'git push' pour sauvegarder et partager son historique de code dans le cloud."
-            },
-            {
-              "@type": "HowToStep",
-              "name": "6. Consulter l'historique",
-              "text": "Exécuter 'git log --oneline' pour parcourir la liste chronologique de toutes les sauvegardes."
-            }
-          ]
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Git expliqué à quelqu'un qui n'a jamais entendu parler de versioning",
+          "item": "https://noseumcode.fr/blog/git-explique-debutant-versioning.html"
         }
       ]
+    },
+    {
+      "@type": "Article",
+      "headline": "Git expliqué à quelqu'un qui n'a jamais entendu parler de versioning",
+      "description": "Tu as déjà nommé un fichier projet_final_v2_vrai_final.zip ? Git est là pour ça. Explication simple, sans jargon et avec de vrais exemples.",
+      "image": "images/courses/git.webp",
+      "author": {
+        "@type": "Person",
+        "name": "Cédric Ragot",
+        "jobTitle": "Ingénieur Senior & Formateur NoSeumCode"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "NoSeumCode",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://noseumcode.fr/images/favicon.png"
+        }
+      },
+      "datePublished": "2026-09-30",
+      "dateModified": "2026-09-30",
+      "mainEntityOfPage": "https://noseumcode.fr/blog/git-explique-debutant-versioning.html"
     }
+  ]
+}
     </script>
   </head>
-
   <body class="article-page poppins-regular">
     <a href="#article-content" class="skip-link">Aller au contenu principal</a>
 
-    <!-- Header injecté dynamiquement -->
-    <div id="header-placeholder"></div>
+    <header class="header">
+
+  <div class="promo-banner">
+    <div class="promo-banner__track">
+      <span class="promo-banner__item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -4px; margin-right: 6px;" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> WORKSHOPS TOUSSAINT GRATUITS : HTML &amp; CSS, JAVASCRIPT, GIT &amp; GITHUB, MINI-PROJET GUIDÉ !
+        <a href="../workshops.html" class="promo-banner__cta bangers-regular" role="button" aria-label="Découvrir les ateliers pratiques, 6 places maximum par session">DÉCOUVRIR LES ATELIERS (6 PLACES MAX)</a>
+      </span>
+      <span class="promo-banner__item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -4px; margin-right: 6px;" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> WORKSHOPS TOUSSAINT GRATUITS : HTML &amp; CSS, JAVASCRIPT, GIT &amp; GITHUB, MINI-PROJET GUIDÉ !
+        <a href="../workshops.html" class="promo-banner__cta bangers-regular" role="button" aria-label="Découvrir les ateliers pratiques, 6 places maximum par session">DÉCOUVRIR LES ATELIERS (6 PLACES MAX)</a>
+      </span>
+    </div>
+  </div>
+
+  <input type="checkbox" id="burger-toggle" class="burger-toggle" aria-label="Basculer le menu mobile" />
+  <div class="header__container">
+
+    <label for="burger-toggle" class="burger-button">
+      <span class="sr-only">Ouvrir le menu de navigation</span>
+      <svg class="burger-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </label>
+
+    <div class="header__logo">
+      <a href="../index.html" aria-label="Retour à l'accueil NoSeumCode">
+        <picture>
+          <source srcset="images/header/logo.webp" type="image/webp" />
+          <img alt="Logo de NoSeumCode" class="logo__img" src="../images/header/logo.png" width="141" height="105" decoding="async" />
+        </picture>
+      </a>
+    </div>
+    <div class="header__navbar">
+      <nav class="navbar" aria-label="Navigation principale">
+        <ul class="navbar__links poppins-regular">
+          <li class="navbar__link"><a href="../index.html">Accueil</a></li>
+          <li class="navbar__link"><a href="../index.html#parcours">Nos Parcours</a></li>
+          <li class="navbar__link"><a href="../index.html#services">La Méthode</a></li>
+          <li class="navbar__link"><a href="../index.html#faq">FAQ</a></li>
+        </ul>
+      </nav>
+      <div class="header__actions" style="display: flex; gap: 0.75rem; align-items: center;">
+        <!-- Bouton Se connecter (visiteur non connecté) -->
+        <button id="header-auth-btn" class="button button__secondary bangers-regular"
+          onclick="openGlobalAuthModal('login', true)"
+          style="cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; font-size: 1.1rem; border: none;">
+          Se connecter
+        </button>
+
+        <!-- Profil connecté (affiché si token présent) -->
+        <div id="header-user-badge" style="display: none; align-items: center; gap: 0.5rem;">
+          <a href="../dashboard.html" class="user-profile-pill"
+            style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem; background: rgba(10, 22, 40, 0.9); padding: 0.35rem 0.8rem; border-radius: 30px; border: 1px solid rgba(0, 255, 135, 0.4); box-shadow: 0 0 10px rgba(0, 255, 135, 0.15);">
+            <div id="header-user-avatar-text"
+              style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #00ff87, #00d9ff); color: #070e18; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem;">
+              U</div>
+            <span id="header-user-name-text" style="font-weight: 600; font-size: 0.85rem; color: #fff;">Mon
+              Espace</span>
+          </a>
+          <button onclick="globalLogout()" title="Déconnexion" aria-label="Se déconnecter de votre compte"
+            style="background: rgba(255,51,102,0.15); border: 1px solid rgba(255,51,102,0.4); color: #ff3366; border-radius: 8px; padding: 6px 10px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+          </button>
+        </div>
+
+        <button id="header-download-btn" class="button button__primary bangers-regular" popovertarget="hubspot-popover" aria-haspopup="dialog" style="display: inline-flex; align-items: center; justify-content: center;">
+          Télécharger le programme
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
 
     <main id="article-content">
-      <!-- Article Hero Header -->
+        <div class="article-container">
+
       <section class="article-hero">
-        <img
-          src="images/courses/git.webp"
-          alt="Comprendre Git et le versioning de code pour débutant"
-          class="article-hero__image"
-          width="1200"
-          height="400"
-          loading="eager"
-          decoding="async"
-        />
+        <img src="../images/courses/git.webp" alt="Git expliqué à quelqu'un qui n'a jamais entendu parler de versioning" class="article-hero__image">
         <div class="article-hero__content">
-          <h1 class="article-hero__title bangers-regular">
-            Git expliqué à quelqu'un qui n'a jamais entendu parler de versioning
-          </h1>
-          <p class="article-hero__subtitle poppins-regular">
-            Fini le jargon incompréhensible : découvre enfin pourquoi et comment Git sauve ton code sans prise de tête.
-          </p>
+          <h1 class="article-hero__title bangers-regular">Git expliqué à quelqu'un qui n'a jamais entendu parler de versioning</h1>
+          <p class="article-hero__subtitle poppins-regular">Tu as déjà nommé un fichier projet_final_v2_vrai_final.zip ? Git est là pour ça. Explication simple, sans jargon et avec de vrais exemples.</p>
         </div>
       </section>
-
       <div class="article-container">
-        <!-- Fil d'Ariane SEO -->
         <nav aria-label="Fil d'Ariane" class="breadcrumb">
           <ol class="breadcrumb__list">
-            <li class="breadcrumb__item">
-              <a href="index.html" class="breadcrumb__link">Accueil</a>
-            </li>
+            <li class="breadcrumb__item"><a href="../index.html" class="breadcrumb__link">Accueil</a></li>
             <li class="breadcrumb__separator" aria-hidden="true">/</li>
-            <li class="breadcrumb__item">
-              <a href="index.html#blog" class="breadcrumb__link">Blog</a>
-            </li>
+            <li class="breadcrumb__item"><a href="../index.html#blog" class="breadcrumb__link">Blog</a></li>
             <li class="breadcrumb__separator" aria-hidden="true">/</li>
-            <li class="breadcrumb__item" aria-current="page">
-              Git Expliqué Simplement
-            </li>
+            <li class="breadcrumb__item" aria-current="page">Git expliqué à quelqu'un qui n'a jamais entendu parler de versioning</li>
           </ol>
         </nav>
-
         <article>
-          <!-- Métadonnées & Auteur -->
           <div class="article-meta">
             <div class="article-meta__author">
-              <img
-                src="images/mentor-cedric.webp"
-                alt="Cédric Ragot, formateur NoSeumCode"
-                class="article-meta__avatar"
-                width="34"
-                height="34"
-                loading="lazy"
-              />
-              <span>Par Cédric Ragot — ingénieur senior, formateur chez NoSeumCode</span>
+              <img src="../images/mentor-cedric.webp" alt="Cédric Ragot" class="article-meta__avatar" width="34" height="34" />
+              <span>Par Cédric Ragot</span>
             </div>
             <div class="article-meta__item">
               <span aria-hidden="true">•</span>
@@ -237,292 +206,508 @@
             </div>
             <div class="article-meta__item">
               <span aria-hidden="true">•</span>
-              <span>Temps de lecture : ~8 min</span>
+              <span>Lecture : ~5 min</span>
             </div>
           </div>
-
-          <!-- Tags thématiques -->
           <div class="article-tags">
-            <span class="article-tag">Git &amp; GitHub</span>
-            <span class="article-tag">Débutant Pro</span>
-            <span class="article-tag">Clean Code</span>
-            <span class="article-tag">Sans le Seum</span>
+            <span class="article-tag">Git</span><span class="article-tag">GitHub</span><span class="article-tag">Versioning</span><span class="article-tag">Débutant Pro</span>
           </div>
-
-          <!-- Introduction -->
-          <p class="article-intro">
-            Si tu as déjà cherché à comprendre ce qu'est Git sur Google ou Wikipédia, tu es sans doute tombé sur une définition du style :
-            <br /><br />
-            <em>"Git est un logiciel de gestion de versions décentralisé permettant d'enregistrer et de tracer l'évolution d'un ensemble de fichiers informatiques dans un graphe acyclique dirigé."</em>
-            <br /><br />
-            Et là, tu as refermé ton navigateur en te disant : <strong>"OK, merci, je n'ai absolument rien compris."</strong>
-            <br /><br />
-            Alors on va reprendre tout ça depuis zéro. Sans jargon élitiste, sans formules mathématiques inutiles, avec des analogies de la vraie vie, en commençant par le pourquoi avant de parler de la moindre commande technique.
-          </p>
-
+          <p class="article-intro">Si tu débutes dans la programmation, tu as forcément croisé ces deux mots partout : Git et GitHub. Les développeurs en parlent comme d'une évidence, mais personne ne prend le temps de t'expliquer ce que c'est sans t'assommer de jargon technique. On va réparer ça tout de suite.</p>
           <div class="article-body">
-            <!-- Section 1 -->
-            <section class="article-section">
-              <h2 class="bangers-regular">Le problème universel que Git vient résoudre</h2>
-              <p>
-                Imagine que tu travailles sur ton premier site web. Tu crées une page d'accueil, elle s'affiche correctement, le design te plaît. Et là, tu as envie de tenter un truc plus complexe : modifier les couleurs, tester une mise en page différente avec CSS Grid.
-              </p>
-              <p>
-                Tu modifies ton code, tu testes... et là, catastrophe : tout est cassé. Le menu a disparu, les blocs se superposent n'importe comment, et tu ne sais plus du tout ce que tu as changé par rapport à 10 minutes plus tôt.
-              </p>
-              <p>
-                Tu veux faire <code>Ctrl + Z</code>, mais tu as déjà fermé ton éditeur. Ton ancienne version qui marchait si bien n'existe plus. Elle a été écrasée.
-              </p>
-              <p>
-                Pour éviter ce cauchemar, tout le monde est passé par cette méthode artisanale et chaotique :
-              </p>
-              <ul>
-                <li><code>projet-site.html</code></li>
-                <li><code>projet-site-v2.html</code></li>
-                <li><code>projet-site-VRAIMENT-FINAL.html</code></li>
-                <li><code>projet-site-version-qui-marche-enfin.html</code></li>
-              </ul>
-              <p>
-                Ton bureau se retrouve envahi de 15 fichiers presque identiques, et tu es incapable de savoir lequel est le bon.
-              </p>
-              <p>
-                <strong>Git est né pour tuer cette pagaille.</strong> C'est tout simplement une machine à voyager dans le temps pour ton code. Il enregistre l'état exact de tes dossiers à des moments choisis, proprement, automatiquement, et te permet de revenir en arrière d'un claquement de doigts.
-              </p>
-            </section>
-
-            <!-- Section 2 -->
-            <section class="article-section">
-              <h2 class="bangers-regular">L'analogie qui fait tout comprendre : la sauvegarde de jeu vidéo</h2>
-              <p>
-                Pense à Git exactement comme au système de sauvegarde d'un jeu vidéo RPG (comme Pokémon, Zelda ou The Witcher).
-              </p>
-              <p>
-                Dans un jeu, tu sauvegardes ta partie avant d'affronter un boss difficile. Si ton personnage est éliminé, tu ne recommences pas le jeu depuis le début : tu recharges ta sauvegarde précédente et tu réessaies avec une stratégie différente. Tu peux aussi garder plusieurs emplacements de sauvegarde pour rejouer un passage mémorable.
-              </p>
-              <p>
-                Git fonctionne de la même manière pour tes projets web. Chaque "point de sauvegarde" porte un nom : <strong>un commit</strong>. Tu travailles, tu écris du code, et dès que tu atteins une étape qui fonctionne proprement, tu crées un commit.
-              </p>
-              <p>
-                Si demain tu introduis un bug en voulant tester une fonctionnalité, tu peux faire revenir ton projet à l'exact état d'hier matin à 10h42.
-              </p>
-            </section>
-
-            <!-- Section 3 -->
-            <section class="article-section">
-              <h2 class="bangers-regular">Les trois mots indispensables à retenir</h2>
-              <p>
-                Dans le monde Git, il y a trois termes fondamentaux que tout le monde confond au début :
-              </p>
-              <ol>
-                <li>
-                  <strong>Le Repository (ou "Repo") :</strong> c'est tout simplement le dossier de ton projet sur ton ordinateur, mais sous surveillance active de Git. Quand tu actives Git dans ton dossier, Git crée un dossier invisible (<code>.git</code>) qui va mémoriser l'historique complet de toutes tes modifications.
-                </li>
-                <li>
-                  <strong>Le Commit :</strong> c'est ta sauvegarde scellée dans le temps. C'est une photographie instantanée de tous tes fichiers. Chaque commit est accompagné d'un message rédigé par tes soins décrivant ce que tu as accompli (par exemple : <em>"Création du formulaire de contact"</em>).
-                </li>
-                <li>
-                  <strong>La Branch (Branche) :</strong> imagine que tu veuilles tester une idée un peu folle (changer complètement la charte graphique de ton site) sans risquer de bousiller ta version stable. Une branche te permet de créer un univers parallèle. Tu t'amuses sur ta branche test. Si le résultat est génial, tu fusionnes ta branche avec ta version principale ; si c'est raté, tu la supprimes sans que ta version principale n'ait été touchée.
-                </li>
-              </ol>
-            </section>
-
-            <!-- Section 4 -->
-            <section class="article-section">
-              <h2 class="bangers-regular">Git et GitHub : la confusion n°1 clarifiée</h2>
-              <p>
-                Attention, beaucoup de débutants croient que Git et GitHub sont la même chose. C'est faux :
-              </p>
-              <ul>
-                <li>
-                  <strong>Git est un logiciel :</strong> il est installé localement sur ton ordinateur. Il n'a même pas besoin d'une connexion internet pour fonctionner. Il gère tes sauvegardes et ton historique hors ligne.
-                </li>
-                <li>
-                  <strong>GitHub est un service web dans le cloud :</strong> c'est une plateforme en ligne (rachetée par Microsoft) qui te permet d'héberger une copie de ton repository Git sur internet.
-                </li>
-              </ul>
-              <p>
-                Pourquoi envoyer ton code sur GitHub ? Pour trois raisons majeures :
-              </p>
-              <ol>
-                <li><strong>La sauvegarde externe :</strong> si ton ordinateur portable tombe par terre ou rend l'âme, tout ton historique de travail est en sécurité sur les serveurs de GitHub.</li>
-                <li><strong>Le travail en équipe :</strong> deux développeurs peuvent travailler sur le même projet à distance sans s'envoyer des fichiers zip par email ou sur Discord.</li>
-                <li><strong>Ton portfolio public :</strong> pour un recruteur ou un client, ton profil GitHub est souvent plus important que ton CV. Il permet de voir si tu écris du code propre et si tu sais travailler avec les outils du métier.</li>
-              </ol>
-            </section>
-
-            <!-- Section 5 -->
-            <section class="article-section">
-              <h2 class="bangers-regular">Les 6 seules commandes dont tu as besoin au début</h2>
-              <p>
-                Il existe des dizaines de commandes Git avancées (rebase, cherry-pick, stash...), mais au début, tu n'as besoin que de ces six-là pour faire 95% de ton travail :
-              </p>
-
-              <h3>1. Initialiser le projet</h3>
-              <pre><code style="display:block; padding: 1rem; background: #070e18; color: #00ff87; border-radius: 8px; font-family: monospace;">git init</code></pre>
-              <p>À lancer une seule fois dans le dossier de ton projet pour dire à Git : <em>"Commence à observer ce dossier."</em></p>
-
-              <h3>2. Vérifier l'état de tes fichiers</h3>
-              <pre><code style="display:block; padding: 1rem; background: #070e18; color: #00ff87; border-radius: 8px; font-family: monospace;">git status</code></pre>
-              <p>La commande réflexe. Git t'affiche la liste des fichiers modifiés, créés ou supprimés depuis ta dernière sauvegarde.</p>
-
-              <h3>3. Préparer les fichiers à sauvegarder</h3>
-              <pre><code style="display:block; padding: 1rem; background: #070e18; color: #00ff87; border-radius: 8px; font-family: monospace;">git add .</code></pre>
-              <p>Le point signifie "tout ajouter". Tu déposes tes fichiers modifiés dans le sas de chargement (le staging) avant de valider la photo.</p>
-
-              <h3>4. Créer la sauvegarde officielle</h3>
-              <pre><code style="display:block; padding: 1rem; background: #070e18; color: #00ff87; border-radius: 8px; font-family: monospace;">git commit -m "Ajout de la section avis clients"</code></pre>
-              <p>C'est ici que tu déclenches la photo. Le message entre guillemets doit résumer clairement ce que tu as accompli.</p>
-
-              <h3>5. Envoyer sur GitHub</h3>
-              <pre><code style="display:block; padding: 1rem; background: #070e18; color: #00ff87; border-radius: 8px; font-family: monospace;">git push</code></pre>
-              <p>Envoie tes commits locaux vers ton compte GitHub pour mettre à jour la version en ligne.</p>
-
-              <h3>6. Voir la liste de tes sauvegardes</h3>
-              <pre><code style="display:block; padding: 1rem; background: #070e18; color: #00ff87; border-radius: 8px; font-family: monospace;">git log --oneline</code></pre>
-              <p>Affiche ton carnet de bord : chaque commit sur une ligne avec son identifiant court et son message.</p>
-            </section>
-
-            <!-- Section 6 -->
-            <section class="article-section">
-              <h2 class="bangers-regular">Une vraie session de travail avec Git pas à pas</h2>
-              <p>
-                Concrètement, comment se déroule une session de code avec Git au quotidien ?
-              </p>
-              <p>
-                Tu allumes ton PC, tu ouvres VS Code (si ton éditeur n'est pas encore prêt, consulte notre guide : <a href="blog/setup-vscode-debutant-plugins-utiles" style="color: #047857; font-weight: 600; text-decoration: underline;">Mon setup VS Code pour débuter sans plugins inutiles</a>). Tu ajoutes un nouveau bouton dans ton fichier <code>index.html</code> et tu règles sa couleur dans <code>style.css</code>. Tu testes dans ton navigateur : tout s'affiche à la perfection.
-              </p>
-              <p>
-                Tu ouvres alors le terminal intégré de VS Code (raccourci <code>Ctrl + `</code>) et tu déroules le rituel en 15 secondes chrono :
-              </p>
-              <pre><code style="display:block; padding: 1rem; background: #070e18; color: #00ff87; border-radius: 8px; font-family: monospace;">git status
-# → Git te confirme : 2 fichiers modifiés (index.html et style.css)
-
-git add .
-# → Tu prépares tes fichiers
-
-git commit -m "Ajout du bouton d'inscription hero"
-# → Ta sauvegarde est enregistrée localement
-
-git push
-# → C'est synchronisé sur GitHub en toute sécurité !</code></pre>
-              <p>
-                Ce cycle devient une seconde nature au bout de deux jours d'utilisation.
-              </p>
-            </section>
-
-            <!-- Section 7 -->
-            <section class="article-section">
-              <h2 class="bangers-regular">À quelle fréquence faut-il faire un commit ?</h2>
-              <p>
-                C'est une des questions les plus fréquentes chez mes apprenants. Il n'y a pas de compteur fixe, mais voici la règle d'or d'un ingénieur senior :
-              </p>
-              <blockquote>
-                Fais un commit chaque fois que tu as terminé une petite unité de travail qui fonctionne. Ne commite jamais du code cassé qui fait planter ton site, et n'attends pas la fin de la semaine pour tout sauvegarder d'un bloc.
-              </blockquote>
-              <p>
-                <strong>Une astuce simple :</strong> si tu es capable de décrire en une phrase simple ce que tu viens de faire (<em>"J'ai centré le logo"</em>, <em>"J'ai réparé le lien du menu"</em>, <em>"J'ai créé le pied de page"</em>), c'est le moment idéal pour faire un commit.
-              </p>
-            </section>
-
-            <!-- Section 8 -->
-            <section class="article-section">
-              <h2 class="bangers-regular">Pourquoi Git fait peur aux débutants (et pourquoi c'est normal)</h2>
-              <p>
-                Si Git impressionne autant les débutants, ce n'est pas parce que le principe est complexe : c'est parce qu'il s'utilise majoritairement dans un <strong>terminal en ligne de commande</strong> avec un écran noir et du texte blanc.
-              </p>
-              <p>
-                Pour beaucoup de gens qui n'ont jamais manipulé que des souris et des fenêtres graphiques, taper des commandes dans un terminal donne l'impression d'être un hacker dans un film des années 90, avec la peur panique d'effacer son disque dur par erreur.
-              </p>
-              <p>
-                Et les messages d'erreur de Git (comme <code>fatal: not a git repository</code> ou <code>Your branch is ahead by 1 commit</code>) ont l'air très martiens quand on ne connaît pas encore le vocabulaire.
-              </p>
-              <p>
-                Mais rassure-toi : après 3 heures de pratique guidée sur un vrai projet, la peur du terminal s'évapore complètement. Taper <code>git status</code> devient aussi naturel que faire un double-clic sur un dossier.
-              </p>
-              <p>
-                Tout comme la fausse idée selon laquelle <a href="blog/faut-il-etre-bon-en-maths-pour-apprendre-a-coder" style="color: #047857; font-weight: 600; text-decoration: underline;">il faudrait être bon en maths pour coder</a>, la peur de Git et du terminal repose sur un malentendu. Avec la bonne méthode et un accompagnement bienveillant, chaque commande prend tout son sens.
-              </p>
-            </section>
-
-            <!-- Section 9 -->
-            <section class="article-section">
-              <h2 class="bangers-regular">Ce que ton GitHub dit de toi aux recruteurs</h2>
-              <p>
-                Voici une histoire vraie que je raconte souvent : un de mes anciens élèves en reconversion n'avait aucun diplôme d'informatique, pas même un bac scientifique.
-              </p>
-              <p>
-                Lors de son premier entretien pour un stage de développeur front-end, il n'a pas sorti un CV classique. Il a ouvert son profil GitHub. Le recruteur a pu explorer ses repositories : l'historique des commits était régulier, les messages étaient clairs, le code était propre et structuré.
-              </p>
-              <p>
-                Le recruteur a vu en 2 minutes que le candidat savait déjà travailler avec les mêmes méthodes professionnelles que son équipe en poste. Il a décroché son stage sur le champ.
-              </p>
-              <p>
-                Git et GitHub ne sont pas de simples outils de stockage : ce sont les preuves tangibles de tes compétences et de ta rigueur.
-              </p>
-            </section>
-
-            <!-- Encadré d'appel à l'action contextuel -->
-            <aside class="article-cta-box">
-              <div class="article-cta-box__content">
-                <span class="section-tag" style="background: rgba(0, 255, 135, 0.15); color: #00ff87;">Passe à l'action</span>
-                <h3 class="bangers-regular">Apprends Git sur des projets concrets avec NoSeumCode</h3>
-                <p class="poppins-regular">
-                  Dans nos parcours d'apprentissage, Git et GitHub sont intégrés dès les premières semaines. Tu repars avec un portfolio en ligne hébergé sur GitHub pour prouver tes compétences.
-                </p>
-                <div class="article-cta-box__buttons">
-                  <a href="formations/starter" class="button button__primary bangers-regular">
-                    Découvrir le Pack Starter (299 €) →
-                  </a>
-                  <button type="button" popovertarget="hubspot-popover" class="button button__secondary bangers-regular">
-                    Télécharger le Programme (PDF)
-                  </button>
-                </div>
-              </div>
-            </aside>
+            
+              <section class="article-section">
+                <h2 class="bangers-regular">Le problème que tout le monde a déjà vécu</h2>
+                <p>Le dossier rempli de copies manuelles type projet_final_v2, la mauvaise manipulation qui efface 3 heures de travail ou la clé USB perdue. Git a été créé exactement pour éliminer cette angoisse.</p>
+              </section>
+            
+              <section class="article-section">
+                <h2 class="bangers-regular">La métaphore du jeu vidéo : Git c'est tes points de sauvegarde</h2>
+                <p>Chaque commit est un point de sauvegarde horodaté avec un message descriptif. Si un boss te terrasse ou si ton code plante, tu peux revenir en arrière en une seconde chrono sans rien perdre.</p>
+              </section>
+            
+              <section class="article-section">
+                <h2 class="bangers-regular">Git vs GitHub : quelle est la vraie différence ?</h2>
+                <p>Git est l'outil installé en local sur ton ordinateur qui gère l'historique de tes fichiers. GitHub est la plateforme cloud en ligne qui héberge tes projets, permet de les partager et sert de vitrine professionnelle pour tes futurs employeurs.</p>
+              </section>
+            
+              <section class="article-section">
+                <h2 class="bangers-regular">Les 6 commandes Git que tu utiliseras 95% du temps</h2>
+                <p>git init (créer le point de sauvegarde), git status (vérifier l'état), git add (sélectionner les fichiers), git commit -m (valider la sauvegarde), git push (envoyer sur GitHub) et git log --oneline (consulter l'historique).</p>
+              </section>
+            
+              <section class="article-section">
+                <h2 class="bangers-regular">Pourquoi Git fait peur aux débutants et pourquoi ton GitHub intéresse les recruteurs</h2>
+                <p>La peur vient du terminal et de son écran noir, mais elle s'efface après quelques heures de pratique guidée. Pour un recruteur, un profil GitHub propre avec des commits réguliers vaut bien plus que n'importe quel diplôme théorique.</p>
+              </section>
+            
           </div>
-
-          <!-- Carte Auteur Senior -->
+          <aside class="article-cta-box">
+            <div class="article-cta-box__content">
+              <span class="section-tag" style="background: rgba(0, 255, 135, 0.15); color: #00ff87;">Passe à l'action</span>
+              <h3 class="bangers-regular">Prêt à construire tes propres projets web ?</h3>
+              <p class="poppins-regular">
+                Rejoins nos parcours interactifs dès 299 € (ou 3x 109 € sans frais) avec garantie 14 jours satisfait ou remboursé, ou télécharge notre programme complet de formation.
+              </p>
+              <div class="article-cta-box__buttons">
+                <a href="../index.html#parcours" class="button button__primary bangers-regular">
+                  Découvrir les Packs NoSeumCode ↓
+                </a>
+                <button type="button" popovertarget="hubspot-popover" class="button button__secondary bangers-regular">
+                  Télécharger le Programme (PDF)
+                </button>
+              </div>
+            </div>
+          </aside>
           <section class="article-author-card">
             <div class="article-author-card__avatar">
-              <img
-                src="images/mentor-cedric.webp"
-                alt="Cédric Ragot, mentor NoSeumCode"
-                width="80"
-                height="80"
-                loading="lazy"
-              />
+              <img src="../images/mentor-cedric.webp" alt="Cédric Ragot, mentor NoSeumCode" width="80" height="80" loading="lazy">
             </div>
             <div class="article-author-card__info">
               <h3 class="bangers-regular">Cédric Ragot</h3>
               <p class="article-author-card__role">Ingénieur Senior &amp; Formateur NoSeumCode</p>
               <p class="article-author-card__bio">
-                Ingénieur senior et formateur, il utilise Git quotidiennement depuis plus de 10 ans pour piloter des projets d'envergure. Il apprend aux débutants à apprivoiser le terminal et les outils professionnels sans angoisse et sans le seum.
+                Ingénieur senior et formateur, il a développé des plateformes web complexes en production avant de fonder NoSeumCode pour enseigner le code aux débutants avec une pédagogie 100% pratique, humaine et sans jargon inutile.
               </p>
             </div>
           </section>
-
-          <!-- Liens de navigation bas de page -->
-          <div style="margin-top: 3.5rem; text-align: center;">
-            <a href="index.html#blog" class="back-link bangers-regular" style="font-size: 1.15rem;">
+          <div class="article-conclusion">
+            <p class="poppins-regular">Git et GitHub ne sont pas des outils réservés aux experts de la Silicon Valley : ce sont tes meilleurs alliés pour coder sans le seum et prouver ton savoir-faire professionnel dès le premier jour.</p>
+            <a href="../index.html#parcours" class="button button__primary bangers-regular">
+              Rejoindre NoSeumCode
+            </a>
+          </div>
+          <div style="margin-top: 3rem; text-align: center;">
+            <a href="../index.html" class="back-link bangers-regular" style="font-size: 1.15rem;">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M19 12H5M12 19l-7-7 7-7"/>
               </svg>
-              ← Voir tous les articles du blog
+              ← Retour à l'accueil
             </a>
           </div>
         </article>
+  
+        </div>
+      </main>
+
+    <footer class="footer">
+  <div class="footer__logo">
+    <div class="logo">
+      <picture>
+        <source srcset="images/header/logo.webp" type="image/webp" />
+        <img
+          alt="Logo de NoSeumCode"
+          class="logo__img"
+          src="../images/header/logo.png"
+          width="141"
+          height="105"
+          loading="lazy"
+          decoding="async"
+        />
+      </picture>
+    </div>
+    <p class="footer__tagline bangers-regular">
+      Code ton avenir, deviens un G.O.A.T&nbsp;!
+    </p>
+  </div>
+  <nav class="footer__nav" aria-label="Navigation de pied de page">
+    <ul class="footer__links footer__links-1">
+      <li class="footer__title">Navigation</li>
+      <li><a href="../index.html" class="footer__link">Accueil</a></li>
+      <li><a href="../dashboard.html" class="footer__link">Mon Espace</a></li>
+      <li><a href="../index.html#parcours" class="footer__link">Parcours</a></li>
+      <li><a href="../workshops.html" class="footer__link">Ateliers</a></li>
+    </ul>
+    <ul class="footer__links footer__links-2">
+      <li class="footer__title">Formations</li>
+      <li><a href="../formations/starter.html" class="footer__link">Pack Starter</a></li>
+      <li><a href="../formations/pack-web.html" class="footer__link">Pack Web</a></li>
+      <li><a href="../index.html#parcours" class="footer__link">Toutes les offres</a></li>
+      <li><a href="../index.html#faq" class="footer__link">FAQ</a></li>
+    </ul>
+    <ul class="footer__links footer__links-3">
+      <li class="footer__title">Support</li>
+      <li><a href="../index.html#faq" class="footer__link">Contact & Aide</a></li>
+      <li><a href="../suivi-mentor.html" class="footer__link">Mentorat</a></li>
+      <li><a href="../dashboard.html" class="footer__link">Espace Membre</a></li>
+    </ul>
+    <ul class="footer__links footer__links-4">
+      <li class="footer__title">Légal</li>
+      <li><a href="../mentions-legales.html" class="footer__link">Mentions légales</a></li>
+      <li><a href="../cgv.html" class="footer__link">CGV / CGU</a></li>
+      <li><a href="../confidentialite.html" class="footer__link">Confidentialité</a></li>
+    </ul>
+  </nav>
+  <div class="footer__copyright poppins-regular">
+    <p>© 2026 NoSeumCode — Tous droits réservés</p>
+  </div>
+</footer>
+
+
+    <script src="../js/analytics.js?v=sprint16"></script>
+    <div id="promo-popup" popover aria-label="Planning des sessions gratuites">
+  <button class="promo-popup__close" popovertarget="promo-popup" popovertargetaction="hide" aria-label="Fermer le pop-up">×</button>
+  <h2 class="promo-popup__title bangers-regular"></h2>
+  <p class="promo-popup__subtitle poppins-regular">Boost tes skills gratuitement durant 2 heures avec nos experts !</p>
+  
+  <table class="promo-schedule poppins-regular">
+    <tbody id="promo-schedule-body">
+      
+    </tbody>
+  </table>
+
+  <a href="../workshops.html" class="button button__primary promo-popup__cta bangers-regular" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+    Voir les ateliers & réserver ma place (6 max)
+  </a>
+</div>
+
+
+<div id="hubspot-popover" popover aria-label="Téléchargement du programme">
+  <button class="popover__close" popovertarget="hubspot-popover" popovertargetaction="hide" aria-label="Fermer">×</button>
+  <header class="popover__header">
+    <h3 class="popover__title">Télécharger le programme</h3>
+    <p class="popover__tagline">Laisse-nous tes infos pour recevoir le banger programme !</p>
+  </header>
+  <div class="popover__content">
+    <div id="hubspot-form-container"></div>
+  </div>
+</div>
+
+<!-- ========================================================
+     MODAL / POPOVER AUTHENTIFICATION & CRÉATION DE COMPTE
+     ======================================================== -->
+<div id="auth-popover" class="auth-popover-box" popover aria-label="Authentification Espace Membre">
+  <button class="popover__close" popovertarget="auth-popover" popovertargetaction="hide" onclick="closeGlobalAuthModal()" aria-label="Fermer la boîte d'authentification">×</button>
+  
+  <header class="popover__header" style="margin-bottom: 1.25rem;">
+    <h3 class="popover__title" style="font-size: 2.2rem; margin-bottom: 0.25rem;">ESPACE MEMBRE</h3>
+    <p class="popover__tagline" style="font-size: 0.95rem; color: #00ff87; margin: 0;">Connecte-toi ou crée ton compte pour booster tes compétences</p>
+  </header>
+
+  <!-- Zone d'alerte feedback (erreur / succès) -->
+  <div id="global-auth-alert" role="alert" aria-live="polite" style="display: none; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1rem; line-height: 1.4;"></div>
+
+  <!-- Sélecteur d'onglets (Connexion / Créer un compte) -->
+  <div class="auth-tabs-nav" style="display: flex; gap: 0.5rem; margin-bottom: 1.25rem; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 12px;">
+    <button id="global-tab-btn-login" class="button button__primary bangers-regular" style="flex: 1; padding: 10px; font-size: 1.15rem; border: none; cursor: pointer; border-radius: 8px;" onclick="switchGlobalAuthTab('login')">
+      SE CONNECTER
+    </button>
+    <button id="global-tab-btn-register" class="button button__secondary bangers-regular" style="flex: 1; padding: 10px; font-size: 1.15rem; border: none; cursor: pointer; border-radius: 8px; background: transparent; color: #fff;" onclick="switchGlobalAuthTab('register')">
+      CRÉER UN COMPTE
+    </button>
+  </div>
+
+  <div class="popover__content" style="max-height: 65vh; overflow-y: auto;">
+    
+    <!-- ==========================================
+         VUE 1 : CONNEXION
+         ========================================== -->
+    <div id="global-auth-login-view">
+      <p style="font-size: 0.85rem; color: #cbd5e0; margin-bottom: 0.85rem; text-align: center;">
+        Connexion rapide avec vos réseaux :
+      </p>
+
+      <!-- 2 Boutons Réseaux Sociaux -->
+      <div class="social-login-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem;">
+        <!-- Google -->
+        <a id="social-login-google" href="#" class="social-btn google" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.65rem; border-radius: 8px; background: rgba(234, 67, 53, 0.15); border: 1px solid rgba(234, 67, 53, 0.4); color: #fff; text-decoration: none; font-size: 0.85rem; font-weight: 600;">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/></svg>
+          Google
+        </a>
+
+        <!-- Discord -->
+        <a id="social-login-discord" href="#" class="social-btn discord" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.65rem; border-radius: 8px; background: rgba(88, 101, 242, 0.15); border: 1px solid rgba(88, 101, 242, 0.4); color: #fff; text-decoration: none; font-size: 0.85rem; font-weight: 600;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+          Discord
+        </a>
       </div>
-    </main>
 
-    <!-- Footer injecté dynamiquement -->
-    <div id="footer-placeholder"></div>
+      <div style="display: flex; align-items: center; text-align: center; color: #cbd5e0; font-size: 0.8rem; margin: 1.25rem 0;">
+        <span style="flex: 1; border-bottom: 1px solid rgba(255,255,255,0.15);"></span>
+        <span style="padding: 0 0.75rem;">ou avec votre email</span>
+        <span style="flex: 1; border-bottom: 1px solid rgba(255,255,255,0.15);"></span>
+      </div>
 
-    <!-- Modales & Popovers partagés -->
-    <div id="popovers-placeholder"></div>
+      <!-- Formulaire Connexion -->
+      <form id="global-login-form" onsubmit="handleGlobalEmailLogin(event)">
+        <div style="margin-bottom: 1rem;">
+          <label for="global-login-email" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e0; margin-bottom: 0.35rem;">Email</label>
+          <input id="global-login-email" type="email" name="email" autocomplete="username email" placeholder="nom@exemple.com" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.7rem 0.9rem; font-size: 0.9rem; outline: none;" />
+        </div>
+        <div style="margin-bottom: 1.25rem;">
+          <label for="global-login-password" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e0; margin-bottom: 0.35rem;">Mot de passe</label>
+          <div style="position: relative; display: flex; align-items: center;">
+            <input id="global-login-password" type="password" name="password" autocomplete="current-password" placeholder="••••••••" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.7rem 2.6rem 0.7rem 0.9rem; font-size: 0.9rem; outline: none; transition: border-color 0.2s;" />
+            <button type="button" id="toggle-login-password-btn" onclick="togglePasswordVisibility('global-login-password', 'toggle-login-password-btn')" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #a0aec0; padding: 4px; display: flex; align-items: center; justify-content: center; transition: color 0.2s;" title="Afficher/Masquer le mot de passe" aria-label="Afficher le mot de passe">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+          <div style="display: flex; justify-content: flex-end; margin-top: 0.4rem;">
+            <a href="#" onclick="switchGlobalAuthTab('forgot'); return false;" style="font-size: 0.8rem; color: #00d9ff; text-decoration: underline;">
+              Mot de passe oublié ?
+            </a>
+          </div>
+        </div>
+        <button type="submit" id="global-login-submit-btn" class="button button__primary bangers-regular" style="width: 100%; padding: 12px; font-size: 1.25rem; border: none; cursor: pointer; border-radius: 8px;">
+          SE CONNECTER
+        </button>
+      </form>
 
-    <!-- Scripts -->
-    <script src="js/analytics.js?v=sprint16"></script>
-    <script src="js/header.min.js?v=sprint16"></script>
-    <script src="js/popover-hubspot.min.js?v=sprint16"></script>
+      <div style="text-align: center; margin-top: 1.25rem; font-size: 0.85rem; color: #cbd5e0;">
+        Pas encore de compte ? 
+        <a href="#" onclick="switchGlobalAuthTab('register'); return false;" style="color: #00ff87; font-weight: 600; text-decoration: underline;">
+          Créer un compte
+        </a>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         VUE 3 : MOT DE PASSE OUBLIÉ
+         ========================================== -->
+    <div id="global-auth-forgot-view" style="display: none;">
+      <p style="font-size: 0.85rem; color: #cbd5e0; margin-bottom: 1.25rem; text-align: center; line-height: 1.5;">
+        Entrez votre adresse email. Nous vous enverrons un lien sécurisé pour réinitialiser votre mot de passe.
+      </p>
+
+      <!-- Formulaire Mot de Passe Oublié -->
+      <form id="global-forgot-form" onsubmit="handleGlobalForgotPassword(event)">
+        <div style="margin-bottom: 1.25rem;">
+          <label for="global-forgot-email" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e0; margin-bottom: 0.35rem;">Email</label>
+          <input id="global-forgot-email" type="email" name="email" autocomplete="email" placeholder="nom@exemple.com" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.7rem 0.9rem; font-size: 0.9rem; outline: none;" />
+        </div>
+
+        <button type="submit" id="global-forgot-submit-btn" class="button button__primary bangers-regular" style="width: 100%; padding: 12px; font-size: 1.25rem; border: none; cursor: pointer; border-radius: 8px;">
+          ENVOYER LE LIEN
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 1.25rem; font-size: 0.85rem; color: #cbd5e0;">
+        <a href="#" onclick="switchGlobalAuthTab('login'); return false;" style="color: #00ff87; font-weight: 600; text-decoration: underline;">
+          ← Retour à la connexion
+        </a>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         VUE 2 : CRÉER UN COMPTE (INSCRIPTION)
+         ========================================== -->
+    <div id="global-auth-register-view" style="display: none;">
+      <p style="font-size: 0.85rem; color: #cbd5e0; margin-bottom: 0.85rem; text-align: center;">
+        Inscription rapide avec un réseau :
+      </p>
+
+      <!-- Opt-in de certification d'âge pour inscription sociale -->
+      <div id="social-age-container" style="margin-bottom: 0.85rem; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 0.65rem 0.85rem; transition: border-color 0.2s, background 0.2s;">
+        <label for="social-age-consent" style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.78rem; color: #cbd5e0; cursor: pointer; line-height: 1.4; user-select: none;">
+          <input type="checkbox" id="social-age-consent" onchange="toggleSocialRegisterButtons()" style="margin-top: 2px; accent-color: #00ff87; cursor: pointer; width: 16px; height: 16px; flex-shrink: 0;" />
+          <span>Je certifie sur l'honneur être âgé(e) d'<strong>au moins 16 ans</strong> ou disposer de l'accord d'un représentant légal.</span>
+        </label>
+        <div id="social-age-warning" role="alert" style="display: none; margin-top: 0.5rem; font-size: 0.75rem; color: #fca5a5; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 6px; padding: 0.45rem 0.65rem; line-height: 1.35;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Vous devez cocher cette case pour certifier votre âge avant de continuer avec un réseau social.
+        </div>
+      </div>
+
+      <!-- 2 Boutons Réseaux Sociaux pour Inscription (grisés par défaut tant que non coché) -->
+      <div id="social-register-grid" class="social-login-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; opacity: 0.45; filter: grayscale(0.8); transition: opacity 0.25s ease, filter 0.25s ease;">
+        <a id="social-register-google" href="#" onclick="handleSocialRegisterClick(event)" class="social-btn google" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.65rem; border-radius: 8px; background: rgba(234, 67, 53, 0.15); border: 1px solid rgba(234, 67, 53, 0.4); color: #fff; text-decoration: none; font-size: 0.85rem; font-weight: 600;">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/></svg>
+          Google
+        </a>
+        <a id="social-register-discord" href="#" onclick="handleSocialRegisterClick(event)" class="social-btn discord" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.65rem; border-radius: 8px; background: rgba(88, 101, 242, 0.15); border: 1px solid rgba(88, 101, 242, 0.4); color: #fff; text-decoration: none; font-size: 0.85rem; font-weight: 600;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+          Discord
+        </a>
+      </div>
+
+      <div style="display: flex; align-items: center; text-align: center; color: #cbd5e0; font-size: 0.8rem; margin: 1.25rem 0;">
+        <span style="flex: 1; border-bottom: 1px solid rgba(255,255,255,0.15);"></span>
+        <span style="padding: 0 0.75rem;">ou remplissez vos détails</span>
+        <span style="flex: 1; border-bottom: 1px solid rgba(255,255,255,0.15);"></span>
+      </div>
+
+      <!-- Formulaire Inscription Complète -->
+      <form id="global-register-form" onsubmit="handleGlobalEmailRegister(event)">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+          <div>
+            <label for="global-reg-firstname" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e0; margin-bottom: 0.25rem;">Prénom</label>
+            <input id="global-reg-firstname" name="firstName" autocomplete="given-name" placeholder="John" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.65rem 0.8rem; font-size: 0.85rem; outline: none;" />
+          </div>
+          <div>
+            <label for="global-reg-lastname" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e0; margin-bottom: 0.25rem;">Nom</label>
+            <input id="global-reg-lastname" name="lastName" autocomplete="family-name" placeholder="Doe" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.65rem 0.8rem; font-size: 0.85rem; outline: none;" />
+          </div>
+        </div>
+
+        <div style="margin-bottom: 0.75rem;">
+          <label for="global-reg-username" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e0; margin-bottom: 0.25rem;">Nom d'utilisateur</label>
+          <input id="global-reg-username" name="username" autocomplete="username" placeholder="johndoe" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.65rem 0.8rem; font-size: 0.85rem; outline: none;" />
+        </div>
+
+        <div style="margin-bottom: 0.75rem;">
+          <label for="global-reg-email" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e0; margin-bottom: 0.25rem;">Email</label>
+          <input id="global-reg-email" type="email" name="email" autocomplete="email" placeholder="john@exemple.com" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.65rem 0.8rem; font-size: 0.85rem; outline: none;" />
+        </div>
+
+        <div style="margin-bottom: 0.75rem;">
+          <label for="global-reg-birthdate" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e0; margin-bottom: 0.25rem;">Date de naissance</label>
+          <input id="global-reg-birthdate" type="date" name="birthDate" required oninput="validateGlobalAge()" onchange="validateGlobalAge()" style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.65rem 0.8rem; font-size: 0.85rem; outline: none; color-scheme: dark;" />
+          <div id="global-reg-age-warning" role="alert" style="display: none; margin-top: 0.5rem; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.83rem; line-height: 1.45; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.45); color: #fca5a5;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> <strong>Accès restreint :</strong> Pour des raisons légales, l'accès est interdit aux moins de 16 ans. Seul un adulte titulaire de l'autorité parentale peut créer un compte pour un mineur.
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <label for="global-reg-password" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e0; margin-bottom: 0.25rem;">Mot de passe</label>
+          <div style="position: relative; display: flex; align-items: center;">
+            <input id="global-reg-password" type="password" name="password" autocomplete="new-password" placeholder="•••••••• (min. 8 caractères)" required minlength="8" style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.65rem 2.6rem 0.65rem 0.8rem; font-size: 0.85rem; outline: none; transition: border-color 0.2s;" />
+            <button type="button" id="toggle-reg-password-btn" onclick="togglePasswordVisibility('global-reg-password', 'toggle-reg-password-btn')" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #a0aec0; padding: 4px; display: flex; align-items: center; justify-content: center; transition: color 0.2s;" title="Afficher/Masquer le mot de passe" aria-label="Afficher le mot de passe">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="global-reg-submit-btn" class="button button__primary bangers-regular" style="width: 100%; padding: 12px; font-size: 1.25rem; border: none; cursor: pointer; border-radius: 8px;">
+          CRÉER MON COMPTE
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 1.25rem; font-size: 0.85rem; color: #cbd5e0;">
+        Déjà un compte ? 
+        <a href="#" onclick="switchGlobalAuthTab('login'); return false;" style="color: #00ff87; font-weight: 600; text-decoration: underline;">
+          Se connecter
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================================================
+     MODAL / PAYWALL STRIPE EMBEDDED CHECKOUT IN-APP
+     Paiement intégré directement sur le site NoSeumCode sans redirection
+     ======================================================== -->
+<div id="stripe-paywall-modal" class="auth-popover-box paywall-popover-box" popover role="dialog" aria-modal="true" aria-labelledby="paywall-course-title" aria-label="Paiement Sécurisé Formation" style="position: relative; overflow: hidden;">
+  <button class="popover__close" type="button" onclick="closeStripePaywall()" aria-label="Fermer la fenêtre de paiement" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; top: 1rem; right: 1rem;">×</button>
+  
+  <header class="popover__header" style="margin-bottom: 1.25rem; text-align: left; padding-right: 2.5rem;">
+    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+      <span style="font-size: 0.8rem; letter-spacing: 1px; color: #00ff87; font-weight: 700; text-transform: uppercase;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Paiement 100% Sécurisé
+      </span>
+    </div>
+    <h3 id="paywall-course-title" class="popover__title" style="font-size: 1.85rem; line-height: 1.2; margin: 0 0 0.5rem 0; color: #ffffff;">
+      Débloquer la Formation
+    </h3>
+    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+      <span id="paywall-course-price" class="bangers-regular" style="background: linear-gradient(135deg, #00ff87, #00d9ff); color: #070e18; font-size: 1.25rem; padding: 2px 14px; border-radius: 20px; letter-spacing: 0.5px;">
+        299 €
+      </span>
+      <span style="background: rgba(0, 255, 135, 0.12); border: 1px solid rgba(0, 255, 135, 0.35); color: #00ff87; font-size: 0.78rem; padding: 4px 10px; border-radius: 20px; font-weight: 600;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Accès illimité à vie
+      </span>
+      <span style="background: rgba(255, 255, 255, 0.08); color: #cbd5e0; font-size: 0.78rem; padding: 4px 10px; border-radius: 20px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Exercices & Projets inclus
+      </span>
+    </div>
+  </header>
+
+  <!-- Zone de notification / statut d'erreur éventuel -->
+  <div id="paywall-error-alert" role="alert" style="display: none; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1rem; background: rgba(255,51,102,0.15); border: 1px solid #ff3366; color: #ff3366;"></div>
+
+  <div class="popover__content paywall__content" style="max-height: 75vh; max-height: 75dvh; overflow-y: auto; padding: 0 0.25rem;">
+    <!-- Programme Détaillé du Pack Sélectionné (ADR-013 & ADR-014) -->
+    <details id="paywall-syllabus-details" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0, 255, 135, 0.25); border-radius: 12px; margin-bottom: 1.25rem; overflow: hidden;" open>
+      <summary style="padding: 0.85rem 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-weight: 600; color: #00ff87; font-size: 0.95rem; user-select: none; background: rgba(0, 255, 135, 0.08);">
+        <span style="display: flex; align-items: center; gap: 0.5rem;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <strong id="paywall-syllabus-title">Programme pédagogique détaillé & livrables</strong>
+        </span>
+        <span style="font-size: 0.78rem; color: #94a3b8; font-weight: 400;">(Déplier / Réduire)</span>
+      </summary>
+      <div id="paywall-syllabus-content" style="padding: 1rem 1.1rem; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.88rem; color: #cbd5e1; line-height: 1.55;">
+        <!-- Injecté dynamiquement par openStripePaywall() selon le pack -->
+      </div>
+    </details>
+
+        <!-- Rappel discret Suivi Mentor si non sélectionné (Section 2.3 & 4.3) -->
+    <div id="paywall-mentor-reminder" style="display: none; background: rgba(0, 255, 135, 0.06); border: 1px solid rgba(0, 255, 135, 0.25); border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.88rem; color: #cbd5e1; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;">
+      <span>Tu n'as pas ajouté le Suivi Mentor — <strong id="paywall-mentor-slots" style="color: #00ff87;">3 places restantes</strong>.</span>
+      <button type="button" id="btn-paywall-show-mentor-drawer" onclick="openMentorDrawer()" style="background: none; border: none; color: #00ff87; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0; font-size: 0.88rem;">
+        Voir l'option →
+      </button>
+    </div>
+
+    <!-- Loader pendant l'initialisation Stripe Embedded -->
+    <div id="paywall-loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 280px; gap: 1rem; color: #a0aec0; text-align: center;">
+      <div style="width: 42px; height: 42px; border: 3px solid rgba(0, 255, 135, 0.2); border-top-color: #00ff87; border-radius: 50%; animation: paywallSpin 0.9s linear infinite;"></div>
+      <p style="font-size: 0.92rem; margin: 0; color: #e2e8f0; font-weight: 500;">Connexion au terminal sécurisé Stripe en cours...</p>
+      <span style="font-size: 0.78rem; color: #94a3b8;">Préparation de votre session de paiement sans quitter le site</span>
+    </div>
+
+    <!-- Conteneur officiel Stripe Embedded Checkout -->
+    <div id="stripe-checkout" style="min-height: 350px;"></div>
+  </div>
+
+  <footer style="margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; color: #94a3b8; flex-wrap: wrap; gap: 0.5rem;">
+    <div style="display: flex; align-items: center; gap: 0.4rem;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00ff87" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      <span>Paiement chiffré SSL 256 bits par Stripe (PCI-DSS niveau 1)</span>
+    </div>
+    <span>Activation immédiate après validation</span>
+  </footer>
+
+  <!-- Modale Downsell Mentorat (Section 2.4 & 4.4) -->
+  <div id="mentor-downsell-modal" style="display: none; position: absolute; inset: 0; background: rgba(7, 14, 24, 0.97); z-index: 100; border-radius: 12px; padding: 2rem; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
+    <h3 style="color: #00ff87; font-size: 1.6rem; margin-top: 0; font-family: 'Bangers', cursive; letter-spacing: 0.5px;">Avant de payer — une question rapide</h3>
+    <div style="color: #e2e8f0; font-size: 0.95rem; line-height: 1.55; margin-bottom: 1.5rem; max-width: 440px;">
+      <p style="margin-top: 0;">Tu n'as pas ajouté le suivi individuel.</p>
+      <p>Si tu hésites parce que tu ne sais pas si le format te conviendra, il y a une option à mi-chemin : <strong style="color: #00ff87;">2 sessions solo à 89 €</strong>.</p>
+      <p style="margin-bottom: 0; color: #94a3b8; font-size: 0.88rem;">Même format que les 4 sessions — mais avec un engagement moindre pour commencer.</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 100%; max-width: 380px;">
+      <button id="btn-accept-downsell" type="button" class="button button__primary bangers-regular" style="font-size: 1.2rem; padding: 12px; width: 100%;">
+        Ajouter 2 sessions pour 89 €
+      </button>
+      <button id="btn-reject-downsell" type="button" class="button button__secondary bangers-regular" style="font-size: 1rem; padding: 10px; background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #cbd5e0; width: 100%; cursor: pointer;">
+        Continuer sans le suivi
+      </button>
+    </div>
+  </div>
+
+  <!-- Drawer Mentorat (Section 2.3 & 4.3) -->
+  <div id="mentor-addon-drawer" style="display: none; position: absolute; top: 0; right: 0; bottom: 0; width: 380px; max-width: 100%; background: #070e18; border-left: 1px solid rgba(0,255,135,0.3); z-index: 101; padding: 2rem; box-shadow: -5px 0 30px rgba(0,0,0,0.7); overflow-y: auto;">
+    <button type="button" onclick="closeMentorDrawer()" aria-label="Fermer" style="position: absolute; top: 1rem; right: 1rem; background: transparent; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;">&times;</button>
+    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 1rem; margin-bottom: 0.5rem;">
+      <h3 style="color: #00ff87; font-size: 1.6rem; margin: 0; font-family: 'Bangers', cursive; letter-spacing: 0.5px;">Suivi Mentor</h3>
+      <span style="font-size: 1.3rem; font-weight: 700; color: #00ff87;">+199 €</span>
+    </div>
+    <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.5; margin-bottom: 1rem;">
+      4 sessions individuelles de 1h avec Cédric.<br>
+      On regarde ton code. On débloque ce qui bloque.
+    </p>
+    <div style="background: rgba(0,255,135,0.06); border: 1px solid rgba(0,255,135,0.25); padding: 0.85rem; border-radius: 8px; margin-bottom: 1.25rem;">
+      <div style="color: #00ff87; font-weight: 600; font-size: 0.85rem;" id="drawer-mentor-slots">
+        Places limitées : 3 places restantes pour cette cohorte
+      </div>
+      <div style="color: #94a3b8; font-size: 0.8rem; margin-top: 0.25rem;">
+        Remboursé si la 1ère session ne te convient pas.
+      </div>
+    </div>
+    <button id="btn-drawer-add-mentor" type="button" class="button button__primary bangers-regular" style="width: 100%; font-size: 1.2rem; padding: 12px; margin-bottom: 0.75rem;">
+      Ajouter à ma commande (+199 €)
+    </button>
+    <div style="text-align: center;">
+      <button type="button" onclick="closeMentorDrawer()" style="background: none; border: none; color: #94a3b8; text-decoration: underline; font-size: 0.88rem; cursor: pointer;">
+        Non merci, continuer sans option
+      </button>
+    </div>
+  </div>
+</div>
+
   </body>
 </html>

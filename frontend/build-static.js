@@ -45,8 +45,14 @@ const processHtmlFile = (filePath) => {
   content = content.replace(/<div id="footer-placeholder"><\/div>/g, footerHtml);
   content = content.replace(/<div id="popovers-placeholder"><\/div>/g, popoversHtml);
   
-  content = content.replace(/<script src="js\/header\.min\.js\?v=.*?"><\/script>/g, "");
-  content = content.replace(/<script src="js\/header\.js\?v=.*?"><\/script>/g, "");
+  // Nettoyage des scripts de rendu CSR client
+  content = content.replace(/<script\b[^>]*?\bsrc=["'][^"']*?article(?:\.min)?\.js(?:\?[^"']*)?["'][^>]*?>\s*<\/script>\s*/gi, "");
+  
+  // Les pages interactives conservent header.min.js (auth, stripe checkout, cart)
+  const isInteractive = ["index.html", "dashboard.html", "app.html", "workshops.html", "starter.html", "pack-web.html"].some(p => filePath.endsWith(p));
+  if (!isInteractive) {
+    content = content.replace(/<script\b[^>]*?\bsrc=["'][^"']*?header(?:\.min)?\.js(?:\?[^"']*)?["'][^>]*?>\s*<\/script>\s*/gi, "");
+  }
   
   fs.writeFileSync(filePath, content, "utf8");
 };
@@ -78,8 +84,8 @@ const templateHtml = fs.readFileSync(path.join(FRONTEND_DIR, "article.html"), "u
 for (const [id, article] of Object.entries(articlesData)) {
   let content = templateHtml;
   
-  content = content.replace(/href="(?!(http|#))([^"]+\.(css|html|xml|png|jpg|webp|js|svg))"/g, 'href="../$2"');
-  content = content.replace(/src="(?!(http|#))([^"]+\.(js|png|jpg|webp|svg))"/g, 'src="../$2"');
+  content = content.replace(/href="(?!(https?:|#|\/))([^"]+?\.(?:css|html|xml|png|jpg|webp|js|svg)(?:\?[^"]*)?)"/g, 'href="../$2"');
+  content = content.replace(/src="(?!(https?:|#|\/))([^"]+?\.(?:js|png|jpg|webp|svg)(?:\?[^"]*)?)"/g, 'src="../$2"');
   
   content = content.replace(/<title>.*?<\/title>/, `<title>${article.title} - NoSeumCode</title>`);
   content = content.replace(/<meta name="description" id="meta-description" content=".*?">/, `<meta name="description" id="meta-description" content="${article.description}">`);
@@ -95,9 +101,8 @@ for (const [id, article] of Object.entries(articlesData)) {
   content = content.replace(/<div id="header-placeholder"><\/div>/g, adjustedHeaderHtml);
   content = content.replace(/<div id="footer-placeholder"><\/div>/g, adjustedFooterHtml);
   content = content.replace(/<div id="popovers-placeholder"><\/div>/g, adjustedPopoversHtml);
-  content = content.replace(/<script src="\.\.\/js\/header\.min\.js\?v=.*?"><\/script>/g, "");
-  
-  content = content.replace(/<script defer src="\.\.\/js\/article\.js\?v=.*?"><\/script>/, "");
+  content = content.replace(/<script\b[^>]*?\bsrc=["'][^"']*?header(?:\.min)?\.js(?:\?[^"']*)?["'][^>]*?>\s*<\/script>\s*/gi, "");
+  content = content.replace(/<script\b[^>]*?\bsrc=["'][^"']*?article(?:\.min)?\.js(?:\?[^"']*)?["'][^>]*?>\s*<\/script>\s*/gi, "");
   
   const schemaLd = {
     "@context": "https://schema.org",
@@ -221,6 +226,9 @@ for (const [id, article] of Object.entries(articlesData)) {
   content = content.replace(/<main id="article-content">[\s\S]*?<\/main>/, `<main id="article-content">\n        <div class="article-container">\n${articleHtmlBody}\n        </div>\n      </main>`);
   
   fs.writeFileSync(path.join(BLOG_DIR, `${id}.html`), content, "utf8");
+  const frontendBlogDir = path.join(FRONTEND_DIR, "blog");
+  if (!fs.existsSync(frontendBlogDir)) fs.mkdirSync(frontendBlogDir, { recursive: true });
+  fs.writeFileSync(path.join(frontendBlogDir, `${id}.html`), content, "utf8");
   console.log(`Generated blog post: /blog/${id}.html`);
 }
 

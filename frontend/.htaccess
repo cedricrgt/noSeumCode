@@ -33,10 +33,14 @@ RewriteRule ^cours\.html$ /#parcours [R=301,L,NE,QSA]
 RewriteRule ^course/?$ /#parcours [R=301,L,NE,QSA]
 RewriteRule ^course\.html$ /#parcours [R=301,L,NE,QSA]
 
-# 2. Réécriture propre de l'endpoint /parcours vers parcours.html
+# 2. Redirection de l'ancien endpoint /parcours vers app.html (LMS privé non indexé)
+RewriteRule ^parcours/?$ /app.html [R=301,L,QSA]
+RewriteRule ^parcours\.html$ /app.html [R=301,L,QSA]
+
+# Réécriture propre de /app vers app.html
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^parcours/?$ parcours.html [L,QSA]
+RewriteRule ^app/?$ app.html [L,QSA]
 
 # 3. Réécriture propre des formations statiques (Sprint 8 / ADR-013)
 RewriteCond %{REQUEST_FILENAME} !-f

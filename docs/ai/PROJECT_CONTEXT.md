@@ -38,11 +38,11 @@ backend/src/main/java/com/codebangers/backend/
   cohort/       Cohort entity, CohortController, CohortService
   discord/      DiscordGateway (REST API v10), DiscordService, DiscordController
 frontend/
-  index.html / dashboard.html / parcours.html / workshops.html
+  index.html / dashboard.html / app.html / workshops.html
   formations/   starter.html / pack-web.html / index.html
   js/header.js dashboard.js cours.js script.js workshops.js analytics.js
   partials/     HTML fragments (header.html, popovers-shared.html, footer.html)
-  .htaccess     Apache security headers + HTTPS redirect + compression mod_deflate
+  .htaccess     Apache security headers + HTTPS redirect + compression mod_deflate + 301 rewrites
 ```
 
 ## Environments & CI/CD Topology
@@ -50,9 +50,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `fix/guarantee-develop-staging-cors`
-## Current State: Correctif CORS phase 2 validé (163 tests OK) : autorisation inconditionnelle de develop.noseumcode.fr dans SecurityConfig prodOrigins.
-## Next Steps: Ouverture de la PR vers develop pour validation et déploiement automatique sur la VM Oracle.
+## Active Branch: `fix/ssg-build-ux-seo-fixes`
+## Current State: Correctifs SSG (build-static regex), CRO (Hero 2 packs, order bump price reactivity, purge du CTA PDF en zone prix) et SEO/Architecture (app.html + noindex, purge sitemap) validés à 100% (8 tests Playwright OK).
+## Next Steps: Ouverture de la PR vers develop pour validation et merge manuel.
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN
