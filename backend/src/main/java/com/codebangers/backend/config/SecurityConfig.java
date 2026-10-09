@@ -58,16 +58,19 @@ public class SecurityConfig {
                                 .collect(Collectors.toSet());
 
                 if (isProd) {
-                        // Strict production CORS policy (P1): strictly noseumcode.fr origins, no wildcards, no localhost/LAN IPs
+                        // Strict production CORS policy (P1): strictly official noseumcode.fr origins (prod & staging), no wildcards, no localhost/LAN IPs
                         Set<String> prodOrigins = new java.util.LinkedHashSet<>();
                         for (String origin : origins) {
-                                if ("https://noseumcode.fr".equals(origin) || "https://www.noseumcode.fr".equals(origin)) {
+                                if ("https://noseumcode.fr".equals(origin)
+                                                || "https://www.noseumcode.fr".equals(origin)
+                                                || "https://develop.noseumcode.fr".equals(origin)) {
                                         prodOrigins.add(origin);
                                 }
                         }
                         if (prodOrigins.isEmpty()) {
                                 prodOrigins.add("https://noseumcode.fr");
                                 prodOrigins.add("https://www.noseumcode.fr");
+                                prodOrigins.add("https://develop.noseumcode.fr");
                         }
                         this.allowedOrigins = new java.util.ArrayList<>(prodOrigins);
                 } else {
