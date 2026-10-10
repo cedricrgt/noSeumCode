@@ -87,9 +87,30 @@
 }
 
 .popover__syllabus-icon {
-  color: #047857;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: #070e18;
+  border: 1px solid rgba(0, 255, 135, 0.35);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  margin-top: 0.2rem;
+  color: var(--primary-green);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.popover__syllabus-item:hover .popover__syllabus-icon {
+  transform: scale(1.06);
+  border-color: var(--primary-green);
+  box-shadow: 0 4px 16px rgba(0, 255, 135, 0.25);
+}
+
+.popover__syllabus-icon svg {
+  width: 22px;
+  height: 22px;
+  display: block;
 }
 
 .popover__syllabus-text {

@@ -107,4 +107,78 @@ test.describe('Vérification des correctifs CRO, UX, SSG et SEO (Debrief)', () =
     expect(Math.abs(centerX - 960)).toBeLessThan(15);
   });
 
+  test('Les 3 piliers pédagogiques (#services) et leurs popovers utilisent des icônes SVG aux couleurs de la marque sans émoticônes IA', async ({ page }) => {
+    await page.goto('/');
+
+    // 1. Les 3 cartes de #services
+    const serviceCards = page.locator('#services .card');
+    await expect(serviceCards).toHaveCount(3);
+
+    for (let i = 0; i < 3; i++) {
+      const card = serviceCards.nth(i);
+      const tag = card.locator('.card__tag');
+      await expect(tag).toBeVisible();
+      await expect(tag.locator('svg.card__icon')).toBeVisible();
+      const title = await card.locator('.card__title').innerText();
+      expect(title).not.toMatch(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}]/u);
+    }
+
+    // 2. Popover Cours en direct (#pedagogy-live) ouvert au clic sur "En savoir plus"
+    await page.locator('.card__link[popovertarget="pedagogy-live"]').click();
+    const popoverLive = page.locator('#pedagogy-live');
+    await expect(popoverLive).toBeVisible();
+    const liveItems = popoverLive.locator('.popover__syllabus-item');
+    await expect(liveItems).toHaveCount(4);
+    for (let i = 0; i < 4; i++) {
+      const item = liveItems.nth(i);
+      await expect(item.locator('.popover__syllabus-icon svg')).toBeVisible();
+      const text = await item.locator('.popover__syllabus-text').innerText();
+      expect(text).not.toMatch(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}]/u);
+    }
+    await popoverLive.locator('.popover__close').click();
+
+    // 3. Popover Projets Pro (#pedagogy-projects) ouvert au clic sur "Ce que tu vas créer"
+    await page.locator('.card__link[popovertarget="pedagogy-projects"]').click();
+    const popoverProjects = page.locator('#pedagogy-projects');
+    await expect(popoverProjects).toBeVisible();
+    const projectItems = popoverProjects.locator('.popover__syllabus-item');
+    await expect(projectItems).toHaveCount(3);
+    for (let i = 0; i < 3; i++) {
+      const item = projectItems.nth(i);
+      await expect(item.locator('.popover__syllabus-icon svg')).toBeVisible();
+      const text = await item.locator('.popover__syllabus-text').innerText();
+      expect(text).not.toMatch(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}]/u);
+    }
+    await popoverProjects.locator('.popover__close').click();
+
+    // 4. Popover Mentorat (#pedagogy-mentoring) ouvert au clic sur "Découvrir le coaching"
+    await page.locator('.card__link[popovertarget="pedagogy-mentoring"]').click();
+    const popoverMentoring = page.locator('#pedagogy-mentoring');
+    await expect(popoverMentoring).toBeVisible();
+    const mentorItems = popoverMentoring.locator('.popover__syllabus-item');
+    await expect(mentorItems).toHaveCount(3);
+    for (let i = 0; i < 3; i++) {
+      const item = mentorItems.nth(i);
+      await expect(item.locator('.popover__syllabus-icon svg')).toBeVisible();
+      const text = await item.locator('.popover__syllabus-text').innerText();
+      expect(text).not.toMatch(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}]/u);
+    }
+    await popoverMentoring.locator('.popover__close').click();
+
+    // 5. Section Mentor (#mentor) badges et piliers
+    const mentorBadges = page.locator('#mentor .mentor__badge');
+    const badgeCount = await mentorBadges.count();
+    for (let i = 0; i < badgeCount; i++) {
+      await expect(mentorBadges.nth(i).locator('svg')).toBeVisible();
+      const text = await mentorBadges.nth(i).innerText();
+      expect(text).not.toMatch(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}]/u);
+    }
+
+    const mentorPillars = page.locator('#mentor .mentor__pillar-icon');
+    const pillarCount = await mentorPillars.count();
+    for (let i = 0; i < pillarCount; i++) {
+      await expect(mentorPillars.nth(i).locator('svg')).toBeVisible();
+    }
+  });
+
 });
