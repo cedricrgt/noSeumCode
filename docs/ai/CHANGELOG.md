@@ -1568,4 +1568,30 @@ eset-password.html.
    - Validation 100% de la suite (10 tests réussis sur 10).
    - Recompilation et minification sans erreur via `frontend/build.sh`.
 
+---
+
+## 2026-10-10 — Remplacement des Émoticônes Génériques par des Icônes Vectorielles SVG aux Couleurs de la Marque
+
+**Conversation ID**: `63bf1469-09ab-48a5-abcd-0423faa44a97`  
+**Branche**: `feat/brand-svg-icons-replace-emojis`  
+**Objectif**: Éliminer l'ensemble des émoticônes IA génériques (fusée, cible, flamme, bulle de discussion, calendrier, horloge, etc.) et les remplacer par des icônes vectorielles SVG personnalisées alignées sur la charte graphique NoSeumCode (`#00ff87` vert néon, `#00d9ff` cyan cyber, fond sombre `#070e18`).
+
+### Réalisations & Corrections :
+1. **Cartes des Piliers Pédagogiques (`#services`)** :
+   - Remplacement des icônes génériques par des badges sombres `.card__tag-brand-green` et `.card__tag-brand-cyan` avec bordures néon lumineuses et ombres portées.
+   - Intégration de visuels SVG dédiés : moniteur de code interactif ("Zéro théorie inutile"), fenêtre de navigateur déployée en ligne ("Des projets fiers") et binôme de développeurs ("Un mentor et une communauté").
+2. **Popovers Pédagogiques Modales (`#pedagogy-live`, `#pedagogy-projects`, `#pedagogy-mentoring`)** :
+   - Refonte des items de syllabus : suppression de tous les émojis texte (💬, 🔥, 🕒, 📅, 🔗, 🎮, 💼, 🎯, 🔍, 🚀).
+   - Création de conteneurs `.popover__syllabus-icon` stylisés en badges sombres avec bordures `#00ff87` et micro-interactions au survol.
+   - Remplacement par des icônes vectorielles SVG précises et sémantiques (dialogue développeur pour Zéro Blocage, équipe pour Motivation Max, horloge pour Rythme Équilibré, calendrier coché pour Régularité Efficace, smartphone pour Bio-Link, dashboard interactif pour Gaming Dashboard, etc.).
+3. **Sections Mentor, Tarification, Blog et Pages Connexes** :
+   - Remplacement des émojis de badges et piliers de la section Mentor (`#mentor`) par des SVG vectoriels (`#00ff87` / `#00d9ff`).
+   - Remplacement de l'émoji cadeau du Pack Web Pro par un badge SVG cadeau aux couleurs de la marque.
+   - Suppression des émojis résiduels dans le titre du Blog (`#blog`), la page d'attente `en-construction.html` et les messages d'alerte et toasts client (`header.js`, `workshops.js`, `cours.js`).
+4. **Validation E2E & Compilation** :
+   - Ajout d'un test automatisé dans `e2e/tests/cro-ux-seo.spec.js` validant l'ouverture de chaque popover, la présence visible des SVG et l'absence totale de caractères émojis Unicode.
+   - Validation de l'intégralité de la suite Playwright (11/11 tests passés).
+   - Recompilation et minification complètes (`homepage.min.css`, `header.min.js`, SSG) via `frontend/build.sh`.
+
+
 

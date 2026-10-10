@@ -392,33 +392,64 @@ html {
 }
 
 .card__tag {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: var(--spacing-sm);
+  background: #070e18;
+  border: 1px solid rgba(0, 255, 135, 0.35);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.card:hover .card__tag {
+  transform: scale(1.05);
+  border-color: var(--primary-green);
+  box-shadow: 0 4px 20px rgba(0, 255, 135, 0.2);
+}
+
+.card__tag-brand-green {
+  background: #070e18;
+  border: 1px solid rgba(0, 255, 135, 0.4);
+  color: var(--primary-green);
+  box-shadow: 0 4px 16px rgba(0, 255, 135, 0.15);
+}
+
+.card__tag-brand-cyan {
+  background: #070e18;
+  border: 1px solid rgba(0, 217, 255, 0.4);
+  color: #00d9ff;
+  box-shadow: 0 4px 16px rgba(0, 217, 255, 0.15);
 }
 
 .card__tag-white {
-  background: var(--white);
+  background: #070e18;
+  border: 1px solid rgba(0, 255, 135, 0.4);
   color: var(--primary-green);
+  box-shadow: 0 4px 16px rgba(0, 255, 135, 0.15);
 }
 
 .card__tag-blue {
-  background: linear-gradient(135deg, #4299e1, #3182ce);
-  color: var(--white);
+  background: #070e18;
+  border: 1px solid rgba(0, 217, 255, 0.4);
+  color: #00d9ff;
+  box-shadow: 0 4px 16px rgba(0, 217, 255, 0.15);
 }
 
 .card__tag-grey {
-  background: linear-gradient(135deg, #718096, #4a5568);
-  color: var(--white);
+  background: #070e18;
+  border: 1px solid rgba(0, 255, 135, 0.4);
+  color: var(--primary-green);
+  box-shadow: 0 4px 16px rgba(0, 255, 135, 0.15);
 }
 
 .card__icon {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
+  display: block;
 }
 
 .card__title {
@@ -571,9 +602,30 @@ html {
 }
 
 .popover__syllabus-icon {
-  color: #047857;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: #070e18;
+  border: 1px solid rgba(0, 255, 135, 0.35);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  margin-top: 0.2rem;
+  color: var(--primary-green);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.popover__syllabus-item:hover .popover__syllabus-icon {
+  transform: scale(1.06);
+  border-color: var(--primary-green);
+  box-shadow: 0 4px 16px rgba(0, 255, 135, 0.25);
+}
+
+.popover__syllabus-icon svg {
+  width: 22px;
+  height: 22px;
+  display: block;
 }
 
 .popover__syllabus-text {

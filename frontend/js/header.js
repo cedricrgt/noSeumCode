@@ -111,7 +111,7 @@ async function loadPartials() {
           const devBanner = document.createElement("div");
           devBanner.id = "dev-env-indicator";
           devBanner.style.cssText = "background: #0f172a; color: #38bdf8; text-align: center; font-size: 0.78rem; font-family: 'Poppins', sans-serif; padding: 6px 12px; border-top: 1px solid rgba(56, 189, 248, 0.25); font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; z-index: 99999; position: fixed; bottom: 0; left: 0; width: 100%; pointer-events: none;";
-          devBanner.innerHTML = "<span>🛠️</span> <span><strong>Environnement de test NoSeumCode</strong> (develop.noseumcode.fr) — Espace réservé à la pré-production.</span>";
+          devBanner.innerHTML = "<span><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='#38bdf8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -2px;'><path d='M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z'></path></svg></span> <span><strong>Environnement de test NoSeumCode</strong> (develop.noseumcode.fr) — Espace réservé à la pré-production.</span>";
           document.body.appendChild(devBanner);
         }
       } else if (item.type === "popovers" && popoversPlaceholder && item.html) {
@@ -558,7 +558,7 @@ function getPaywallSyllabusHtml(tier, addon) {
   if (tier === "STARTER") {
     syllabusHtml = `
       <div style="margin-bottom: 0.85rem; font-weight: 600; color: #60a5fa; font-size: 0.95rem;">
-        🧱 Pack Starter – Les Fondations du Web (HTML5 & CSS3 Moderne)
+        Pack Starter – Les Fondations du Web (HTML5 & CSS3 Moderne)
       </div>
       <div style="display: flex; flex-direction: column; gap: 0.75rem;">
         <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
@@ -579,14 +579,14 @@ function getPaywallSyllabusHtml(tier, addon) {
         </div>
       </div>
       <div style="margin-top: 0.85rem; padding: 0.65rem 0.85rem; background: rgba(37, 99, 235, 0.12); border: 1px solid rgba(37, 99, 235, 0.3); border-radius: 8px; font-size: 0.82rem; color: #93c5fd;">
-        ✨ <strong>Inclus :</strong> Accès immédiat et mises à jour à vie • Communauté Discord d'entraide • Éligible Klarna 3x 109 € sans frais • Garantie 14 jours satisfait ou remboursé.
+        <strong>Inclus :</strong> Accès immédiat et mises à jour à vie • Communauté Discord d'entraide • Éligible Klarna 3x 109 € sans frais • Garantie 14 jours satisfait ou remboursé.
       </div>
     `;
   } else {
     // WEB (Pack Web Pro)
     syllabusHtml = `
       <div style="margin-bottom: 0.85rem; font-weight: 600; color: #00ff87; font-size: 0.95rem;">
-        ⚡ Pack Web Pro – L'Autonomie Complète (Pack Starter + JS ES6+ + Bonus Git)
+        Pack Web Pro – L'Autonomie Complète (Pack Starter + JS ES6+ + Bonus Git)
       </div>
       <div style="display: flex; flex-direction: column; gap: 0.75rem;">
         <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
@@ -606,7 +606,7 @@ function getPaywallSyllabusHtml(tier, addon) {
           <span style="color: #94a3b8; font-size: 0.83rem;">Protocole HTTP, Promesses et async/await. Connexion d'APIs externes avec fetch, gestion du chargement et affichage dynamique.</span>
         </div>
         <div style="background: rgba(0, 255, 135, 0.08); border: 1px solid rgba(0, 255, 135, 0.25); border-radius: 8px; padding: 0.75rem 0.9rem;">
-          <strong style="color: #00ff87; display: block; margin-bottom: 0.25rem;">🎁 BONUS OFFERT : Formation Git & GitHub (valeur 49 €)</strong>
+          <strong style="color: #00ff87; display: block; margin-bottom: 0.25rem;">BONUS OFFERT : Formation Git & GitHub (valeur 49 €)</strong>
           <span style="color: #cbd5e1; font-size: 0.83rem;">Dépôts locaux, commits conventionnels, branches, merge et travail collaboratif GitHub comme en entreprise.</span>
         </div>
         <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.9rem;">
@@ -615,7 +615,7 @@ function getPaywallSyllabusHtml(tier, addon) {
         </div>
       </div>
       <div style="margin-top: 0.85rem; padding: 0.65rem 0.85rem; background: rgba(0, 255, 135, 0.12); border: 1px solid rgba(0, 255, 135, 0.3); border-radius: 8px; font-size: 0.82rem; color: #a7f3d0;">
-        ✨ <strong>Inclus :</strong> Tout le Pack Starter + JS + Bonus Git/GitHub • Accès prioritaire Discord • Éligible Klarna 3x 160 € sans frais • Garantie 14 jours.
+        <strong>Inclus :</strong> Tout le Pack Starter + JS + Bonus Git/GitHub • Accès prioritaire Discord • Éligible Klarna 3x 160 € sans frais • Garantie 14 jours.
       </div>
     `;
   }
@@ -623,14 +623,14 @@ function getPaywallSyllabusHtml(tier, addon) {
   if (addon === "mentor_4sessions") {
     syllabusHtml += `
       <div style="margin-top: 0.85rem; background: rgba(0, 255, 135, 0.08); border: 1px solid rgba(0, 255, 135, 0.35); border-radius: 8px; padding: 0.75rem 0.9rem;">
-        <strong style="color: #00ff87; display: block; margin-bottom: 0.25rem;">✨ Suivi Mentor Inclus (4 sessions individuelles de 1h)</strong>
+        <strong style="color: #00ff87; display: block; margin-bottom: 0.25rem;">Suivi Mentor Inclus (4 sessions individuelles de 1h)</strong>
         <span style="color: #cbd5e1; font-size: 0.83rem;">4 sessions individuelles en visio 1-to-1 avec Cédric Ragot : diagnostic personnalisé, revues de code ligne par ligne, déblocage direct et coaching carrière. Garantie satisfait ou remboursé dès la 1ère session.</span>
       </div>
     `;
   } else if (addon === "mentor_downsell_2sessions") {
     syllabusHtml += `
       <div style="margin-top: 0.85rem; background: rgba(0, 255, 135, 0.08); border: 1px solid rgba(0, 255, 135, 0.35); border-radius: 8px; padding: 0.75rem 0.9rem;">
-        <strong style="color: #00ff87; display: block; margin-bottom: 0.25rem;">✨ Suivi Mentor Inclus (2 sessions individuelles de 1h)</strong>
+        <strong style="color: #00ff87; display: block; margin-bottom: 0.25rem;">Suivi Mentor Inclus (2 sessions individuelles de 1h)</strong>
         <span style="color: #cbd5e1; font-size: 0.83rem;">2 sessions individuelles en visio 1-to-1 avec Cédric Ragot : revue de code et déblocage personnalisé sur tes projets.</span>
       </div>
     `;
@@ -690,7 +690,7 @@ async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortI
     }
 
     openGlobalAuthModal("register");
-    showGlobalAuthAlert(`🎓 Connectez-vous ou créez votre compte pour acheter "${courseTitle}" (${priceText}). Le paiement sécurisé s'affichera directement après connexion.`, "info");
+    showGlobalAuthAlert(`Connectez-vous ou créez votre compte pour acheter "${courseTitle}" (${priceText}). Le paiement sécurisé s'affichera directement après connexion.`, "info");
     return;
   }
 
@@ -836,7 +836,7 @@ async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortI
         alertEl.style.background = "rgba(0, 255, 135, 0.15)";
         alertEl.style.border = "1px solid #00ff87";
         alertEl.style.color = "#00ff87";
-        alertEl.textContent = "🎉 Formation gratuite validée avec succès ! Redirection...";
+        alertEl.textContent = "Formation gratuite validée avec succès ! Redirection...";
       }
       setTimeout(() => {
         closeStripePaywall();
@@ -877,7 +877,7 @@ async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortI
     if (loadingEl) loadingEl.style.display = "none";
     if (alertEl) {
       alertEl.style.display = "block";
-      alertEl.textContent = "❌ " + (err.message || "Erreur lors de l'ouverture du terminal de paiement.");
+      alertEl.textContent = (err.message || "Erreur lors de l'ouverture du terminal de paiement.");
     }
   }
 }
@@ -992,7 +992,7 @@ async function handleGlobalEmailLogin(e) {
       const pendingCourseId = sessionStorage.getItem("noseum_pending_checkout_course_id");
 
       if (pendingWorkshopId) {
-        showGlobalAuthAlert("🎉 Connexion réussie ! Réservation de ton atelier en cours...", "success");
+        showGlobalAuthAlert("Connexion réussie ! Réservation de ton atelier en cours...", "success");
         setTimeout(async () => {
           closeGlobalAuthModal();
           try {
@@ -1022,13 +1022,13 @@ async function handleGlobalEmailLogin(e) {
         sessionStorage.removeItem("noseum_pending_checkout_tier");
         sessionStorage.removeItem("noseum_pending_checkout_addon");
 
-        showGlobalAuthAlert("💳 Connexion réussie ! Ouverture du terminal de paiement sécurisé...", "success");
+        showGlobalAuthAlert("Connexion réussie ! Ouverture du paiement sécurisé...", "success");
         setTimeout(async () => {
           closeGlobalAuthModal();
           await openStripePaywall(pendingCourseId, pendingTitle, pendingPrice, pendingTier, null, pendingAddon);
         }, 400);
       } else {
-        showGlobalAuthAlert("✅ Connexion réussie ! Redirection vers votre espace...", "success");
+        showGlobalAuthAlert("Connexion réussie ! Redirection vers votre espace...", "success");
         setTimeout(() => {
           closeGlobalAuthModal();
           window.location.href = "dashboard.html";
@@ -1040,11 +1040,11 @@ async function handleGlobalEmailLogin(e) {
         const errData = await response.json();
         if (errData.message) errMsg = errData.message;
       } catch (_) { }
-      showGlobalAuthAlert(`❌ ${errMsg}`, "error");
+      showGlobalAuthAlert(errMsg, "error");
     }
   } catch (err) {
     console.error("Login error:", err);
-    showGlobalAuthAlert("❌ Impossible de joindre le serveur. Assurez-vous que le backend est démarré.", "error");
+    showGlobalAuthAlert("Impossible de joindre le serveur. Assurez-vous que le backend est démarré.", "error");
   } finally {
     if (submitBtn) {
       submitBtn.disabled = false;
@@ -1095,7 +1095,7 @@ function validateGlobalAge() {
   if (age === null || age < 0) {
     if (ageWarning) {
       ageWarning.style.display = "block";
-      ageWarning.innerHTML = "⚠️ <strong>Date invalide :</strong> La date de naissance ne peut pas être dans le futur.";
+      ageWarning.innerHTML = "<strong>Date invalide :</strong> La date de naissance ne peut pas être dans le futur.";
     }
     if (submitBtn) {
       submitBtn.disabled = true;
@@ -1109,7 +1109,7 @@ function validateGlobalAge() {
   if (age < 16) {
     if (ageWarning) {
       ageWarning.style.display = "block";
-      ageWarning.innerHTML = "⚠️ <strong>Accès restreint :</strong> Pour des raisons légales, l'accès est interdit aux personnes de moins de 16 ans. Seul un adulte titulaire de l'autorité parentale peut créer et gérer un compte pour un mineur.";
+      ageWarning.innerHTML = "<strong>Accès restreint :</strong> Pour des raisons légales, l'accès est interdit aux personnes de moins de 16 ans. Seul un adulte titulaire de l'autorité parentale peut créer et gérer un compte pour un mineur.";
     }
     if (submitBtn) {
       submitBtn.disabled = true;
@@ -1178,7 +1178,7 @@ function handleSocialRegisterClick(e) {
       container.style.borderColor = "rgba(239, 68, 68, 0.6)";
       container.style.background = "rgba(239, 68, 68, 0.08)";
     }
-    showGlobalAuthAlert("⚠️ Veuillez cocher la case d'attestation d'âge avant de continuer.", "error");
+    showGlobalAuthAlert("Veuillez cocher la case d'attestation d'âge avant de continuer.", "error");
     if (checkbox) checkbox.focus();
     return false;
   }
@@ -1194,14 +1194,14 @@ async function handleGlobalEmailRegister(e) {
   const age = calculateAge(birthDateValue);
 
   if (age === null || !birthDateValue) {
-    showGlobalAuthAlert("❌ Veuillez renseigner votre date de naissance.", "error");
+    showGlobalAuthAlert("Veuillez renseigner votre date de naissance.", "error");
     if (birthDateInput) birthDateInput.focus();
     return;
   }
 
   if (age < 16) {
     validateGlobalAge();
-    showGlobalAuthAlert("❌ Pour des raisons légales, l'accès est interdit aux moins de 16 ans. Seul un adulte disposant de l'autorité parentale peut créer un compte.", "error");
+    showGlobalAuthAlert("Pour des raisons légales, l'accès est interdit aux moins de 16 ans. Seul un adulte disposant de l'autorité parentale peut créer un compte.", "error");
     return;
   }
 
@@ -1248,7 +1248,7 @@ async function handleGlobalEmailRegister(e) {
       const pendingCourseId = sessionStorage.getItem("noseum_pending_checkout_course_id");
 
       if (pendingWorkshopId) {
-        showGlobalAuthAlert("🎉 Compte créé avec succès ! Confirmation de ton atelier en cours...", "success");
+        showGlobalAuthAlert("Compte créé avec succès ! Confirmation de ton atelier en cours...", "success");
         setTimeout(async () => {
           closeGlobalAuthModal();
           try {
@@ -1278,13 +1278,13 @@ async function handleGlobalEmailRegister(e) {
         sessionStorage.removeItem("noseum_pending_checkout_tier");
         sessionStorage.removeItem("noseum_pending_checkout_addon");
 
-        showGlobalAuthAlert("🎉 Compte créé ! Ouverture du terminal de paiement sécurisé...", "success");
+        showGlobalAuthAlert("Compte créé ! Ouverture du paiement sécurisé...", "success");
         setTimeout(async () => {
           closeGlobalAuthModal();
           await openStripePaywall(pendingCourseId, pendingTitle, pendingPrice, pendingTier, null, pendingAddon);
         }, 400);
       } else {
-        showGlobalAuthAlert("🎉 Compte créé avec succès ! Bienvenue sur NoSeumCode.", "success");
+        showGlobalAuthAlert("Compte créé avec succès ! Bienvenue sur NoSeumCode.", "success");
         setTimeout(() => {
           closeGlobalAuthModal();
           window.location.href = "dashboard.html";
@@ -1296,11 +1296,11 @@ async function handleGlobalEmailRegister(e) {
         const errData = await response.json();
         if (errData.message) errMsg = errData.message;
       } catch (_) { }
-      showGlobalAuthAlert(`❌ ${errMsg}`, "error");
+      showGlobalAuthAlert(errMsg, "error");
     }
   } catch (err) {
     console.error("Register error:", err);
-    showGlobalAuthAlert("❌ Impossible de joindre le serveur. Assurez-vous que le backend est démarré.", "error");
+    showGlobalAuthAlert("Impossible de joindre le serveur. Assurez-vous que le backend est démarré.", "error");
   } finally {
     if (submitBtn) {
       submitBtn.disabled = false;
@@ -1333,11 +1333,11 @@ async function handleGlobalForgotPassword(e) {
     });
 
     // Message rassurant et sécurisé conforme OWASP
-    showGlobalAuthAlert("✅ Si cette adresse email est associée à un compte, un lien de réinitialisation vous a été envoyé. Vérifiez vos emails.", "success");
+    showGlobalAuthAlert("Si cette adresse email est associée à un compte, un lien de réinitialisation vous a été envoyé. Vérifiez vos emails.", "success");
     if (emailInput) emailInput.value = "";
   } catch (err) {
     console.error("Forgot password error:", err);
-    showGlobalAuthAlert("❌ Impossible de joindre le serveur. Veuillez réessayer plus tard.", "error");
+    showGlobalAuthAlert("Impossible de joindre le serveur. Veuillez réessayer plus tard.", "error");
   } finally {
     if (submitBtn) {
       submitBtn.disabled = false;
@@ -1488,13 +1488,14 @@ async function updatePromoBanner() {
     }
 
     const titleText = data.title || "WORKSHOPS GRATUITS";
-    const emoji = data.emoji || "✨";
+    const emoji = data.emoji || "";
 
     const buildBannerItem = () => {
       const span = document.createElement("span");
       span.className = "promo-banner__item";
 
-      const textNode = document.createTextNode(`${emoji} ${titleText} : ${topics} ! `);
+      const prefix = emoji ? `${emoji} ` : "";
+      const textNode = document.createTextNode(`${prefix}${titleText} : ${topics} ! `);
       span.appendChild(textNode);
 
       const link = document.createElement("a");

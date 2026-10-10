@@ -1128,7 +1128,7 @@ async function handleSaveCourse(event) {
       currentCourse.updatedAt = new Date().toISOString();
     }
     closeCourseManageModal();
-    alert("✅ Formation mise à jour avec succès.");
+    alert("Formation mise à jour avec succès.");
     renderClassroom();
   } else {
     // Création d'un nouveau cours
@@ -1151,7 +1151,7 @@ async function handleSaveCourse(event) {
     }
     allCourses.unshift(newCourse);
     closeCourseManageModal();
-    alert("🎉 Formation créée avec succès !");
+    alert("Formation créée avec succès !");
     window.location.href = `app.html?id=${newCourse.id}`;
   }
 }
@@ -1181,9 +1181,9 @@ async function handleSaveChapter(event) {
 
     closeChapterModal();
     if (currentRole === "TEACHER") {
-      alert("✅ Section modifiée ! Elle a été automatiquement soumise à la validation d'un Administrateur.");
+      alert("Section modifiée ! Elle a été automatiquement soumise à la validation d'un Administrateur.");
     } else {
-      alert("✅ Section mise à jour avec succès.");
+      alert("Section mise à jour avec succès.");
     }
   } else {
     const newChap = {
@@ -1213,7 +1213,7 @@ async function handleSaveChapter(event) {
     }
 
     closeChapterModal();
-    alert("🎉 Nouvelle section créée avec son contenu !");
+    alert("Nouvelle section créée avec son contenu !");
   }
 
   renderClassroom();
@@ -1229,7 +1229,7 @@ async function handleApproveChapter(chapId) {
   const chap = courseChapters.find(c => c.id === chapId);
   if (chap) chap.status = "APPROVED";
 
-  alert("✅ Section validée et publiée avec succès !");
+  alert("Section validée et publiée avec succès !");
   renderClassroom();
 }
 
@@ -1247,13 +1247,13 @@ async function handleRejectChapter(chapId) {
   const chap = courseChapters.find(c => c.id === chapId);
   if (chap) chap.status = "REJECTED";
 
-  alert("❌ Section refusée. L'enseignant a été notifié.");
+  alert("Section refusée. L'enseignant a été notifié.");
   renderClassroom();
 }
 
 async function handleDeleteChapter(chapId) {
   if (currentRole !== "ADMIN") {
-    alert("⛔ Action interdite : Seul un Administrateur peut supprimer une section.");
+    alert("Action interdite : Seul un Administrateur peut supprimer une section.");
     return;
   }
 
@@ -1265,23 +1265,23 @@ async function handleDeleteChapter(chapId) {
 
   courseChapters = courseChapters.filter(c => c.id !== chapId);
   activeChapterId = courseChapters[0]?.id || null;
-  alert("🗑️ Section supprimée.");
+  alert("Section supprimée.");
   renderClassroom();
 }
 
 async function handleDeleteCourse(courseId) {
   if (currentRole !== "ADMIN") {
-    alert("⛔ Action interdite : Seul un Administrateur peut supprimer une formation.");
+    alert("Action interdite : Seul un Administrateur peut supprimer une formation.");
     return;
   }
 
-  if (!confirm("⚠️ Attention : Confirmer la suppression complète de cette formation ?")) return;
+  if (!confirm("Attention : Confirmer la suppression complète de cette formation ?")) return;
 
   await coursApiFetch(`/api/courses/${courseId}`, {
     method: "DELETE"
   });
 
-  alert("🗑️ Formation supprimée.");
+  alert("Formation supprimée.");
   window.location.href = "app.html";
 }
 
@@ -1338,7 +1338,7 @@ async function initiateStripeCheckout(courseId) {
     if (typeof openGlobalAuthModal === "function") {
       openGlobalAuthModal("register");
       if (typeof showGlobalAuthAlert === "function") {
-        showGlobalAuthAlert(`🎓 Connectez-vous ou créez votre compte pour acheter "${courseTitle}" (${priceText}). Le paiement sécurisé s'affichera directement après connexion.`, "info");
+        showGlobalAuthAlert(`Connectez-vous ou créez votre compte pour acheter "${courseTitle}" (${priceText}). Le paiement sécurisé s'affichera directement après connexion.`, "info");
       }
     } else if (typeof openAuthModal === "function") {
       openAuthModal("register");
@@ -1390,12 +1390,12 @@ async function handleEnroll(courseId) {
     }
   }
 
-  alert("🎉 Inscription confirmée ! Vous avez accès à l'aperçu gratuit de la section 1.");
+  alert("Inscription confirmée ! Vous avez accès à l'aperçu gratuit de la section 1.");
   window.location.href = `app.html?id=${courseId}`;
 }
 
 function markChapterComplete(chapId) {
-  alert("🎉 Félicitations ! Section validée. Votre progression a été enregistrée.");
+  alert("Félicitations ! Section validée. Votre progression a été enregistrée.");
 }
 
 // ========================================================

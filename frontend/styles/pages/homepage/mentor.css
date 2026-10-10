@@ -148,8 +148,23 @@
 }
 
 .mentor__pillar-icon {
-  font-size: 2rem;
-  margin-bottom: 0.25rem;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-lg);
+  background: rgba(0, 255, 135, 0.08);
+  border: 1px solid rgba(0, 255, 135, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  transition: all var(--transition-fast);
+}
+
+.mentor__pillar-card:hover .mentor__pillar-icon {
+  background: rgba(0, 255, 135, 0.16);
+  border-color: var(--primary-green);
+  box-shadow: 0 0 20px rgba(0, 255, 135, 0.25);
+  transform: scale(1.08);
 }
 
 .mentor__pillar-heading {
