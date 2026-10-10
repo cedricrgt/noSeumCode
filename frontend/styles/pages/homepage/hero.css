@@ -209,20 +209,14 @@
   }
 }
 
-.hero__bottom {
-  grid-column: 1 / -1;
-  margin-top: var(--spacing-xl);
-}
-
 .hero__trustbar {
-  grid-column: 1 / -1;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-xl);
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
   background: transparent;
   border: none;
 }
@@ -231,10 +225,11 @@
   display: flex;
   justify-content: center;
   text-align: center;
+  width: 100%;
 }
 
 .hero__trustbar-label {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -247,15 +242,16 @@
 .hero__trustbar-tools {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.6rem;
   align-items: center;
   justify-content: center;
+  width: 100%;
 }
 
 @media (max-width: 768px) {
   .hero__trustbar {
-    gap: var(--spacing-sm);
-    margin-top: var(--spacing-lg);
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-xs);
   }
 }
 

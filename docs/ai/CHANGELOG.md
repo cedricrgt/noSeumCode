@@ -1545,4 +1545,27 @@ eset-password.html.
    - Validation 100% de la suite de tests Playwright (10/10 tests réussis).
    - Recompilation complète des bundles CSS (`build.sh`) et du SSG.
 
+---
+
+## 2026-10-10 — Repositionnement de la Boîte à Outils dans la Colonne Droite du Hero & Invalidation Cache CSS
+
+**Conversation ID**: `63bf1469-09ab-48a5-abcd-0423faa44a97`  
+**Branche**: `fix/hero-right-column-tools-trustbar`  
+**Objectif**: Déplacer la boîte à outils/technologies dans la colonne droite du hero (`.hero__left`), directement sous les boutons CTA et la mention de réassurance, tout en conservant son centrage horizontal. Résoudre le défaut d'affichage observé sur `develop.noseumcode.fr` causé par la persistance en cache de la version CSS antérieure à `.hero__container`.
+
+### Réalisations & Corrections :
+1. **Restructuration HTML (`frontend/index.html`)** :
+   - Déplacement de `<div class="hero__trustbar">` au sein de `.hero__left` immédiatement après le bloc `.hero__decorations`.
+   - Simplification de la structure du hero à 2 éléments enfants directs dans `.hero__container` : la colonne visuelle (gauche) et la colonne textuelle/interactive (droite).
+   - Incrément du query parameter de cache CSS sur `homepage.min.css?v=sprint18.2` pour forcer le rechargement immédiat du bundle sur `develop.noseumcode.fr` et chez tous les utilisateurs.
+2. **Ajustements CSS (`hero.css`, `homepage.css`, `homepage.min.css`)** :
+   - Suppression de la directive `grid-column: 1 / -1;` et de `.hero__bottom` devenues caduques.
+   - Alignement centré (`display: flex; flex-direction: column; align-items: center; text-align: center; justify-content: center;`) du titre et des badges au sein de la colonne droite.
+   - Ajustement fin des espacements verticaux (`margin-top: var(--spacing-sm); gap: var(--spacing-sm);`) pour une intégration harmonieuse sous la phrase de réassurance.
+3. **Tests & Validation E2E Playwright (`cro-ux-seo.spec.js`)** :
+   - Mise à jour du sélecteur Playwright pour cibler `.hero__left .hero__trustbar`.
+   - Assertion géométrique confirmant que la trustbar se situe en-dessous de `.hero__decorations`.
+   - Validation 100% de la suite (10 tests réussis sur 10).
+   - Recompilation et minification sans erreur via `frontend/build.sh`.
+
 
