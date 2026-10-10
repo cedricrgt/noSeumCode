@@ -55,11 +55,17 @@ test.describe('Vérification des correctifs CRO, UX, SSG et SEO (Debrief)', () =
     await expect(page).toHaveURL(/app\.html/);
   });
 
-  test('La boîte à outils est intégrée au bas du hero, centrée avec le titre au-dessus des outils', async ({ page }) => {
+  test('La boîte à outils est intégrée dans la partie droite du hero sous les CTA, centrée avec le titre au-dessus des outils', async ({ page }) => {
     await page.goto('/');
     const hero = page.locator('section.hero');
-    const heroTrustbar = hero.locator('.hero__trustbar');
+    const heroTrustbar = hero.locator('.hero__left .hero__trustbar');
     await expect(heroTrustbar).toBeVisible();
+
+    // Vérifier que la trustbar est bien positionnée sous les boutons d'action
+    const heroDecorations = hero.locator('.hero__decorations');
+    const decBox = await heroDecorations.boundingBox();
+    const trustBox = await heroTrustbar.boundingBox();
+    expect(trustBox.y).toBeGreaterThanOrEqual(decBox.y + decBox.height - 10);
 
     // Vérifier l'absence d'ancienne section trustbar hors du hero
     await expect(page.locator('main > section.section--trustbar')).toHaveCount(0);
