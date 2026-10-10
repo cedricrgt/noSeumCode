@@ -55,7 +55,7 @@ test.describe('Vérification des correctifs CRO, UX, SSG et SEO (Debrief)', () =
     await expect(page).toHaveURL(/app\.html/);
   });
 
-  test('La boîte à outils est intégrée au bas du hero sur 2 colonnes sans background', async ({ page }) => {
+  test('La boîte à outils est intégrée au bas du hero, centrée avec le titre au-dessus des outils', async ({ page }) => {
     await page.goto('/');
     const hero = page.locator('section.hero');
     const heroTrustbar = hero.locator('.hero__trustbar');
@@ -64,12 +64,13 @@ test.describe('Vérification des correctifs CRO, UX, SSG et SEO (Debrief)', () =
     // Vérifier l'absence d'ancienne section trustbar hors du hero
     await expect(page.locator('main > section.section--trustbar')).toHaveCount(0);
 
-    // Vérifier les 2 colonnes : label et badges
+    // Vérifier le titre au-dessus des outils
     const label = heroTrustbar.locator('.hero__trustbar-label');
     await expect(label).toBeVisible();
     await expect(label).toContainText('Les technologies et outils professionnels que tu vas maîtriser');
 
-    const tools = heroTrustbar.locator('.hero__trustbar-tools .tool-badge');
+    const toolsContainer = heroTrustbar.locator('.hero__trustbar-tools');
+    const tools = toolsContainer.locator('.tool-badge');
     await expect(tools).toHaveCount(6);
     await expect(tools.nth(0)).toContainText('HTML5 Sémantique');
     await expect(tools.nth(1)).toContainText('CSS3 & Flexbox');
@@ -77,6 +78,11 @@ test.describe('Vérification des correctifs CRO, UX, SSG et SEO (Debrief)', () =
     await expect(tools.nth(3)).toContainText('Git & GitHub');
     await expect(tools.nth(4)).toContainText('VS Code');
     await expect(tools.nth(5)).toContainText('Responsive Design');
+
+    // Vérifier géométriquement que le titre est au-dessus des icônes/badges
+    const labelBox = await label.boundingBox();
+    const firstToolBox = await tools.first().boundingBox();
+    expect(labelBox.y + labelBox.height).toBeLessThanOrEqual(firstToolBox.y);
 
     // Vérifier que le background du conteneur trustbar est transparent
     const bg = await heroTrustbar.evaluate((el) => window.getComputedStyle(el).backgroundColor);

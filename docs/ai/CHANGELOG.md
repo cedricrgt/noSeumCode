@@ -1531,12 +1531,13 @@ eset-password.html.
      - Colonne 2 (`.hero__trustbar-tools`) : Badges des 6 outils professionnels (`HTML5 Sémantique`, `CSS3 & Flexbox`, `JavaScript ES6+`, `Git & GitHub`, `VS Code`, `Responsive Design`).
    - Suppression intégrale de l'ancienne section détachée `<section class="section section--dark section--trustbar">` et de son conteneur externe.
 2. **Design & Responsive CSS (`hero.css`, `homepage.min.css`)** :
-   - Mise en page par grille CSS (`display: grid; grid-template-columns: 1fr 1.3fr; gap: var(--spacing-xl);`) au format desktop, parfaitement alignée sous la grille du hero.
+   - Centrage complet au bas du hero (`display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--spacing-md);`).
+   - Positionnement du titre directement au-dessus des icônes/badges d'outils, aligné et centré horizontalement.
+   - Alignement centré des 6 badges (`justify-content: center`) sur desktop, tablette et mobile.
    - Suppression de tout arrière-plan dédié (`background: transparent; border: none;`) pour laisser transparaître le dégradé natif du Hero (`linear-gradient(135deg, #0a1628 0%, #1a2332 100%)`).
-   - Rééquilibrage du padding bas du hero (`padding-bottom: var(--spacing-2xl)` au lieu de `12rem`) pour un rythme vertical harmonieux.
-   - Repliement responsive sur mobile (`@media (max-width: 900px)`) en une colonne unique centrée et sans débordement horizontal.
+   - Rééquilibrage du padding bas du hero (`padding-bottom: var(--spacing-2xl)`) pour un rythme vertical harmonieux.
 3. **Tests & Validation Automatisée** :
-   - Ajout d'un test Playwright dans `e2e/tests/cro-ux-seo.spec.js` validant la présence de la boîte à outils dans `.hero`, l'absence de l'ancienne section hors-hero, la présence des 6 badges et la transparence du fond (`rgba(0, 0, 0, 0)`).
+   - Ajout d'un test Playwright dans `e2e/tests/cro-ux-seo.spec.js` validant la présence de la boîte à outils dans `.hero`, l'alignement géométrique du titre au-dessus des badges, le décompte des 6 badges et la transparence du fond (`rgba(0, 0, 0, 0)`).
    - Validation 100% de la suite de tests Playwright (9/9 tests réussis).
    - Recompilation complète des bundles CSS (`build.sh`) et du SSG.
 
