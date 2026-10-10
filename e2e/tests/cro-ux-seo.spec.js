@@ -89,4 +89,16 @@ test.describe('Vérification des correctifs CRO, UX, SSG et SEO (Debrief)', () =
     expect(bg).toBe('rgba(0, 0, 0, 0)');
   });
 
+  test('Le contenu du hero est centré sur grand écran (1920px)', async ({ page }) => {
+    await page.setViewportSize({ width: 1920, height: 1080 });
+    await page.goto('/');
+    const heroContainer = page.locator('.hero__container');
+    await expect(heroContainer).toBeVisible();
+
+    const box = await heroContainer.boundingBox();
+    const centerX = box.x + box.width / 2;
+    // Sur viewport 1920px, le centre doit être aligné à 960px (+/- 10px)
+    expect(Math.abs(centerX - 960)).toBeLessThan(15);
+  });
+
 });

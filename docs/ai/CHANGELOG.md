@@ -1529,16 +1529,20 @@ eset-password.html.
    - Organisation structurelle en deux colonnes :
      - Colonne 1 (`.hero__trustbar-text`) : Libellé "Les technologies et outils professionnels que tu vas maîtriser :".
      - Colonne 2 (`.hero__trustbar-tools`) : Badges des 6 outils professionnels (`HTML5 Sémantique`, `CSS3 & Flexbox`, `JavaScript ES6+`, `Git & GitHub`, `VS Code`, `Responsive Design`).
-   - Suppression intégrale de l'ancienne section détachée `<section class="section section--dark section--trustbar">` et de son conteneur externe.
+   - Intégration d'un conteneur centré `.hero__container` (`max-width: 1200px; margin: 0 auto;`) pour envelopper le contenu du Hero (image blob, textes, CTA et boîte à outils).
+   - Résolution du problème d'alignement sur grands écrans (1440px+, 1920px+) où `repeat(auto-fit, minmax(450px, 1fr))` générait des colonnes fantômes repoussant tout le contenu à gauche.
 2. **Design & Responsive CSS (`hero.css`, `homepage.min.css`)** :
-   - Centrage complet au bas du hero (`display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--spacing-md);`).
+   - Centrage complet du hero via `display: flex; justify-content: center; align-items: center;` avec fond dégradé préservé sur toute la largeur d'écran.
+   - Mise en page à 2 colonnes (`grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);`) pour l'image et les textes, avec repliement responsive propre (`@media (max-width: 900px)`) en colonne unique.
+   - Centrage complet au bas du hero de la boîte à outils (`display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--spacing-md);`).
    - Positionnement du titre directement au-dessus des icônes/badges d'outils, aligné et centré horizontalement.
    - Alignement centré des 6 badges (`justify-content: center`) sur desktop, tablette et mobile.
    - Suppression de tout arrière-plan dédié (`background: transparent; border: none;`) pour laisser transparaître le dégradé natif du Hero (`linear-gradient(135deg, #0a1628 0%, #1a2332 100%)`).
    - Rééquilibrage du padding bas du hero (`padding-bottom: var(--spacing-2xl)`) pour un rythme vertical harmonieux.
 3. **Tests & Validation Automatisée** :
    - Ajout d'un test Playwright dans `e2e/tests/cro-ux-seo.spec.js` validant la présence de la boîte à outils dans `.hero`, l'alignement géométrique du titre au-dessus des badges, le décompte des 6 badges et la transparence du fond (`rgba(0, 0, 0, 0)`).
-   - Validation 100% de la suite de tests Playwright (9/9 tests réussis).
+   - Ajout d'un test Playwright validant le centrage du conteneur `.hero__container` sur grand écran 1920px (centre du viewport aligné à 960px).
+   - Validation 100% de la suite de tests Playwright (10/10 tests réussis).
    - Recompilation complète des bundles CSS (`build.sh`) et du SSG.
 
 
