@@ -55,4 +55,50 @@ test.describe('Vérification des correctifs CRO, UX, SSG et SEO (Debrief)', () =
     await expect(page).toHaveURL(/app\.html/);
   });
 
+  test('La boîte à outils est intégrée au bas du hero, centrée avec le titre au-dessus des outils', async ({ page }) => {
+    await page.goto('/');
+    const hero = page.locator('section.hero');
+    const heroTrustbar = hero.locator('.hero__trustbar');
+    await expect(heroTrustbar).toBeVisible();
+
+    // Vérifier l'absence d'ancienne section trustbar hors du hero
+    await expect(page.locator('main > section.section--trustbar')).toHaveCount(0);
+
+    // Vérifier le titre au-dessus des outils
+    const label = heroTrustbar.locator('.hero__trustbar-label');
+    await expect(label).toBeVisible();
+    await expect(label).toContainText('Les technologies et outils professionnels que tu vas maîtriser');
+
+    const toolsContainer = heroTrustbar.locator('.hero__trustbar-tools');
+    const tools = toolsContainer.locator('.tool-badge');
+    await expect(tools).toHaveCount(6);
+    await expect(tools.nth(0)).toContainText('HTML5 Sémantique');
+    await expect(tools.nth(1)).toContainText('CSS3 & Flexbox');
+    await expect(tools.nth(2)).toContainText('JavaScript ES6+');
+    await expect(tools.nth(3)).toContainText('Git & GitHub');
+    await expect(tools.nth(4)).toContainText('VS Code');
+    await expect(tools.nth(5)).toContainText('Responsive Design');
+
+    // Vérifier géométriquement que le titre est au-dessus des icônes/badges
+    const labelBox = await label.boundingBox();
+    const firstToolBox = await tools.first().boundingBox();
+    expect(labelBox.y + labelBox.height).toBeLessThanOrEqual(firstToolBox.y);
+
+    // Vérifier que le background du conteneur trustbar est transparent
+    const bg = await heroTrustbar.evaluate((el) => window.getComputedStyle(el).backgroundColor);
+    expect(bg).toBe('rgba(0, 0, 0, 0)');
+  });
+
+  test('Le contenu du hero est centré sur grand écran (1920px)', async ({ page }) => {
+    await page.setViewportSize({ width: 1920, height: 1080 });
+    await page.goto('/');
+    const heroContainer = page.locator('.hero__container');
+    await expect(heroContainer).toBeVisible();
+
+    const box = await heroContainer.boundingBox();
+    const centerX = box.x + box.width / 2;
+    // Sur viewport 1920px, le centre doit être aligné à 960px (+/- 10px)
+    expect(Math.abs(centerX - 960)).toBeLessThan(15);
+  });
+
 });
