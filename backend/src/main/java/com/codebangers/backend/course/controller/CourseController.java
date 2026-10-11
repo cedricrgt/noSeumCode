@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -153,6 +154,17 @@ public class CourseController {
     }
 
     private User resolveUser(Jwt jwt) {
+        String userIdStr = jwt.getClaimAsString("userId");
+        if (userIdStr != null && !userIdStr.isBlank()) {
+            try {
+                UUID uid = UUID.fromString(userIdStr);
+                Optional<User> userOpt = userService.getUserById(uid);
+                if (userOpt.isPresent()) {
+                    return userOpt.get();
+                }
+            } catch (Exception ignored) {
+            }
+        }
         String email = jwt.getSubject();
         return userService.getUserByEmail(email)
             .orElseThrow(() -> new ResourceNotFoundException("User", email));
@@ -164,6 +176,9 @@ public class CourseController {
         }
         if (authentication == null) {
             throw new IllegalArgumentException("Non authentifié");
+        }
+        if (authentication.getPrincipal() instanceof User userPrincipal) {
+            return userPrincipal;
         }
         if (authentication.getPrincipal() instanceof Jwt jwt) {
             return resolveUser(jwt);

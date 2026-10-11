@@ -1729,13 +1729,17 @@ eset-password.html.
 1. **Renommage de la section Enseignant (`frontend/dashboard.html`, `frontend/js/dashboard.js`)** :
    - Section `#teacher-courses-grid` renommée de « Mes Cours & Formations Actives » à « Mes cours enseignés ».
    - État vide mis à jour : « Aucun cours enseigné pour le moment ».
-2. **Backend : Requêtes JPQL et Contrôleur (`CourseRepository.java`, `CourseService.java`, `CourseController.java`)** :
+2. **Backend : Requêtes JPQL, Transactionnalité et Contrôleur (`CourseRepository.java`, `CourseService.java`, `CourseController.java`)** :
    - `CourseRepository.java` : ajout de `DISTINCT` et prise en compte de `(c.isDeleted = false OR c.isDeleted IS NULL)` sur `findAllByAssignedTeachersId`, `findAllByAssignedTeacherId` et `isTeacherAssignedToCourse`.
-   - `CourseService.java` : appel explicite de `courseRepository.flush()` après `save(course)` dans `assignTeacherToCourse` et `removeTeacherFromCourse` pour garantir la persistance immédiate dans la table de jointure `course_teacher`.
-   - `CourseController.java` : endpoint `GET /api/courses/my-assigned-courses` adapté pour les administrateurs (renvoie tous les cours actifs par défaut, ou filtre par `?teacherId={uuid}` si fourni), permettant l'inspection transparente du tableau de bord enseignant sans re-connexion. Sécurisation de l'accès à `course.getChapters()` via bloc `try-catch` défensif dans `mapToResponse`.
-3. **Frontend : Réactivité et synchronisation en mémoire (`frontend/js/dashboard.js`)** :
-   - `loadTeacherData()` : ajout d'un fallback vers `/api/courses` si un administrateur inspecte la vue formateur et qu'aucun cours n'est assigné à son propre compte.
-   - `handleAssignTeacherToCourse()` et `handleRemoveTeacherFromCourse()` : mise à jour réactive de `allAvailableCourses` en mémoire lors de l'assignation ou du retrait d'un formateur dans la vue admin, pour répercussion immédiate sans rechargement.
+   - `CourseService.java` : ajout de `@Transactional` explicite et appel de `courseRepository.flush()` après `save(course)` dans `assignTeacherToCourse` et `removeTeacherFromCourse` pour garantir la persistance immédiate et la visibilité transactionnelle dans la table de jointure `course_teacher`.
+   - `CourseController.java` : 
+     * `resolveUser` : résolution prioritaire par le claim `userId` du JWT avant repli sur l'email, protégeant contre toute divergence d'identifiant. Support direct du principal `User` dans `resolveUserFromAuth`.
+     * `GET /api/courses/my-assigned-courses` : pour un enseignant réel (`Role.TEACHER`), renvoie strictement ses cours assignés ; pour un administrateur (`Role.ADMIN`), renvoie l'ensemble du catalogue actif par défaut (ou filtré par `?teacherId={uuid}` si fourni).
+     * Sécurisation de l'accès à `course.getChapters()` via bloc défensif dans `mapToResponse`.
+3. **Frontend : Découplage strict Vue Générique Admin vs Session Enseignant Réel (`frontend/js/dashboard.js`)** :
+   - `loadTeacherData()` : différentiation stricte basée sur `currentAuth.user.role === "TEACHER"`. L'enseignant réel interroge ses cours assignés nominatifs (`/api/courses/my-assigned-courses`), tandis que l'administrateur en vue formateur consulte l'intégralité du catalogue actif (`/api/courses`).
+   - `syncUserProfile()` : synchronisation défensive de `currentAuth.user.id` depuis `freshUser.userId` ou `freshUser.id`.
+   - `handleAssignTeacherToCourse()` et `handleRemoveTeacherFromCourse()` : mise à jour réactive de `allAvailableCourses` en mémoire lors de l'assignation ou du retrait d'un formateur dans la vue admin.
 4. **Validation des tests** :
-   - 22 tests unitaires et de sécurité backend passés avec succès (`CourseControllerSecurityTest`, `CourseTeacherServiceTest`, `CourseMethodSecurityTest`).
-   - 6/6 tests E2E Playwright validés (`teacher-dashboard-isolation.spec.js`), incluant l'assertion sur « Mes cours enseignés ».
+   - 213/213 tests unitaires et de sécurité backend passés avec succès (`BUILD SUCCESS` via `mvnw test`).
+   - 7/7 tests E2E Playwright validés (`teacher-dashboard-isolation.spec.js`), incluant l'assertion sur « Mes cours enseignés » et le découplage Enseignant réel / Admin.

@@ -535,4 +535,71 @@ test.describe('Isolation du Dashboard Enseignant et Interface Admin d\'Assignati
     await expect(btnDetail).toHaveAttribute('aria-expanded', 'false');
   });
 
+  // =========================================================================
+  // Test 5 - Découplage Vue Enseignant Réel vs Vue Formateur Admin
+  // =========================================================================
+  test('Test 5 - Découplage : l\'enseignant réel voit ses cours assignés, l\'admin en vue formateur voit tout le catalogue', async ({ page }) => {
+    await setupAuth(page, adminUser);
+    await setupCommonRoutes(page, adminUser);
+
+    let calledMyAssigned = false;
+    let calledAllCourses = false;
+
+    const catalogCourses = [
+      { id: 'course-cat-1', title: 'HTML & CSS Fondations', description: 'Bases du web', chaptersCount: 5 },
+      { id: 'course-cat-2', title: 'JavaScript Moderne', description: 'ES6+ et DOM', chaptersCount: 8 }
+    ];
+
+    await page.route('**/api/courses/my-assigned-courses', async (route) => {
+      calledMyAssigned = true;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([])
+      });
+    });
+
+    await page.route('**/api/courses', async (route) => {
+      calledAllCourses = true;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(catalogCourses)
+      });
+    });
+
+    await page.route('**/api/chapters/pending', async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) });
+    });
+    await page.route('**/api/enrollments/stats', async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ totalEnrollments: 0 }) });
+    });
+    await page.route('**/api/courses/*/teachers', async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) });
+    });
+    await page.route('**/api/users/teachers', async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) });
+    });
+    await page.route('**/api/enrollments/my-courses', async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) });
+    });
+
+    await page.goto('/dashboard.html');
+
+    // Admin clique sur la "Vue Formateur"
+    const btnTeacherView = page.locator('#btn-view-teacher');
+    await expect(btnTeacherView).toBeVisible();
+    await btnTeacherView.click();
+
+    // Vérifier que c'est bien /api/courses qui a été sollicité pour l'admin
+    expect(calledAllCourses).toBe(true);
+    expect(calledMyAssigned).toBe(false);
+
+    // Vérifier que la section "Mes cours enseignés" affiche bien les cours du catalogue
+    const teacherCoursesGrid = page.locator('#teacher-courses-grid');
+    await expect(teacherCoursesGrid).toBeVisible();
+    await expect(teacherCoursesGrid).toContainText('HTML & CSS Fondations');
+    await expect(teacherCoursesGrid).toContainText('JavaScript Moderne');
+  });
+
 });
