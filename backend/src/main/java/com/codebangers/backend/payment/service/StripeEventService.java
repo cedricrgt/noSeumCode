@@ -126,7 +126,7 @@ public class StripeEventService {
                         enrollmentRepository.save(newEnrollment);
                     }
 
-                    if (tier == EnrollmentTier.VIP || tier == EnrollmentTier.WEB) {
+                    if (tier == EnrollmentTier.VIP || tier == EnrollmentTier.WEB || tier == EnrollmentTier.STARTER) {
                         enrollmentProvisioningService.enrollInBundleCourses(user, tier, cohort, status);
                     }
 

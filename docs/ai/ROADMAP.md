@@ -564,23 +564,32 @@ gantt
 
 ---
 
-### Sprint 27 : Modélisation des Enseignants & Sécurité Spring Boot (Backend TDD) (Terminé)
-- **27.1 Modèle Relationnel `course_teacher` & Flyway V020** :
-  - Création de la migration `V020__create_course_teacher_table.sql` (table de liaison `course_id UUID`, `teacher_id UUID`, `assigned_at`, `assigned_by_id`).
+### Sprint 27 : Modélisation Granulaire des Cours, Affectation des Enseignants & Sécurité Spring Boot (Backend TDD) (Terminé)
+- **27.1 Modèle Relationnel `course_teacher` & Flyway V020/V021** :
+  - Création de la migration `V020__create_course_teacher_table.sql` et `V021__decouple_courses_and_create_course_teacher.sql`.
+  - Découplage strict des offres commerciales (Starter, Web Pro, VIP) des 3 cours pédagogiques réels :
+    * Cours 1 (`c1...`) : `HTML5 & CSS3 Moderne` (`html-css`, tier requis `STARTER`).
+    * Cours 2 (`c3...`) : `Git, GitHub & Déploiement` (`git-github`, tier requis `STARTER`).
+    * Cours 3 (`c2...`) : `JavaScript ES6+ & DOM Interactif` (`javascript`, tier requis `WEB`).
+  - Table de liaison `course_teacher` (`course_id UUID`, `teacher_id UUID`, `assigned_at`, `assigned_by_id`).
   - Indexation sur `teacher_id` et `course_id` pour des performances optimales.
   - Refus architectural catégorique de l'altération du statut de paiement (`PaymentStatus` reste strictement financier).
 - **27.2 Entité Course & Repository JPA** :
   - Enrichissement de `Course.java` avec la relation `@ManyToMany` vers `User` (`assignedTeachers`).
-  - Ajout des méthodes de requête dans `CourseRepository` : `findAllByAssignedTeachersId(UUID teacherId)` et `isTeacherAssignedToCourse(UUID courseId, UUID teacherId)`.
+  - Ajout des méthodes de requête dans `CourseRepository` : `findAllByAssignedTeachersId(UUID teacherId)`, `findAllByAssignedTeacherId(UUID teacherId)` et `isTeacherAssignedToCourse(UUID courseId, UUID teacherId)`.
 - **27.3 Sécurité Spring Boot `@courseSecurity` (ABAC / RBAC)** :
   - Création du composant `@Component("courseSecurity") CourseSecurity` vérifiant si l'utilisateur connecté est `ADMIN` ou un enseignant assigné au cours ciblé.
   - Sécurisation de `CourseController` (`PUT /api/courses/{id}`, `DELETE /api/courses/{id}`) et `ChapterController` / `ContentController` avec `@PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageCourse(#id, authentication)")`.
 - **27.4 Endpoints REST Enseignants & Assignation** :
   - Endpoint `GET /api/courses/my-assigned-courses` retournant exclusivement les cours confiés au formateur connecté (`ROLE_TEACHER`).
   - Endpoints Admin `POST /api/courses/{id}/teachers/{teacherId}` et `DELETE /api/courses/{id}/teachers/{teacherId}` réservés à `ROLE_ADMIN`.
-- **27.5 Validation TDD Backend** :
-  - Tests slice `@DataJpaTest` validant les requêtes d'assignation.
-  - Tests unitaires et d'intégration Spring Security `CourseSecurityTest` et `CourseControllerSecurityTest` : validation formelle du code HTTP `403 Forbidden` si un formateur tente de modifier un cours auquel il n'est pas assigné.
+- **27.5 Provisioning Multi-Cours Résilient (`EnrollmentProvisioningService`)** :
+  - `EnrollmentTier.STARTER` : inscription de l'élève à `html-css` et `git-github`.
+  - `EnrollmentTier.WEB` et `VIP` : inscription de l'élève à `html-css`, `git-github` et `javascript`.
+  - Résilience d'accès par slug avec repli automatique par UUID canoniques et anciens slugs de packages.
+- **27.6 Validation TDD Backend (205 tests passés, 0 régression)** :
+  - Suite `EnrollmentBundleProvisioningTest` (7 tests) validant le découplage des offres commerciales et le provisioning multi-cours.
+  - Tests slice et proxy Spring Security `CourseSecurityTest`, `CourseTeacherServiceTest`, `CourseControllerSecurityTest`, `CourseMethodSecurityTest` : validation formelle du code HTTP `403 Forbidden` si un formateur tente de modifier un cours auquel il n'est pas assigné.
 
 ---
 
