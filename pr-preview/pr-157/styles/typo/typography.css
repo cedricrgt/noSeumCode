@@ -1,0 +1,41 @@
+
+.poppins-regular {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+}
+
+.bangers-regular {
+  font-family: "Bangers", cursive;
+  letter-spacing: 1px;
+}
+
+.gradient-text {
+  display: inline-block;
+  background: linear-gradient(
+    135deg,
+    var(--gradient-start),
+    var(--gradient-end)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+  transform: translateZ(0);
+  will-change: opacity;
+  animation: gradientGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes gradientGlow {
+  0% {
+    opacity: 0.92;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gradient-text {
+    animation: none;
+  }
+}
