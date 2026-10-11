@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+
+    <title>Suivi Mentor — 4 sessions individuelles | NoSeumCode</title>
+    <meta
+      name="description"
+      content="Accélère ta progression avec 4 sessions de mentorat individuel d'une heure. Limité à 3 places par cohorte."
+    />
+    <meta
+      name="keywords"
+      content="suivi mentor, mentorat dev web, coaching code individuel, apprendre à coder avec mentor, Cédric Ragot"
+    />
+    <meta name="author" content="Cédric Ragot" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://noseumcode.fr/suivi-mentor" />
+    <link rel="icon" type="image/png" href="images/favicon.png" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="NoSeumCode" />
+    <meta property="og:title" content="Suivi Mentor — 4 sessions individuelles | NoSeumCode" />
+    <meta
+      property="og:description"
+      content="Accélère ta progression avec 4 sessions de mentorat individuel d'une heure. Limité à 3 places par cohorte."
+    />
+    <meta property="og:url" content="https://noseumcode.fr/suivi-mentor" />
+    <meta property="og:image" content="https://noseumcode.fr/images/og/og-main.png" />
+    <meta property="og:locale" content="fr_FR" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Suivi Mentor — 4 sessions individuelles | NoSeumCode" />
+    <meta
+      name="twitter:description"
+      content="Accélère ta progression avec 4 sessions de mentorat individuel d'une heure. Limité à 3 places par cohorte."
+    />
+    <meta name="twitter:image" content="https://noseumcode.fr/images/og/og-main.png" />
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": "Suivi Mentor",
+      "provider": {
+        "@type": "Person",
+        "name": "Cédric Ragot",
+        "jobTitle": "Lead Developer & Formateur",
+        "url": "https://noseumcode.fr/"
+      },
+      "description": "4 sessions individuelles de 1h en tête-à-tête avec Cédric Ragot pour débloquer ton code et accélérer ton apprentissage.",
+      "offers": {
+        "@type": "Offer",
+        "price": "199.00",
+        "priceCurrency": "EUR",
+        "availability": "https://schema.org/InStock",
+        "url": "https://noseumcode.fr/suivi-mentor"
+      },
+      "url": "https://noseumcode.fr/suivi-mentor"
+    }
+    </script>
+
+    <!-- Plausible Analytics Cookieless & RGPD -->
+    <script>
+      window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments); };
+      window.addEventListener('load', function() {
+        (window.requestIdleCallback || function(cb) { setTimeout(cb, 1); })(function() {
+          var s = document.createElement('script');
+          s.defer = true;
+          s.setAttribute('data-domain', 'noseumcode.fr');
+          s.src = 'https://plausible.io/js/script.tagged-events.outbound-links.js';
+          document.head.appendChild(s);
+        });
+      });
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Bangers&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Bangers&display=swap"
+      />
+    </noscript>
+
+    <link rel="stylesheet" href="styles/dist/homepage.min.css?v=sprint16" />
+    <link rel="stylesheet" href="styles/dist/formations.min.css?v=sprint16" />
+    <link rel="stylesheet" href="styles/dist/components.min.css?v=sprint16" />
+
+    <style>
+      .mentor-page {
+        background-color: #070e18;
+        color: #f8fafc;
+      }
+      .mentor-hero {
+        padding: 5rem 1.5rem 3.5rem;
+        text-align: center;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .mentor-hero__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 6px 14px;
+        border-radius: 999px;
+        background: rgba(255, 51, 102, 0.15);
+        border: 1px solid rgba(255, 51, 102, 0.35);
+        color: #ff3366;
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+      }
+      .mentor-hero__title {
+        font-size: clamp(2.2rem, 5vw, 3.5rem);
+        line-height: 1.1;
+        margin-bottom: 1.25rem;
+        color: #ffffff;
+      }
+      .mentor-hero__title span {
+        color: #00ff87;
+      }
+      .mentor-hero__subtitle {
+        font-size: 1.15rem;
+        line-height: 1.6;
+        color: #cbd5e1;
+        max-width: 720px;
+        margin: 0 auto 2rem;
+      }
+      .mentor-hero__cta-group {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+      }
+      .mentor-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.5rem;
+        margin: 2.5rem 0;
+      }
+      .mentor-card-feature {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 1.75rem;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+      }
+      .mentor-card-feature:hover {
+        border-color: rgba(0, 255, 135, 0.3);
+        transform: translateY(-3px);
+      }
+      .mentor-card-feature h3 {
+        color: #00ff87;
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+      }
+      .mentor-card-feature p {
+        color: #cbd5e1;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin: 0;
+      }
+      .mentor-section-box {
+        background: #0d1522;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2.5rem 2rem;
+        margin: 3rem 0;
+      }
+      .mentor-check-list {
+        list-style: none;
+        padding: 0;
+        margin: 1.5rem 0;
+      }
+      .mentor-check-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.85rem;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+        color: #e2e8f0;
+        line-height: 1.5;
+      }
+      .mentor-check-list li svg {
+        flex-shrink: 0;
+        margin-top: 3px;
+        color: #00ff87;
+      }
+      .mentor-rarity-card {
+        background: linear-gradient(135deg, rgba(255, 51, 102, 0.08) 0%, rgba(13, 21, 34, 0.8) 100%);
+        border: 1px solid rgba(255, 51, 102, 0.25);
+        border-radius: 16px;
+        padding: 2rem;
+        margin: 3rem 0;
+        text-align: center;
+      }
+      .mentor-faq-accordion details {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        margin-bottom: 0.85rem;
+        padding: 1rem 1.25rem;
+      }
+      .mentor-faq-accordion summary {
+        font-weight: 600;
+        font-size: 1.05rem;
+        color: #ffffff;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .mentor-faq-accordion p {
+        margin-top: 0.75rem;
+        color: #cbd5e1;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+
+  <body class="mentor-page poppins-regular">
+    <a href="#mentor-content" class="skip-link">Aller au contenu principal</a>
+
+    <!-- Header injecté dynamiquement -->
+    <div id="header-placeholder"></div>
+
+    <main id="mentor-content">
+      <!-- HERO -->
+      <section class="mentor-hero">
+        <div class="mentor-hero__badge">
+          <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ff3366;"></span>
+          <span id="mentor-hero-counter">3 places disponibles pour la cohorte en cours</span>
+        </div>
+        <h1 class="mentor-hero__title bangers-regular">
+          Progresse deux fois plus vite avec un <span>suivi individuel</span>
+        </h1>
+        <p class="mentor-hero__subtitle">
+          4 sessions de 1h en tête-à-tête avec Cédric. Tu poses tes questions, on débloque ce qui bloque, on corrige ce qui mérite d'être corrigé.
+        </p>
+
+        <div class="mentor-hero__cta-group">
+          <a href="formations/starter?addon=mentor" class="button button__primary bangers-regular" style="font-size: 1.2rem; padding: 12px 24px;">
+            Ajouter le Suivi Mentor à mon pack (+199 €) →
+          </a>
+          <a href="index.html#parcours" class="button button__secondary bangers-regular" style="font-size: 1.1rem; padding: 12px 20px;">
+            Voir les packs sans suivi →
+          </a>
+        </div>
+        <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem;">
+          Option disponible avec le Pack Starter ou le Pack Web Pro • Remboursé si la 1ère session ne te convient pas
+        </p>
+      </section>
+
+      <div style="max-width: 900px; margin: 0 auto; padding: 0 1.5rem 4rem;">
+
+        <!-- SECTION 1 : CE QUI CHANGE AVEC LE SUIVI INDIVIDUEL -->
+        <section style="margin: 3rem 0;">
+          <h2 class="bangers-regular" style="font-size: 2.2rem; color: #fff; text-align: center; margin-bottom: 0.5rem;">
+            Ce que tu obtiens avec 4 sessions solo
+          </h2>
+          <p style="text-align: center; color: #94a3b8; font-size: 1.1rem; margin-bottom: 2rem;">
+            En cours collectif, les questions s'accumulent. En session individuelle, elles disparaissent.
+          </p>
+
+          <div class="mentor-grid-3">
+            <div class="mentor-card-feature">
+              <h3 class="bangers-regular">Ton propre rythme</h3>
+              <p>
+                En groupe, Cédric avance au rythme de six. En session solo, il avance au tien. Tu peux revenir sur un point autant de fois que nécessaire. Sans ralentir les autres. Sans te sentir con de demander.
+              </p>
+            </div>
+            <div class="mentor-card-feature">
+              <h3 class="bangers-regular">Sur ton vrai code</h3>
+              <p>
+                Il regarde ton code — le vrai, pas un exercice fictif. Les sessions sont organisées autour de ce que tu construis pendant la formation. Si tu bloques sur un projet, c'est sur ce projet qu'on travaille.
+              </p>
+            </div>
+            <div class="mentor-card-feature">
+              <h3 class="bangers-regular">Corrections concrètes</h3>
+              <p>
+                Tu repars avec des corrections concrètes, pas des encouragements. Un code propre expliqué, pas un simple « c'est bien mais tu peux faire mieux ».
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 2 : FORMAT DES SESSIONS -->
+        <section class="mentor-section-box">
+          <h2 class="bangers-regular" style="font-size: 2rem; color: #00ff87; margin-bottom: 1.5rem;">
+            Comment ça se passe
+          </h2>
+          <ul class="mentor-check-list">
+            <li>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span><strong>4 sessions de 1h</strong>, planifiées à ta convenance sur le mois.</span>
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span><strong>En visioconférence privée</strong>, avec partage d'écran pour coder et déboguer ensemble.</span>
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span><strong>Tu envoies tes questions et ton code en avance</strong> si tu veux — les sessions sont bien plus efficaces quand elles ont un sujet précis.</span>
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span><strong>Cédric prend des notes</strong> pendant la session — tu repars avec un résumé écrit des points clés et du refactoring abordé.</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- SECTION 3 : POUR QUI -->
+        <section style="margin: 3.5rem 0;">
+          <h2 class="bangers-regular" style="font-size: 2.2rem; color: #fff; margin-bottom: 1.5rem; text-align: center;">
+            Le suivi est fait pour toi si...
+          </h2>
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 2rem;">
+            <ul class="mentor-check-list" style="margin: 0;">
+              <li>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Tu sais que tu vas avoir besoin qu'on regarde ton code de près pour prendre de bonnes habitudes dès le début.</span>
+              </li>
+              <li>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Tu apprends mieux quand tu peux poser des questions en direct, plutôt que par forum écrit ou Discord.</span>
+              </li>
+              <li>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Tu veux aller plus vite que le rythme du groupe sur certains sujets ou débloquer un projet perso ambitieux.</span>
+              </li>
+              <li>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Tu prépares quelque chose de concret (portfolio, reconversion professionnelle, premier emploi) et tu veux un regard d'ingénieur senior sur ton travail.</span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- SECTION 4 : RARETÉ RÉELLE -->
+        <section class="mentor-rarity-card">
+          <span style="color: #ff3366; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Engagement de qualité</span>
+          <h2 class="bangers-regular" style="font-size: 2.3rem; color: #fff; margin: 0.5rem 0 1rem;">
+            3 places par cohorte. Pas plus.
+          </h2>
+          <p style="color: #cbd5e1; font-size: 1.05rem; line-height: 1.6; max-width: 650px; margin: 0 auto 1.5rem;">
+            Ce n'est pas un argument marketing artificiel. C'est une contrainte de temps bien réelle : 4 sessions d'une heure par élève, à préparer, animer et documenter, sur un mois où 6 élèves sont déjà en cours collectif. Au-delà de 3 élèves en suivi individuel par cohorte, la qualité baisse. Les 3 places existent pour garantir un accompagnement d'excellence.
+          </p>
+          <div style="display: inline-block; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,51,102,0.4); padding: 8px 18px; border-radius: 8px; color: #fff; font-weight: 600;">
+            <span id="mentor-rarity-counter" style="color: #00ff87; font-weight: 700;">3</span> places restantes pour la prochaine cohorte (Novembre 2026)
+          </div>
+        </section>
+
+        <!-- SECTION 5 : GARANTIE -->
+        <section style="background: rgba(0, 255, 135, 0.05); border: 1px solid rgba(0, 255, 135, 0.25); border-radius: 12px; padding: 2rem; margin: 3rem 0; text-align: center;">
+          <h2 class="bangers-regular" style="font-size: 2rem; color: #00ff87; margin-bottom: 0.75rem;">
+            Et si la première session ne te convient pas ?
+          </h2>
+          <p style="color: #e2e8f0; font-size: 1.05rem; line-height: 1.6; max-width: 680px; margin: 0 auto;">
+            Si après ta première session individuelle tu estimes que le format ne te correspond pas, on te rembourse intégralement les <strong>199 €</strong> de l'option. Le pack de base reste actif sans interruption. Zéro risque.
+          </p>
+        </section>
+
+        <!-- CTA FINAL -->
+        <section style="text-align: center; margin: 4rem 0;">
+          <h2 class="bangers-regular" style="font-size: 2.4rem; color: #fff; margin-bottom: 1rem;">
+            Prêt à passer au niveau supérieur ?
+          </h2>
+          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem;">
+            <a href="formations/starter?addon=mentor" class="button button__primary bangers-regular" style="font-size: 1.25rem; padding: 14px 28px;">
+              Ajouter au Pack Starter (498 €) →
+            </a>
+            <a href="formations/pack-web?addon=mentor" class="button button__primary bangers-regular" style="font-size: 1.25rem; padding: 14px 28px; background: #00ff87; color: #070e18;">
+              Ajouter au Pack Web Pro (648 €) →
+            </a>
+          </div>
+          <p style="color: #94a3b8; font-size: 0.85rem;">
+            Paiement en 3x sans frais disponible via Stripe & Klarna.
+          </p>
+        </section>
+
+        <!-- FAQ -->
+        <section style="margin-top: 4rem;">
+          <h2 class="bangers-regular" style="font-size: 2.2rem; color: #fff; text-align: center; margin-bottom: 2rem;">
+            Questions fréquentes sur le Suivi Mentor
+          </h2>
+          <div class="mentor-faq-accordion">
+            <details>
+              <summary>Est-ce que je dois choisir avant de commencer la formation ?</summary>
+              <p>
+                Oui. Les places sont limitées à 3 par cohorte et se réservent à l'inscription. Il n'est pas possible d'ajouter l'option en cours de formation si les places sont épuisées.
+              </p>
+            </details>
+            <details>
+              <summary>Est-ce que les sessions ont une date fixe ?</summary>
+              <p>
+                Non. Tu planifies tes 4 sessions quand tu veux sur le mois, selon tes disponibilités et celles de Cédric. Un lien de réservation t'est envoyé dès la confirmation de ton inscription.
+              </p>
+            </details>
+            <details>
+              <summary>Puis-je l'ajouter au pack Starter ou uniquement au Web Pro ?</summary>
+              <p>
+                Les deux. L'option Suivi Mentor est disponible avec le Starter (HTML/CSS) et le Web Pro (HTML/CSS + JavaScript). Elle s'ajoute pour +199 € quel que soit le pack choisi.
+              </p>
+            </details>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- Footer injecté dynamiquement -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Modales & Popovers partagés -->
+    <div id="popovers-placeholder"></div>
+
+    <script src="js/analytics.js?v=sprint16"></script>
+    <script src="js/header.min.js?v=sprint16"></script>
+    <script src="js/popover-hubspot.min.js?v=sprint16"></script>
+
+    <script>
+      // Récupération dynamique des places réelles via GET /api/cohorts/current
+      document.addEventListener("DOMContentLoaded", function() {
+        const apiBase = window.API_BASE_URL || "https://api.noseumcode.fr";
+        fetch(apiBase + "/api/cohorts/current")
+          .then(function(res) {
+            if (res.ok) return res.json();
+            throw new Error("HTTP " + res.status);
+          })
+          .then(function(data) {
+            let slots = 3;
+            if (data && data.starter && typeof data.starter.mentor_slots_remaining === "number") {
+              slots = data.starter.mentor_slots_remaining;
+            }
+            const heroCounter = document.getElementById("mentor-hero-counter");
+            const rarityCounter = document.getElementById("mentor-rarity-counter");
+            if (heroCounter) {
+              heroCounter.textContent = slots > 0 ? (slots + " place" + (slots > 1 ? "s" : "") + " disponible" + (slots > 1 ? "s" : "") + " pour la cohorte en cours") : "Complet pour cette cohorte";
+            }
+            if (rarityCounter) {
+              rarityCounter.textContent = slots;
+            }
+          })
+          .catch(function(err) {
+            console.warn("Could not fetch mentor slots, displaying default capacity:", err);
+          });
+      });
+    </script>
+  </body>
+</html>
