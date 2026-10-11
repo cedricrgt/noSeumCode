@@ -797,3 +797,93 @@ body.dashboard-body {
   text-decoration: underline;
 }
 
+/* ─── Sprint 28: Formateurs Référents & Isolation Dashboard ─── */
+.teacher-badges-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.teacher-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(14, 165, 233, 0.12);
+  color: #0369a1; /* Contrast > 5.3:1 on white (WCAG AA) */
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  padding: 0.25rem 0.55rem;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.teacher-badge-remove-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 2px;
+  cursor: pointer;
+  color: #0369a1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  transition: all 0.15s ease;
+}
+
+.teacher-badge-remove-btn:hover,
+.teacher-badge-remove-btn:focus-visible {
+  background: rgba(239, 68, 68, 0.2);
+  color: #b91c1c;
+  outline: 2px solid #b91c1c;
+  outline-offset: 1px;
+}
+
+.btn-open-assign-teacher {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  color: #334155;
+  padding: 0.25rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.2s ease;
+}
+
+.btn-open-assign-teacher:hover,
+.btn-open-assign-teacher:focus-visible {
+  border-color: #047857;
+  color: #047857;
+  background: rgba(4, 120, 87, 0.05);
+  outline: 2px solid #047857;
+  outline-offset: 1px;
+}
+
+.assign-teacher-popover {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 0.85rem;
+  margin-top: 0.5rem;
+  min-width: 250px;
+}
+
+.teacher-empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 16px;
+  color: var(--dash-text-muted);
+}
+
+

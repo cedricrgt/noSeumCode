@@ -1233,6 +1233,19 @@ function showGlobalDashboardToast(message, type = "success") {
   }, 5000);
 }
 window.showGlobalDashboardToast = showGlobalDashboardToast;
+window.showToast = showGlobalDashboardToast;
+
+function announceA11y(message) {
+  if (!message) return;
+  const announcer = document.getElementById("a11y-status-announcer");
+  if (announcer) {
+    announcer.textContent = "";
+    setTimeout(() => {
+      announcer.textContent = message;
+    }, 50);
+  }
+}
+window.announceA11y = announceA11y;
 
 async function downloadHubspotCsv(workshopId = null) {
   const token = localStorage.getItem("noseum_token") || currentAuth.token;
@@ -1280,52 +1293,49 @@ window.downloadHubspotCsv = downloadHubspotCsv;
 // ==========================================
 
 async function loadTeacherData() {
-  const res = await apiFetch("/api/courses");
+  const isTeacherRole = (activeDashboardView === "TEACHER") || (normalizeRole(currentAuth.user.role) === "TEACHER");
+  const endpoint = isTeacherRole ? "/api/courses/my-assigned-courses" : "/api/courses";
+  const res = await apiFetch(endpoint);
   if (res && res.ok) {
     allAvailableCourses = await res.json();
-  } else if (allAvailableCourses.length === 0) {
-    allAvailableCourses = [
-      { id: "c1000000-0000-0000-0000-000000000001", title: "HTML & CSS – Les Fondations du Web" },
-      { id: "c3000000-0000-0000-0000-000000000003", title: "Git & GitHub – L'outil n°1 des devs pro" },
-      { id: "c2000000-0000-0000-0000-000000000002", title: "JavaScript – L'interactivité au bout des doigts" }
-    ];
+  } else if (res && (res.status === 403 || res.status === 401)) {
+    allAvailableCourses = [];
+  } else if (!res && allAvailableCourses.length === 0) {
+    allAvailableCourses = [];
   }
 
-  // Load teacher chapters
-  if (teacherChapters.length === 0) {
-    teacherChapters = [
-      {
-        id: "chap-101",
-        courseId: "c1000000-0000-0000-0000-000000000001",
-        courseTitle: "HTML & CSS – Les Fondations du Web",
-        title: "Structure Sémantique & Accessibilité Web",
-        position: 1,
-        content: "# Structure Sémantique & Accessibilité Web\n\nApprenez à structurer des pages HTML5 modernes respectant les standards WCAG et le SEO sémantique.",
-        status: "APPROVED",
-        submittedAt: "2026-08-20T10:00:00"
-      },
-      {
-        id: "chap-102",
-        courseId: "c2000000-0000-0000-0000-000000000002",
-        courseTitle: "JavaScript – L'interactivité au bout des doigts",
-        title: "Manipulation du DOM & Gestionnaires d'Événements",
-        position: 2,
-        content: "# Manipulation du DOM\n\nSélection et manipulation dynamique des nœuds DOM en Vanilla JavaScript moderne.",
-        status: "PENDING_APPROVAL",
-        submittedAt: "2026-08-24T09:30:00"
-      },
-      {
-        id: "chap-103",
-        courseId: "c3000000-0000-0000-0000-000000000003",
-        courseTitle: "Git & GitHub – L'outil n°1 des devs pro",
-        title: "Gestion des Branches & Pull Requests",
-        position: 3,
-        content: "# Git & Pull Requests\n\nWorkflow GitHub professionnel avec validation de commits et merge sans conflit.",
-        status: "REJECTED",
-        rejectionReason: "Veuillez détailler les commandes de résolution de conflits (git merge --abort / git checkout).",
-        submittedAt: "2026-08-23T14:15:00"
+  // Load teacher chapters for assigned courses if not already populated
+  const assignedIds = new Set(allAvailableCourses.map(c => c.id));
+  if (allAvailableCourses.length > 0 && teacherChapters.length === 0) {
+    try {
+      const fetchedChapters = [];
+      for (const course of allAvailableCourses) {
+        const chapRes = await apiFetch(`/api/chapters/course/${course.id}/all`);
+        if (chapRes && chapRes.ok) {
+          const chaps = await chapRes.json();
+          if (Array.isArray(chaps)) {
+            chaps.forEach(ch => {
+              fetchedChapters.push({
+                id: ch.id,
+                courseId: course.id,
+                courseTitle: course.title,
+                title: ch.title,
+                position: ch.position,
+                content: ch.content || "",
+                status: ch.status || "APPROVED",
+                rejectionReason: ch.rejectionReason,
+                submittedAt: ch.submittedAt || ch.createdAt
+              });
+            });
+          }
+        }
       }
-    ];
+      if (fetchedChapters.length > 0) {
+        teacherChapters = fetchedChapters;
+      }
+    } catch (_) {}
+  } else if (allAvailableCourses.length === 0) {
+    teacherChapters = [];
   }
 
   renderTeacherDashboard();
@@ -1337,9 +1347,35 @@ function renderTeacherDashboard() {
   const statPending = document.getElementById("stat-teacher-pending");
   const statRejected = document.getElementById("stat-teacher-rejected");
 
-  const publishedCount = teacherChapters.filter(c => c.status === "APPROVED").length;
-  const pendingCount = teacherChapters.filter(c => c.status === "PENDING_APPROVAL").length;
-  const rejectedCount = teacherChapters.filter(c => c.status === "REJECTED").length;
+  if (allAvailableCourses.length === 0) {
+    if (statPublished) statPublished.textContent = "0";
+    if (statPending) statPending.textContent = "0";
+    if (statRejected) statRejected.textContent = "0";
+    if (grid) {
+      grid.innerHTML = `
+        <div class="teacher-empty-state" role="status" style="grid-column: 1 / -1; width: 100%; text-align: center; padding: 3rem 1.5rem; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 16px;">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 1rem auto; color: #64748b; display: block;" aria-hidden="true">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--dash-dark-navy); margin-bottom: 0.5rem;">
+            Aucun cours ne vous a encore été attribué. Contactez l'administrateur.
+          </h3>
+          <p style="font-size: 0.88rem; color: var(--dash-text-muted); max-width: 520px; margin: 0 auto; line-height: 1.6;">
+            Dès qu'un administrateur vous aura affecté à une formation, vous pourrez ajouter, éditer et soumettre vos chapitres pédagogiques.
+          </p>
+        </div>
+      `;
+    }
+    return;
+  }
+
+  const assignedIds = new Set(allAvailableCourses.map(c => c.id));
+  const visibleChapters = teacherChapters.filter(c => assignedIds.has(c.courseId));
+
+  const publishedCount = visibleChapters.filter(c => c.status === "APPROVED").length;
+  const pendingCount = visibleChapters.filter(c => c.status === "PENDING_APPROVAL").length;
+  const rejectedCount = visibleChapters.filter(c => c.status === "REJECTED").length;
 
   if (statPublished) statPublished.textContent = publishedCount;
   if (statPending) statPending.textContent = pendingCount;
@@ -1348,7 +1384,16 @@ function renderTeacherDashboard() {
   if (!grid) return;
   grid.innerHTML = "";
 
-  teacherChapters.forEach(chapter => {
+  if (visibleChapters.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column: 1 / -1; width: 100%; text-align: center; padding: 2.5rem 1.5rem; background: #ffffff; border: 1px dashed #e2e8f0; border-radius: 12px; color: var(--dash-text-muted);">
+        <p style="margin: 0; font-size: 0.92rem;">Aucun chapitre n'a encore été créé pour vos cours assignés. Cliquez sur « Ajouter une nouvelle section » ci-dessus pour commencer.</p>
+      </div>
+    `;
+    return;
+  }
+
+  visibleChapters.forEach(chapter => {
     const card = document.createElement("div");
     card.className = "dash-card";
 
@@ -1408,6 +1453,12 @@ function openAddChapterModal() {
   const contentInput = document.getElementById("chapter-content-input");
   const courseSelect = document.getElementById("chapter-course-select");
 
+  if (allAvailableCourses.length === 0) {
+    showGlobalDashboardToast("Action non autorisée : aucun cours ne vous a été attribué.", "error");
+    announceA11y("Action non autorisée : aucun cours ne vous a été attribué.");
+    return;
+  }
+
   if (titleHeading) titleHeading.textContent = "Ajouter une Section de Cours";
   if (chapterIdInput) chapterIdInput.value = "";
   if (titleInput) titleInput.value = "";
@@ -1428,6 +1479,13 @@ function openEditChapterModal(chapterId) {
   const chapter = teacherChapters.find(c => c.id === chapterId);
   if (!chapter) return;
 
+  const isAssigned = allAvailableCourses.some(c => c.id === chapter.courseId);
+  if (!isAssigned) {
+    showGlobalDashboardToast("Action non autorisée : vous n'enseignez pas ce cours.", "error");
+    announceA11y("Action non autorisée : vous n'enseignez pas ce cours.");
+    return;
+  }
+
   const modal = document.getElementById("add-chapter-modal");
   const titleHeading = document.getElementById("add-chapter-modal-title");
   const chapterIdInput = document.getElementById("chapter-id-input");
@@ -1436,7 +1494,7 @@ function openEditChapterModal(chapterId) {
   const contentInput = document.getElementById("chapter-content-input");
   const courseSelect = document.getElementById("chapter-course-select");
 
-  if (titleHeading) titleHeading.textContent = "✏️ Modifier la Section de Cours";
+  if (titleHeading) titleHeading.textContent = "Modifier la Section de Cours";
   if (chapterIdInput) chapterIdInput.value = chapter.id;
   if (titleInput) titleInput.value = chapter.title || "";
   if (positionInput) positionInput.value = chapter.position || 1;
@@ -1462,8 +1520,34 @@ async function handleSaveChapter(event) {
 
   if (!title) return;
 
+  const isAssigned = allAvailableCourses.some(c => c.id === courseId);
+  if (!isAssigned) {
+    showGlobalDashboardToast("Action non autorisée : vous n'enseignez pas ce cours.", "error");
+    announceA11y("Action non autorisée : vous n'enseignez pas ce cours.");
+    return;
+  }
+
   if (chapterId) {
-    // Modification d'une section existante
+    const res = await apiFetch(`/api/chapters/${chapterId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, position, content })
+    });
+
+    if (res && res.status === 403) {
+      showGlobalDashboardToast("Action non autorisée : vous n'enseignez pas ce cours.", "error");
+      announceA11y("Action non autorisée : vous n'enseignez pas ce cours.");
+      return;
+    }
+
+    if (!res || !res.ok) {
+      const err = res ? await res.json().catch(() => ({})) : {};
+      const errMsg = err.message || "Erreur lors de la mise à jour de la section.";
+      showGlobalDashboardToast(errMsg, "error");
+      announceA11y(errMsg);
+      return;
+    }
+
     const chapter = teacherChapters.find(c => c.id === chapterId);
     if (chapter) {
       chapter.title = title;
@@ -1474,31 +1558,44 @@ async function handleSaveChapter(event) {
       chapter.submittedAt = new Date().toISOString();
     }
 
-    // Envoyer la modification au backend API pour validation
-    await apiFetch(`/api/chapters/${chapterId}`, {
-      method: "PUT",
+    renderTeacherDashboard();
+    closeModal("add-chapter-modal");
+    showGlobalDashboardToast("Section mise à jour avec succès et soumise à la validation de l'administrateur !", "success");
+    announceA11y("Section mise à jour avec succès et soumise à la validation de l'administrateur.");
+  } else {
+    const res = await apiFetch(`/api/chapters/course/${courseId}`, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, position, content })
     });
 
-    notifications.unshift({
-      id: "notif-" + Date.now(),
-      title: "Section mise à jour et soumise",
-      message: `Votre section "${title}" a été mise à jour avec son contenu et renvoyée pour validation.`,
-      type: "COURSE_SUBMISSION",
-      isRead: false,
-      createdAt: new Date().toISOString()
-    });
+    if (res && res.status === 403) {
+      showGlobalDashboardToast("Action non autorisée : vous n'enseignez pas ce cours.", "error");
+      announceA11y("Action non autorisée : vous n'enseignez pas ce cours.");
+      return;
+    }
 
-    renderNotifications();
-    renderTeacherDashboard();
-    closeModal("add-chapter-modal");
-    alert("✅ Section mise à jour avec succès et soumise à la validation de l'administrateur !");
-  } else {
-    // Création d'une nouvelle section
+    if (!res || !res.ok) {
+      const err = res ? await res.json().catch(() => ({})) : {};
+      const errMsg = err.message || "Erreur lors de la création de la section.";
+      showGlobalDashboardToast(errMsg, "error");
+      announceA11y(errMsg);
+      return;
+    }
+
+    const createdChapter = await res.json().catch(() => null);
     const selectedCourse = allAvailableCourses.find(c => c.id === courseId) || { title: "Formation" };
 
-    const newChapter = {
+    const newChapter = createdChapter ? {
+      id: createdChapter.id,
+      courseId: courseId,
+      courseTitle: selectedCourse.title,
+      title: createdChapter.title || title,
+      position: createdChapter.position || position,
+      content: createdChapter.content || content,
+      status: createdChapter.status || "PENDING_APPROVAL",
+      submittedAt: createdChapter.submittedAt || new Date().toISOString()
+    } : {
       id: "chap-" + Date.now(),
       courseId,
       courseTitle: selectedCourse.title,
@@ -1510,27 +1607,10 @@ async function handleSaveChapter(event) {
     };
 
     teacherChapters.unshift(newChapter);
-
-    // Send to backend API
-    await apiFetch(`/api/chapters/course/${courseId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, position, content })
-    });
-
-    notifications.unshift({
-      id: "notif-" + Date.now(),
-      title: "Section soumise pour validation",
-      message: `Votre section "${title}" avec son contenu pédagogique a été envoyée aux administrateurs pour examen.`,
-      type: "COURSE_SUBMISSION",
-      isRead: false,
-      createdAt: new Date().toISOString()
-    });
-
-    renderNotifications();
     renderTeacherDashboard();
     closeModal("add-chapter-modal");
-    alert("Section enregistrée avec son contenu et soumise à la validation de l'administrateur !");
+    showGlobalDashboardToast("Section enregistrée avec son contenu et soumise à la validation de l'administrateur !", "success");
+    announceA11y("Section enregistrée avec son contenu et soumise à la validation de l'administrateur.");
   }
 }
 
@@ -1538,12 +1618,25 @@ async function submitChapter(chapterId) {
   const chapter = teacherChapters.find(c => c.id === chapterId);
   if (!chapter) return;
 
+  const isAssigned = allAvailableCourses.some(c => c.id === chapter.courseId);
+  if (!isAssigned) {
+    showGlobalDashboardToast("Action non autorisée : vous n'enseignez pas ce cours.", "error");
+    announceA11y("Action non autorisée : vous n'enseignez pas ce cours.");
+    return;
+  }
+
+  const res = await apiFetch(`/api/chapters/${chapterId}/submit`, { method: "POST" });
+  if (res && res.status === 403) {
+    showGlobalDashboardToast("Action non autorisée : vous n'enseignez pas ce cours.", "error");
+    announceA11y("Action non autorisée : vous n'enseignez pas ce cours.");
+    return;
+  }
+
   chapter.status = "PENDING_APPROVAL";
   chapter.rejectionReason = null;
   renderTeacherDashboard();
-
-  await apiFetch(`/api/chapters/${chapterId}/submit`, { method: "POST" });
-  alert("Section soumise avec succès aux administrateurs !");
+  showGlobalDashboardToast("Section soumise avec succès aux administrateurs !", "success");
+  announceA11y("Section soumise avec succès aux administrateurs.");
 }
 
 // ==========================================
@@ -1635,46 +1728,45 @@ async function loadAdminPendingChapters() {
   renderAdminDashboard();
 }
 
+let cachedTeachersList = null;
+
+async function getTeachersList() {
+  if (cachedTeachersList && cachedTeachersList.length > 0) {
+    return cachedTeachersList;
+  }
+  try {
+    const res = await apiFetch("/api/users?role=TEACHER");
+    if (res && res.ok) {
+      const users = await res.json();
+      if (Array.isArray(users)) {
+        cachedTeachersList = users.filter(u => u.role === "TEACHER");
+        if (cachedTeachersList.length > 0) return cachedTeachersList;
+      }
+    }
+  } catch (_) {}
+
+  if (adminUsersList && adminUsersList.length > 0) {
+    cachedTeachersList = adminUsersList.filter(u => u.role === "TEACHER");
+    if (cachedTeachersList.length > 0) return cachedTeachersList;
+  }
+  return cachedTeachersList || [];
+}
+
 async function loadAdminCourses() {
-  const tbody = document.getElementById("admin-courses-table-body");
   const statCourses = document.getElementById("stat-admin-courses");
 
-  const res = await apiFetch("/api/courses");
+  const res = await apiFetch("/api/courses/all");
   if (res && res.ok) {
     adminCoursesList = await res.json();
-  } else if (adminCoursesList.length === 0) {
-    adminCoursesList = [
-      {
-        id: "c1000000-0000-0000-0000-000000000001",
-        title: "HTML & CSS – Les Fondations du Web",
-        createdByName: "Cedric Ragot",
-        updatedByName: "Cedric Ragot",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 12).toISOString(),
-        updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString(),
-        chaptersCount: 3
-      },
-      {
-        id: "c2000000-0000-0000-0000-000000000002",
-        title: "JavaScript – L'interactivité au bout des doigts",
-        createdByName: "Ada Lovelace",
-        updatedByName: "Ada Lovelace",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 8).toISOString(),
-        updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 18).toISOString(),
-        chaptersCount: 3
-      },
-      {
-        id: "c3000000-0000-0000-0000-000000000003",
-        title: "Git & GitHub – L'outil n°1 des devs pro",
-        createdByName: "Admin CodeBangers",
-        updatedByName: "Admin CodeBangers",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
-        updatedAt: new Date().toISOString(),
-        chaptersCount: 3
-      }
-    ];
+  } else {
+    const resFallback = await apiFetch("/api/courses");
+    if (resFallback && resFallback.ok) {
+      adminCoursesList = await resFallback.json();
+    }
   }
 
   if (statCourses) statCourses.textContent = adminCoursesList.length;
+  await getTeachersList().catch(() => {});
   renderAdminCourses();
 }
 
@@ -1687,7 +1779,7 @@ function renderAdminCourses() {
   if (adminCoursesList.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="6" style="padding: 2rem; text-align: center; color: var(--dash-text-muted);">
+        <td colspan="7" style="padding: 2rem; text-align: center; color: var(--dash-text-muted);">
           Aucune formation active trouvée.
         </td>
       </tr>
@@ -1707,12 +1799,50 @@ function renderAdminCourses() {
       day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"
     }) : "—";
 
+    const teachers = course.assignedTeachers || [];
+    let teachersBadgesHtml = `<div class="teacher-badges-list" id="teacher-badges-${course.id}">`;
+    if (teachers.length > 0) {
+      teachers.forEach(t => {
+        const tName = ((t.firstName || "") + " " + (t.lastName || "")).trim() || t.userName || t.email;
+        teachersBadgesHtml += `
+          <span class="teacher-badge" data-teacher-id="${t.id}">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span class="teacher-name">${escapeHtml(tName)}</span>
+            <button type="button" class="teacher-badge-remove-btn"
+              aria-label="Retirer ${escapeHtml(tName)} du cours ${escapeHtml(course.title)}"
+              title="Retirer ce formateur"
+              onclick="handleRemoveTeacherFromCourse('${course.id}', '${t.id}', '${escapeHtml(tName).replace(/'/g, "\\'")}', '${escapeHtml(course.title).replace(/'/g, "\\'")}')">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              <span class="sr-only">Retirer ${escapeHtml(tName)}</span>
+            </button>
+          </span>
+        `;
+      });
+    } else {
+      teachersBadgesHtml += `<span class="no-teachers-text" style="color: var(--dash-text-muted); font-size: 0.8rem; font-style: italic;">Aucun formateur assigné</span>`;
+    }
+    teachersBadgesHtml += `</div>`;
+
+    teachersBadgesHtml += `
+      <button type="button" class="btn-open-assign-teacher" id="btn-assign-teacher-${course.id}"
+        aria-haspopup="dialog" aria-expanded="false" aria-controls="assign-teacher-form-${course.id}"
+        onclick="toggleAssignTeacherForm('${course.id}', '${escapeHtml(course.title).replace(/'/g, "\\'")}')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>+ Assigner un formateur</span>
+      </button>
+      <div id="assign-teacher-form-${course.id}" class="assign-teacher-popover" style="display: none;" role="dialog" aria-labelledby="assign-label-${course.id}">
+      </div>
+    `;
+
     tr.innerHTML = `
       <td style="padding: 1rem 1.25rem;">
         <a href="app.html?id=${course.id}" class="course-title-link" target="_blank" title="Cliquez pour accéder à la formation" style="display: inline-flex; align-items: center; gap: 5px;">
           ${ICONS.book} ${escapeHtml(course.title)}
           <span style="font-size: 0.75rem; color: #00d9ff;">↗</span>
         </a>
+      </td>
+      <td style="padding: 1rem 1.25rem; min-width: 230px;">
+        ${teachersBadgesHtml}
       </td>
       <td style="padding: 1rem 1.25rem; font-weight: 500; color: var(--dash-dark-navy);">
         ${escapeHtml(course.createdByName || "Admin")}
@@ -1734,6 +1864,144 @@ function renderAdminCourses() {
     `;
     tbody.appendChild(tr);
   });
+}
+
+async function toggleAssignTeacherForm(courseId, courseTitle) {
+  const formContainer = document.getElementById(`assign-teacher-form-${courseId}`);
+  const btn = document.getElementById(`btn-assign-teacher-${courseId}`);
+  if (!formContainer) return;
+
+  const isOpening = formContainer.style.display === "none";
+  if (!isOpening) {
+    closeAssignTeacherForm(courseId);
+    return;
+  }
+
+  // Close any other open assignment popovers
+  document.querySelectorAll(".assign-teacher-popover").forEach(el => {
+    el.style.display = "none";
+  });
+  document.querySelectorAll(".btn-open-assign-teacher").forEach(b => {
+    b.setAttribute("aria-expanded", "false");
+  });
+
+  const course = adminCoursesList.find(c => c.id === courseId);
+  const assignedIds = new Set((course && course.assignedTeachers ? course.assignedTeachers : []).map(t => t.id));
+  const teachers = await getTeachersList();
+  const availableTeachers = teachers.filter(t => !assignedIds.has(t.id));
+
+  formContainer.innerHTML = `
+    <form onsubmit="handleAssignTeacherToCourse(event, '${courseId}')" style="margin: 0;">
+      <label id="assign-label-${courseId}" for="assign-teacher-select-${courseId}" class="form-label" style="font-size: 0.82rem; font-weight: 700; color: var(--dash-dark-navy); display: block; margin-bottom: 0.35rem;">
+        Assigner un formateur au cours ${escapeHtml(courseTitle || "Formation")}
+      </label>
+      <select id="assign-teacher-select-${courseId}" class="form-select" style="width: 100%; font-size: 0.82rem; padding: 6px 10px; margin-bottom: 0.65rem;" required>
+        <option value="" disabled selected>Sélectionner un formateur...</option>
+        ${availableTeachers.map(t => {
+          const name = ((t.firstName || "") + " " + (t.lastName || "")).trim() || t.userName || t.email;
+          return `<option value="${t.id}">${escapeHtml(name)} (${escapeHtml(t.email)})</option>`;
+        }).join("")}
+      </select>
+      ${availableTeachers.length === 0 ? `
+        <p style="font-size: 0.78rem; color: #dc2626; margin: 0 0 0.5rem 0;">Tous les formateurs disponibles sont déjà assignés.</p>
+      ` : ""}
+      <div style="display: flex; gap: 0.4rem; justify-content: flex-end;">
+        <button type="button" class="button button__secondary" style="font-size: 0.78rem; padding: 4px 10px;" onclick="closeAssignTeacherForm('${courseId}')">Annuler</button>
+        <button type="submit" class="button button__primary bangers-regular" style="font-size: 0.82rem; padding: 4px 12px;" ${availableTeachers.length === 0 ? "disabled" : ""}>Valider l'affectation</button>
+      </div>
+    </form>
+  `;
+
+  formContainer.style.display = "block";
+  if (btn) btn.setAttribute("aria-expanded", "true");
+
+  const selectEl = document.getElementById(`assign-teacher-select-${courseId}`);
+  if (selectEl) selectEl.focus();
+
+  // Keyboard navigation & Escape key handling
+  formContainer.onkeydown = function(e) {
+    if (e.key === "Escape") {
+      e.stopPropagation();
+      closeAssignTeacherForm(courseId);
+    }
+  };
+}
+
+function closeAssignTeacherForm(courseId) {
+  const formContainer = document.getElementById(`assign-teacher-form-${courseId}`);
+  const btn = document.getElementById(`btn-assign-teacher-${courseId}`);
+  if (formContainer) formContainer.style.display = "none";
+  if (btn) {
+    btn.setAttribute("aria-expanded", "false");
+    btn.focus();
+  }
+}
+
+async function handleAssignTeacherToCourse(event, courseId) {
+  if (event && event.preventDefault) event.preventDefault();
+  const selectEl = document.getElementById(`assign-teacher-select-${courseId}`);
+  if (!selectEl || !selectEl.value) {
+    showGlobalDashboardToast("Veuillez sélectionner un formateur à assigner.", "error");
+    return;
+  }
+  const teacherId = selectEl.value;
+
+  try {
+    const res = await apiFetch(`/api/courses/${courseId}/teachers/${teacherId}`, {
+      method: "POST"
+    });
+
+    if (res && res.ok) {
+      const updatedCourse = await res.json();
+      const idx = adminCoursesList.findIndex(c => c.id === courseId);
+      if (idx !== -1 && updatedCourse) {
+        adminCoursesList[idx] = updatedCourse;
+      }
+      closeAssignTeacherForm(courseId);
+      renderAdminCourses();
+      showGlobalDashboardToast("Formateur assigné avec succès au cours.", "success");
+      announceA11y("Formateur assigné avec succès au cours.");
+    } else {
+      const err = res ? await res.json().catch(() => ({})) : {};
+      const errMsg = err.message || "Erreur lors de l'assignation du formateur.";
+      showGlobalDashboardToast(errMsg, "error");
+      announceA11y(errMsg);
+    }
+  } catch (e) {
+    showGlobalDashboardToast("Erreur réseau lors de l'affectation.", "error");
+  }
+}
+
+async function handleRemoveTeacherFromCourse(courseId, teacherId, teacherName, courseTitle) {
+  const confirmed = window.confirm(`Êtes-vous sûr de vouloir retirer ${teacherName} du cours ${courseTitle} ?`);
+  if (!confirmed) return;
+
+  try {
+    const res = await apiFetch(`/api/courses/${courseId}/teachers/${teacherId}`, {
+      method: "DELETE"
+    });
+
+    if (res && res.ok) {
+      const updatedCourse = await res.json();
+      const idx = adminCoursesList.findIndex(c => c.id === courseId);
+      if (idx !== -1 && updatedCourse) {
+        adminCoursesList[idx] = updatedCourse;
+      } else if (idx !== -1) {
+        adminCoursesList[idx].assignedTeachers = (adminCoursesList[idx].assignedTeachers || []).filter(t => t.id !== teacherId);
+      }
+      renderAdminCourses();
+      const successMsg = `Formateur ${teacherName} retiré du cours avec succès.`;
+      showGlobalDashboardToast(successMsg, "info");
+      announceA11y(successMsg);
+    } else {
+      const err = res ? await res.json().catch(() => ({})) : {};
+      const errMsg = err.message || "Erreur lors du retrait du formateur.";
+      showGlobalDashboardToast(errMsg, "error");
+      announceA11y(errMsg);
+    }
+  } catch (e) {
+    showGlobalDashboardToast("Erreur réseau lors du retrait.", "error");
+  }
 }
 
 async function loadAdminUsers() {
@@ -2758,3 +3026,20 @@ function setupEventListeners() {
     });
   }
 }
+
+// Global exports for inline HTML handlers & Playwright testing
+window.closeModal = closeModal;
+window.escapeHtml = escapeHtml;
+window.openAddChapterModal = openAddChapterModal;
+window.openEditChapterModal = openEditChapterModal;
+window.handleSaveChapter = handleSaveChapter;
+window.submitChapter = submitChapter;
+window.toggleAssignTeacherForm = toggleAssignTeacherForm;
+window.closeAssignTeacherForm = closeAssignTeacherForm;
+window.handleAssignTeacherToCourse = handleAssignTeacherToCourse;
+window.handleRemoveTeacherFromCourse = handleRemoveTeacherFromCourse;
+window.loadTeacherData = loadTeacherData;
+window.loadAdminCourses = loadAdminCourses;
+window.renderAdminCourses = renderAdminCourses;
+window.renderTeacherDashboard = renderTeacherDashboard;
+

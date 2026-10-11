@@ -36,7 +36,7 @@
 | **Sprint 25** | **Sécurité Métier & Idempotence Stripe (P0)** | IDOR, usurpation session, verrou idempotence Stripe DB | ✅ **Terminé** |
 | **Sprint 26** | **E2E, CORS & Hygiène (P1 & P2)** | Playwright CI, durcissement CORS, HttpOnly cookies, nettoyage repo | ✅ **Terminé** |
 | **Sprint 27** | **Modélisation Formateurs & Sécurité RBAC** | Table d'affectation `course_teacher`, Spring Security `@courseSecurity`, isolation stricte | ✅ **Terminé** |
-| **Sprint 28** | **Dashboard Formateur & Assignation Admin** | Vue filtrée Formateur, affectation accessible WCAG par l'Admin, cloisonnement édition | 📋 **À faire** |
+| **Sprint 28** | **Dashboard Formateur & Assignation Admin** | Vue filtrée Formateur, affectation accessible WCAG par l'Admin, cloisonnement édition | ✅ **Terminé** |
 | **Sprint 29** | **Discord Salons Scène & Vocaux Projets Manga** | Salons Scène de cours (live magistraux) + 3 salons vocaux libres de projets Manga (`luffy-code-lab`, `goku-dojo-live`, `naruto-team-hub`) | 📋 **À faire** |
 | **Sprint 30** | **Recette E2E Globale, Accessibilité & Clôture** | Validation E2E Playwright de bout en bout, tests accessibilité clavier/écran, ADR-024 | 📋 **À faire** |
 
@@ -167,7 +167,7 @@ gantt
     Sprint 26 (E2E, CORS & Nettoyage) :done, sp26, 2026-10-09, 1d
     section Phase 4 (Pédagogie, Formateurs & Salons Discord)
     Sprint 27 (Modélisation & Sécurité Formateurs) :done, sp27, 2026-10-11, 1d
-    Sprint 28 (Dashboard Formateurs & Admin)       :sp28, after sp27, 3d
+    Sprint 28 (Dashboard Formateurs & Admin)       :active, sp28, 2026-10-11, 2d
     Sprint 29 (Salons Scène & Vocaux Manga)       :sp29, after sp28, 3d
     Sprint 30 (Recette E2E & Clôture)             :sp30, after sp29, 2d
 ```
@@ -593,7 +593,7 @@ gantt
 
 ---
 
-### Sprint 28 : Dashboard Admin & Interface Enseignant (Frontend & A11y) (À faire)
+### Sprint 28 : Dashboard Admin & Interface Enseignant (Frontend & A11y) (Terminé)
 - **28.1 Dashboard Formateur Filtré (`dashboard.js`, `dashboard.html`)** :
   - Lorsque la vue active est `TEACHER`, chargement dynamique via `GET /api/courses/my-assigned-courses`.
   - La liste déroulante des cours et la gestion des chapitres n'affichent que les cours assignés au formateur.

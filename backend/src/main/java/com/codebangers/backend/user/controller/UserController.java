@@ -5,6 +5,7 @@ import com.codebangers.backend.course.repository.EnrollmentRepository;
 import com.codebangers.backend.user.dto.RoleUpdateRequest;
 import com.codebangers.backend.user.dto.UserRequest;
 import com.codebangers.backend.user.dto.UserResponse;
+import com.codebangers.backend.user.model.Role;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.service.UserService;
 import jakarta.validation.Valid;
@@ -32,8 +33,13 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UserResponse>> getAllUsers() {
+    public ResponseEntity<List<UserResponse>> getAllUsers(@RequestParam(required = false) Role role) {
         List<User> users = userService.getAllUsersForAdmin();
+        if (role != null) {
+            users = users.stream()
+                .filter(u -> u.getRole() == role)
+                .toList();
+        }
         List<UserResponse> responses = users.stream()
             .map(this::mapToResponse)
             .collect(Collectors.toList());
