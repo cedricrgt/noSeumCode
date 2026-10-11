@@ -113,7 +113,7 @@ public class ContentController {
     }
 
     @PostMapping("/chapter/{chapterId}")
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageChapter(#chapterId, authentication)")
     public ResponseEntity<ContentResponse> createContent(@PathVariable UUID chapterId,
                                                           @Valid @RequestBody ContentRequest request,
                                                           @AuthenticationPrincipal Jwt jwt) {
@@ -130,7 +130,7 @@ public class ContentController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageContent(#id, authentication)")
     public ResponseEntity<ContentResponse> updateContent(@PathVariable UUID id,
                                                           @Valid @RequestBody ContentRequest request) {
         Content content = contentService.updateContent(
@@ -144,14 +144,14 @@ public class ContentController {
     }
 
     @PutMapping("/{id}/toggle-published")
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageContent(#id, authentication)")
     public ResponseEntity<ContentResponse> togglePublished(@PathVariable UUID id) {
         Content content = contentService.togglePublished(id);
         return ResponseEntity.ok(mapToResponse(content));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageContent(#id, authentication)")
     public ResponseEntity<Void> softDeleteContent(@PathVariable UUID id) {
         contentService.softDeleteContent(id);
         return ResponseEntity.noContent().build();

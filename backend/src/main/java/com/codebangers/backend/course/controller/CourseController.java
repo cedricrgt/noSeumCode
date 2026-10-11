@@ -60,11 +60,30 @@ public class CourseController {
             .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/my-assigned-courses")
+    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    public ResponseEntity<List<CourseResponse>> getMyAssignedCourses(org.springframework.security.core.Authentication authentication) {
+        User user = resolveUserFromAuth(authentication);
+        List<Course> courses;
+        if (user.getRole() == com.codebangers.backend.user.model.Role.ADMIN) {
+            courses = courseService.getAssignedCoursesForTeacher(user.getId());
+            if (courses.isEmpty()) {
+                courses = courseService.getAllActiveCourses();
+            }
+        } else {
+            courses = courseService.getAssignedCoursesForTeacher(user.getId());
+        }
+        List<CourseResponse> responses = courses.stream()
+            .map(this::mapToResponse)
+            .toList();
+        return ResponseEntity.ok(responses);
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
     public ResponseEntity<CourseResponse> createCourse(@Valid @RequestBody CourseRequest request,
-                                                       @AuthenticationPrincipal Jwt jwt) {
-        User creator = resolveUser(jwt);
+                                                       org.springframework.security.core.Authentication authentication) {
+        User creator = resolveUserFromAuth(authentication);
         Course course = courseService.createCourse(
             request.getTitle(),
             request.getDescription(),
@@ -80,11 +99,11 @@ public class CourseController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageCourse(#id, authentication)")
     public ResponseEntity<CourseResponse> updateCourse(@PathVariable UUID id,
                                                        @Valid @RequestBody CourseRequest request,
-                                                       @AuthenticationPrincipal Jwt jwt) {
-        User updater = resolveUser(jwt);
+                                                       org.springframework.security.core.Authentication authentication) {
+        User updater = resolveUserFromAuth(authentication);
         Course course = courseService.updateCourse(
             id,
             request.getTitle(),
@@ -101,17 +120,51 @@ public class CourseController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> softDeleteCourse(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
-        User deleter = resolveUser(jwt);
+    @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageCourse(#id, authentication)")
+    public ResponseEntity<Void> softDeleteCourse(@PathVariable UUID id, org.springframework.security.core.Authentication authentication) {
+        User deleter = resolveUserFromAuth(authentication);
         courseService.softDeleteCourse(id, deleter);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/teachers/{teacherId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CourseResponse> assignTeacherToCourse(@PathVariable UUID id,
+                                                                @PathVariable UUID teacherId,
+                                                                org.springframework.security.core.Authentication authentication) {
+        User admin = resolveUserFromAuth(authentication);
+        Course updatedCourse = courseService.assignTeacherToCourse(id, teacherId, admin);
+        return ResponseEntity.ok(mapToResponse(updatedCourse));
+    }
+
+    @DeleteMapping("/{id}/teachers/{teacherId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CourseResponse> removeTeacherFromCourse(@PathVariable UUID id,
+                                                                  @PathVariable UUID teacherId) {
+        Course updatedCourse = courseService.removeTeacherFromCourse(id, teacherId);
+        return ResponseEntity.ok(mapToResponse(updatedCourse));
     }
 
     private User resolveUser(Jwt jwt) {
         String email = jwt.getSubject();
         return userService.getUserByEmail(email)
             .orElseThrow(() -> new ResourceNotFoundException("User", email));
+    }
+
+    private User resolveUserFromAuth(org.springframework.security.core.Authentication authentication) {
+        if (authentication == null) {
+            authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        }
+        if (authentication == null) {
+            throw new IllegalArgumentException("Non authentifié");
+        }
+        if (authentication.getPrincipal() instanceof Jwt jwt) {
+            return resolveUser(jwt);
+        }
+        String name = authentication.getName();
+        return userService.getUserByEmail(name)
+            .or(() -> userService.getUserByUserName(name))
+            .orElseThrow(() -> new ResourceNotFoundException("User", name));
     }
 
     private CourseResponse mapToResponse(Course course) {
@@ -144,6 +197,22 @@ public class CourseController {
             course.isPublished()
         );
         response.setRequiredTier(course.getRequiredTier() != null ? course.getRequiredTier() : com.codebangers.backend.course.model.CourseTier.STARTER);
+
+        if (course.getAssignedTeachers() != null) {
+            try {
+                response.setAssignedTeachers(course.getAssignedTeachers().stream()
+                    .map(t -> new com.codebangers.backend.course.dto.TeacherResponse(
+                        t.getId(),
+                        t.getFirstName(),
+                        t.getLastName(),
+                        t.getEmail(),
+                        t.getUserName()
+                    ))
+                    .toList());
+            } catch (Exception ignored) {
+            }
+        }
+
         return response;
     }
 }

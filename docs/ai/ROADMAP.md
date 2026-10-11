@@ -35,7 +35,7 @@
 | **Sprint 24** | **Qualité, CI/CD et Observabilité (P1 & P2)** | Nettoyage secrets env, Testcontainers PostgreSQL, refactoring métier, Correlation ID | 🚧 **À faire** |
 | **Sprint 25** | **Sécurité Métier & Idempotence Stripe (P0)** | IDOR, usurpation session, verrou idempotence Stripe DB | ✅ **Terminé** |
 | **Sprint 26** | **E2E, CORS & Hygiène (P1 & P2)** | Playwright CI, durcissement CORS, HttpOnly cookies, nettoyage repo | ✅ **Terminé** |
-| **Sprint 27** | **Modélisation Formateurs & Sécurité RBAC** | Table d'affectation `course_teacher`, Spring Security `@courseSecurity`, isolation stricte | 📋 **À faire** |
+| **Sprint 27** | **Modélisation Formateurs & Sécurité RBAC** | Table d'affectation `course_teacher`, Spring Security `@courseSecurity`, isolation stricte | ✅ **Terminé** |
 | **Sprint 28** | **Dashboard Formateur & Assignation Admin** | Vue filtrée Formateur, affectation accessible WCAG par l'Admin, cloisonnement édition | 📋 **À faire** |
 | **Sprint 29** | **Discord Salons Scène & Vocaux Projets Manga** | Salons Scène de cours (live magistraux) + 3 salons vocaux libres de projets Manga (`luffy-code-lab`, `goku-dojo-live`, `naruto-team-hub`) | 📋 **À faire** |
 | **Sprint 30** | **Recette E2E Globale, Accessibilité & Clôture** | Validation E2E Playwright de bout en bout, tests accessibilité clavier/écran, ADR-024 | 📋 **À faire** |
@@ -166,7 +166,7 @@ gantt
     Sprint 25 (Sécurité & Idempotence):done, sp25, 2026-10-08, 1d
     Sprint 26 (E2E, CORS & Nettoyage) :done, sp26, 2026-10-09, 1d
     section Phase 4 (Pédagogie, Formateurs & Salons Discord)
-    Sprint 27 (Modélisation & Sécurité Formateurs) :sp27, 2026-10-12, 3d
+    Sprint 27 (Modélisation & Sécurité Formateurs) :done, sp27, 2026-10-11, 1d
     Sprint 28 (Dashboard Formateurs & Admin)       :sp28, after sp27, 3d
     Sprint 29 (Salons Scène & Vocaux Manga)       :sp29, after sp28, 3d
     Sprint 30 (Recette E2E & Clôture)             :sp30, after sp29, 2d
@@ -564,7 +564,7 @@ gantt
 
 ---
 
-### Sprint 27 : Modélisation des Enseignants & Sécurité Spring Boot (Backend TDD) (À faire)
+### Sprint 27 : Modélisation des Enseignants & Sécurité Spring Boot (Backend TDD) (Terminé)
 - **27.1 Modèle Relationnel `course_teacher` & Flyway V020** :
   - Création de la migration `V020__create_course_teacher_table.sql` (table de liaison `course_id UUID`, `teacher_id UUID`, `assigned_at`, `assigned_by_id`).
   - Indexation sur `teacher_id` et `course_id` pour des performances optimales.

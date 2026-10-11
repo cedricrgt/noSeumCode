@@ -50,9 +50,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `docs/roadmap-sprints-27-30-teachers-discord`
-## Current State: Sprints 25 (Sécurité Métier & Idempotence Stripe) et 26 (Playwright E2E CI Gate, CORS production strict, hygiène repository) clôturés et validés à 100%. Roadmap Phase 4 validée et inscrite : gestion hermétique des enseignants (`course_teacher` + `@courseSecurity`), salons Scène Discord pour les cours magistraux, et 3 salons vocaux projets libres Manga (`luffy-code-lab`, `goku-dojo-live`, `naruto-team-hub`).
-## Next Steps: Démarrage du Sprint 27 (Backend TDD - Table `course_teacher`, Spring Security `@courseSecurity`, endpoints d'assignation et isolation 403).
+## Active Branch: `feat/sprint-27-teachers-modeling-security`
+## Current State: Sprint 27 (Modélisation des Enseignants & Sécurité Spring Boot) complété et validé à 100% via TDD (migration V020, relation ManyToMany course_teacher, composant ABAC/RBAC @courseSecurity, endpoints d'affectation et 199 tests passés avec 0 régression).
+## Next Steps: Démarrage du Sprint 28 (Dashboard Formateurs & Interface Admin accessible WCAG AA).
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN
