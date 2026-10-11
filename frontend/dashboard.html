@@ -333,8 +333,19 @@
         </div>
       </div>
 
+      <!-- Mes Formations (Vue Formateur) -->
+      <div class="dash-section-header" style="margin-top: 2rem;">
+        <h2 class="dash-section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          Mes Cours & Formations Actives
+        </h2>
+      </div>
+      <div id="teacher-courses-grid" class="courses-grid" style="margin-bottom: 2.5rem;">
+        <!-- Populated by renderTeacherCourses() in dashboard.js -->
+      </div>
+
       <!-- Gestion des Sections de Cours -->
-      <div class="dash-section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div class="dash-section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
         <h2 class="dash-section-title">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           Mes Sections & Chapitres de Cours
@@ -364,7 +375,7 @@
         </div>
       </div>
 
-      <div id="teacher-sections-list" class="courses-grid">
+      <div id="teacher-sections-list" style="margin-bottom: 2rem;">
         <!-- Populated by JS -->
       </div>
 
