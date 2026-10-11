@@ -28,10 +28,6 @@ public class CourseService {
         this.userRepository = userRepository;
     }
 
-    public CourseService(CourseRepository courseRepository) {
-        this(courseRepository, null);
-    }
-
     @Transactional(readOnly = true)
     public List<Course> getAllCourses() {
         return courseRepository.findAll();

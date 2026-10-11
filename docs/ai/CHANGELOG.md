@@ -1628,7 +1628,6 @@ eset-password.html.
    - `CourseTeacherServiceTest.java` : 6 tests validant l'assignation, la révocation, l'auto-assignation à la création et le rejet des non-enseignants.
    - `CourseControllerSecurityTest.java` : 7 tests validant le comportement du contrôleur REST.
    - `CourseMethodSecurityTest.java` : 9 tests avec proxy Spring Security validant formellement l'exception `AccessDeniedException` (HTTP 403 Forbidden) lorsqu'un formateur non assigné tente de modifier un cours.
-
-
-
+6. **Correctif d'Instanciation IoC (`CourseService.java`)** :
+   - Suppression du constructeur à un seul argument sans `@Autowired` pour garantir une instanciation Spring univoque et lever le blocage de démarrage du contexte applicatif complet (`NoSuchMethodException: <init>()` résolu).
 
