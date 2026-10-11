@@ -54,6 +54,16 @@ class DiscordServiceTest {
         lenient().when(discordGateway.getWebRoleId()).thenReturn("role-web-456");
         lenient().when(discordGateway.getVipRoleId()).thenReturn("role-vip-789");
         lenient().when(discordGateway.getDefaultRoleId()).thenReturn("role-member-000");
+        lenient().when(discordGateway.getStarterStageChannelUrl()).thenReturn("https://discord.com/channels/guild123/stage-starter");
+        lenient().when(discordGateway.getWebStageChannelUrl()).thenReturn("https://discord.com/channels/guild123/stage-web");
+        lenient().when(discordGateway.getLuffyVoiceChannelUrl()).thenReturn("https://discord.com/channels/guild123/voice-luffy");
+        lenient().when(discordGateway.getGokuVoiceChannelUrl()).thenReturn("https://discord.com/channels/guild123/voice-goku");
+        lenient().when(discordGateway.getNarutoVoiceChannelUrl()).thenReturn("https://discord.com/channels/guild123/voice-naruto");
+        lenient().when(discordGateway.getMangaVoiceChannelUrls()).thenReturn(java.util.Map.of(
+                "luffyCodeLabUrl", "https://discord.com/channels/guild123/voice-luffy",
+                "gokuDojoLiveUrl", "https://discord.com/channels/guild123/voice-goku",
+                "narutoTeamHubUrl", "https://discord.com/channels/guild123/voice-naruto"
+        ));
     }
 
     @Test
@@ -217,5 +227,84 @@ class DiscordServiceTest {
         List<String> names = discordService.resolveRoleNamesForUser(teacherUser);
 
         assertTrue(names.contains("Formateur"));
+    }
+
+    @Test
+    @DisplayName("Devrait résoudre le salon Scène Starter pour un apprenant Starter lié")
+    void shouldResolveStarterStageChannelUrlForStarterStudent() {
+        testUser.setDiscordUserId("discord-999");
+        Course course = new Course("HTML & CSS", "desc");
+        Enrollment enrollment = new Enrollment(testUser, course, PaymentStatus.PAID, 0, EnrollmentTier.STARTER, null);
+        when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(List.of(enrollment));
+        when(discordGateway.getGuildMember("discord-999")).thenReturn(Optional.of(
+                new DiscordMemberDto("discord-999", "jean", null, null, List.of("role-starter-123"), "2026-09-28")
+        ));
+
+        DiscordStatusResponse status = discordService.getDiscordStatus(testUser);
+
+        assertTrue(status.linked());
+        assertEquals("https://discord.com/channels/guild123/stage-starter", status.stageChannelUrl());
+        assertNotNull(status.mangaVoiceChannels());
+        assertEquals("https://discord.com/channels/guild123/voice-luffy", status.mangaVoiceChannels().get("luffyCodeLabUrl"));
+        assertEquals("https://discord.com/channels/guild123/voice-goku", status.mangaVoiceChannels().get("gokuDojoLiveUrl"));
+        assertEquals("https://discord.com/channels/guild123/voice-naruto", status.mangaVoiceChannels().get("narutoTeamHubUrl"));
+    }
+
+    @Test
+    @DisplayName("Devrait résoudre le salon Scène Web pour un apprenant Web ou VIP lié")
+    void shouldResolveWebStageChannelUrlForWebAndVipStudents() {
+        testUser.setDiscordUserId("discord-999");
+        Course course = new Course("JavaScript", "desc");
+        Enrollment enrollment = new Enrollment(testUser, course, PaymentStatus.PAID, 0, EnrollmentTier.WEB, null);
+        when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(List.of(enrollment));
+        when(discordGateway.getGuildMember("discord-999")).thenReturn(Optional.of(
+                new DiscordMemberDto("discord-999", "jean", null, null, List.of("role-web-456"), "2026-09-28")
+        ));
+
+        DiscordStatusResponse status = discordService.getDiscordStatus(testUser);
+
+        assertEquals("https://discord.com/channels/guild123/stage-web", status.stageChannelUrl());
+    }
+
+    @Test
+    @DisplayName("Devrait donner l'accès modérateur au salon Scène pour un Enseignant ou Administrateur")
+    void shouldResolveModeratorStageChannelUrlForTeacherAndAdmin() {
+        User teacher = new User("teacher1", "Prof", "X", "prof@example.com", "hash", Role.TEACHER);
+        teacher.setId(UUID.randomUUID());
+        teacher.setDiscordUserId("discord-prof-1");
+
+        when(discordGateway.getGuildMember("discord-prof-1")).thenReturn(Optional.of(
+                new DiscordMemberDto("discord-prof-1", "prof", null, null, List.of(), "2026-09-28")
+        ));
+
+        DiscordStatusResponse teacherStatus = discordService.getDiscordStatus(teacher);
+        assertEquals("https://discord.com/channels/guild123/stage-web", teacherStatus.stageChannelUrl());
+
+        User admin = new User("admin1", "Admin", "Boss", "admin@example.com", "hash", Role.ADMIN);
+        admin.setId(UUID.randomUUID());
+        admin.setDiscordUserId("discord-admin-1");
+
+        when(discordGateway.getGuildMember("discord-admin-1")).thenReturn(Optional.of(
+                new DiscordMemberDto("discord-admin-1", "admin", null, null, List.of(), "2026-09-28")
+        ));
+
+        DiscordStatusResponse adminStatus = discordService.getDiscordStatus(admin);
+        assertEquals("https://discord.com/channels/guild123/stage-web", adminStatus.stageChannelUrl());
+    }
+
+    @Test
+    @DisplayName("Devrait renvoyer une URL de salon Scène nulle si l'apprenant n'a aucune inscription payée")
+    void shouldReturnNullStageChannelUrlWhenNoPaidEnrollment() {
+        testUser.setDiscordUserId("discord-999");
+        when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(List.of());
+        when(discordGateway.getGuildMember("discord-999")).thenReturn(Optional.of(
+                new DiscordMemberDto("discord-999", "jean", null, null, List.of(), "2026-09-28")
+        ));
+
+        DiscordStatusResponse status = discordService.getDiscordStatus(testUser);
+
+        assertNull(status.stageChannelUrl());
+        assertNotNull(status.mangaVoiceChannels());
+        assertFalse(status.mangaVoiceChannels().isEmpty());
     }
 }

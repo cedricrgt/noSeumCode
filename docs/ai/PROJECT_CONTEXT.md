@@ -50,9 +50,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `feat/sprint-28-teacher-dashboard-admin-assignment`
-## Current State: Sprint 28 (Dashboard Admin & Interface Enseignant Frontend & A11y) terminé : cloisonnement strict du dashboard formateur (/api/courses/my-assigned-courses), composant accessible WCAG d'assignation/retrait de formateurs dans le dashboard admin, annonces vocales aria-live, 5 tests E2E Playwright validés (16 tests au total, 0 régression) et 206 tests backend validés.
-## Next Steps: Sprint 29 (Discord Salons Scène & Vocaux Projets Manga).
+## Active Branch: `feat/sprint-29-discord-stage-and-manga-voice-channels`
+## Current State: Sprint 29 (Automatisation Discord Avancée : Salons Scène & Vocaux Manga Multi-Projets) validé et terminé : intégration backend des salons Scène de cours et des 3 salons vocaux Manga (Luffy, Goku, Naruto), enrichissement du DTO Discord, intégration UI dashboard apprenant et formateur avec boutons profonds et modale accessible de liaison 1-clic. 212/212 tests passés au vert (0 échec, 0 régression).
+## Next Steps: Sprint 30 (Recette E2E Playwright, Audit Accessibilité & Clôture).
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN

@@ -1673,4 +1673,39 @@ eset-password.html.
    - Test 3 : Parcours admin complet : bascule d'onglet, ouverture popover, navigation clavier `Escape`, assignation d'un enseignant, affichage immédiat du badge et annonce vocale, retrait avec confirmation et feedback vocal.
    - **Bilan Tests** : 16/16 tests Playwright réussis (0 régression) et 206/206 tests unitaires/sécurité backend réussis.
 
+---
+
+## 2026-10-11 | Conversation: 6e223d6b-ce9b-4a35-b341-44d8c5ce59de
+
+**Type**: Sprint 29 — Automatisation Discord Avancée (Salons Scène & Salons Vocaux Manga Multi-Projets)  
+**Auteur**: Antigravity (Agent IA)  
+**Branche**: `feat/sprint-29-discord-stage-and-manga-voice-channels`  
+**Objectif**: Automatiser l'accès aux salons Scène de cours magistraux (`GUILD_STAGE_VOICE`) par package (Starter, Web/VIP) et aux 3 salons vocaux Manga d'entraide (`GUILD_VOICE` : `luffy-code-lab`, `goku-dojo-live`, `naruto-team-hub`), enrichir le DTO Discord de statut avec URLs profondes, intégrer les accès directs dans le Dashboard (Apprenants & Formateurs), proposer une modale de liaison Discord en 1 clic pour les utilisateurs non connectés, et garantir la résilience des tests (212/212 au vert).
+
+### Réalisations & Livrables :
+1. **Configuration & Paramétrage Discord (`application.properties`, `application-prod.properties`)** :
+   - Ajout des propriétés configurables des salons Scène (`discord.channels.stage.starter`, `discord.channels.stage.web`) et vocaux Manga (`discord.channels.voice.luffy`, `discord.channels.voice.goku`, `discord.channels.voice.naruto`) avec injection des variables d'environnement correspondantes.
+2. **Enrichissement du DTO de Statut Discord (`DiscordStatusResponse.java`)** :
+   - Ajout du champ `stageChannelUrl` (URL profonde du salon Scène résolu pour l'utilisateur).
+   - Ajout du champ `mangaVoiceChannels` (`Map<String, String>` associant les 3 clés de salons Manga `luffyCodeLabUrl`, `gokuDojoLiveUrl`, `narutoTeamHubUrl` à leurs URLs directes respectives).
+   - Préservation de la rétrocompatibilité via constructeur chaîné.
+3. **Ports & Adapters : Passerelle Discord (`DiscordGateway.java`, `DiscordGatewayImpl.java`)** :
+   - Ajout des getters pour les identifiants et les URLs des salons Scène et Manga.
+   - Méthode `buildChannelUrl(guildId, channelId)` générant le lien profond `https://discord.com/channels/{guildId}/{channelId}` ou basculant gracieusement sur `inviteUrl` si les identifiants ne sont pas renseignés (mode mock/test).
+4. **Service Métier Discord (`DiscordService.java`)** :
+   - Résolution contextualisée du salon Scène dans `getDiscordStatus(User user)` :
+     - Pour `TEACHER` et `ADMIN` : attribution du lien Scène modérateur (`webStageChannelUrl` ou `starterStageChannelUrl`).
+     - Pour `STUDENT` : résolution basée sur le palier d'inscription payante actif (`VIP`/`WEB` -> `webStageChannelUrl`, `STARTER` -> `starterStageChannelUrl`, aucun -> `null`).
+   - Distribution systématique de la carte des 3 salons Manga dès que l'utilisateur est lié à Discord.
+5. **Intégration Dashboard Frontend (`frontend/dashboard.html`, `frontend/js/dashboard.js`)** :
+   - Bannière supérieure Live pour les apprenants (`#student-live-bar`) avec bouton `[🎙️ Rejoindre le Cours en Direct (Salon Scène)]`.
+   - Bouton `[🎙️ Scène Live]` intégré sur chaque carte de cours active de l'apprenant.
+   - Bouton Formateur dans l'en-tête Enseignant (`#btn-teacher-lead-stage`) : `[🎙️ Animer le Direct (Modérateur Scène)]`.
+   - Modale accessible de connexion Discord en 1-clic (`#discord-connect-modal`) déclenchée avec focus trap et bouton de fermeture, interceptant tout clic vers un cours Scène ou un salon vocal lorsque le compte Discord n'est pas encore associé.
+   - Section « Espaces de Travail Collaboratif & Entraide » avec 3 cartes interactives pour `luffy-code-lab` (One Piece), `goku-dojo-live` (Dragon Ball) et `naruto-team-hub` (Naruto) comportant les badges de fonctionnalités (`STREAM`, `PAIR-PROGRAMMING`, `PROJETS D'ÉQUIPE`) et liens directs accessibles (`target="_blank"`, `rel="noopener noreferrer"`, `aria-label`).
+6. **Tests Unitaires & Validation Backend (212 tests passés, 0 échec, 0 régression)** :
+   - `DiscordGatewayImplTest.java` : tests de construction d'URLs directes et de repli lors d'identifiants manquants ou bot non configuré.
+   - `DiscordServiceTest.java` : tests de résolution des salons Scène pour Starter, Web, Enseignants/Admins et élèves non inscrits.
+   - 212 tests unitaires exécutés et validés via `mvnw test` avec `BUILD SUCCESS`.
+
 

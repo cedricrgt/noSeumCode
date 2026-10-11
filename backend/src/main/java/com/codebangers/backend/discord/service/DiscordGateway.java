@@ -3,6 +3,7 @@ package com.codebangers.backend.discord.service;
 import com.codebangers.backend.discord.dto.DiscordMemberDto;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -29,4 +30,28 @@ public interface DiscordGateway {
     String getVipRoleId();
 
     String getDefaultRoleId();
+
+    // Identifiants des salons (Sprint 29)
+    String getStageStarterChannelId();
+
+    String getStageWebChannelId();
+
+    String getVoiceLuffyChannelId();
+
+    String getVoiceGokuChannelId();
+
+    String getVoiceNarutoChannelId();
+
+    // URLs directes des salons (Sprint 29)
+    String getStarterStageChannelUrl();
+
+    String getWebStageChannelUrl();
+
+    String getLuffyVoiceChannelUrl();
+
+    String getGokuVoiceChannelUrl();
+
+    String getNarutoVoiceChannelUrl();
+
+    Map<String, String> getMangaVoiceChannelUrls();
 }

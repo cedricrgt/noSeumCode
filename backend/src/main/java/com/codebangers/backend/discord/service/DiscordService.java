@@ -18,7 +18,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 /**
- * Service métier de gestion de l'intégration Discord & liaison des comptes apprenants (Sprint 11).
+ * Service métier de gestion de l'intégration Discord, liaison des comptes apprenants
+ * et résolution des accès aux salons Scène et salons Manga multi-projets (Sprint 11 & 29).
  */
 @Service
 @Transactional
@@ -40,7 +41,8 @@ public class DiscordService {
     }
 
     /**
-     * Retourne le statut de connexion Discord actuel d'un utilisateur.
+     * Retourne le statut de connexion Discord actuel d'un utilisateur, incluant
+     * l'accès direct aux salons Scène (selon palier/rôle) et aux 3 salons Manga.
      */
     @Transactional(readOnly = true)
     public DiscordStatusResponse getDiscordStatus(User user) {
@@ -53,7 +55,9 @@ public class DiscordService {
                     null,
                     false,
                     List.of(),
-                    discordGateway.getInviteUrl()
+                    discordGateway.getInviteUrl(),
+                    null,
+                    Map.of()
             );
         }
 
@@ -61,6 +65,8 @@ public class DiscordService {
         boolean serverJoined = memberOpt.isPresent();
 
         List<String> assignedRoleNames = resolveRoleNamesForUser(user);
+        String stageChannelUrl = resolveStageChannelUrl(user);
+        Map<String, String> mangaVoiceChannels = discordGateway.getMangaVoiceChannelUrls();
 
         return new DiscordStatusResponse(
                 true,
@@ -70,8 +76,48 @@ public class DiscordService {
                 user.getDiscordLinkedAt(),
                 serverJoined,
                 assignedRoleNames,
-                discordGateway.getInviteUrl()
+                discordGateway.getInviteUrl(),
+                stageChannelUrl,
+                mangaVoiceChannels
         );
+    }
+
+    /**
+     * Résout l'URL du salon Scène direct selon le statut modérateur (ADMIN/TEACHER)
+     * ou le palier d'inscription payante de l'apprenant (Sprint 29).
+     */
+    public String resolveStageChannelUrl(User user) {
+        if (user == null) return null;
+
+        // Modérateurs / Speakers : Administrateurs et Formateurs
+        if (user.getRole() == Role.ADMIN || user.getRole() == Role.TEACHER) {
+            String webStage = discordGateway.getWebStageChannelUrl();
+            if (webStage != null && !webStage.isBlank() && !webStage.equals(discordGateway.getInviteUrl())) {
+                return webStage;
+            }
+            String starterStage = discordGateway.getStarterStageChannelUrl();
+            if (starterStage != null && !starterStage.isBlank() && !starterStage.equals(discordGateway.getInviteUrl())) {
+                return starterStage;
+            }
+            return webStage != null ? webStage : discordGateway.getInviteUrl();
+        }
+
+        // Apprenants inscrits : résolution selon le palier payé le plus élevé
+        List<Enrollment> enrollments = enrollmentRepository.findByUserId(user.getId());
+        EnrollmentTier highestTier = enrollments.stream()
+                .filter(e -> e.getPaymentStatus() == PaymentStatus.PAID)
+                .map(Enrollment::getTier)
+                .filter(Objects::nonNull)
+                .max(Comparator.comparingInt(EnrollmentTier::getLevel))
+                .orElse(null);
+
+        if (highestTier == EnrollmentTier.VIP || highestTier == EnrollmentTier.WEB) {
+            return discordGateway.getWebStageChannelUrl();
+        } else if (highestTier == EnrollmentTier.STARTER) {
+            return discordGateway.getStarterStageChannelUrl();
+        }
+
+        return null;
     }
 
     /**
