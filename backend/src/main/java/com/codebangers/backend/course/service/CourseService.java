@@ -211,7 +211,9 @@ public class CourseService {
         }
 
         course.addTeacher(teacher);
-        return courseRepository.save(course);
+        Course saved = courseRepository.save(course);
+        courseRepository.flush();
+        return saved;
     }
 
     public Course removeTeacherFromCourse(UUID courseId, UUID teacherId) {
@@ -226,6 +228,8 @@ public class CourseService {
             .orElseThrow(() -> new ResourceNotFoundException("User", teacherId));
 
         course.removeTeacher(teacher);
-        return courseRepository.save(course);
+        Course saved = courseRepository.save(course);
+        courseRepository.flush();
+        return saved;
     }
 }
