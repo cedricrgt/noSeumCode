@@ -1743,3 +1743,58 @@ eset-password.html.
 4. **Validation des tests** :
    - 213/213 tests unitaires et de sécurité backend passés avec succès (`BUILD SUCCESS` via `mvnw test`).
    - 7/7 tests E2E Playwright validés (`teacher-dashboard-isolation.spec.js`), incluant l'assertion sur « Mes cours enseignés » et le découplage Enseignant réel / Admin.
+
+---
+
+## 2026-10-11 | Conversation: 6e223d6b-ce9b-4a35-b341-44d8c5ce59de
+
+**Type**: Correctif Session Hibernate & Gestion d'Erreurs Toast Formateur  
+**Auteur**: Antigravity (Agent IA)  
+**Branche**: `fix/teacher-assigned-courses-lazy-fetch-error-handling`  
+**Objectif**: Éliminer tout risque de `LazyInitializationException` sur les entités d'audit lors de la sérialisation DTO des cours assignés, et stopper le masquage silencieux des erreurs HTTP 403/500 côté frontend.
+
+### Réalisations & Livrables :
+1. **Backend : Requête JPQL avec Fetch Eager (`CourseRepository.java`)** :
+   - Requête `findAllByAssignedTeachersId` et `findAllByAssignedTeacherId` enrichie avec `LEFT JOIN FETCH c.assignedTeachers t`, `LEFT JOIN FETCH c.createdBy` et `LEFT JOIN FETCH c.updatedBy`.
+2. **Backend : Transactionnalité & Sécurisation Défensive DTO (`CourseController.java`)** :
+   - Ajout de `@Transactional(readOnly = true)` sur l'endpoint `getMyAssignedCourses`.
+   - Protection défensive complète de `mapToResponse` englobant `course.getCreatedBy()` et `course.getUpdatedBy()` dans un bloc `try-catch` avec fallback gracieux sur `"Admin"`.
+   - Ajout d'un test unitaire `mapToResponseGracefullyHandlesLazyInitializationException` dans `CourseControllerSecurityTest.java`.
+3. **Frontend : Arrêt du masquage silencieux & Alignement Réactif (`frontend/js/dashboard.js`)** :
+   - `loadTeacherData()` : notifications toast immédiates (`showGlobalDashboardToast`) et logs console sur HTTP 403 (droits non synchronisés) et HTTP >= 500 (erreur technique serveur).
+   - `loadStoredAuth()` : alignement réactif immédiat vers la vue `TEACHER` (`applyDashboardView("TEACHER")` + `loadTeacherData()`) lorsque `/api/auth/me` résout un rôle `TEACHER` différent de l'état initial.
+4. **Validation des tests** :
+   - 214/214 tests unitaires et de sécurité backend passés avec succès (`BUILD SUCCESS` via `mvnw test`).
+   - 9/9 tests E2E Playwright validés (`teacher-dashboard-isolation.spec.js`), incluant les nouveaux tests de feedback toast sur 403 et d'alignement réactif.
+
+---
+
+## 2026-10-11 | Conversation: 6e223d6b-ce9b-4a35-b341-44d8c5ce59de
+
+**Type**: Durcissement des Tests & Éradication des Faux Positifs (Real-World Testing, ADR-024)  
+**Auteur**: Antigravity (Agent IA)  
+**Branche**: `fix/teacher-assigned-courses-lazy-fetch-error-handling`  
+**Objectif**: Mettre en place des tests qui éprouvent la réalité opérationnelle de bout en bout (persistance en base réelle, sessions Hibernate, tokens JWT signés) et requalifier rigoureusement les tests de surface mockés.
+
+### Réalisations & Livrables :
+1. **Test d'Intégration Réel Backend (`CourseTeacherIntegrationTest.java`)** :
+   - Test Spring Boot complet (`@SpringBootTest(webEnvironment = RANDOM_PORT)`).
+   - Insertion réelle en base (Admin, Formateur, Cours avec `createdBy = admin`, Chapitre).
+   - Génération de vrais jetons JWT via `JwtService` pour Admin et Teacher.
+   - Appel réel `POST /api/courses/{courseId}/teachers/{teacherId}` via `MockMvc` (Spring Security actif).
+   - Assertion de persistance effective dans la table de jointure `course_teacher`.
+   - Appel réel `GET /api/courses/my-assigned-courses` avec le token Formateur.
+   - Assertions strictes : HTTP 200, absence de `LazyInitializationException`, présence de `chaptersCount`, nom du créateur et formateurs assignés.
+   - Éradication de `StaleObjectStateException` : suppression des appels manuels `setId()` sur les entités `@GeneratedValue` pour garantir l'exécution de `persist()` au lieu de `merge()` sous PostgreSQL réel (Testcontainers CI). Nettoyage relationnel en cascade (`tearDown`).
+2. **Test E2E Playwright Dé-mocké (`teacher-dashboard-live.spec.js`)** :
+   - Interdiction formelle de tout `page.route()` pour les routes `/api/auth/*` ou `/api/courses/*`.
+   - Parcours complet : vérification probe des identifiants réels -> connexion admin -> assignation formateur -> déconnexion UI `globalLogout` -> connexion formateur -> vérification vue `#view-teacher` et badge « FORMATEUR RÉFÉRENT ».
+   - Sonde de disponibilité préliminaire évitant les faux négatifs de CI lorsque l'environnement cible n'a pas d'identifiants live provisionnés.
+3. **Requalification QA & Décision d'Architecture (ADR-024)** :
+   - Requalification formelle de `teacher-dashboard-isolation.spec.js` en « Test de Composant UI ».
+   - Enregistrement de l'ADR-024 dans `docs/ai/DECISIONS.md`.
+4. **Validation des tests** :
+   - 215 tests backend exécutés via Maven (`BUILD SUCCESS`, 0 échec, 0 erreur).
+   - 21 tests Playwright exécutés (`20 passed, 1 skipped`).
+
+

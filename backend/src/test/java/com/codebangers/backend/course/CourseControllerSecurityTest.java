@@ -194,4 +194,27 @@ class CourseControllerSecurityTest {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         verify(courseService).softDeleteCourse(eq(courseA.getId()), eq(teacherA));
     }
+
+    @Test
+    @DisplayName("mapToResponse gracefully handles LazyInitializationException on createdBy/updatedBy")
+    void mapToResponseGracefullyHandlesLazyInitializationException() {
+        User lazyUserProxy = mock(User.class);
+        when(lazyUserProxy.getFirstName()).thenThrow(new org.hibernate.LazyInitializationException("could not initialize proxy - no Session"));
+
+        Course lazyCourse = new Course("Cours Lazy", "Description Lazy");
+        lazyCourse.setId(UUID.randomUUID());
+        lazyCourse.setCreatedBy(lazyUserProxy);
+        lazyCourse.setUpdatedBy(lazyUserProxy);
+
+        when(courseService.getAssignedCoursesForTeacher(teacherA.getId())).thenReturn(List.of(lazyCourse));
+
+        Authentication auth = mockAuth(teacherA, "ROLE_TEACHER");
+        ResponseEntity<List<CourseResponse>> response = courseController.getMyAssignedCourses(auth);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
+        assertEquals("Admin", response.getBody().get(0).getCreatedByName());
+        assertEquals("Admin", response.getBody().get(0).getUpdatedByName());
+    }
 }

@@ -219,4 +219,15 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 - Basculer sur une session HTTP classique avec état serveur (Spring Session / Redis) : rejeté pour préserver l'architecture stateless de l'API REST et éviter les surcoûts d'infrastructure.
 **Conséquence**: Éradication du vecteur d'exfiltration de jetons par XSS, suppression du JWT des fragments d'URL lors des flux OAuth2, et protection CSRF standardisée sans remise en cause de l'architecture REST stateless.
 
+## ADR-024 — Ségrégation Stricte des Tests : Tests de Composants UI vs Tests E2E Réels
+**Status**: [ACCEPTED]
+**Décision**: 
+1. **Requalification des tests avec mock réseau (`page.route()`)** : Tout test Playwright utilisant `page.route()` pour intercepter ou simuler des réponses HTTP (APIs `/api/*`) est formellement requalifié en **« Test de Composant UI »** (ou test d'intégration frontend isolé). Il valide le contrat visuel, l'accessibilité et la réactivité du DOM, mais **ne prouve en aucun cas** la validité du contrat réseau ou backend.
+2. **Réserve exclusive de l'appellation « Test E2E »** : L'appellation E2E (End-to-End) est réservée exclusivement aux suites de tests traversant la pile complète sans aucune interception réseau : client navigateur réel -> réseau HTTP réel -> backend Spring Boot réel -> base de données relationnelle persistée.
+3. **Tests d'Intégration Réels Backend (`@SpringBootTest`)** : Toute association d'entités avec relations `LAZY`, projection DTO ou sécurité JWT doit obligatoirement être couverte par un test d'intégration Spring Boot réel (`MockMvc` avec contexte Spring Security et transaction de base de données réelle) pour interdire les faux positifs liés aux sessions Hibernate (`LazyInitializationException`).
+**Alternative rejetée**: 
+- Qualifier de « E2E » des tests Playwright entièrement mockés via `page.route()` (rejetée car cela masque les erreurs 403 de tokens, les incompatibilités de contrat DTO et les erreurs 500 Hibernate, créant un faux sentiment de sécurité).
+**Conséquence**: Éradication des faux positifs en CI/CD, traçabilité nette entre tests de surface UI et validation d'intégration opérationnelle de bout en bout.
+
+
 
