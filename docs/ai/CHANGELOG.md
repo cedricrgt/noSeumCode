@@ -1649,7 +1649,8 @@ eset-password.html.
 1. **Cloisonnement du Dashboard Enseignant (`frontend/js/dashboard.js`)** :
    - `loadTeacherData()` : appel conditionnel de `GET /api/courses/my-assigned-courses` lorsque le rôle ou la vue active est `TEACHER`.
    - `renderTeacherDashboard()` : affichage d'un état vide bienveillant (« Aucun cours ne vous a encore été attribué. Contactez l'administrateur. ») lorsque la liste de cours assignés est vide. Filtrage strict des sections pédagogiques par cours assignés.
-   - `openAddChapterModal()` et `openEditChapterModal()` : alimentation du sélecteur `#chapter-course-select` exclusivement avec les cours assignés. Blocage de l'ouverture si aucun cours n'est assigné.
+   - `openAddChapterModal()` et `openEditChapterModal()` : alimentation du sélecteur `#chapter-course-select` exclusivement avec les cours assignés, avec support du pré-ciblage `openAddChapterModal(courseId)`. Blocage de l'ouverture si aucun cours n'est assigné.
+   - Ajout de la section « Mes Cours & Formations Enseignés » (`#teacher-courses-grid`) et de la stat « Formations assignées » (`#stat-teacher-courses-count`) permettant au formateur d'accéder directement au visualiseur LMS de chaque formation (`app.html?id=${course.id}`) et de prévisualiser son contenu.
    - `handleSaveChapter()` et `submitChapter()` : validation côté client et interception des réponses API HTTP 403 Forbidden avec notifications toast d'erreur et retours vocaux : *« Action non autorisée : vous n'enseignez pas ce cours. »*.
 2. **Interface Admin d'Affectation des Formateurs (`frontend/dashboard.html`, `dashboard.js`, `dashboard.css`)** :
    - Ajout d'une colonne « Formateurs Référents » dans le tableau de gestion des cours de la console admin (`#admin-courses-table`).

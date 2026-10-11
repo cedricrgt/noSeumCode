@@ -270,11 +270,20 @@
       <!-- Stats -->
       <div class="stats-grid">
         <div class="stat-card">
+          <div class="stat-icon-wrapper blue">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+          <div>
+            <div id="stat-teacher-courses-count" class="stat-value">0</div>
+            <div class="stat-label">Formations assignées</div>
+          </div>
+        </div>
+        <div class="stat-card">
           <div class="stat-icon-wrapper green">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
           <div>
-            <div id="stat-teacher-published" class="stat-value">1</div>
+            <div id="stat-teacher-published" class="stat-value">0</div>
             <div class="stat-label">Sections validées & publiées</div>
           </div>
         </div>
@@ -283,7 +292,7 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           </div>
           <div>
-            <div id="stat-teacher-pending" class="stat-value">1</div>
+            <div id="stat-teacher-pending" class="stat-value">0</div>
             <div class="stat-label">En attente de validation Admin</div>
           </div>
         </div>
@@ -292,10 +301,21 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           </div>
           <div>
-            <div id="stat-teacher-rejected" class="stat-value">1</div>
+            <div id="stat-teacher-rejected" class="stat-value">0</div>
             <div class="stat-label">Sections avec retours Admin</div>
           </div>
         </div>
+      </div>
+
+      <!-- Mes Cours & Formations Enseignés -->
+      <div class="dash-section-header">
+        <h2 class="dash-section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          Mes Cours & Formations Enseignés
+        </h2>
+      </div>
+      <div id="teacher-courses-grid" class="courses-grid" style="margin-bottom: 2.5rem;">
+        <!-- Populated by JS -->
       </div>
 
       <!-- Gestion des Sections de Cours -->

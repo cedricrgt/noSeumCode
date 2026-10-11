@@ -102,6 +102,16 @@ test.describe('Isolation du Dashboard Enseignant et Interface Admin d\'Assignati
     const heroTitle = page.locator('#dash-hero-title');
     await expect(heroTitle).toContainText('ESPACE CRÉATION & FORMATEUR');
 
+    // Vérifier l'accès direct aux cours enseignés (grille de cours enseignant)
+    const teacherCoursesGrid = page.locator('#teacher-courses-grid');
+    await expect(teacherCoursesGrid).toBeVisible();
+    await expect(teacherCoursesGrid).toContainText('Clean Architecture & Spring Boot 3');
+    await expect(teacherCoursesGrid).toContainText('FORMATEUR RÉFÉRENT');
+
+    const courseDirectLink = teacherCoursesGrid.locator('a[href="app.html?id=course-clean-arch-101"]');
+    await expect(courseDirectLink).toBeVisible();
+    await expect(courseDirectLink).toContainText('Accéder au cours');
+
     // Vérifier la présence du chapitre du cours assigné
     const chapterCard = page.locator('#teacher-sections-list');
     await expect(chapterCard).toContainText('Ports & Adapters en Java');

@@ -1342,17 +1342,21 @@ async function loadTeacherData() {
 }
 
 function renderTeacherDashboard() {
+  const coursesGrid = document.getElementById("teacher-courses-grid");
   const grid = document.getElementById("teacher-sections-list");
+  const statCoursesCount = document.getElementById("stat-teacher-courses-count");
   const statPublished = document.getElementById("stat-teacher-published");
   const statPending = document.getElementById("stat-teacher-pending");
   const statRejected = document.getElementById("stat-teacher-rejected");
+
+  if (statCoursesCount) statCoursesCount.textContent = allAvailableCourses.length;
 
   if (allAvailableCourses.length === 0) {
     if (statPublished) statPublished.textContent = "0";
     if (statPending) statPending.textContent = "0";
     if (statRejected) statRejected.textContent = "0";
-    if (grid) {
-      grid.innerHTML = `
+    if (coursesGrid) {
+      coursesGrid.innerHTML = `
         <div class="teacher-empty-state" role="status" style="grid-column: 1 / -1; width: 100%; text-align: center; padding: 3rem 1.5rem; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 16px;">
           <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 1rem auto; color: #64748b; display: block;" aria-hidden="true">
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
@@ -1362,12 +1366,74 @@ function renderTeacherDashboard() {
             Aucun cours ne vous a encore été attribué. Contactez l'administrateur.
           </h3>
           <p style="font-size: 0.88rem; color: var(--dash-text-muted); max-width: 520px; margin: 0 auto; line-height: 1.6;">
-            Dès qu'un administrateur vous aura affecté à une formation, vous pourrez ajouter, éditer et soumettre vos chapitres pédagogiques.
+            Dès qu'un administrateur vous aura affecté à une formation, vous retrouverez ici l'accès direct aux cours que vous enseignez ainsi que la gestion de vos sections pédagogiques.
           </p>
         </div>
       `;
     }
+    if (grid) {
+      grid.innerHTML = `
+        <div style="grid-column: 1 / -1; width: 100%; text-align: center; padding: 2rem 1.5rem; background: #ffffff; border: 1px dashed #e2e8f0; border-radius: 12px; color: var(--dash-text-muted);">
+          <p style="margin: 0; font-size: 0.92rem;">Aucun chapitre accessible tant qu'aucune formation ne vous est assignée.</p>
+        </div>
+      `;
+    }
     return;
+  }
+
+  // Rendu des formations que le formateur enseigne (accès direct LMS)
+  if (coursesGrid) {
+    coursesGrid.innerHTML = "";
+    allAvailableCourses.forEach(course => {
+      const imgUrl = getCourseImageForTitle(course.title, course.description);
+      const chaptersCount = course.chaptersCount || (course.chapters ? course.chapters.length : 0);
+      const card = document.createElement("article");
+      card.className = "card card-white card-paddingtop teacher-course-card";
+      card.style.overflow = "hidden";
+      card.innerHTML = `
+        <header class="card__imageContainer">
+          <img
+            class="card__image"
+            src="${imgUrl}"
+            alt="${escapeHtml(course.title)}"
+            width="400"
+            height="250"
+            loading="lazy"
+            decoding="async"
+          />
+        </header>
+        <main class="card__main">
+          <div class="card__header">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.35rem; flex-wrap:wrap; gap: 0.4rem;">
+              <div style="display:flex; gap:0.4rem; align-items:center; flex-wrap:wrap;">
+                <span class="section-tag" style="font-size: 0.72rem; margin-bottom: 0; display: inline-flex; align-items: center; gap: 3px; background: rgba(14, 165, 233, 0.12); color: #0369a1; border: 1px solid rgba(14, 165, 233, 0.3);">
+                  ${ICONS.teacher} FORMATEUR RÉFÉRENT
+                </span>
+                <span style="font-size: 0.72rem; color: #475569; background: #f1f5f9; padding: 2px 7px; border-radius: 4px; font-weight: 600;">
+                  ${chaptersCount > 0 ? `${chaptersCount} chapitres` : 'Formation active'}
+                </span>
+              </div>
+            </div>
+            <h3 class="card__title" style="font-size: 1.35rem;">${escapeHtml(course.title)}</h3>
+          </div>
+          <p class="card__paragraphe card__textGreen poppins-regular" style="font-size: 0.92rem;">
+            ${escapeHtml(course.description || "Consultez le programme, prévisualisez les chapitres publiés et accédez directement à l'espace de formation.")}
+          </p>
+          <div style="margin-top: auto; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href="app.html?id=${course.id}" class="card__link bangers-regular" target="_blank" style="flex: 1; justify-content: center; text-decoration: none;">
+              Accéder au cours
+              <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <button type="button" class="button button__secondary" style="font-size: 0.82rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px; border-radius: 8px;" onclick="openAddChapterModal('${course.id}')" title="Ajouter une section à ce cours">
+              ${ICONS.edit} + Section
+            </button>
+          </div>
+        </main>
+      `;
+      coursesGrid.appendChild(card);
+    });
   }
 
   const assignedIds = new Set(allAvailableCourses.map(c => c.id));
@@ -1444,7 +1510,7 @@ function renderTeacherDashboard() {
   });
 }
 
-function openAddChapterModal() {
+function openAddChapterModal(preselectedCourseId = null) {
   const modal = document.getElementById("add-chapter-modal");
   const titleHeading = document.getElementById("add-chapter-modal-title");
   const chapterIdInput = document.getElementById("chapter-id-input");
@@ -1467,8 +1533,11 @@ function openAddChapterModal() {
 
   if (courseSelect) {
     courseSelect.innerHTML = allAvailableCourses.map(c => `
-      <option value="${c.id}">${escapeHtml(c.title)}</option>
+      <option value="${c.id}" ${preselectedCourseId && c.id === preselectedCourseId ? "selected" : ""}>${escapeHtml(c.title)}</option>
     `).join("");
+    if (preselectedCourseId && allAvailableCourses.some(c => c.id === preselectedCourseId)) {
+      courseSelect.value = preselectedCourseId;
+    }
     courseSelect.disabled = false;
   }
 
