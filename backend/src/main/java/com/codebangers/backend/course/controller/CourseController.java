@@ -62,12 +62,15 @@ public class CourseController {
 
     @GetMapping("/my-assigned-courses")
     @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
-    public ResponseEntity<List<CourseResponse>> getMyAssignedCourses(org.springframework.security.core.Authentication authentication) {
+    public ResponseEntity<List<CourseResponse>> getMyAssignedCourses(
+            @RequestParam(required = false) UUID teacherId,
+            org.springframework.security.core.Authentication authentication) {
         User user = resolveUserFromAuth(authentication);
         List<Course> courses;
         if (user.getRole() == com.codebangers.backend.user.model.Role.ADMIN) {
-            courses = courseService.getAssignedCoursesForTeacher(user.getId());
-            if (courses.isEmpty()) {
+            if (teacherId != null) {
+                courses = courseService.getAssignedCoursesForTeacher(teacherId);
+            } else {
                 courses = courseService.getAllActiveCourses();
             }
         } else {
@@ -77,6 +80,10 @@ public class CourseController {
             .map(this::mapToResponse)
             .toList();
         return ResponseEntity.ok(responses);
+    }
+
+    public ResponseEntity<List<CourseResponse>> getMyAssignedCourses(org.springframework.security.core.Authentication authentication) {
+        return getMyAssignedCourses(null, authentication);
     }
 
     @PostMapping
@@ -178,7 +185,11 @@ public class CourseController {
             updatedByName = (course.getUpdatedBy().getFirstName() != null ? course.getUpdatedBy().getFirstName() + " " + (course.getUpdatedBy().getLastName() != null ? course.getUpdatedBy().getLastName() : "") : course.getUpdatedBy().getUserName()).trim();
         }
 
-        int chaptersCount = (course.getChapters() != null) ? course.getChapters().size() : 0;
+        int chaptersCount = 0;
+        try {
+            chaptersCount = (course.getChapters() != null) ? course.getChapters().size() : 0;
+        } catch (Exception ignored) {
+        }
 
         CourseResponse response = new CourseResponse(
             course.getId(),

@@ -1431,6 +1431,15 @@ async function loadTeacherData() {
     allAvailableCourses = [];
   }
 
+  if ((!allAvailableCourses || allAvailableCourses.length === 0) && normalizeRole(currentAuth.user.role) === "ADMIN") {
+    try {
+      const fallbackRes = await apiFetch("/api/courses");
+      if (fallbackRes && fallbackRes.ok) {
+        allAvailableCourses = await fallbackRes.json();
+      }
+    } catch (_) {}
+  }
+
   // Also fetch enrolled courses for teachers
   try {
     const enrollRes = await apiFetch("/api/enrollments/my-courses");
@@ -1534,7 +1543,7 @@ function renderTeacherCourses() {
         <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(88, 101, 242, 0.1); color: #5865F2; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
         </div>
-        <h3 style="font-size: 1.15rem; color: var(--dash-dark-navy); margin-bottom: 0.4rem;">Aucune formation active pour le moment</h3>
+        <h3 style="font-size: 1.15rem; color: var(--dash-dark-navy); margin-bottom: 0.4rem;">Aucun cours enseigné pour le moment</h3>
         <p style="color: var(--dash-text-muted); font-size: 0.9rem; margin-bottom: 0;">
           Dès qu'un administrateur vous affecte à un cours ou que vous rejoignez une formation, vous retrouverez ici l'accès direct aux modules, aux ressources et à la scène live.
         </p>
@@ -2338,6 +2347,14 @@ async function handleAssignTeacherToCourse(event, courseId) {
       if (idx !== -1 && updatedCourse) {
         adminCoursesList[idx] = updatedCourse;
       }
+      if (Array.isArray(allAvailableCourses) && updatedCourse) {
+        const availIdx = allAvailableCourses.findIndex(c => c.id === courseId);
+        if (availIdx !== -1) {
+          allAvailableCourses[availIdx] = updatedCourse;
+        } else {
+          allAvailableCourses.push(updatedCourse);
+        }
+      }
       closeAssignTeacherForm(courseId);
       renderAdminCourses();
       showGlobalDashboardToast("Formateur assigné avec succès au cours.", "success");
@@ -2369,6 +2386,14 @@ async function handleRemoveTeacherFromCourse(courseId, teacherId, teacherName, c
         adminCoursesList[idx] = updatedCourse;
       } else if (idx !== -1) {
         adminCoursesList[idx].assignedTeachers = (adminCoursesList[idx].assignedTeachers || []).filter(t => t.id !== teacherId);
+      }
+      if (Array.isArray(allAvailableCourses)) {
+        const availIdx = allAvailableCourses.findIndex(c => c.id === courseId);
+        if (availIdx !== -1 && updatedCourse) {
+          allAvailableCourses[availIdx] = updatedCourse;
+        } else if (availIdx !== -1) {
+          allAvailableCourses[availIdx].assignedTeachers = (allAvailableCourses[availIdx].assignedTeachers || []).filter(t => t.id !== teacherId);
+        }
       }
       renderAdminCourses();
       const successMsg = `Formateur ${teacherName} retiré du cours avec succès.`;

@@ -1715,3 +1715,27 @@ eset-password.html.
    - Restructuration de « Mes Sections & Chapitres de Cours » sous forme de tableau responsive (`#teacher-chapters-table`) avec colonnes Formation/Cours, Titre, Position, Statut, Bouton Détails et Actions.
    - Ligne déroulante (dropdown) accessible (`#chapter-detail-row-{id}`, `aria-expanded`, `aria-controls`) affichant l'aperçu du contenu Markdown, date de soumission, motif de refus et actions rapides.
    - Ajout du Test 4 dans `teacher-dashboard-isolation.spec.js` : 6/6 tests Playwright réussis.
+
+---
+
+## 2026-10-11 | Conversation: 6e223d6b-ce9b-4a35-b341-44d8c5ce59de
+
+**Type**: Correctif Dashboard Formateur (Affichage des cours enseignés & Intitulé de section)  
+**Auteur**: Antigravity (Agent IA)  
+**Branche**: `feat/teacher-dashboard-assigned-courses-fix`  
+**Objectif**: Corriger l'affichage des cours assignés aux formateurs dans la vue Enseignant, renommer la section en « Mes cours enseignés », et sécuriser la synchronisation des cours assignés lors de la bascule de vue Administrateur / Formateur.
+
+### Réalisations & Livrables :
+1. **Renommage de la section Enseignant (`frontend/dashboard.html`, `frontend/js/dashboard.js`)** :
+   - Section `#teacher-courses-grid` renommée de « Mes Cours & Formations Actives » à « Mes cours enseignés ».
+   - État vide mis à jour : « Aucun cours enseigné pour le moment ».
+2. **Backend : Requêtes JPQL et Contrôleur (`CourseRepository.java`, `CourseService.java`, `CourseController.java`)** :
+   - `CourseRepository.java` : ajout de `DISTINCT` et prise en compte de `(c.isDeleted = false OR c.isDeleted IS NULL)` sur `findAllByAssignedTeachersId`, `findAllByAssignedTeacherId` et `isTeacherAssignedToCourse`.
+   - `CourseService.java` : appel explicite de `courseRepository.flush()` après `save(course)` dans `assignTeacherToCourse` et `removeTeacherFromCourse` pour garantir la persistance immédiate dans la table de jointure `course_teacher`.
+   - `CourseController.java` : endpoint `GET /api/courses/my-assigned-courses` adapté pour les administrateurs (renvoie tous les cours actifs par défaut, ou filtre par `?teacherId={uuid}` si fourni), permettant l'inspection transparente du tableau de bord enseignant sans re-connexion. Sécurisation de l'accès à `course.getChapters()` via bloc `try-catch` défensif dans `mapToResponse`.
+3. **Frontend : Réactivité et synchronisation en mémoire (`frontend/js/dashboard.js`)** :
+   - `loadTeacherData()` : ajout d'un fallback vers `/api/courses` si un administrateur inspecte la vue formateur et qu'aucun cours n'est assigné à son propre compte.
+   - `handleAssignTeacherToCourse()` et `handleRemoveTeacherFromCourse()` : mise à jour réactive de `allAvailableCourses` en mémoire lors de l'assignation ou du retrait d'un formateur dans la vue admin, pour répercussion immédiate sans rechargement.
+4. **Validation des tests** :
+   - 22 tests unitaires et de sécurité backend passés avec succès (`CourseControllerSecurityTest`, `CourseTeacherServiceTest`, `CourseMethodSecurityTest`).
+   - 6/6 tests E2E Playwright validés (`teacher-dashboard-isolation.spec.js`), incluant l'assertion sur « Mes cours enseignés ».

@@ -493,7 +493,8 @@ test.describe('Isolation du Dashboard Enseignant et Interface Admin d\'Assignati
 
     await page.goto('/dashboard.html');
 
-    // 1. Vérifier la section "Mes Cours & Formations Actives"
+    // 1. Vérifier la section "Mes cours enseignés"
+    await expect(page.locator('#view-teacher')).toContainText('Mes cours enseignés');
     const activeCoursesSection = page.locator('#teacher-courses-grid');
     await expect(activeCoursesSection).toBeVisible();
 
