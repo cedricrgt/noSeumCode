@@ -242,31 +242,34 @@ public class EnrollmentService {
             return;
         }
         if (tier == null || user == null) return;
-        Course c1 = courseRepository.findBySlug("pack-starter").orElse(null);
-        UUID c1Id = c1 != null ? c1.getId() : null;
-        Course c2 = courseRepository.findBySlug("pack-web-pro").orElse(null);
-        UUID c2Id = c2 != null ? c2.getId() : null;
-        Course c3 = courseRepository.findBySlug("pack-mentorat-vip").orElse(null);
-        UUID c3Id = c3 != null ? c3.getId() : null;
+        Course htmlCourse = courseRepository.findBySlug("html-css")
+                .or(() -> courseRepository.findById(UUID.fromString("c1000000-0000-0000-0000-000000000001")))
+                .or(() -> courseRepository.findBySlug("pack-starter"))
+                .orElse(null);
+        Course gitCourse = courseRepository.findBySlug("git-github")
+                .or(() -> courseRepository.findById(UUID.fromString("c3000000-0000-0000-0000-000000000003")))
+                .or(() -> courseRepository.findBySlug("pack-mentorat-vip"))
+                .orElse(null);
+        Course jsCourse = courseRepository.findBySlug("javascript")
+                .or(() -> courseRepository.findById(UUID.fromString("c2000000-0000-0000-0000-000000000002")))
+                .or(() -> courseRepository.findBySlug("pack-web-pro"))
+                .orElse(null);
 
-        List<UUID> targetCourseIds = new java.util.ArrayList<>();
-        if (tier == EnrollmentTier.VIP) {
-            if (c3Id != null) targetCourseIds.add(c3Id);
-            if (c2Id != null) targetCourseIds.add(c2Id);
-            if (c1Id != null) targetCourseIds.add(c1Id);
-        } else if (tier == EnrollmentTier.WEB) {
-            if (c2Id != null) targetCourseIds.add(c2Id);
-            if (c1Id != null) targetCourseIds.add(c1Id);
+        List<Course> targetCourses = new java.util.ArrayList<>();
+        if (tier == EnrollmentTier.VIP || tier == EnrollmentTier.WEB) {
+            if (htmlCourse != null) targetCourses.add(htmlCourse);
+            if (gitCourse != null) targetCourses.add(gitCourse);
+            if (jsCourse != null) targetCourses.add(jsCourse);
         } else if (tier == EnrollmentTier.STARTER) {
-            if (c1Id != null) targetCourseIds.add(c1Id);
+            if (htmlCourse != null) targetCourses.add(htmlCourse);
+            if (gitCourse != null) targetCourses.add(gitCourse);
         }
 
         List<Enrollment> existingEnrollments = enrollmentRepository.findByUserId(user.getId());
-        for (UUID cid : targetCourseIds) {
-            Course c = courseRepository.findById(cid).orElse(null);
+        for (Course c : targetCourses) {
             if (c != null) {
                 Enrollment e = existingEnrollments.stream()
-                        .filter(x -> x.getCourse() != null && x.getCourse().getId().equals(cid))
+                        .filter(x -> x.getCourse() != null && x.getCourse().getId().equals(c.getId()))
                         .findFirst()
                         .orElse(null);
                 if (e != null) {

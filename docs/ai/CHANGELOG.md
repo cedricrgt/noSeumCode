@@ -1630,4 +1630,9 @@ eset-password.html.
    - `CourseMethodSecurityTest.java` : 9 tests avec proxy Spring Security validant formellement l'exception `AccessDeniedException` (HTTP 403 Forbidden) lorsqu'un formateur non assigné tente de modifier un cours.
 6. **Correctif d'Instanciation IoC (`CourseService.java`)** :
    - Suppression du constructeur à un seul argument sans `@Autowired` pour garantir une instanciation Spring univoque et lever le blocage de démarrage du contexte applicatif complet (`NoSuchMethodException: <init>()` résolu).
+7. **Découplage Granulaire des Packages & Provisioning Multi-Cours (V021)** :
+   - Migration `V021__decouple_courses_and_create_course_teacher.sql` : alignement des 3 cours pédagogiques réels (`html-css` STARTER, `git-github` STARTER, `javascript` WEB) dissociés des offres commerciales.
+   - Refactorisation de `EnrollmentProvisioningService.java` et `StripeEventService.java` : inscription multi-cours résiliente (recherche par slug avec repli UUID/legacy) lors de l'achat d'un package (STARTER -> HTML + Git, WEB/VIP -> HTML + Git + JS).
+   - `CourseRepository.java` : ajout de la méthode de recherche `findAllByAssignedTeacherId`.
+   - `EnrollmentBundleProvisioningTest.java` : 7 nouveaux tests unitaires validant l'ensemble des scénarios d'inscription par lot et d'idempotence (suite globale à 205 tests réussis, 0 régression).
 

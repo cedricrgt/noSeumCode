@@ -122,7 +122,7 @@ public class EnrollmentProvisioningService {
             enrollmentRepository.save(enrollment);
         }
 
-        if (tier == EnrollmentTier.VIP || tier == EnrollmentTier.WEB) {
+        if (tier == EnrollmentTier.VIP || tier == EnrollmentTier.WEB || tier == EnrollmentTier.STARTER) {
             enrollInBundleCourses(user, tier, cohort, PaymentStatus.PAID);
         }
 
@@ -144,43 +144,58 @@ public class EnrollmentProvisioningService {
 
         List<Enrollment> existingEnrollments = enrollmentRepository.findByUserId(user.getId());
 
-        Course c1 = courseRepository.findBySlug("pack-starter").orElse(null);
-        UUID c1Id = c1 != null ? c1.getId() : null;
-        Course c2 = courseRepository.findBySlug("pack-web-pro").orElse(null);
-        UUID c2Id = c2 != null ? c2.getId() : null;
-        Course c3 = courseRepository.findBySlug("pack-mentorat-vip").orElse(null);
-        UUID c3Id = c3 != null ? c3.getId() : null;
+        Course htmlCourse = findCourseBySlugOrFallback(
+                "html-css",
+                UUID.fromString("c1000000-0000-0000-0000-000000000001"),
+                "pack-starter"
+        );
+        Course gitCourse = findCourseBySlugOrFallback(
+                "git-github",
+                UUID.fromString("c3000000-0000-0000-0000-000000000003"),
+                "pack-mentorat-vip"
+        );
+        Course jsCourse = findCourseBySlugOrFallback(
+                "javascript",
+                UUID.fromString("c2000000-0000-0000-0000-000000000002"),
+                "pack-web-pro"
+        );
 
-        List<UUID> targetCourseIds = new java.util.ArrayList<>();
-        if (tier == EnrollmentTier.VIP) {
-            targetCourseIds.add(c3Id);
-            targetCourseIds.add(c2Id);
-            targetCourseIds.add(c1Id);
-        } else if (tier == EnrollmentTier.WEB) {
-            targetCourseIds.add(c2Id);
-            targetCourseIds.add(c1Id);
+        List<Course> targetCourses = new java.util.ArrayList<>();
+        if (tier == EnrollmentTier.VIP || tier == EnrollmentTier.WEB) {
+            if (htmlCourse != null) targetCourses.add(htmlCourse);
+            if (gitCourse != null) targetCourses.add(gitCourse);
+            if (jsCourse != null) targetCourses.add(jsCourse);
         } else if (tier == EnrollmentTier.STARTER) {
-            targetCourseIds.add(c1Id);
+            if (htmlCourse != null) targetCourses.add(htmlCourse);
+            if (gitCourse != null) targetCourses.add(gitCourse);
         }
 
-        for (UUID cid : targetCourseIds) {
-            Course c = courseRepository.findById(cid).orElse(null);
-            if (c != null) {
-                Enrollment e = existingEnrollments.stream()
-                        .filter(x -> x.getCourse() != null && x.getCourse().getId().equals(cid))
-                        .findFirst()
-                        .orElse(null);
-                if (e != null) {
-                    e.setPaymentStatus(status);
-                    e.setTier(tier);
-                    if (cohort != null) e.setCohort(cohort);
-                    enrollmentRepository.save(e);
-                } else if (status != null) {
-                    Enrollment ne = new Enrollment(user, c, status, 0, tier, cohort);
-                    enrollmentRepository.save(ne);
-                }
+        for (Course c : targetCourses) {
+            Enrollment e = existingEnrollments.stream()
+                    .filter(x -> x.getCourse() != null && x.getCourse().getId().equals(c.getId()))
+                    .findFirst()
+                    .orElse(null);
+            if (e != null) {
+                e.setPaymentStatus(status);
+                e.setTier(tier);
+                if (cohort != null) e.setCohort(cohort);
+                enrollmentRepository.save(e);
+            } else if (status != null) {
+                Enrollment ne = new Enrollment(user, c, status, 0, tier, cohort);
+                enrollmentRepository.save(ne);
             }
         }
+    }
+
+    private Course findCourseBySlugOrFallback(String primarySlug, UUID fallbackId, String legacySlug) {
+        Course course = courseRepository.findBySlug(primarySlug).orElse(null);
+        if (course == null && fallbackId != null) {
+            course = courseRepository.findById(fallbackId).orElse(null);
+        }
+        if (course == null && legacySlug != null) {
+            course = courseRepository.findBySlug(legacySlug).orElse(null);
+        }
+        return course;
     }
 
     public void syncDiscordRolesIfLinked(User user, PaymentStatus status) {
