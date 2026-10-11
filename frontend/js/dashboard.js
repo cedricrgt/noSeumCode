@@ -255,7 +255,10 @@ async function loadStoredAuth() {
       }
       if (res.ok) {
         const freshUser = await res.json();
-        currentAuth.user.role = normalizeRole(freshUser.role);
+        const previousRole = normalizeRole(currentAuth.user.role);
+        const resolvedRole = normalizeRole(freshUser.role);
+
+        currentAuth.user.role = resolvedRole;
         currentAuth.user.firstName = freshUser.firstName;
         currentAuth.user.lastName = freshUser.lastName;
         currentAuth.user.email = freshUser.email;
@@ -264,6 +267,19 @@ async function loadStoredAuth() {
         else if (freshUser.id) currentAuth.user.id = freshUser.id;
         localStorage.setItem("noseum_user", JSON.stringify(currentAuth.user));
         updateUserUI();
+
+        const roleChanged = (previousRole !== resolvedRole);
+        if (roleChanged) {
+          activeDashboardView = resolvedRole;
+        }
+
+        if (resolvedRole === "TEACHER" && (roleChanged || activeDashboardView !== "TEACHER")) {
+          activeDashboardView = "TEACHER";
+          applyDashboardView("TEACHER");
+          await loadTeacherData();
+        } else if (roleChanged) {
+          applyDashboardView(activeDashboardView);
+        }
       }
     }
   } catch (_) {}
@@ -1427,10 +1443,19 @@ async function loadTeacherData() {
   const res = await apiFetch(endpoint);
   if (res && res.ok) {
     allAvailableCourses = await res.json();
-  } else if (res && (res.status === 403 || res.status === 401)) {
+  } else {
     allAvailableCourses = [];
-  } else if (!res && allAvailableCourses.length === 0) {
-    allAvailableCourses = [];
+    if (res) {
+      if (res.status === 403) {
+        showGlobalDashboardToast("Droits formateur non synchronisés. Veuillez vous reconnecter.", "error");
+        console.warn(`[Teacher Dashboard] Accès refusé (HTTP 403) sur ${endpoint}. Droits formateur non synchronisés.`);
+      } else if (res.status >= 500) {
+        console.error(`[Teacher Dashboard] Erreur technique serveur (HTTP ${res.status}) sur ${endpoint}`);
+        showGlobalDashboardToast("Erreur technique lors du chargement des cours formateur. Veuillez réessayer plus tard.", "error");
+      }
+    } else {
+      console.error(`[Teacher Dashboard] Erreur réseau lors de la communication avec ${endpoint}`);
+    }
   }
 
   // Also fetch enrolled courses for teachers

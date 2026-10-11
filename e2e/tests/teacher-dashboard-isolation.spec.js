@@ -602,4 +602,74 @@ test.describe('Isolation du Dashboard Enseignant et Interface Admin d\'Assignati
     await expect(teacherCoursesGrid).toContainText('JavaScript Moderne');
   });
 
+  // =========================================================================
+  // Test 6 - Résilience et feedback visuel : Erreurs HTTP 403/500 & Toast
+  // =========================================================================
+  test('Test 6 - Résilience : alerte explicite en cas d\'erreur 403 ou 500 sur les cours formateur', async ({ page }) => {
+    await setupAuth(page, teacherUser);
+    await setupCommonRoutes(page, teacherUser);
+
+    // Simuler une erreur 403 sur /api/courses/my-assigned-courses
+    await page.route('**/api/courses/my-assigned-courses', async (route) => {
+      await route.fulfill({
+        status: 403,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Forbidden' })
+      });
+    });
+
+    await page.route('**/api/enrollments/my-courses', async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) });
+    });
+
+    await page.goto('/dashboard.html');
+
+    // Vérifier que le toast d'erreur de droits non synchronisés s'affiche
+    const toast = page.locator('#dash-floating-toast');
+    await expect(toast).toBeVisible();
+    await expect(toast).toContainText('Droits formateur non synchronisés. Veuillez vous reconnecter.');
+  });
+
+  // =========================================================================
+  // Test 7 - Alignement réactif : bascule automatique vers TEACHER si /api/auth/me est désynchronisé
+  // =========================================================================
+  test('Test 7 - Alignement réactif : bascule automatique vers TEACHER si /api/auth/me retourne TEACHER', async ({ page }) => {
+    // Initialement stocké comme STUDENT dans localStorage
+    const staleStudentUser = { ...teacherUser, role: 'STUDENT' };
+    await setupAuth(page, staleStudentUser);
+
+    // Mais /api/auth/me renvoie le vrai rôle à jour : TEACHER
+    await setupCommonRoutes(page, teacherUser);
+
+    const assignedCourse = {
+      id: 'course-react-101',
+      title: 'React & Redux Pro',
+      description: 'Formation avancée',
+      chaptersCount: 4,
+      assignedTeachers: [{ id: 'teacher-alice-uuid', firstName: 'Alice', email: 'alice@noseumcode.com' }]
+    };
+
+    await page.route('**/api/courses/my-assigned-courses', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([assignedCourse])
+      });
+    });
+
+    await page.route('**/api/enrollments/my-courses', async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) });
+    });
+
+    await page.goto('/dashboard.html');
+
+    // Vérifier que la vue a basculé automatiquement vers la vue formateur
+    const teacherView = page.locator('#view-teacher');
+    await expect(teacherView).toBeVisible();
+
+    // Et que la section "Mes cours enseignés" contient bien le cours
+    const teacherCoursesGrid = page.locator('#teacher-courses-grid');
+    await expect(teacherCoursesGrid).toContainText('React & Redux Pro');
+  });
+
 });

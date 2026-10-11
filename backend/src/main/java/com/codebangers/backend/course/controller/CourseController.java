@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,6 +64,7 @@ public class CourseController {
 
     @GetMapping("/my-assigned-courses")
     @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    @Transactional(readOnly = true)
     public ResponseEntity<List<CourseResponse>> getMyAssignedCourses(
             @RequestParam(required = false) UUID teacherId,
             org.springframework.security.core.Authentication authentication) {
@@ -191,13 +193,29 @@ public class CourseController {
 
     private CourseResponse mapToResponse(Course course) {
         String createdByName = "Admin";
-        if (course.getCreatedBy() != null) {
-            createdByName = (course.getCreatedBy().getFirstName() != null ? course.getCreatedBy().getFirstName() + " " + (course.getCreatedBy().getLastName() != null ? course.getCreatedBy().getLastName() : "") : course.getCreatedBy().getUserName()).trim();
+        try {
+            if (course.getCreatedBy() != null) {
+                User cb = course.getCreatedBy();
+                String name = (cb.getFirstName() != null ? cb.getFirstName() + " " + (cb.getLastName() != null ? cb.getLastName() : "") : cb.getUserName());
+                if (name != null && !name.isBlank()) {
+                    createdByName = name.trim();
+                }
+            }
+        } catch (Exception ignored) {
+            createdByName = "Admin";
         }
 
         String updatedByName = createdByName;
-        if (course.getUpdatedBy() != null) {
-            updatedByName = (course.getUpdatedBy().getFirstName() != null ? course.getUpdatedBy().getFirstName() + " " + (course.getUpdatedBy().getLastName() != null ? course.getUpdatedBy().getLastName() : "") : course.getUpdatedBy().getUserName()).trim();
+        try {
+            if (course.getUpdatedBy() != null) {
+                User ub = course.getUpdatedBy();
+                String name = (ub.getFirstName() != null ? ub.getFirstName() + " " + (ub.getLastName() != null ? ub.getLastName() : "") : ub.getUserName());
+                if (name != null && !name.isBlank()) {
+                    updatedByName = name.trim();
+                }
+            }
+        } catch (Exception ignored) {
+            updatedByName = createdByName;
         }
 
         int chaptersCount = 0;
