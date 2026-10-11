@@ -4,6 +4,7 @@ import com.codebangers.backend.discord.dto.DiscordMemberDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,7 @@ public class DiscordGatewayImpl implements DiscordGateway {
     private final String voiceNarutoChannelId;
     private final RestClient restClient;
 
+    @Autowired
     public DiscordGatewayImpl(
             @Value("${discord.bot.token:}") String botToken,
             @Value("${discord.guild.id:}") String guildId,

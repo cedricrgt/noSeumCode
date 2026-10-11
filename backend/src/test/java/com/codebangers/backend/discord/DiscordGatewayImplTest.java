@@ -122,4 +122,19 @@ class DiscordGatewayImplTest {
         assertTrue(member.isPresent());
         assertEquals("user123", member.get().id());
     }
+
+    @Test
+    @DisplayName("Devrait être instancié sans ambiguïté par le conteneur IoC Spring (@Autowired)")
+    void shouldBeInstantiatedBySpringIoCWithoutAmbiguity() {
+        try (org.springframework.context.annotation.AnnotationConfigApplicationContext context =
+                     new org.springframework.context.annotation.AnnotationConfigApplicationContext()) {
+            context.registerBean("restClientBuilder", RestClient.Builder.class, () -> RestClient.builder());
+            context.register(DiscordGatewayImpl.class);
+            context.refresh();
+
+            DiscordGatewayImpl bean = context.getBean(DiscordGatewayImpl.class);
+            assertNotNull(bean);
+            assertFalse(bean.isConfigured());
+        }
+    }
 }

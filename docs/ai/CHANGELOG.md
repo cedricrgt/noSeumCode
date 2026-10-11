@@ -1703,9 +1703,10 @@ eset-password.html.
    - Bouton Formateur dans l'en-tête Enseignant (`#btn-teacher-lead-stage`) : `[🎙️ Animer le Direct (Modérateur Scène)]`.
    - Modale accessible de connexion Discord en 1-clic (`#discord-connect-modal`) déclenchée avec focus trap et bouton de fermeture, interceptant tout clic vers un cours Scène ou un salon vocal lorsque le compte Discord n'est pas encore associé.
    - Section « Espaces de Travail Collaboratif & Entraide » avec 3 cartes interactives pour `luffy-code-lab` (One Piece), `goku-dojo-live` (Dragon Ball) et `naruto-team-hub` (Naruto) comportant les badges de fonctionnalités (`STREAM`, `PAIR-PROGRAMMING`, `PROJETS D'ÉQUIPE`) et liens directs accessibles (`target="_blank"`, `rel="noopener noreferrer"`, `aria-label`).
-6. **Tests Unitaires & Validation Backend (212 tests passés, 0 échec, 0 régression)** :
-   - `DiscordGatewayImplTest.java` : tests de construction d'URLs directes et de repli lors d'identifiants manquants ou bot non configuré.
+6. **Tests Unitaires, Correction IoC & Validation Backend (213 tests passés, 0 échec, 0 régression)** :
+   - `DiscordGatewayImpl.java` : ajout explicite de `@Autowired` sur le constructeur d'injection principal à 13 arguments pour lever l'ambiguïté IoC Spring lors du démarrage du contexte complet (`BackendApplicationTests` / `CustomOAuth2UserService` / `DiscordService`).
+   - `DiscordGatewayImplTest.java` : tests de construction d'URLs directes, repli lors d'identifiants manquants ou bot non configuré, et test d'instanciation Spring IoC sans ambiguïté.
    - `DiscordServiceTest.java` : tests de résolution des salons Scène pour Starter, Web, Enseignants/Admins et élèves non inscrits.
-   - 212 tests unitaires exécutés et validés via `mvnw test` avec `BUILD SUCCESS`.
+   - 213 tests unitaires exécutés et validés via `mvnw test` avec `BUILD SUCCESS`.
 
 
