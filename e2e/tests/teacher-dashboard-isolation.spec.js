@@ -433,4 +433,105 @@ test.describe('Isolation du Dashboard Enseignant et Interface Admin d\'Assignati
     await expect(announcer).toContainText('retiré du cours avec succès');
   });
 
+  // =========================================================================
+  // Test 4 - Vue Enseignant : Mes Cours Actifs & Tableau des Chapitres avec Détails
+  // =========================================================================
+  test('Test 4 - Vue Enseignant : Affichage des cours actifs et tableau des chapitres avec détails déroulants', async ({ page }) => {
+    await setupAuth(page, teacherUser);
+    await setupCommonRoutes(page, teacherUser);
+
+    const assignedCourse = {
+      id: 'course-clean-arch-101',
+      title: 'Clean Architecture & Spring Boot 3',
+      description: 'Formation avancée Spring Boot',
+      chaptersCount: 12,
+      assignedTeachers: [{ id: 'teacher-alice-uuid', firstName: 'Alice', email: 'alice@noseumcode.com' }]
+    };
+
+    const enrolledCourse = {
+      courseId: 'course-enrolled-202',
+      courseTitle: 'TypeScript & React Avancé',
+      courseDescription: 'Maîtrise du frontend moderne',
+      progress: 60,
+      tier: 'STARTER'
+    };
+
+    await page.route('**/api/courses/my-assigned-courses', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([assignedCourse])
+      });
+    });
+
+    await page.route('**/api/enrollments/my-courses', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([enrolledCourse])
+      });
+    });
+
+    await page.route('**/api/chapters/course/course-clean-arch-101/all', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([
+          {
+            id: 'chap-clean-01',
+            courseId: 'course-clean-arch-101',
+            courseTitle: 'Clean Architecture & Spring Boot 3',
+            title: 'Ports & Adapters en Java',
+            position: 1,
+            status: 'APPROVED',
+            content: 'Contenu pédagogique complet sur l\'inversion de dépendances',
+            submittedAt: '2026-10-10T14:30:00Z'
+          }
+        ])
+      });
+    });
+
+    await page.goto('/dashboard.html');
+
+    // 1. Vérifier la section "Mes Cours & Formations Actives"
+    const activeCoursesSection = page.locator('#teacher-courses-grid');
+    await expect(activeCoursesSection).toBeVisible();
+
+    // Vérifier les deux cartes de formation
+    await expect(activeCoursesSection).toContainText('Clean Architecture & Spring Boot 3');
+    await expect(activeCoursesSection).toContainText('FORMATEUR RÉFÉRENT');
+    await expect(activeCoursesSection).toContainText('TypeScript & React Avancé');
+    await expect(activeCoursesSection).toContainText('EN COURS');
+    await expect(activeCoursesSection).toContainText('60% complété');
+
+    // 2. Vérifier la structure du tableau des sections de cours
+    const table = page.locator('#teacher-chapters-table');
+    await expect(table).toBeVisible();
+
+    const row = page.locator('#chapter-row-chap-clean-01');
+    await expect(row).toBeVisible();
+    await expect(row).toContainText('Clean Architecture & Spring Boot 3');
+    await expect(row).toContainText('Ports & Adapters en Java');
+    await expect(row).toContainText('#1');
+    await expect(row).toContainText('Validé & En ligne');
+
+    // 3. Tester le dropdown / ligne déroulante de détails
+    const detailRow = page.locator('#chapter-detail-row-chap-clean-01');
+    await expect(detailRow).toBeHidden();
+
+    const btnDetail = page.locator('#btn-chapter-detail-chap-clean-01');
+    await expect(btnDetail).toHaveAttribute('aria-expanded', 'false');
+
+    // Clic pour dérouler
+    await btnDetail.click();
+    await expect(detailRow).toBeVisible();
+    await expect(btnDetail).toHaveAttribute('aria-expanded', 'true');
+    await expect(detailRow).toContainText('Contenu pédagogique complet sur l\'inversion de dépendances');
+
+    // Clic pour refermer
+    await btnDetail.click();
+    await expect(detailRow).toBeHidden();
+    await expect(btnDetail).toHaveAttribute('aria-expanded', 'false');
+  });
+
 });

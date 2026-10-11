@@ -1710,3 +1710,8 @@ eset-password.html.
    - 213 tests unitaires exécutés et validés via `mvnw test` avec `BUILD SUCCESS`.
 
 
+7. **Tableau Pédagogique & Section Cours Actifs Enseignant (`frontend/dashboard.html`, `frontend/js/dashboard.js`, `e2e/tests/teacher-dashboard-isolation.spec.js`)** :
+   - Ajout de la section « Mes Cours & Formations Actives » (`#teacher-courses-grid`) pour les enseignants, combinant cours assignés (`/api/courses/my-assigned-courses`) et cours inscrits (`/api/enrollments/my-courses`).
+   - Restructuration de « Mes Sections & Chapitres de Cours » sous forme de tableau responsive (`#teacher-chapters-table`) avec colonnes Formation/Cours, Titre, Position, Statut, Bouton Détails et Actions.
+   - Ligne déroulante (dropdown) accessible (`#chapter-detail-row-{id}`, `aria-expanded`, `aria-controls`) affichant l'aperçu du contenu Markdown, date de soumission, motif de refus et actions rapides.
+   - Ajout du Test 4 dans `teacher-dashboard-isolation.spec.js` : 6/6 tests Playwright réussis.

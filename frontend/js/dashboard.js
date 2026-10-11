@@ -1431,6 +1431,14 @@ async function loadTeacherData() {
     allAvailableCourses = [];
   }
 
+  // Also fetch enrolled courses for teachers
+  try {
+    const enrollRes = await apiFetch("/api/enrollments/my-courses");
+    if (enrollRes && enrollRes.ok) {
+      enrolledCourses = await enrollRes.json();
+    }
+  } catch (_) {}
+
   // Load teacher chapters for assigned courses if not already populated
   const assignedIds = new Set(allAvailableCourses.map(c => c.id));
   if (allAvailableCourses.length > 0 && teacherChapters.length === 0) {
@@ -1465,11 +1473,153 @@ async function loadTeacherData() {
     teacherChapters = [];
   }
 
+  renderTeacherCourses();
   renderTeacherDashboard();
 }
 
+function getTeacherActiveCourses() {
+  const courseMap = new Map();
+
+  // 1. Cours assignés en tant que Formateur Référent
+  if (Array.isArray(allAvailableCourses)) {
+    allAvailableCourses.forEach(c => {
+      courseMap.set(c.id, {
+        id: c.id,
+        title: c.title,
+        description: c.description,
+        isTeacherAssigned: true,
+        chaptersCount: c.chaptersCount
+      });
+    });
+  }
+
+  // 2. Cours auxquels l'enseignant est également inscrit
+  if (Array.isArray(enrolledCourses)) {
+    enrolledCourses.forEach(ec => {
+      const cId = ec.courseId || ec.id;
+      if (courseMap.has(cId)) {
+        const existing = courseMap.get(cId);
+        existing.progress = ec.progress;
+        existing.tier = ec.tier || existing.tier;
+        existing.cohortName = ec.cohortName;
+        existing.lifetimeAccess = ec.lifetimeAccess;
+      } else {
+        courseMap.set(cId, {
+          id: cId,
+          title: ec.courseTitle || ec.title,
+          description: ec.courseDescription || ec.description,
+          isTeacherAssigned: false,
+          progress: ec.progress,
+          tier: ec.tier || "STARTER",
+          cohortName: ec.cohortName,
+          lifetimeAccess: ec.lifetimeAccess
+        });
+      }
+    });
+  }
+
+  return Array.from(courseMap.values());
+}
+
+function renderTeacherCourses() {
+  const grid = document.getElementById("teacher-courses-grid");
+  if (!grid) return;
+  grid.innerHTML = "";
+
+  const courses = getTeacherActiveCourses();
+
+  if (courses.length === 0) {
+    grid.innerHTML = `
+      <div style="text-align: center; padding: 2.5rem 1.5rem; background: #ffffff; border-radius: 20px; border: 2px dashed #cbd5e1; grid-column: 1 / -1;">
+        <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(88, 101, 242, 0.1); color: #5865F2; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        </div>
+        <h3 style="font-size: 1.15rem; color: var(--dash-dark-navy); margin-bottom: 0.4rem;">Aucune formation active pour le moment</h3>
+        <p style="color: var(--dash-text-muted); font-size: 0.9rem; margin-bottom: 0;">
+          Dès qu'un administrateur vous affecte à un cours ou que vous rejoignez une formation, vous retrouverez ici l'accès direct aux modules, aux ressources et à la scène live.
+        </p>
+      </div>
+    `;
+    return;
+  }
+
+  courses.forEach(course => {
+    const imgUrl = getCourseImageForTitle(course.title, course.description);
+    const card = document.createElement("article");
+    card.className = "card card-white card-paddingtop";
+    card.style.overflow = "hidden";
+
+    const badgeLabel = course.isTeacherAssigned ? "FORMATEUR RÉFÉRENT" : "EN COURS";
+
+    card.innerHTML = `
+      <header class="card__imageContainer">
+        <img
+          class="card__image"
+          src="${imgUrl}"
+          alt="${escapeHtml(course.title)}"
+          width="400"
+          height="250"
+          loading="lazy"
+          decoding="async"
+        />
+      </header>
+      <main class="card__main">
+        <div class="card__header">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.35rem; flex-wrap:wrap; gap: 0.4rem;">
+            <div style="display:flex; gap:0.4rem; align-items:center; flex-wrap:wrap;">
+              <span class="section-tag" style="font-size: 0.72rem; margin-bottom: 0; display: inline-flex; align-items: center; gap: 3px;">
+                ${course.isTeacherAssigned ? ICONS.teacher : ICONS.student} ${badgeLabel}
+              </span>
+              <span style="font-size: 0.72rem; color: #059669; background: rgba(5, 150, 105, 0.12); padding: 2px 7px; border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px;">
+                ${ICONS.check}Accès Pédagogique Total
+              </span>
+            </div>
+            ${course.chaptersCount ? `
+              <span style="font-size: 0.78rem; font-weight: 700; color: #0284c7; background: rgba(2, 132, 199, 0.12); padding: 2px 8px; border-radius: 999px;">
+                ${course.chaptersCount} chapitres
+              </span>
+            ` : (course.progress !== undefined ? `
+              <span style="font-size: 0.78rem; font-weight: 700; color: #00a85a; background: rgba(0,255,135,0.15); padding: 2px 8px; border-radius: 999px;">
+                ${course.progress}% complété
+              </span>
+            ` : "")}
+          </div>
+          <h3 class="card__title" style="font-size: 1.35rem;">${escapeHtml(course.title)}</h3>
+        </div>
+        <p class="card__paragraphe card__textGreen poppins-regular" style="font-size: 0.92rem;">
+          ${escapeHtml(course.description || "Formation active sous votre supervision pédagogique. Vous avez un accès illimité à l'ensemble des modules.")}
+        </p>
+
+        ${course.progress !== undefined ? `
+          <div class="progress-bar-container" style="margin: 0.5rem 0 1rem 0;">
+            <div class="progress-track" style="height: 8px; border-radius: 99px; background: #e2e8f0; overflow: hidden;">
+              <div class="progress-fill" style="width: ${course.progress}%; height: 100%; background: linear-gradient(90deg, #00ff87, #00d9ff); border-radius: 99px;"></div>
+            </div>
+          </div>
+        ` : ""}
+        
+        <div style="display: flex; gap: 0.6rem; margin-top: auto; flex-wrap: wrap;">
+          <a href="app.html?id=${course.id}" class="card__link bangers-regular" style="flex: 1; min-height: 44px; justify-content: center;" title="Accéder au lecteur de cours">
+            Accéder au cours
+            <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <button class="button button__secondary bangers-regular" onclick="openCourseViewer('${course.id}', '${escapeHtml(course.title).replace(/'/g, "\\'")}')" style="min-height: 44px; font-size: 0.95rem; padding: 0.5rem 1rem;" aria-label="Consulter le programme du cours ${escapeHtml(course.title)}">
+            Programme
+          </button>
+          <button class="button button__secondary bangers-regular" onclick="handleJoinStageLive()" style="min-height: 44px; font-size: 0.95rem; padding: 0.5rem 1rem; color: #5865F2; border-color: rgba(88, 101, 242, 0.4);" aria-label="Rejoindre le salon Scène Discord en tant que Formateur">
+            🎙️ Scène Live
+          </button>
+        </div>
+      </main>
+    `;
+    grid.appendChild(card);
+  });
+}
+
 function renderTeacherDashboard() {
-  const grid = document.getElementById("teacher-sections-list");
+  const container = document.getElementById("teacher-sections-list");
   const statPublished = document.getElementById("stat-teacher-published");
   const statPending = document.getElementById("stat-teacher-pending");
   const statRejected = document.getElementById("stat-teacher-rejected");
@@ -1478,9 +1628,9 @@ function renderTeacherDashboard() {
     if (statPublished) statPublished.textContent = "0";
     if (statPending) statPending.textContent = "0";
     if (statRejected) statRejected.textContent = "0";
-    if (grid) {
-      grid.innerHTML = `
-        <div class="teacher-empty-state" role="status" style="grid-column: 1 / -1; width: 100%; text-align: center; padding: 3rem 1.5rem; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 16px;">
+    if (container) {
+      container.innerHTML = `
+        <div class="teacher-empty-state" role="status" style="width: 100%; text-align: center; padding: 3rem 1.5rem; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 16px;">
           <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 1rem auto; color: #64748b; display: block;" aria-hidden="true">
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
@@ -1508,67 +1658,171 @@ function renderTeacherDashboard() {
   if (statPending) statPending.textContent = pendingCount;
   if (statRejected) statRejected.textContent = rejectedCount;
 
-  if (!grid) return;
-  grid.innerHTML = "";
+  if (!container) return;
+  container.innerHTML = "";
 
   if (visibleChapters.length === 0) {
-    grid.innerHTML = `
-      <div style="grid-column: 1 / -1; width: 100%; text-align: center; padding: 2.5rem 1.5rem; background: #ffffff; border: 1px dashed #e2e8f0; border-radius: 12px; color: var(--dash-text-muted);">
+    container.innerHTML = `
+      <div style="width: 100%; text-align: center; padding: 2.5rem 1.5rem; background: #ffffff; border: 1px dashed #e2e8f0; border-radius: 12px; color: var(--dash-text-muted);">
         <p style="margin: 0; font-size: 0.92rem;">Aucun chapitre n'a encore été créé pour vos cours assignés. Cliquez sur « Ajouter une nouvelle section » ci-dessus pour commencer.</p>
       </div>
     `;
     return;
   }
 
-  visibleChapters.forEach(chapter => {
-    const card = document.createElement("div");
-    card.className = "dash-card";
+  const tableWrapper = document.createElement("div");
+  tableWrapper.className = "table-responsive";
+  tableWrapper.style.cssText = "background: #ffffff; border-radius: 20px; border: 1px solid rgba(0,0,0,0.07); box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow-x: auto; margin-bottom: 2rem; width: 100%;";
 
-    let statusPillClass = "draft";
+  let rowsHtml = "";
+  visibleChapters.forEach(chapter => {
+    let statusPillStyle = "background: #f1f5f9; color: #64748b;";
     let statusLabel = "Brouillon";
+    let statusPillClass = "draft";
 
     if (chapter.status === "APPROVED") {
-      statusPillClass = "approved";
+      statusPillStyle = "background: rgba(16, 185, 129, 0.12); color: #059669;";
       statusLabel = "Validé & En ligne";
+      statusPillClass = "approved";
     } else if (chapter.status === "PENDING_APPROVAL") {
-      statusPillClass = "pending";
+      statusPillStyle = "background: rgba(245, 158, 11, 0.12); color: #d97706;";
       statusLabel = "En attente de validation";
+      statusPillClass = "pending";
     } else if (chapter.status === "REJECTED") {
-      statusPillClass = "rejected";
+      statusPillStyle = "background: rgba(239, 68, 68, 0.12); color: #dc2626;";
       statusLabel = "Refusé par l'Admin";
+      statusPillClass = "rejected";
     }
 
-    card.innerHTML = `
-      <div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-          <span style="font-size: 0.8rem; color: var(--dash-neon-blue); font-weight: 600;">${escapeHtml(chapter.courseTitle || "Formation")}</span>
-          <span class="status-pill ${statusPillClass}">${statusLabel}</span>
-        </div>
-        <h4 class="dash-card-title">${escapeHtml(chapter.title)}</h4>
-        <p class="dash-card-desc">Position dans le cours : ${chapter.position}</p>
-        ${chapter.content ? `
-          <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.6rem 0.75rem; margin-top: 0.5rem; max-height: 80px; overflow: hidden; font-size: 0.8rem; color: var(--dash-text-muted); font-family: monospace; white-space: pre-line;">
-            ${escapeHtml(chapter.content.slice(0, 150))}${chapter.content.length > 150 ? "..." : ""}
+    const formattedDate = formatRelativeTime(chapter.submittedAt);
+
+    rowsHtml += `
+      <tr class="teacher-chapter-row" id="chapter-row-${chapter.id}" style="border-bottom: 1px solid #e2e8f0; transition: background 0.15s ease;">
+        <td style="padding: 1rem 1.25rem; font-weight: 600; color: var(--dash-dark-navy);">
+          <span style="display: inline-flex; align-items: center; gap: 0.35rem; color: #2563eb;">
+            ${ICONS.book || ""} ${escapeHtml(chapter.courseTitle || "Formation")}
+          </span>
+        </td>
+        <td style="padding: 1rem 1.25rem;">
+          <strong style="color: var(--dash-dark-navy); font-size: 0.95rem; display: block;">
+            ${escapeHtml(chapter.title)}
+          </strong>
+        </td>
+        <td style="padding: 1rem 1.25rem; text-align: center;">
+          <span style="background: #f1f5f9; color: #475569; font-weight: 700; padding: 2px 8px; border-radius: 999px; font-size: 0.8rem;">
+            #${chapter.position}
+          </span>
+        </td>
+        <td style="padding: 1rem 1.25rem;">
+          <span class="status-pill ${statusPillClass}" style="${statusPillStyle} font-weight: 700; padding: 4px 10px; border-radius: 999px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 4px;">
+            ${statusLabel}
+          </span>
+        </td>
+        <td style="padding: 1rem 1.25rem; text-align: center;">
+          <button type="button" class="button button__secondary"
+            id="btn-chapter-detail-${chapter.id}"
+            aria-expanded="false"
+            aria-controls="chapter-detail-row-${chapter.id}"
+            onclick="toggleChapterDetail('${chapter.id}')"
+            style="font-size: 0.82rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border-radius: 8px;"
+            aria-label="Afficher les détails de la section ${escapeHtml(chapter.title)}">
+            <span>Détails</span>
+            <svg id="chevron-detail-${chapter.id}" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s;" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+        </td>
+        <td style="padding: 1rem 1.25rem; text-align: right;">
+          <div style="display: inline-flex; gap: 0.4rem; align-items: center; justify-content: flex-end;">
+            <button class="button button__secondary" style="font-size: 0.8rem; padding: 6px 10px; display: inline-flex; align-items: center; gap: 4px;" onclick="openEditChapterModal('${chapter.id}')" aria-label="Modifier la section ${escapeHtml(chapter.title)}">
+              ${ICONS.edit} Modifier
+            </button>
+            ${chapter.status !== "PENDING_APPROVAL" && chapter.status !== "APPROVED" ? `
+              <button class="button button__primary bangers-regular" style="font-size: 0.82rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 4px;" onclick="submitChapter('${chapter.id}')" aria-label="Soumettre la section ${escapeHtml(chapter.title)} pour validation">
+                ${ICONS.send} Soumettre
+              </button>
+            ` : ""}
           </div>
-        ` : ""}
-        ${chapter.status === "REJECTED" && chapter.rejectionReason ? `
-          <div class="alert-box danger" style="margin-top: 0.5rem;">
-            <div>
-              <strong>Motif du refus :</strong><br>
-              ${escapeHtml(chapter.rejectionReason)}
+        </td>
+      </tr>
+      <tr id="chapter-detail-row-${chapter.id}" class="chapter-detail-row" style="display: none; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+        <td colspan="6" style="padding: 1.25rem 1.5rem;">
+          <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+              <h5 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--dash-dark-navy);">
+                Aperçu du Contenu & Informations Pédagogiques
+              </h5>
+              <div style="font-size: 0.8rem; color: var(--dash-text-muted);">
+                ${chapter.submittedAt ? `Dernière soumission : <strong>${formattedDate}</strong>` : ""}
+              </div>
+            </div>
+
+            ${chapter.status === "REJECTED" && chapter.rejectionReason ? `
+              <div class="alert-box danger" style="margin-bottom: 1rem;">
+                <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #dc2626; flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <div>
+                    <strong style="color: #dc2626;">Motif du refus par l'administrateur :</strong>
+                    <p style="margin: 0.25rem 0 0 0; font-size: 0.88rem; color: #7f1d1d;">${escapeHtml(chapter.rejectionReason)}</p>
+                  </div>
+                </div>
+              </div>
+            ` : ""}
+
+            <div style="margin-bottom: 1rem;">
+              <label style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--dash-text-muted); display: block; margin-bottom: 0.35rem;">
+                Extrait du Contenu Markdown :
+              </label>
+              <pre style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0.85rem; font-size: 0.82rem; color: #1e293b; max-height: 180px; overflow-y: auto; white-space: pre-wrap; font-family: 'Courier New', Courier, monospace; margin: 0;">${escapeHtml(chapter.content || "Aucun contenu rédigé pour le moment.")}</pre>
+            </div>
+
+            <div style="display: flex; gap: 0.6rem; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
+              <button class="button button__secondary" onclick="openEditChapterModal('${chapter.id}')" style="font-size: 0.85rem; padding: 6px 14px; display: inline-flex; align-items: center; gap: 4px;">
+                ${ICONS.edit} Modifier la section
+              </button>
+              ${chapter.status !== "PENDING_APPROVAL" && chapter.status !== "APPROVED" ? `
+                <button class="button button__primary bangers-regular" onclick="submitChapter('${chapter.id}')" style="font-size: 0.9rem; padding: 6px 16px; display: inline-flex; align-items: center; gap: 4px;">
+                  ${ICONS.send} Soumettre pour validation
+                </button>
+              ` : ""}
             </div>
           </div>
-        ` : ""}
-      </div>
-      <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
-        <button class="dash-btn dash-btn-secondary" style="flex:1; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem;" onclick="openEditChapterModal('${chapter.id}')">${ICONS.edit} Modifier</button>
-        ${chapter.status !== "PENDING_APPROVAL" && chapter.status !== "APPROVED" ? `
-          <button class="dash-btn dash-btn-primary" style="flex:1; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem;" onclick="submitChapter('${chapter.id}')">${ICONS.send} Soumettre</button>
-        ` : ""}
-      </div>
+        </td>
+      </tr>
     `;
-    grid.appendChild(card);
   });
+
+  tableWrapper.innerHTML = `
+    <table id="teacher-chapters-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; min-width: 800px;">
+      <thead>
+        <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: var(--dash-dark-navy); font-weight: 700;">
+          <th scope="col" style="padding: 1rem 1.25rem;">Formation / Cours</th>
+          <th scope="col" style="padding: 1rem 1.25rem;">Titre de la Section</th>
+          <th scope="col" style="padding: 1rem 1.25rem; text-align: center;">Position</th>
+          <th scope="col" style="padding: 1rem 1.25rem;">Statut</th>
+          <th scope="col" style="padding: 1rem 1.25rem; text-align: center;">Détails</th>
+          <th scope="col" style="padding: 1rem 1.25rem; text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="teacher-chapters-table-body">
+        ${rowsHtml}
+      </tbody>
+    </table>
+  `;
+
+  container.appendChild(tableWrapper);
+}
+
+function toggleChapterDetail(chapterId) {
+  const detailRow = document.getElementById(`chapter-detail-row-${chapterId}`);
+  const btn = document.getElementById(`btn-chapter-detail-${chapterId}`);
+  const chevron = document.getElementById(`chevron-detail-${chapterId}`);
+  if (!detailRow) return;
+
+  const isHidden = detailRow.style.display === "none";
+  detailRow.style.display = isHidden ? "table-row" : "none";
+  if (btn) btn.setAttribute("aria-expanded", isHidden ? "true" : "false");
+  if (chevron) chevron.style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
 }
 
 function openAddChapterModal() {
@@ -3169,6 +3423,8 @@ window.loadTeacherData = loadTeacherData;
 window.loadAdminCourses = loadAdminCourses;
 window.renderAdminCourses = renderAdminCourses;
 window.renderTeacherDashboard = renderTeacherDashboard;
+window.renderTeacherCourses = renderTeacherCourses;
+window.toggleChapterDetail = toggleChapterDetail;
 window.openDiscordConnectModal = openDiscordConnectModal;
 window.closeDiscordConnectModal = () => closeModal('discord-connect-modal');
 window.handleJoinStageLive = handleJoinStageLive;
