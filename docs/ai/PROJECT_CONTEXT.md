@@ -50,11 +50,20 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `fix/ssg-build-ux-seo-fixes`
-## Current State: Correctifs SSG (build-static regex), CRO (Hero 2 packs, order bump price reactivity, purge du CTA PDF en zone prix) et SEO/Architecture (app.html + noindex, purge sitemap) validés à 100% (8 tests Playwright OK).
-## Next Steps: Ouverture de la PR vers develop pour validation et merge manuel.
+## Active Branch: `docs/roadmap-sprints-27-30-teachers-discord`
+## Current State: Sprints 25 (Sécurité Métier & Idempotence Stripe) et 26 (Playwright E2E CI Gate, CORS production strict, hygiène repository) clôturés et validés à 100%. Roadmap Phase 4 validée et inscrite : gestion hermétique des enseignants (`course_teacher` + `@courseSecurity`), salons Scène Discord pour les cours magistraux, et 3 salons vocaux projets libres Manga (`luffy-code-lab`, `goku-dojo-live`, `naruto-team-hub`).
+## Next Steps: Démarrage du Sprint 27 (Backend TDD - Table `course_teacher`, Spring Security `@courseSecurity`, endpoints d'assignation et isolation 403).
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN
+## Modèle Relationnel Formateurs:
+- Rôle utilisateur: `Role.TEACHER` (distinct et indépendant des flux de facturation).
+- Statut de paiement: `PaymentStatus` (`PAID`, `PENDING`, `FAILED`, `REFUNDED`) strictement réservé aux transactions financières (aucun détournement pour désigner un rôle enseignant).
+- Affectation aux cours: Table de liaison Many-to-Many `course_teacher` (`course_id`, `teacher_id`).
+- Cloisonnement d'accès: `@PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageCourse(#id, authentication)")`.
+
+## Salons Discord Pédagogiques:
+- Cours Live: Salons Scène (`GUILD_STAGE_VOICE`) — Formateurs modérateurs avec voix prioritaire, apprenants auditeurs avec `REQUEST_TO_SPEAK`.
+- Projets Collectifs: 3 salons vocaux libres (`GUILD_VOICE`) ouverts à tous les apprenants avec partage d'écran (`STREAM`) autorisé : `luffy-code-lab`, `goku-dojo-live`, `naruto-team-hub`.
 
 
