@@ -5,7 +5,9 @@ import com.codebangers.backend.config.exception.ResourceNotFoundException;
 import com.codebangers.backend.course.model.Course;
 import com.codebangers.backend.course.model.CourseTier;
 import com.codebangers.backend.course.repository.CourseRepository;
+import com.codebangers.backend.user.model.Role;
 import com.codebangers.backend.user.model.User;
+import com.codebangers.backend.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,9 +21,15 @@ import java.util.UUID;
 public class CourseService {
 
     private final CourseRepository courseRepository;
+    private final UserRepository userRepository;
+
+    public CourseService(CourseRepository courseRepository, UserRepository userRepository) {
+        this.courseRepository = courseRepository;
+        this.userRepository = userRepository;
+    }
 
     public CourseService(CourseRepository courseRepository) {
-        this.courseRepository = courseRepository;
+        this(courseRepository, null);
     }
 
     @Transactional(readOnly = true)
@@ -104,6 +112,9 @@ public class CourseService {
             course.setRequiredTier(requiredTier);
         }
         course.setCreatedBy(createdBy);
+        if (createdBy != null && createdBy.getRole() == Role.TEACHER) {
+            course.addTeacher(createdBy);
+        }
         return courseRepository.save(course);
     }
 
@@ -181,5 +192,44 @@ public class CourseService {
 
     public void deleteCourse(UUID courseId) {
         courseRepository.deleteById(courseId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Course> getAssignedCoursesForTeacher(UUID teacherId) {
+        return courseRepository.findAllByAssignedTeachersId(teacherId);
+    }
+
+    public Course assignTeacherToCourse(UUID courseId, UUID teacherId, User assignedBy) {
+        Course course = courseRepository.findById(courseId)
+            .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
+
+        if (userRepository == null) {
+            throw new IllegalStateException("UserRepository is not configured");
+        }
+
+        User teacher = userRepository.findById(teacherId)
+            .orElseThrow(() -> new ResourceNotFoundException("User", teacherId));
+
+        if (teacher.getRole() != Role.TEACHER) {
+            throw new IllegalArgumentException("User must have TEACHER role to be assigned to a course");
+        }
+
+        course.addTeacher(teacher);
+        return courseRepository.save(course);
+    }
+
+    public Course removeTeacherFromCourse(UUID courseId, UUID teacherId) {
+        Course course = courseRepository.findById(courseId)
+            .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
+
+        if (userRepository == null) {
+            throw new IllegalStateException("UserRepository is not configured");
+        }
+
+        User teacher = userRepository.findById(teacherId)
+            .orElseThrow(() -> new ResourceNotFoundException("User", teacherId));
+
+        course.removeTeacher(teacher);
+        return courseRepository.save(course);
     }
 }

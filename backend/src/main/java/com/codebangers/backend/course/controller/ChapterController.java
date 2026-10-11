@@ -119,7 +119,7 @@ public class ChapterController {
     }
 
     @PostMapping("/course/{courseId}")
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageCourse(#courseId, authentication)")
     public ResponseEntity<?> createChapter(@PathVariable UUID courseId, @RequestBody ChapterRequest request, @AuthenticationPrincipal Jwt jwt) {
         try {
             User author = getAuthenticatedUser(jwt);
@@ -131,7 +131,7 @@ public class ChapterController {
     }
 
     @PostMapping("/{parentId}/sub-chapter")
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageChapter(#parentId, authentication)")
     public ResponseEntity<?> createSubChapter(@PathVariable UUID parentId, @RequestBody ChapterRequest request, @AuthenticationPrincipal Jwt jwt) {
         try {
             User author = getAuthenticatedUser(jwt);
@@ -143,7 +143,7 @@ public class ChapterController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageChapter(#id, authentication)")
     public ResponseEntity<?> updateChapter(@PathVariable UUID id, @RequestBody ChapterRequest request, @AuthenticationPrincipal Jwt jwt) {
         try {
             User editor = getAuthenticatedUser(jwt);
@@ -155,7 +155,7 @@ public class ChapterController {
     }
 
     @PostMapping("/{id}/submit")
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageChapter(#id, authentication)")
     public ResponseEntity<?> submitForApproval(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
         try {
             User user = getAuthenticatedUser(jwt);
@@ -192,7 +192,7 @@ public class ChapterController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageChapter(#id, authentication)")
     public ResponseEntity<?> softDeleteChapter(@PathVariable UUID id) {
         try {
             chapterService.softDeleteChapter(id);

@@ -1,6 +1,8 @@
 package com.codebangers.backend.course.dto;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class CourseResponse {
@@ -20,6 +22,7 @@ public class CourseResponse {
     private String level;
     private boolean isPublished;
     private com.codebangers.backend.course.model.CourseTier requiredTier;
+    private List<TeacherResponse> assignedTeachers = new ArrayList<>();
 
     // Constructors
 
@@ -189,5 +192,13 @@ public class CourseResponse {
 
     public void setRequiredTier(com.codebangers.backend.course.model.CourseTier requiredTier) {
         this.requiredTier = requiredTier;
+    }
+
+    public List<TeacherResponse> getAssignedTeachers() {
+        return assignedTeachers;
+    }
+
+    public void setAssignedTeachers(List<TeacherResponse> assignedTeachers) {
+        this.assignedTeachers = assignedTeachers;
     }
 }

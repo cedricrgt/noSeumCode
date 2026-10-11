@@ -1593,5 +1593,42 @@ eset-password.html.
    - Validation de l'intégralité de la suite Playwright (11/11 tests passés).
    - Recompilation et minification complètes (`homepage.min.css`, `header.min.js`, SSG) via `frontend/build.sh`.
 
+---
+
+## 2026-10-11 — Sprint 27 : Modélisation des Enseignants & Sécurité Spring Boot (Backend TDD)
+
+**Conversation ID**: `dae2aa67-d104-46fa-99e6-809c99691f90`  
+**Branche**: `feat/sprint-27-teachers-modeling-security`  
+**Objectif**: Mettre en place la modélisation relationnelle d'affectation des formateurs (`course_teacher`), la relation `@ManyToMany` JPA, le composant d'autorisation ABAC/RBAC `@courseSecurity`, les endpoints d'assignation admin et de filtrage formateur, et valider l'isolation 403 Forbidden via TDD.
+
+### Réalisations & Livrables :
+1. **Migration Flyway V020 (`V020__create_course_teacher_table.sql`)** :
+   - Création de la table de liaison `course_teacher` (`course_id UUID`, `teacher_id UUID`, `assigned_at`, `assigned_by_id`).
+   - Clé primaire composite `(course_id, teacher_id)`, contraintes de clés étrangères en cascade sur `course` et `users`.
+   - Indexation dédiée sur `teacher_id` et `course_id`.
+   - Préservation stricte du domaine financier : refus catégorique de détourner `PaymentStatus` pour la gestion des formateurs.
+2. **Entité JPA Course & Requêtes Repository** :
+   - `Course.java` : relation `@ManyToMany` vers `User` (`assignedTeachers`) mappée sur `course_teacher` avec `@JsonIgnore` et méthodes de gestion `addTeacher` / `removeTeacher`.
+   - `User.java` : implémentation de `equals` et `hashCode` basée sur l'identifiant UUID `id` pour un comportement déterministe dans les collections JPA.
+   - `CourseRepository.java` : ajout de `findAllByAssignedTeachersId(UUID teacherId)` et `isTeacherAssignedToCourse(UUID courseId, UUID teacherId)`.
+3. **Composant de Sécurité Spring Boot `@courseSecurity` (`CourseSecurity.java`)** :
+   - Validation d'accès `canManageCourse(UUID courseId, Authentication authentication)` : octroie l'accès immédiat aux administrateurs (`ROLE_ADMIN`), vérifie le rôle `ROLE_TEACHER` et l'affectation effective au cours via `isTeacherAssignedToCourse`.
+   - Helpers d'autorisation en cascade : `canManageChapter(UUID chapterId, ...)` et `canManageContent(UUID contentId, ...)`.
+   - Résolution multi-principals (JWT claim `userId`, claim subject email, username).
+4. **Endpoints REST Formateurs & Sécurisation RBAC** :
+   - `CourseController.java` :
+     - `GET /api/courses/my-assigned-courses` : réservé à `hasAnyRole('TEACHER', 'ADMIN')`, renvoie exclusivement les cours assignés au formateur connecté.
+     - `PUT /api/courses/{id}` et `DELETE /api/courses/{id}` protégés par `@PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageCourse(#id, authentication)")`.
+     - `POST /api/courses/{id}/teachers/{teacherId}` et `DELETE /api/courses/{id}/teachers/{teacherId}` réservés à `hasRole('ADMIN')`.
+     - Auto-assignation du formateur créateur lors de `createCourse` par un formateur.
+   - `ChapterController.java` et `ContentController.java` : sécurisation des mutations (`POST`, `PUT`, `DELETE`, `submit`) avec `@courseSecurity`.
+   - DTO `TeacherResponse` et enrichissement de `CourseResponse` avec la liste des formateurs assignés.
+5. **Validation TDD & Tests de Sécurité (199 tests passés, 0 régression)** :
+   - `CourseSecurityTest.java` : 14 tests validant tous les scénarios de décision ABAC (Admin, formateur assigné, formateur non assigné, élève, null).
+   - `CourseTeacherServiceTest.java` : 6 tests validant l'assignation, la révocation, l'auto-assignation à la création et le rejet des non-enseignants.
+   - `CourseControllerSecurityTest.java` : 7 tests validant le comportement du contrôleur REST.
+   - `CourseMethodSecurityTest.java` : 9 tests avec proxy Spring Security validant formellement l'exception `AccessDeniedException` (HTTP 403 Forbidden) lorsqu'un formateur non assigné tente de modifier un cours.
+
+
 
 

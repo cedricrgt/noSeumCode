@@ -9,7 +9,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -84,6 +86,15 @@ public class Course {
     @JsonIgnore
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Enrollment> enrollments = new ArrayList<>();
+
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "course_teacher",
+        joinColumns = @JoinColumn(name = "course_id"),
+        inverseJoinColumns = @JoinColumn(name = "teacher_id")
+    )
+    private Set<User> assignedTeachers = new HashSet<>();
 
     // =========================
     // Constructors
@@ -243,5 +254,26 @@ public class Course {
 
     public void setRequiredTier(CourseTier requiredTier) {
         this.requiredTier = requiredTier;
+    }
+
+    public Set<User> getAssignedTeachers() {
+        return assignedTeachers;
+    }
+
+    public void setAssignedTeachers(Set<User> assignedTeachers) {
+        this.assignedTeachers = assignedTeachers;
+    }
+
+    public void addTeacher(User teacher) {
+        if (this.assignedTeachers == null) {
+            this.assignedTeachers = new HashSet<>();
+        }
+        this.assignedTeachers.add(teacher);
+    }
+
+    public void removeTeacher(User teacher) {
+        if (this.assignedTeachers != null) {
+            this.assignedTeachers.remove(teacher);
+        }
     }
 }
