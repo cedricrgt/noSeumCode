@@ -83,6 +83,8 @@ h1, h2, h3, h4, h5, h6 {
     scroll-behavior: auto !important;
   }
 }
+
+
 .poppins-regular {
   font-family: "Poppins", sans-serif;
   font-weight: 400;
@@ -123,6 +125,8 @@ h1, h2, h3, h4, h5, h6 {
     animation: none;
   }
 }
+
+
 
 /* Accessibility: Screen Reader Only */
 .sr-only {
@@ -280,6 +284,8 @@ html {
     minmax(var(--min-column-size), 1fr)
   );
 }
+
+
 .button {
   padding: 12px 32px;
   border: none;
@@ -328,6 +334,8 @@ html {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
+
+
 .card {
   border-radius: var(--radius-xl);
   overflow: hidden;
@@ -513,6 +521,8 @@ html {
 .card-paddingtop .card__imageContainer {
   height: 250px;
 }
+
+
 
 [popover] {
   border: none;
@@ -746,6 +756,8 @@ html {
 #stripe-checkout iframe {
   border-radius: 12px;
 }
+
+
 #header-placeholder {
   display: block;
   position: relative;
@@ -1022,6 +1034,8 @@ html {
     transition-delay: 0.2s;
   }
 }
+
+
 .promo-banner {
   background-color: var(--primary-green);
   color: var(--dark-navy);
@@ -1105,6 +1119,8 @@ html {
     padding-left: 1rem;
   }
 }
+
+
 
 #promo-popup {
   inset: 0;
@@ -1205,6 +1221,8 @@ html {
     font-size: 2.5rem;
   }
 }
+
+
 .article-page {
   background-color: var(--white);
   color: var(--text-dark);
@@ -1571,6 +1589,8 @@ html {
     text-align: center;
   }
 }
+
+
 .footer {
   background: var(--dark-navy);
   color: var(--white);

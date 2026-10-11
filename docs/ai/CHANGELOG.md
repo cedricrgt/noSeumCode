@@ -1636,3 +1636,41 @@ eset-password.html.
    - `CourseRepository.java` : ajout de la méthode de recherche `findAllByAssignedTeacherId`.
    - `EnrollmentBundleProvisioningTest.java` : 7 nouveaux tests unitaires validant l'ensemble des scénarios d'inscription par lot et d'idempotence (suite globale à 205 tests réussis, 0 régression).
 
+---
+
+## 2026-10-11 | Conversation: 05a29429-9a0e-4d6d-9b4b-c5eb033ab962
+
+**Type**: Sprint 28 — Dashboard Admin & Interface Enseignant (Frontend & A11y)  
+**Auteur**: Antigravity (Agent IA)  
+**Branche**: `feat/sprint-28-teacher-dashboard-admin-assignment`  
+**Objectif**: Cloisonner le dashboard enseignant (`TEACHER`) aux cours assignés via `/api/courses/my-assigned-courses`, créer l'interface d'assignation et de retrait des formateurs dans la console admin (`ADMIN`), garantir l'accessibilité WCAG 2.1 AA (ARIA, annonces vocales, navigation clavier) et valider la couverture par des tests E2E Playwright.
+
+### Réalisations & Livrables :
+1. **Cloisonnement du Dashboard Enseignant (`frontend/js/dashboard.js`)** :
+   - `loadTeacherData()` : appel conditionnel de `GET /api/courses/my-assigned-courses` lorsque le rôle ou la vue active est `TEACHER`.
+   - `renderTeacherDashboard()` : affichage d'un état vide bienveillant (« Aucun cours ne vous a encore été attribué. Contactez l'administrateur. ») lorsque la liste de cours assignés est vide. Filtrage strict des sections pédagogiques par cours assignés.
+   - `openAddChapterModal()` et `openEditChapterModal()` : alimentation du sélecteur `#chapter-course-select` exclusivement avec les cours assignés. Blocage de l'ouverture si aucun cours n'est assigné.
+   - `handleSaveChapter()` et `submitChapter()` : validation côté client et interception des réponses API HTTP 403 Forbidden avec notifications toast d'erreur et retours vocaux : *« Action non autorisée : vous n'enseignez pas ce cours. »*.
+2. **Interface Admin d'Affectation des Formateurs (`frontend/dashboard.html`, `dashboard.js`, `dashboard.css`)** :
+   - Ajout d'une colonne « Formateurs Référents » dans le tableau de gestion des cours de la console admin (`#admin-courses-table`).
+   - Rendu dynamique des badges des formateurs assignés (`.teacher-badge`) avec nom complet et bouton d'action accessible de retrait `[x Retirer]`.
+   - Bouton d'ouverture de formulaire d'assignation accessible `[+ Assigner un formateur]` avec gestion des états `aria-expanded` et `aria-controls`.
+   - Menu déroulant alimenté par `GET /api/users?role=TEACHER` (avec fallback sur `adminUsersList`), filtrant automatiquement les formateurs déjà assignés.
+   - Validation de l'affectation via `POST /api/courses/{courseId}/teachers/{teacherId}` et suppression via `DELETE /api/courses/{courseId}/teachers/{teacherId}` avec confirmation.
+   - Mise à jour réactive locale de la liste des cours sans rechargement de page.
+3. **Accessibilité & Ergonomie WCAG 2.1 AA** :
+   - Zone d'annonce vocale dynamique `<div id="a11y-status-announcer" class="sr-only" aria-live="polite" role="status"></div>`.
+   - Fonction utilitaire `announceA11y(message)` pour avertir les lecteurs d'écran lors des assignations, suppressions et erreurs de permission.
+   - Balisage ARIA sémantique complet (`<label for="assign-teacher-select-${courseId}">`, `aria-label` explicites sur les boutons de retrait incluant le nom de l'enseignant et le cours).
+   - Navigation clavier : fermeture des popovers d'assignation via la touche `Escape` et restitution du focus sur le bouton déclencheur.
+4. **Backend : Support du filtrage par rôle sur l'API Utilisateurs (`backend/.../UserController.java`)** :
+   - Ajout du paramètre optionnel `@RequestParam(required = false) Role role` sur `GET /api/users` permettant la requête ciblée `GET /api/users?role=TEACHER`.
+5. **Tests E2E Playwright (`e2e/tests/teacher-dashboard-isolation.spec.js`)** :
+   - Test 1 : Vue formateur filtrée au seul cours assigné dans `#chapter-course-select`.
+   - Test 1bis : État vide formateur bienveillant et blocage si 0 cours attribué.
+   - Test 2 : Rejet côté client de tentative d'altération du sélecteur vers un cours non assigné.
+   - Test 2bis : Gestion et affichage du refus HTTP 403 Forbidden du serveur backend.
+   - Test 3 : Parcours admin complet : bascule d'onglet, ouverture popover, navigation clavier `Escape`, assignation d'un enseignant, affichage immédiat du badge et annonce vocale, retrait avec confirmation et feedback vocal.
+   - **Bilan Tests** : 16/16 tests Playwright réussis (0 régression) et 206/206 tests unitaires/sécurité backend réussis.
+
+

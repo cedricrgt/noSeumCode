@@ -50,9 +50,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `feat/sprint-27-course-teachers-rbac`
-## Current State: Sprint 27 (Modélisation Granulaire des Cours, Affectation Enseignants & Sécurité Spring Boot TDD) complété et validé à 100% via TDD (migration V021 découplant les offres commerciales Starter/Web/VIP des cours réels HTML-CSS/Git/JS, table course_teacher, provisioning multi-cours résilient, composant ABAC/RBAC @courseSecurity, endpoints d'affectation et 205 tests passés avec 0 régression).
-## Next Steps: Fusion PR #149 vers develop puis démarrage du Sprint 28 (Dashboard Formateurs & Interface Admin accessible WCAG AA).
+## Active Branch: `feat/sprint-28-teacher-dashboard-admin-assignment`
+## Current State: Sprint 28 (Dashboard Admin & Interface Enseignant Frontend & A11y) terminé : cloisonnement strict du dashboard formateur (/api/courses/my-assigned-courses), composant accessible WCAG d'assignation/retrait de formateurs dans le dashboard admin, annonces vocales aria-live, 5 tests E2E Playwright validés (16 tests au total, 0 régression) et 206 tests backend validés.
+## Next Steps: Sprint 29 (Discord Salons Scène & Vocaux Projets Manga).
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN
