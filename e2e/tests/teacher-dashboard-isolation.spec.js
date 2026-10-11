@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-test.describe('Isolation du Dashboard Enseignant et Interface Admin d\'Assignation (Sprint 28)', () => {
+test.describe('Test de Composant UI : Isolation du Dashboard Enseignant et Interface Admin d\'Assignation (Sprint 28)', () => {
 
   const teacherUser = {
     id: 'teacher-alice-uuid',
