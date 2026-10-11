@@ -35,6 +35,10 @@
 | **Sprint 24** | **Qualité, CI/CD et Observabilité (P1 & P2)** | Nettoyage secrets env, Testcontainers PostgreSQL, refactoring métier, Correlation ID | 🚧 **À faire** |
 | **Sprint 25** | **Sécurité Métier & Idempotence Stripe (P0)** | IDOR, usurpation session, verrou idempotence Stripe DB | ✅ **Terminé** |
 | **Sprint 26** | **E2E, CORS & Hygiène (P1 & P2)** | Playwright CI, durcissement CORS, HttpOnly cookies, nettoyage repo | ✅ **Terminé** |
+| **Sprint 27** | **Modélisation Formateurs & Sécurité RBAC** | Table d'affectation `course_teacher`, Spring Security `@courseSecurity`, isolation stricte | 📋 **À faire** |
+| **Sprint 28** | **Dashboard Formateur & Assignation Admin** | Vue filtrée Formateur, affectation accessible WCAG par l'Admin, cloisonnement édition | 📋 **À faire** |
+| **Sprint 29** | **Discord Salons Scène & Vocaux Projets Manga** | Salons Scène de cours (live magistraux) + 3 salons vocaux libres de projets Manga (`luffy-code-lab`, `goku-dojo-live`, `naruto-team-hub`) | 📋 **À faire** |
+| **Sprint 30** | **Recette E2E Globale, Accessibilité & Clôture** | Validation E2E Playwright de bout en bout, tests accessibilité clavier/écran, ADR-024 | 📋 **À faire** |
 
 ---
 
@@ -161,6 +165,11 @@ gantt
     Sprint 24 (Qualité & CI/CD)     :sp24, after sp23, 3d
     Sprint 25 (Sécurité & Idempotence):done, sp25, 2026-10-08, 1d
     Sprint 26 (E2E, CORS & Nettoyage) :done, sp26, 2026-10-09, 1d
+    section Phase 4 (Pédagogie, Formateurs & Salons Discord)
+    Sprint 27 (Modélisation & Sécurité Formateurs) :sp27, 2026-10-12, 3d
+    Sprint 28 (Dashboard Formateurs & Admin)       :sp28, after sp27, 3d
+    Sprint 29 (Salons Scène & Vocaux Manga)       :sp29, after sp28, 3d
+    Sprint 30 (Recette E2E & Clôture)             :sp30, after sp29, 2d
 ```
 
 ---
@@ -552,3 +561,72 @@ gantt
 - **26.1 Playwright CI Gate** : Exécution automatique des tests E2E Playwright dans la chaîne GitHub Actions (`frontend-ci.yml`), configuration de `playwright test` dans `e2e/package.json` et rapport d'artefacts.
 - **26.2 Durcissement Réseau (CORS & Auth)** : Ciblage du CORS en prod (`https://noseumcode.fr`, `https://www.noseumcode.fr`, interdiction formelle des wildcards et origines locales) + conception complète de l'architecture cookies `HttpOnly; Secure; SameSite=Lax` pour la transition JWT (ADR-023).
 - **26.3 Nettoyage du Bruit Git** : Suppression des fichiers doublons corrompus (mojibake Mac/Windows) dans `frontend/data/` et `.github/instructions/`, réécriture de `rule-11` en nommage ASCII strict, et mise à jour de la description dans `pom.xml` vers Spring Boot 4.1 & Java 21.
+
+---
+
+### Sprint 27 : Modélisation des Enseignants & Sécurité Spring Boot (Backend TDD) (À faire)
+- **27.1 Modèle Relationnel `course_teacher` & Flyway V020** :
+  - Création de la migration `V020__create_course_teacher_table.sql` (table de liaison `course_id UUID`, `teacher_id UUID`, `assigned_at`, `assigned_by_id`).
+  - Indexation sur `teacher_id` et `course_id` pour des performances optimales.
+  - Refus architectural catégorique de l'altération du statut de paiement (`PaymentStatus` reste strictement financier).
+- **27.2 Entité Course & Repository JPA** :
+  - Enrichissement de `Course.java` avec la relation `@ManyToMany` vers `User` (`assignedTeachers`).
+  - Ajout des méthodes de requête dans `CourseRepository` : `findAllByAssignedTeachersId(UUID teacherId)` et `isTeacherAssignedToCourse(UUID courseId, UUID teacherId)`.
+- **27.3 Sécurité Spring Boot `@courseSecurity` (ABAC / RBAC)** :
+  - Création du composant `@Component("courseSecurity") CourseSecurity` vérifiant si l'utilisateur connecté est `ADMIN` ou un enseignant assigné au cours ciblé.
+  - Sécurisation de `CourseController` (`PUT /api/courses/{id}`, `DELETE /api/courses/{id}`) et `ChapterController` / `ContentController` avec `@PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageCourse(#id, authentication)")`.
+- **27.4 Endpoints REST Enseignants & Assignation** :
+  - Endpoint `GET /api/courses/my-assigned-courses` retournant exclusivement les cours confiés au formateur connecté (`ROLE_TEACHER`).
+  - Endpoints Admin `POST /api/courses/{id}/teachers/{teacherId}` et `DELETE /api/courses/{id}/teachers/{teacherId}` réservés à `ROLE_ADMIN`.
+- **27.5 Validation TDD Backend** :
+  - Tests slice `@DataJpaTest` validant les requêtes d'assignation.
+  - Tests unitaires et d'intégration Spring Security `CourseSecurityTest` et `CourseControllerSecurityTest` : validation formelle du code HTTP `403 Forbidden` si un formateur tente de modifier un cours auquel il n'est pas assigné.
+
+---
+
+### Sprint 28 : Dashboard Admin & Interface Enseignant (Frontend & A11y) (À faire)
+- **28.1 Dashboard Formateur Filtré (`dashboard.js`, `dashboard.html`)** :
+  - Lorsque la vue active est `TEACHER`, chargement dynamique via `GET /api/courses/my-assigned-courses`.
+  - La liste déroulante des cours et la gestion des chapitres n'affichent que les cours assignés au formateur.
+  - Blocage des interfaces d'édition pour toute ressource non assignée avec feedback utilisateur clair.
+- **28.2 Dashboard Admin : Assignation des Formateurs par Cours** :
+  - Section Formations : ajout d'un volet d'affectation des formateurs sur chaque carte de cours.
+  - Liste déroulante alimentée dynamiquement par les utilisateurs ayant le rôle `TEACHER` (`GET /api/users?role=TEACHER`).
+  - Séparation hermétique avec la gestion des paiements (aucun impact sur la table des inscriptions ou des statuts de paiement).
+- **28.3 Accessibilité & Ergonomie WCAG 2.1 AA (`screen-reader-testing`)** :
+  - Composant d'assignation accessible au clavier avec balises `<label>`, `aria-haspopup="listbox"`, `aria-expanded` et focus trap dans les popovers/modales.
+  - Annonce vocale dynamique de l'état de sauvegarde via zone `aria-live="polite"`.
+- **28.4 Tests E2E Playwright** :
+  - Suite de tests `teacher-dashboard-isolation.spec.js` :
+    1. Connexion en tant qu'enseignant A -> Vérification qu'il ne voit que son cours assigné.
+    2. Tentative de forçage d'édition d'un cours tiers -> Rejet avec toast d'interdiction.
+    3. Connexion Admin -> Assignation d'un cours à l'enseignant B -> Vérification de la prise en compte immédiate.
+
+---
+
+### Sprint 29 : Automatisation Discord Avancée — Salons Scène de Cours & Salons Vocaux Manga Multi-Projets (À faire)
+- **29.1 Architecture Discord Salons Scène (`GUILD_STAGE_VOICE` / Type 13) pour les Cours** :
+  - Modélisation de salons Scène pour les cours live magistraux :
+    - Enseignants assignés : rôle Animateur/Modérateur Scène (`CONNECT`, `SPEAK`, `STREAM`, `PRIORITY_SPEAKER`, `MUTE_MEMBERS`, `MOVE_MEMBERS`).
+    - Apprenants inscrits : auditeurs silencieux par défaut avec permission de levée de main (`REQUEST_TO_SPEAK`), `VIEW_CHANNEL`, `CONNECT`, `SEND_MESSAGES` (dans le fil de discussion intégré).
+  - Évitement strict du piège des overwrites individuels : chaque cours dispose d'un rôle Discord (`@Course-[Code]`), les salons héritent des permissions de ce rôle.
+- **29.2 Salons Vocaux Libres d'Entraide & Projets Multi-Élèves (Thématique Manga)** :
+  - Création de 3 salons vocaux permanents (`GUILD_VOICE` / Type 2) ouverts à tous les apprenants vérifiés pour le travail en équipe et le pair-programming :
+    1. 🏴‍☠️ **`luffy-code-lab`** (One Piece) — Salon libre d'entraide, partage d'idées et projets collaboratifs.
+    2. ⚡ **`goku-dojo-live`** (Dragon Ball) — Salon de pair programming intensif, révision et debug en binôme.
+    3. 🍥 **`naruto-team-hub`** (Naruto) — Salon d'ateliers de groupe, hackathons et travaux pratiques collectifs.
+  - Permissions accordées sur les 3 salons Manga : `CONNECT`, `SPEAK`, `STREAM` (partage d'écran actif indispensable pour le code collaboratif), `USE_VAD`, `SEND_MESSAGES`.
+- **29.3 Synchronisation Automatique Inscription -> Rôle Discord Cours** :
+  - Extension de `DiscordGateway` et `DiscordService` pour provisionner le rôle de cours dès confirmation de paiement (`PAID`) via Stripe webhook ou secours `confirm-session`.
+  - Boutons d'accès direct « 🎙️ Rejoindre le direct (Salon Scène) » et « 👥 Espaces Projets Manga » intégrés dans le dashboard apprenant et enseignant.
+
+---
+
+### Sprint 30 : Recette Globale, E2E Playwright & Documentation d'Architecture (À faire)
+- **30.1 Validation E2E Bout-en-Bout** :
+  - Parcours complet automatisé : Achat / inscription d'un cours -> Attribution automatique du rôle Discord -> Accès au salon Scène -> Connexion Enseignant -> Édition du cours assigné -> Tentative d'accès interdit.
+- **30.2 Audit d'Accessibilité Clavier & Synthèse Vocale** :
+  - Audit complet de l'interface d'assignation admin et des déclencheurs Discord au clavier et aux technologies d'assistance (NVDA/JAWS).
+- **30.3 Clôture Documentaire & ADR-024** :
+  - Rédaction de l'ADR-024 : *Architecture d'affectation des enseignants et intégration des salons Scène et vocaux Discord*.
+  - Mise à jour de `PROJECT_CONTEXT.md` et alignement avec le Kanban GitHub.
