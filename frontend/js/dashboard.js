@@ -260,6 +260,8 @@ async function loadStoredAuth() {
         currentAuth.user.lastName = freshUser.lastName;
         currentAuth.user.email = freshUser.email;
         currentAuth.user.userName = freshUser.userName;
+        if (freshUser.userId) currentAuth.user.id = freshUser.userId;
+        else if (freshUser.id) currentAuth.user.id = freshUser.id;
         localStorage.setItem("noseum_user", JSON.stringify(currentAuth.user));
         updateUserUI();
       }
@@ -1420,8 +1422,8 @@ window.downloadHubspotCsv = downloadHubspotCsv;
 // ==========================================
 
 async function loadTeacherData() {
-  const isTeacherRole = (activeDashboardView === "TEACHER") || (normalizeRole(currentAuth.user.role) === "TEACHER");
-  const endpoint = isTeacherRole ? "/api/courses/my-assigned-courses" : "/api/courses";
+  const isRealTeacher = normalizeRole(currentAuth.user.role) === "TEACHER";
+  const endpoint = isRealTeacher ? "/api/courses/my-assigned-courses" : "/api/courses";
   const res = await apiFetch(endpoint);
   if (res && res.ok) {
     allAvailableCourses = await res.json();
@@ -1429,15 +1431,6 @@ async function loadTeacherData() {
     allAvailableCourses = [];
   } else if (!res && allAvailableCourses.length === 0) {
     allAvailableCourses = [];
-  }
-
-  if ((!allAvailableCourses || allAvailableCourses.length === 0) && normalizeRole(currentAuth.user.role) === "ADMIN") {
-    try {
-      const fallbackRes = await apiFetch("/api/courses");
-      if (fallbackRes && fallbackRes.ok) {
-        allAvailableCourses = await fallbackRes.json();
-      }
-    } catch (_) {}
   }
 
   // Also fetch enrolled courses for teachers
@@ -1448,9 +1441,8 @@ async function loadTeacherData() {
     }
   } catch (_) {}
 
-  // Load teacher chapters for assigned courses if not already populated
-  const assignedIds = new Set(allAvailableCourses.map(c => c.id));
-  if (allAvailableCourses.length > 0 && teacherChapters.length === 0) {
+  // Load teacher chapters for assigned courses
+  if (Array.isArray(allAvailableCourses) && allAvailableCourses.length > 0) {
     try {
       const fetchedChapters = [];
       for (const course of allAvailableCourses) {
@@ -1474,11 +1466,9 @@ async function loadTeacherData() {
           }
         }
       }
-      if (fetchedChapters.length > 0) {
-        teacherChapters = fetchedChapters;
-      }
+      teacherChapters = fetchedChapters;
     } catch (_) {}
-  } else if (allAvailableCourses.length === 0) {
+  } else {
     teacherChapters = [];
   }
 

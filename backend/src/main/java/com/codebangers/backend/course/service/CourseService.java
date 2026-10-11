@@ -195,6 +195,7 @@ public class CourseService {
         return courseRepository.findAllByAssignedTeachersId(teacherId);
     }
 
+    @Transactional
     public Course assignTeacherToCourse(UUID courseId, UUID teacherId, User assignedBy) {
         Course course = courseRepository.findById(courseId)
             .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
@@ -216,6 +217,7 @@ public class CourseService {
         return saved;
     }
 
+    @Transactional
     public Course removeTeacherFromCourse(UUID courseId, UUID teacherId) {
         Course course = courseRepository.findById(courseId)
             .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
