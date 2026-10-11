@@ -54,6 +54,7 @@ public class CourseTeacherIntegrationTest {
     private User admin;
     private User teacher;
     private Course course;
+    private Chapter chapter;
 
     @BeforeEach
     void setUp() {
@@ -65,6 +66,17 @@ public class CourseTeacherIntegrationTest {
 
     @AfterEach
     void tearDown() {
+        if (course != null && course.getId() != null) {
+            try {
+                course.getAssignedTeachers().clear();
+                courseRepository.saveAndFlush(course);
+            } catch (Exception ignored) {}
+        }
+        if (chapter != null && chapter.getId() != null) {
+            try {
+                chapterRepository.deleteById(chapter.getId());
+            } catch (Exception ignored) {}
+        }
         if (course != null && course.getId() != null) {
             try {
                 courseRepository.deleteById(course.getId());
@@ -88,16 +100,13 @@ public class CourseTeacherIntegrationTest {
         // 1. Insère en base réelle un administrateur et un utilisateur TEACHER
         String suffix = UUID.randomUUID().toString().substring(0, 8);
         admin = new User("admin_" + suffix, "Admin", "Super", "admin_" + suffix + "@codebangers.fr", "hash", Role.ADMIN);
-        admin.setId(UUID.randomUUID());
         admin = userRepository.save(admin);
 
         teacher = new User("teacher_" + suffix, "Prof", "Expert", "teacher_" + suffix + "@codebangers.fr", "hash", Role.TEACHER);
-        teacher.setId(UUID.randomUUID());
         teacher = userRepository.save(teacher);
 
         // Insère un cours complet avec createdBy = admin
         course = new Course("Formation Intégration Réelle " + suffix, "Description complète de la formation");
-        course.setId(UUID.randomUUID());
         course.setCreatedBy(admin);
         course.setPriceInCents(57900L);
         course.setCurrency("EUR");
@@ -106,9 +115,8 @@ public class CourseTeacherIntegrationTest {
         course = courseRepository.save(course);
 
         // Insère un chapitre associé
-        Chapter chapter = new Chapter(course, "Chapitre 1 : Introduction Réelle", 1);
-        chapter.setId(UUID.randomUUID());
-        chapterRepository.save(chapter);
+        chapter = new Chapter(course, "Chapitre 1 : Introduction Réelle", 1);
+        chapter = chapterRepository.save(chapter);
 
         // 2. Génère de vrais tokens JWT
         String adminToken = jwtService.generateToken(admin);

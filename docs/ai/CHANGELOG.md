@@ -1785,6 +1785,7 @@ eset-password.html.
    - Assertion de persistance effective dans la table de jointure `course_teacher`.
    - Appel réel `GET /api/courses/my-assigned-courses` avec le token Formateur.
    - Assertions strictes : HTTP 200, absence de `LazyInitializationException`, présence de `chaptersCount`, nom du créateur et formateurs assignés.
+   - Éradication de `StaleObjectStateException` : suppression des appels manuels `setId()` sur les entités `@GeneratedValue` pour garantir l'exécution de `persist()` au lieu de `merge()` sous PostgreSQL réel (Testcontainers CI). Nettoyage relationnel en cascade (`tearDown`).
 2. **Test E2E Playwright Dé-mocké (`teacher-dashboard-live.spec.js`)** :
    - Interdiction formelle de tout `page.route()` pour les routes `/api/auth/*` ou `/api/courses/*`.
    - Parcours complet : vérification probe des identifiants réels -> connexion admin -> assignation formateur -> déconnexion UI `globalLogout` -> connexion formateur -> vérification vue `#view-teacher` et badge « FORMATEUR RÉFÉRENT ».
