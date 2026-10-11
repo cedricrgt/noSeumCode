@@ -1466,6 +1466,9 @@ async function loadTeacherData() {
     }
   } catch (_) {}
 
+  // Rendu immédiat des cours assignés et actifs pour un affichage instantané sans blocage
+  renderTeacherCourses();
+
   // Load teacher chapters for assigned courses
   if (Array.isArray(allAvailableCourses) && allAvailableCourses.length > 0) {
     try {
