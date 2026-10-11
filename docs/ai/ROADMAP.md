@@ -167,8 +167,8 @@ gantt
     Sprint 26 (E2E, CORS & Nettoyage) :done, sp26, 2026-10-09, 1d
     section Phase 4 (Pédagogie, Formateurs & Salons Discord)
     Sprint 27 (Modélisation & Sécurité Formateurs) :done, sp27, 2026-10-11, 1d
-    Sprint 28 (Dashboard Formateurs & Admin)       :active, sp28, 2026-10-11, 2d
-    Sprint 29 (Salons Scène & Vocaux Manga)       :sp29, after sp28, 3d
+    Sprint 28 (Dashboard Formateurs & Admin)       :done, sp28, 2026-10-11, 2d
+    Sprint 29 (Salons Scène & Vocaux Manga)       :done, sp29, 2026-10-11, 2d
     Sprint 30 (Recette E2E & Clôture)             :sp30, after sp29, 2d
 ```
 
@@ -613,7 +613,7 @@ gantt
 
 ---
 
-### Sprint 29 : Automatisation Discord Avancée — Salons Scène de Cours & Salons Vocaux Manga Multi-Projets (À faire)
+### Sprint 29 : Automatisation Discord Avancée — Salons Scène de Cours & Salons Vocaux Manga Multi-Projets (Terminé)
 - **29.1 Architecture Discord Salons Scène (`GUILD_STAGE_VOICE` / Type 13) pour les Cours** :
   - Modélisation de salons Scène pour les cours live magistraux :
     - Enseignants assignés : rôle Animateur/Modérateur Scène (`CONNECT`, `SPEAK`, `STREAM`, `PRIORITY_SPEAKER`, `MUTE_MEMBERS`, `MOVE_MEMBERS`).

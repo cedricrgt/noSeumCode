@@ -4,6 +4,7 @@ import com.codebangers.backend.discord.dto.DiscordMemberDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,8 +17,9 @@ import java.util.*;
 
 /**
  * Adaptateur d'intégration HTTP avec l'API Discord v10 (ADR-010).
- * Gère l'ajout d'utilisateurs au serveur Discord (OAuth2 access token + guilds.join)
- * et l'attribution dynamique de rôles par le Bot NoSeumCode.
+ * Gère l'ajout d'utilisateurs au serveur Discord (OAuth2 access token + guilds.join),
+ * l'attribution dynamique de rôles et la résolution des URLs directes des salons Scène
+ * et des salons vocaux Manga (Sprint 29).
  */
 @Component
 public class DiscordGatewayImpl implements DiscordGateway {
@@ -32,8 +34,14 @@ public class DiscordGatewayImpl implements DiscordGateway {
     private final String vipRoleId;
     private final String defaultRoleId;
     private final String inviteUrl;
+    private final String stageStarterChannelId;
+    private final String stageWebChannelId;
+    private final String voiceLuffyChannelId;
+    private final String voiceGokuChannelId;
+    private final String voiceNarutoChannelId;
     private final RestClient restClient;
 
+    @Autowired
     public DiscordGatewayImpl(
             @Value("${discord.bot.token:}") String botToken,
             @Value("${discord.guild.id:}") String guildId,
@@ -42,6 +50,11 @@ public class DiscordGatewayImpl implements DiscordGateway {
             @Value("${discord.roles.vip:}") String vipRoleId,
             @Value("${discord.roles.default:}") String defaultRoleId,
             @Value("${discord.community.invite-url:https://discord.gg/noseumcode}") String inviteUrl,
+            @Value("${discord.channels.stage.starter:}") String stageStarterChannelId,
+            @Value("${discord.channels.stage.web:}") String stageWebChannelId,
+            @Value("${discord.channels.voice.luffy:}") String voiceLuffyChannelId,
+            @Value("${discord.channels.voice.goku:}") String voiceGokuChannelId,
+            @Value("${discord.channels.voice.naruto:}") String voiceNarutoChannelId,
             RestClient.Builder restClientBuilder) {
         this.botToken = botToken != null ? botToken.trim() : "";
         this.guildId = guildId != null ? guildId.trim() : "";
@@ -50,11 +63,29 @@ public class DiscordGatewayImpl implements DiscordGateway {
         this.vipRoleId = vipRoleId != null ? vipRoleId.trim() : "";
         this.defaultRoleId = defaultRoleId != null ? defaultRoleId.trim() : "";
         this.inviteUrl = inviteUrl != null && !inviteUrl.isBlank() ? inviteUrl.trim() : "https://discord.gg/noseumcode";
+        this.stageStarterChannelId = stageStarterChannelId != null ? stageStarterChannelId.trim() : "";
+        this.stageWebChannelId = stageWebChannelId != null ? stageWebChannelId.trim() : "";
+        this.voiceLuffyChannelId = voiceLuffyChannelId != null ? voiceLuffyChannelId.trim() : "";
+        this.voiceGokuChannelId = voiceGokuChannelId != null ? voiceGokuChannelId.trim() : "";
+        this.voiceNarutoChannelId = voiceNarutoChannelId != null ? voiceNarutoChannelId.trim() : "";
 
         this.restClient = restClientBuilder
                 .baseUrl(DISCORD_API_BASE_URL)
                 .defaultHeader(HttpHeaders.USER_AGENT, "NoSeumCode-Backend/1.0")
                 .build();
+    }
+
+    public DiscordGatewayImpl(
+            String botToken,
+            String guildId,
+            String starterRoleId,
+            String webRoleId,
+            String vipRoleId,
+            String defaultRoleId,
+            String inviteUrl,
+            RestClient.Builder restClientBuilder) {
+        this(botToken, guildId, starterRoleId, webRoleId, vipRoleId, defaultRoleId, inviteUrl,
+                "", "", "", "", "", restClientBuilder);
     }
 
     @Override
@@ -235,5 +266,71 @@ public class DiscordGatewayImpl implements DiscordGateway {
     @Override
     public String getDefaultRoleId() {
         return defaultRoleId;
+    }
+
+    @Override
+    public String getStageStarterChannelId() {
+        return stageStarterChannelId;
+    }
+
+    @Override
+    public String getStageWebChannelId() {
+        return stageWebChannelId;
+    }
+
+    @Override
+    public String getVoiceLuffyChannelId() {
+        return voiceLuffyChannelId;
+    }
+
+    @Override
+    public String getVoiceGokuChannelId() {
+        return voiceGokuChannelId;
+    }
+
+    @Override
+    public String getVoiceNarutoChannelId() {
+        return voiceNarutoChannelId;
+    }
+
+    @Override
+    public String getStarterStageChannelUrl() {
+        return buildChannelUrl(stageStarterChannelId);
+    }
+
+    @Override
+    public String getWebStageChannelUrl() {
+        return buildChannelUrl(stageWebChannelId);
+    }
+
+    @Override
+    public String getLuffyVoiceChannelUrl() {
+        return buildChannelUrl(voiceLuffyChannelId);
+    }
+
+    @Override
+    public String getGokuVoiceChannelUrl() {
+        return buildChannelUrl(voiceGokuChannelId);
+    }
+
+    @Override
+    public String getNarutoVoiceChannelUrl() {
+        return buildChannelUrl(voiceNarutoChannelId);
+    }
+
+    @Override
+    public Map<String, String> getMangaVoiceChannelUrls() {
+        Map<String, String> urls = new LinkedHashMap<>();
+        urls.put("luffyCodeLabUrl", getLuffyVoiceChannelUrl());
+        urls.put("gokuDojoLiveUrl", getGokuVoiceChannelUrl());
+        urls.put("narutoTeamHubUrl", getNarutoVoiceChannelUrl());
+        return urls;
+    }
+
+    private String buildChannelUrl(String channelId) {
+        if (!guildId.isBlank() && channelId != null && !channelId.isBlank()) {
+            return "https://discord.com/channels/" + guildId + "/" + channelId;
+        }
+        return inviteUrl;
     }
 }

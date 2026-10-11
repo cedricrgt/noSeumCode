@@ -657,12 +657,17 @@ function renderStudentCourses() {
           </div>
         </div>
 
-        <a href="app.html?id=${course.courseId}" class="card__link bangers-regular" style="margin-top: auto;">
-          Continuer la formation
-          <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </a>
+        <div style="display: flex; gap: 0.6rem; margin-top: auto; flex-wrap: wrap;">
+          <a href="app.html?id=${course.courseId}" class="card__link bangers-regular" style="flex: 1; min-height: 44px; justify-content: center;">
+            Continuer la formation
+            <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <button type="button" class="button button__secondary bangers-regular btn-course-live-stage" onclick="handleJoinStageLive()" style="min-height: 44px; padding: 0.5rem 0.9rem; font-size: 0.92rem; display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer;" aria-label="Rejoindre le Cours en Direct sur le Salon Scène Discord (nouvel onglet)">
+            <span>🎙️ Scène Live</span>
+          </button>
+        </div>
       </main>
     `;
     grid.appendChild(card);
@@ -962,6 +967,36 @@ function updateDiscordHeaderButton(data) {
   }
 }
 
+function openDiscordConnectModal() {
+  const modal = document.getElementById("discord-connect-modal");
+  if (modal) {
+    modal.style.display = "flex";
+  } else {
+    connectDiscordAccount();
+  }
+}
+window.openDiscordConnectModal = openDiscordConnectModal;
+
+function handleJoinStageLive() {
+  if (!cachedDiscordData || !cachedDiscordData.linked) {
+    openDiscordConnectModal();
+    return;
+  }
+  const stageUrl = cachedDiscordData.stageChannelUrl || cachedDiscordData.inviteUrl || "https://discord.gg/noseumcode";
+  window.open(stageUrl, "_blank", "noopener,noreferrer");
+}
+window.handleJoinStageLive = handleJoinStageLive;
+
+function handleJoinVoiceChannelClick(event, url) {
+  if (!cachedDiscordData || !cachedDiscordData.linked) {
+    if (event && event.preventDefault) event.preventDefault();
+    openDiscordConnectModal();
+    return false;
+  }
+  return true;
+}
+window.handleJoinVoiceChannelClick = handleJoinVoiceChannelClick;
+
 function renderDiscordCard(data, targetContainer = null) {
   const containers = targetContainer 
     ? [targetContainer] 
@@ -981,6 +1016,96 @@ function renderDiscordCard(data, targetContainer = null) {
     } else if (currentAuth && currentAuth.user && currentAuth.user.role) {
       containerRole = currentAuth.user.role;
     }
+
+    const mangaChannels = (data && data.mangaVoiceChannels) ? data.mangaVoiceChannels : {};
+    const luffyUrl = mangaChannels.luffyCodeLabUrl || (data && data.inviteUrl) || "https://discord.gg/noseumcode";
+    const gokuUrl = mangaChannels.gokuDojoLiveUrl || (data && data.inviteUrl) || "https://discord.gg/noseumcode";
+    const narutoUrl = mangaChannels.narutoTeamHubUrl || (data && data.inviteUrl) || "https://discord.gg/noseumcode";
+
+    const mangaRoomsHtml = `
+      <div class="manga-rooms-section" style="margin-top: 2rem; padding-top: 1.75rem; border-top: 1px solid #e2e8f0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <h4 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--dash-dark-navy, #0a1628); display: flex; align-items: center; gap: 0.5rem;">
+              <span>👥</span> Espaces de Travail Collaboratif & Entraide (Salons Vocaux)
+            </h4>
+            <p style="margin: 0.25rem 0 0 0; color: var(--dash-text-muted, #718096); font-size: 0.88rem;">
+              3 salons vocaux permanents ouverts 24/7 avec partage d'écran (STREAM) actif pour coder en équipe, s'entraider et débugger.
+            </p>
+          </div>
+          ${data && data.stageChannelUrl ? `
+            <a href="${escapeHtml(data.stageChannelUrl)}" target="_blank" rel="noopener noreferrer" class="button button__primary bangers-regular" style="background: linear-gradient(135deg, #5865F2, #4752c4); border: none; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 1.2rem; font-size: 0.95rem; color: #ffffff;" aria-label="Rejoindre le Cours en Direct sur le salon Scène Discord (nouvel onglet)">
+              <span>🎙️ Accéder au Salon Scène Live</span>
+            </a>
+          ` : ''}
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
+          <!-- 1. Luffy Code Lab (One Piece) -->
+          <div class="manga-room-card" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1rem;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 1.6rem;" aria-hidden="true">🏴‍☠️</span>
+                <span style="background: rgba(88, 101, 242, 0.1); color: #5865F2; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 9999px;">STREAM AUTORISÉ</span>
+              </div>
+              <h5 style="margin: 0 0 0.25rem 0; font-size: 1.05rem; font-weight: 700; color: var(--dash-dark-navy, #0a1628);">
+                luffy-code-lab
+              </h5>
+              <p style="margin: 0 0 0.5rem 0; font-size: 0.78rem; font-weight: 600; color: #dc2626;">Thématique One Piece</p>
+              <p style="margin: 0; font-size: 0.85rem; color: var(--dash-text-muted, #718096); line-height: 1.45;">
+                Entraide libre, brainstorming, partage d'idées et code collaboratif en toute liberté.
+              </p>
+            </div>
+            <a href="${escapeHtml(luffyUrl)}" target="_blank" rel="noopener noreferrer" onclick="return handleJoinVoiceChannelClick(event, '${escapeHtml(luffyUrl)}')" class="button button__secondary bangers-regular" style="width: 100%; text-decoration: none; justify-content: center; min-height: 44px; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 0.4rem;" aria-label="Rejoindre le salon vocal Luffy Code Lab sur Discord (nouvel onglet)">
+              <span>Rejoindre le Vocal</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+
+          <!-- 2. Goku Dojo Live (Dragon Ball) -->
+          <div class="manga-room-card" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1rem;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 1.6rem;" aria-hidden="true">⚡</span>
+                <span style="background: rgba(234, 88, 12, 0.1); color: #ea580c; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 9999px;">PAIR-PROGRAMMING</span>
+              </div>
+              <h5 style="margin: 0 0 0.25rem 0; font-size: 1.05rem; font-weight: 700; color: var(--dash-dark-navy, #0a1628);">
+                goku-dojo-live
+              </h5>
+              <p style="margin: 0 0 0.5rem 0; font-size: 0.78rem; font-weight: 600; color: #ea580c;">Thématique Dragon Ball</p>
+              <p style="margin: 0; font-size: 0.85rem; color: var(--dash-text-muted, #718096); line-height: 1.45;">
+                Pair-programming intensif, entraînements poussés et sessions de live debug en binôme.
+              </p>
+            </div>
+            <a href="${escapeHtml(gokuUrl)}" target="_blank" rel="noopener noreferrer" onclick="return handleJoinVoiceChannelClick(event, '${escapeHtml(gokuUrl)}')" class="button button__secondary bangers-regular" style="width: 100%; text-decoration: none; justify-content: center; min-height: 44px; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 0.4rem;" aria-label="Rejoindre le salon vocal Goku Dojo Live sur Discord (nouvel onglet)">
+              <span>Rejoindre le Vocal</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+
+          <!-- 3. Naruto Team Hub (Naruto) -->
+          <div class="manga-room-card" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1rem;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 1.6rem;" aria-hidden="true">🍥</span>
+                <span style="background: rgba(16, 185, 129, 0.1); color: #059669; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 9999px;">PROJETS D'ÉQUIPE</span>
+              </div>
+              <h5 style="margin: 0 0 0.25rem 0; font-size: 1.05rem; font-weight: 700; color: var(--dash-dark-navy, #0a1628);">
+                naruto-team-hub
+              </h5>
+              <p style="margin: 0 0 0.5rem 0; font-size: 0.78rem; font-weight: 600; color: #059669;">Thématique Naruto</p>
+              <p style="margin: 0; font-size: 0.85rem; color: var(--dash-text-muted, #718096); line-height: 1.45;">
+                Ateliers de groupe, hackathons, sprints collectifs et réalisations de projets d'équipe.
+              </p>
+            </div>
+            <a href="${escapeHtml(narutoUrl)}" target="_blank" rel="noopener noreferrer" onclick="return handleJoinVoiceChannelClick(event, '${escapeHtml(narutoUrl)}')" class="button button__secondary bangers-regular" style="width: 100%; text-decoration: none; justify-content: center; min-height: 44px; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 0.4rem;" aria-label="Rejoindre le salon vocal Naruto Team Hub sur Discord (nouvel onglet)">
+              <span>Rejoindre le Vocal</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
 
     if (!data || !data.linked) {
       let title = "Rejoins le serveur Discord de la communauté NoSeumCode";
@@ -1039,6 +1164,7 @@ function renderDiscordCard(data, targetContainer = null) {
             </button>
           </div>
         </div>
+        ${mangaRoomsHtml}
       `;
       return;
     }
@@ -1085,6 +1211,7 @@ function renderDiscordCard(data, targetContainer = null) {
           </button>
         </div>
       </div>
+      ${mangaRoomsHtml}
     `;
   });
 }
@@ -3042,4 +3169,8 @@ window.loadTeacherData = loadTeacherData;
 window.loadAdminCourses = loadAdminCourses;
 window.renderAdminCourses = renderAdminCourses;
 window.renderTeacherDashboard = renderTeacherDashboard;
+window.openDiscordConnectModal = openDiscordConnectModal;
+window.closeDiscordConnectModal = () => closeModal('discord-connect-modal');
+window.handleJoinStageLive = handleJoinStageLive;
+window.handleJoinVoiceChannelClick = handleJoinVoiceChannelClick;
 
