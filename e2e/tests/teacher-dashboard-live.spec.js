@@ -9,25 +9,42 @@ const { test, expect } = require('@playwright/test');
  */
 test.describe('E2E Dé-mocké : Parcours d\'Assignation Admin & Espace Formateur Réel (ADR-024)', () => {
 
+  const targetApi = process.env.API_BASE_URL || 'http://localhost:8080';
   const adminEmail = process.env.TEST_ADMIN_EMAIL || 'admin@codebangers.fr';
   const adminPassword = process.env.TEST_ADMIN_PASSWORD || 'secret123';
   const teacherEmail = process.env.TEST_TEACHER_EMAIL || 'teacher@codebangers.fr';
   const teacherPassword = process.env.TEST_TEACHER_PASSWORD || 'secret123';
 
   test('Parcours réel de bout en bout sans mock réseau (Admin assigne, Teacher consulte)', async ({ page, request }) => {
-    // 0. Vérification de la disponibilité et de la validité des identifiants réels sur l'API distante
+    // 0. Vérification de la disponibilité et de la validité des identifiants réels sur l'API
     let credentialsValid = false;
+    let effectiveApi = targetApi;
     try {
-      const probeRes = await request.post('https://api.noseumcode.fr/api/auth/login', {
+      let probeRes = await request.post(`${effectiveApi}/api/auth/login`, {
         headers: { 'Content-Type': 'application/json' },
         data: { email: adminEmail, password: adminPassword }
       });
       credentialsValid = probeRes.status() === 200;
+      if (!credentialsValid && effectiveApi !== 'https://api.noseumcode.fr') {
+        probeRes = await request.post('https://api.noseumcode.fr/api/auth/login', {
+          headers: { 'Content-Type': 'application/json' },
+          data: { email: adminEmail, password: adminPassword }
+        });
+        if (probeRes.status() === 200) {
+          credentialsValid = true;
+          effectiveApi = 'https://api.noseumcode.fr';
+        }
+      }
     } catch (_) {
       credentialsValid = false;
     }
 
-    test.skip(!credentialsValid, 'Identifiants réels non configurés ou indisponibles sur https://api.noseumcode.fr (nécessite des identifiants valides via TEST_ADMIN_EMAIL / TEST_ADMIN_PASSWORD).');
+    test.skip(!credentialsValid, `Identifiants réels non configurés ou indisponibles sur ${effectiveApi}.`);
+
+    await page.addInitScript((url) => {
+      localStorage.setItem('noseum_api_url', url);
+      localStorage.setItem('noseum_api_target', 'local');
+    }, effectiveApi);
 
     // 1. Démarrer sur index.html et ouvrir la modale d'authentification
     await page.goto('/index.html');

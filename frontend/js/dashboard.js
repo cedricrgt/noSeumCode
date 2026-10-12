@@ -2283,19 +2283,29 @@ async function toggleAssignTeacherForm(courseId, courseTitle) {
   const selectEl = document.getElementById(`assign-teacher-select-${courseId}`);
   if (selectEl) selectEl.focus();
 
-  // Keyboard navigation & Escape key handling
-  formContainer.onkeydown = function(e) {
+  // Keyboard navigation & Escape key handling (scoped to document and popover)
+  if (formContainer._escapeListener) {
+    document.removeEventListener("keydown", formContainer._escapeListener);
+  }
+  formContainer._escapeListener = function(e) {
     if (e.key === "Escape") {
       e.stopPropagation();
       closeAssignTeacherForm(courseId);
     }
   };
+  document.addEventListener("keydown", formContainer._escapeListener);
 }
 
 function closeAssignTeacherForm(courseId) {
   const formContainer = document.getElementById(`assign-teacher-form-${courseId}`);
   const btn = document.getElementById(`btn-assign-teacher-${courseId}`);
-  if (formContainer) formContainer.style.display = "none";
+  if (formContainer) {
+    formContainer.style.display = "none";
+    if (formContainer._escapeListener) {
+      document.removeEventListener("keydown", formContainer._escapeListener);
+      formContainer._escapeListener = null;
+    }
+  }
   if (btn) {
     btn.setAttribute("aria-expanded", "false");
     btn.focus();
@@ -2342,6 +2352,7 @@ async function handleAssignTeacherToCourse(event, courseId) {
     }
   } catch (e) {
     showGlobalDashboardToast("Erreur réseau lors de l'affectation.", "error");
+    announceA11y("Erreur réseau lors de l'affectation.");
   }
 }
 
@@ -2382,6 +2393,7 @@ async function handleRemoveTeacherFromCourse(courseId, teacherId, teacherName, c
     }
   } catch (e) {
     showGlobalDashboardToast("Erreur réseau lors du retrait.", "error");
+    announceA11y("Erreur réseau lors du retrait.");
   }
 }
 

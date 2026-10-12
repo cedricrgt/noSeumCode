@@ -1820,4 +1820,31 @@ eset-password.html.
    - 20/20 tests Playwright au vert (1 skipped pour credentials distants réels).
    - 215/215 tests Spring Boot au vert (`BUILD SUCCESS`).
 
+---
+
+## 2026-10-12 | Conversation: adbaed0b-0e79-4902-90fa-bfd28b8917c7
+
+**Type**: Sprint 30 — Recette Globale, E2E Playwright Réel, Audit Accessibilité & Documentation d'Architecture  
+**Auteur**: Antigravity (Agent IA)  
+**Branche**: `feat/sprint-30-recette-e2e-a11y-adr`  
+**Objectif**: Valider le cycle complet de production via une suite E2E Playwright 100% réelle et dé-mockée (ADR-024), auditer et durcir l'accessibilité WCAG 2.2 AA / RGAA, et formaliser l'ADR-025.
+
+### Réalisations & Livrables :
+1. **Suite E2E Playwright Réelle & Dé-mockée (`e2e/tests/sprint30-lifecycle-e2e.spec.js`)** :
+   - Conformité stricte ADR-024 : interdiction totale de tout `page.route()` sur les APIs `/api/auth/*`, `/api/courses/*`, `/api/chapters/*`.
+   - Étape 1 (Admin) : Connexion réelle UI (`admin@codebangers.fr`), assignation d'un cours au formateur (`teacher@codebangers.fr`), validation immédiate du badge formateur dans la table admin.
+   - Étape 2 (Formateur) : Déconnexion complète via `globalLogout()` (vérification de la purge de `noseum_token` et `noseum_user` dans le `localStorage`), connexion formateur, vérification de la vue `#view-teacher`, affichage du cours assigné avec badge « FORMATEUR RÉFÉRENT », test de rejet 403 Forbidden sur tentative d'édition non autorisée.
+   - Étape 3 (Apprenant) : Déconnexion et connexion étudiant inscrit, vérification des points d'accès Discord (salon Scène Live et les 3 salons collaboratifs permanents thématiques Manga `luffy-code-lab`, `goku-dojo-live`, `naruto-team-hub`), contrôle de non-exposition de token JWT dans le DOM et absence d'erreur console critique.
+   - Test d'accessibilité clavier dédié : ouverture de la popover au clavier (`Enter`), fermeture sur touche `Escape`, restitution immédiate du focus sur le déclencheur et contrôle de synchronisation `aria-expanded="false"`.
+2. **Accessibilité & Durcissement (WCAG 2.2 AA / RGAA) (`frontend/js/dashboard.js`)** :
+   - Restitution systématique du focus sur le bouton déclencheur lors de la fermeture de la popover d'assignation via `Escape` ou clic extérieur.
+   - Annonce vocale dynamique des erreurs d'assignation et de retrait via `announceA11y()` (`aria-live="polite"`).
+   - Validation des contrastes WCAG 2.2 AA : bouton Discord `#5865F2` (4.59:1), badges formateur `#0369a1` (5.35:1), section tags `#047857` (5.48:1).
+3. **Architecture & Documentation Technique (ADR-025)** :
+   - Rédaction de l'ADR-025 dans `docs/ai/DECISIONS.md` (*Architecture d'Affectation des Formateurs (course_teacher), Cloisonnement RBAC & Salons Discord Scène / Manga*).
+   - Mise à jour complète de `docs/ai/PROJECT_CONTEXT.md` et `docs/ai/ROADMAP.md`.
+4. **Validation des Tests** :
+   - 215 tests backend Spring Boot exécutés via `./mvnw test` : `BUILD SUCCESS` (0 échec, 0 erreur, 2 skipped).
+   - 23 tests E2E Playwright exécutés via `npm test` : 23 passed (0 échec, 53.5s).
+
 
