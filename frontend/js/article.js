@@ -1,3 +1,14 @@
+function escapeHtml(str) {
+  if (str === null || str === undefined) return "";
+  return String(str).replace(/[&<>'"]/g, tag => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "'": "&#39;",
+    '"': "&quot;"
+  }[tag] || tag));
+}
+
 async function loadArticle() {
   const contentArea = document.getElementById("article-content");
   const params = new URLSearchParams(window.location.search);
@@ -97,10 +108,10 @@ async function loadArticle() {
 
     contentArea.innerHTML = `
       <section class="article-hero">
-        <img src="${article.image}" alt="${article.title}" class="article-hero__image">
+        <img src="${escapeHtml(article.image)}" alt="${escapeHtml(article.title)}" class="article-hero__image">
         <div class="article-hero__content">
-          <h1 class="article-hero__title bangers-regular">${article.title}</h1>
-          <p class="article-hero__subtitle poppins-regular">${article.subtitle}</p>
+          <h1 class="article-hero__title bangers-regular">${escapeHtml(article.title)}</h1>
+          <p class="article-hero__subtitle poppins-regular">${escapeHtml(article.subtitle)}</p>
         </div>
       </section>
       <div class="article-container">
@@ -110,7 +121,7 @@ async function loadArticle() {
             <li class="breadcrumb__separator" aria-hidden="true">/</li>
             <li class="breadcrumb__item"><a href="index.html#blog" class="breadcrumb__link">Blog</a></li>
             <li class="breadcrumb__separator" aria-hidden="true">/</li>
-            <li class="breadcrumb__item" aria-current="page">${article.title}</li>
+            <li class="breadcrumb__item" aria-current="page">${escapeHtml(article.title)}</li>
           </ol>
         </nav>
 
@@ -131,20 +142,20 @@ async function loadArticle() {
           </div>
           
           <div class="article-tags">
-            ${article.tags
-              .map((tag) => `<span class="article-tag">${tag}</span>`)
+            ${(article.tags || [])
+              .map((tag) => `<span class="article-tag">${escapeHtml(tag)}</span>`)
               .join("")}
           </div>
 
-          <p class="article-intro">${article.intro}</p>
+          <p class="article-intro">${escapeHtml(article.intro)}</p>
 
           <div class="article-body">
-            ${article.sections
+            ${(article.sections || [])
               .map(
                 (section) => `
               <section class="article-section">
-                <h2 class="bangers-regular">${section.heading}</h2>
-                <p>${section.text}</p>
+                <h2 class="bangers-regular">${escapeHtml(section.heading)}</h2>
+                <p>${escapeHtml(section.text)}</p>
               </section>
             `
               )
@@ -185,7 +196,7 @@ async function loadArticle() {
           </section>
 
           <div class="article-conclusion">
-            <p class="poppins-regular">${article.conclusion}</p>
+            <p class="poppins-regular">${escapeHtml(article.conclusion)}</p>
             <a href="index.html#parcours" class="button button__primary bangers-regular">
               Rejoindre NoSeumCode
             </a>

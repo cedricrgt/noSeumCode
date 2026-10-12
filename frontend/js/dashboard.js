@@ -1271,7 +1271,7 @@ async function syncDiscordRoles() {
   const btns = document.querySelectorAll(".btn-sync-discord, #btn-sync-discord");
   btns.forEach(btn => {
     btn.disabled = true;
-    btn.dataset.originalHtml = btn.innerHTML;
+    btn.setAttribute("aria-busy", "true");
     btn.innerHTML = `<span>⏳ Synchronisation...</span>`;
   });
 
@@ -1292,9 +1292,8 @@ async function syncDiscordRoles() {
   } finally {
     btns.forEach(btn => {
       btn.disabled = false;
-      if (btn.dataset.originalHtml) {
-        btn.innerHTML = btn.dataset.originalHtml;
-      }
+      btn.removeAttribute("aria-busy");
+      btn.innerHTML = `${ICONS.refresh} Synchroniser`;
     });
   }
 }
@@ -1368,7 +1367,7 @@ function showGlobalDashboardToast(message, type = "success") {
     toast.style.border = "1px solid #ef4444";
   }
 
-  toast.innerHTML = message;
+  toast.textContent = message;
   toast.style.display = "block";
   toast.style.opacity = "1";
 
@@ -3379,8 +3378,8 @@ function closeModal(modalId) {
 }
 
 function escapeHtml(str) {
-  if (!str) return "";
-  return str.replace(/[&<>'"]/g, tag => ({
+  if (str === null || str === undefined) return "";
+  return String(str).replace(/[&<>'"]/g, tag => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",

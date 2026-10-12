@@ -1,6 +1,6 @@
 # KNOWN_ISSUES.md — NoSeumCode
 
-_Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
+_Last updated: 2026-10-12 | Audit de Sécurité Aikido (Secrets, SAST XSS & SCA Jackson)_
 
 ---
 
@@ -224,6 +224,46 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 1. *Doublons d'encodage Mac/Windows (mojibake)* : L'utilisation de tirets cadratins non-ASCII (`–`) avait créé des versions dupliquées corrompues (`ÔÇô` / CP1252) dans `frontend/data/` (programme PDF) et `.github/instructions/` (`rule-11`). Les versions corrompues ont été purgées et la règle réécrite avec un tiret ASCII strict (`rule-11-ModernCSS-responsive-design-expert.md`).
 2. *Description Spring Boot 3 obsolète dans pom.xml* : `<description>` mise à jour pour refléter fidèlement le parent `Spring Boot 4.1 & Java 21`.
 3. *Playwright CI absent* : Ajout du job `playwright-e2e-tests` dans `.github/workflows/frontend-ci.yml` exécutant les tests E2E sur Chromium avec installation automatique des dépendances.
+
+### ISSUE-037 ✅ [Secrets Exposés] Clé Stripe Publishable hardcodée dans header.js/min.js et historique Git pr-preview (29 détections Aikido) [RÉSOLU]
+**Status**: Résolu.
+**Détection**: Aikido Security a détecté 29 occurrences d'une clé Stripe Publishable (`pk_test_...` / `l.publishableKey || "pk_test_2BsFfeoXfXOvjtOnGf24JH6E00S9sVcIEG"`).
+**Périmètre touché** :
+- `frontend/js/header.js`, `frontend/js/header.min.js`, `backend/src/main/resources/application.properties`, `StripeGatewayImpl.java`.
+- Historique Git des artefacts de build `pr-preview/` sur la branche `gh-pages`.
+**Fix appliqué** :
+1. Suppression intégrale du fallback hardcodé `"pk_test_2BsFfeoXfXOvjtOnGf24JH6E00S9sVcIEG"` dans `header.js`, `header.min.js`, `StripeGatewayImpl.java` et `application.properties`.
+2. Implémentation du résolveur sécurisé `resolveStripePublishableKey(dataKey)` dans `header.js` lisant : (a) la réponse API `/api/payments/create-checkout-session`, (b) l'attribut `data-stripe-key` sur le `<body>` ou balise `<meta>`, ou (c) l'endpoint dynamique `GET /api/config/stripe-key`.
+3. Création de `PaymentConfigController.java` (`GET /api/config/stripe-key`) et autorisation publique `GET /api/config/**` dans `SecurityConfig.java`. Validé par tests unitaires (`PaymentConfigControllerTest`).
+4. Régénération des bundles CSS et JS minifiés via `node build.js`.
+5. Exclusion formelle de `pr-preview/` et `.deploy-cache/` dans `.gitignore`.
+6. Rotation de clé : lien direct Stripe Dashboard consigné (`https://dashboard.stripe.com/acct_1GYAtuAmRX1Xf5vu/apikeys`).
+
+### ISSUE-038 ✅ [SAST / XSS] Sinks d'injection DOM non sécurisés via innerHTML (14 détections Aikido SAST) [RÉSOLU]
+**Status**: Résolu.
+**Détection**: 14 occurrences de méthodes d'écriture DOM (`innerHTML`, `outerHTML`) manipulant des données dynamiques sans garantie de neutralisation XSS.
+**Périmètre touché** :
+- `frontend/js/article.js`, `frontend/js/dashboard.js`, `frontend/js/cours.js`.
+**Fix appliqué** :
+1. Remplacement immédiat du sink critique de notification dans `dashboard.js` : `toast.innerHTML = message;` remplacé par `toast.textContent = message;`.
+2. Remplacement de la restauration de bouton `btn.innerHTML = btn.dataset.originalHtml` dans `syncDiscordRoles()` par une bascule typée déterministe avec `aria-busy` et l'icône statique de confiance `ICONS.refresh`.
+3. Introduction d'une fonction `escapeHtml()` robuste dans `article.js` avec échappement systématique de `article.title`, `article.subtitle`, `article.image`, `article.tags`, `article.intro`, `section.heading`, `section.text`, et `article.conclusion`.
+4. Durcissement de la fonction `escapeHtml()` dans `cours.js` et `dashboard.js` pour échapper systématiquement les guillemets simples et doubles (`&#39;`, `&quot;`) et gérer les valeurs non-string ou nulles.
+5. Validation de non-régression par la suite complète Playwright E2E (20 tests passés, 0 échec).
+
+### ISSUE-039 ✅ [SCA / Vulnérabilités Dépendances] Failles critiques DoS et RCE dans les bibliothèques Jackson (CVE-2026-68497, CVE-2026-89425, CVE-2026-89407...) [RÉSOLU]
+**Status**: Résolu.
+**Détection**: 9 CVEs affectant les dépendances Jackson déclarées et transitives du backend :
+- `tools.jackson.core:jackson-core` (3.1.5 -> 3.1.7) : CVE-2026-89425 (High - DoS), CVE-2026-89407 (High - ReDoS).
+- `tools.jackson.core:jackson-databind` (3.1.5 -> 3.1.7) : CVE-2026-68497 (High - Unsafe deserialization / RCE), CVE-2026-83557 (Medium - DoS), CVE-2026-19032 (Medium - DoS), CVE-2026-91777 (Low), CVE-2026-91776 (Low).
+- `com.fasterxml.jackson.core:jackson-core` et `jackson-databind` (2.21.5 -> 2.21.7) : CVE-2026-89425, CVE-2026-89407.
+**Périmètre touché** :
+- `backend/pom.xml` : Jackson 2.21.5 et Jackson 3.1.5 hérités de `spring-boot-starter-parent:4.1.1` et de la dépendance explicite `com.fasterxml.jackson.core:jackson-databind`.
+**Fix appliqué** :
+1. Montée de version dans `backend/pom.xml` via propriétés Spring Boot : `<jackson-bom.version>3.1.7</jackson-bom.version>` et `<jackson-2-bom.version>2.21.7</jackson-2-bom.version>`.
+2. Verrouillage strict de l'arbre complet des dépendances dans `<dependencyManagement>` pour `tools.jackson.core:jackson-core` (3.1.7), `tools.jackson.core:jackson-databind` (3.1.7), `com.fasterxml.jackson.core:jackson-core` (2.21.7) et `com.fasterxml.jackson.core:jackson-databind` (2.21.7).
+3. Résolution effective confirmée via `./mvnw dependency:list | Select-String "jackson"` (3.1.7 et 2.21.7 résolus à 100%).
+4. Validation par la suite complète de 217 tests Spring Boot (`./mvnw test` : 0 échec, 0 régression).
 
 ## Fausses Hypothèses à Éviter
 - Ne pas supposer que les environnements de production et de développement doivent partager la même politique CORS : en production, les wildcards (`*.noseumcode.fr`) et les origines localhost/LAN doivent impérativement être rejetés pour prévenir les attaques de cross-origin non autorisées.
