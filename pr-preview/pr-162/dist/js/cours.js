@@ -25,6 +25,24 @@ function getStoredUser() {
   }
 }
 
+function isTeacherAssignedToCourse(course, user) {
+  if (!course || !user) return false;
+  if (!Array.isArray(course.assignedTeachers)) return false;
+  return course.assignedTeachers.some(t => {
+    if (t.id && user.id && t.id === user.id) return true;
+    if (t.email && user.email && t.email.toLowerCase() === user.email.toLowerCase()) return true;
+    return false;
+  });
+}
+
+function canUserManageCurrentCourse() {
+  if (currentRole === "ADMIN") return true;
+  if (currentRole === "TEACHER") {
+    return isTeacherAssignedToCourse(currentCourse, currentUser);
+  }
+  return false;
+}
+
 async function coursApiFetch(endpoint, options = {}) {
   const token = getAuthToken();
   const headers = {
@@ -61,6 +79,22 @@ async function initCoursPage() {
     currentRole = currentUser.role.toUpperCase();
   } else {
     currentRole = "GUEST";
+  }
+
+  // Rafraîchir les données utilisateur depuis /api/auth/me si un token est présent
+  const token = getAuthToken();
+  if (token) {
+    try {
+      const meRes = await coursApiFetch("/api/auth/me");
+      if (meRes && meRes.ok) {
+        const freshUser = await meRes.json();
+        if (freshUser && freshUser.role) {
+          currentUser = freshUser;
+          currentRole = freshUser.role.toUpperCase();
+          localStorage.setItem("noseum_user", JSON.stringify(freshUser));
+        }
+      }
+    } catch (_) {}
   }
 
   const params = new URLSearchParams(window.location.search);
@@ -271,7 +305,7 @@ function renderCourseCatalog() {
         </div>
         <div>
           ${roleHeaderTag}
-          ${currentRole === "TEACHER" || currentRole === "ADMIN" ? `
+          ${currentRole === "ADMIN" ? `
             <button class="button button__primary bangers-regular" style="padding: 10px 20px; font-size: 1.1rem; margin-left: 0.75rem;" onclick="openCreateCourseModal()">
               + Créer un parcours
             </button>
@@ -365,8 +399,8 @@ function renderCourseCatalog() {
           let actionBtn = "";
           const courseImg = getCourseImage(course);
 
-          if (currentRole === "ADMIN" || currentRole === "TEACHER") {
-            accessBadge = `<span style="background: rgba(0, 255, 135, 0.15); color: #00a85a; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(0, 255, 135, 0.4);">✓ Accès Édition</span>`;
+          if (currentRole === "ADMIN") {
+            accessBadge = `<span style="background: rgba(0, 255, 135, 0.15); color: #00a85a; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(0, 255, 135, 0.4);">✓ Accès Gestion (Admin)</span>`;
             actionBtn = `
               <a href="app.html?id=${course.id}" class="card__link bangers-regular">
                 Gérer le parcours
@@ -375,6 +409,26 @@ function renderCourseCatalog() {
                 </svg>
               </a>
             `;
+          } else if (currentRole === "TEACHER") {
+            const isAssigned = isTeacherAssignedToCourse(course, currentUser);
+            if (isAssigned) {
+              accessBadge = `<span style="background: rgba(0, 255, 135, 0.15); color: #00a85a; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(0, 255, 135, 0.4);">✓ Formateur Référent</span>`;
+              actionBtn = `
+                <a href="app.html?id=${course.id}" class="card__link bangers-regular">
+                  Gérer le parcours
+                  <svg class="card__chevron-darken" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              `;
+            } else {
+              accessBadge = `<span style="background: #f1f5f9; color: #64748b; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid #cbd5e1;">🔒 Non attribué</span>`;
+              actionBtn = `
+                <a href="dashboard.html" class="button button__secondary bangers-regular" style="padding: 8px 12px; font-size: 0.95rem; text-decoration:none; display:inline-flex; align-items:center;">
+                  Mon Espace Formateur
+                </a>
+              `;
+            }
           } else if (currentRole === "STUDENT") {
             if (!enrollmentInfo) {
               accessBadge = `<span style="background: #f1f5f9; color: #64748b; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid #cbd5e1;">🔒 Non inscrit</span>`;
@@ -511,13 +565,12 @@ async function loadSingleCourse(courseId, requestedChapterId) {
     return;
   }
 
-  // 2. Récupérer les données du cours
-  currentCourse = allCourses.find(c => c.id === courseId);
-  if (!currentCourse) {
-    const res = await coursApiFetch(`/api/courses/${courseId}`);
-    if (res && res.ok) {
-      currentCourse = await res.json();
-    }
+  // 2. Récupérer les données fraîches du cours
+  const res = await coursApiFetch(`/api/courses/${courseId}`);
+  if (res && res.ok) {
+    currentCourse = await res.json();
+  } else {
+    currentCourse = allCourses.find(c => c.id === courseId);
   }
 
   if (!currentCourse) {
@@ -529,6 +582,19 @@ async function loadSingleCourse(courseId, requestedChapterId) {
       </div>
     `;
     return;
+  }
+
+  // 2b. Vérification stricte des Droits d'Accès pour un compte Formateur
+  if (currentRole === "TEACHER" && !canUserManageCurrentCourse()) {
+    let enrollment = userEnrollments.find(e => e.courseId === currentCourse.id);
+    if (!enrollment) {
+      renderAccessGate(
+        "⛔ Cours Non Attribué",
+        `Vous êtes connecté avec le compte enseignant <strong>${escapeHtml(currentUser.email || currentUser.userName || "Formateur")}</strong>.<br><br>Ce cours n'est pas attribué à votre profil dans le système. Seuls les formateurs référents assignés par l'administration peuvent accéder à l'espace de gestion et modifier les sections de cette formation.`,
+        "TEACHER_NOT_ASSIGNED"
+      );
+      return;
+    }
   }
 
   // 3. Vérification des Droits d'Accès de l'Étudiant (Inscription & Statut de Paiement)
@@ -752,6 +818,19 @@ function renderAccessGate(title, description, type, extraStatus = "") {
         </button>
       </div>
     `;
+  } else if (type === "TEACHER_NOT_ASSIGNED") {
+    icon = "⛔";
+    cardClass += " not-enrolled";
+    actionButtons = `
+      <div style="display:flex; justify-content:center; gap: 1rem; flex-wrap:wrap;">
+        <a href="dashboard.html" class="button button__primary bangers-regular" style="padding: 12px 28px; font-size: 1.2rem; text-decoration:none;">
+          📋 Accéder à mon Dashboard Formateur
+        </a>
+        <a href="app.html" class="button button__secondary bangers-regular" style="padding: 12px 20px; font-size: 1rem; text-decoration:none;">
+          📚 Toutes les formations
+        </a>
+      </div>
+    `;
   }
 
   contentArea.innerHTML = `
@@ -788,6 +867,8 @@ function renderClassroom() {
   const currentEnrollment = userEnrollments.find(e => e.courseId === currentCourse.id);
   const isPaidUser = currentEnrollment && (currentEnrollment.paymentStatus === "PAID" || currentEnrollment.paymentStatus === "PAYÉ");
 
+  const canManage = canUserManageCurrentCourse();
+
   if (currentRole === "STUDENT") {
     if (isPaidUser) {
       roleBadgeLabel = "✓ Formation Débloquée (Payé)";
@@ -807,12 +888,16 @@ function renderClassroom() {
       `;
     }
   } else if (currentRole === "TEACHER") {
-    roleBadgeLabel = "👨‍🏫 Enseignant (Édition autorisée)";
-    roleNoticeHtml = `
-      <div class="role-notice-banner role-notice-teacher">
-        ℹ️ <strong>Espace Enseignant :</strong> Vous avez accès à la modification de ce cours et de ses sections. Conformément aux règles de sécurité, toute modification est soumise à la validation d'un Administrateur avant d'être publiée pour les étudiants.
-      </div>
-    `;
+    if (canManage) {
+      roleBadgeLabel = "👨‍🏫 Formateur Référent (Édition autorisée)";
+      roleNoticeHtml = `
+        <div class="role-notice-banner role-notice-teacher">
+          ℹ️ <strong>Espace Enseignant :</strong> Vous êtes formateur référent sur ce cours. Conformément aux règles de sécurité, toute modification est soumise à la validation d'un Administrateur avant d'être publiée pour les étudiants.
+        </div>
+      `;
+    } else {
+      roleBadgeLabel = "👁️ Consultation (Non formateur référent)";
+    }
   } else if (currentRole === "ADMIN") {
     roleBadgeLabel = "🛡️ Administrateur (Gestion Totale)";
     roleNoticeHtml = `
@@ -838,7 +923,7 @@ function renderClassroom() {
           <div class="course-badge-role">
             ${roleBadgeLabel}
           </div>
-          ${currentRole === "TEACHER" || currentRole === "ADMIN" ? `
+          ${canManage ? `
             <button class="button button__secondary" style="padding: 6px 14px; font-size: 0.82rem;" onclick="openEditCourseModal()">
               ✏️ Modifier le cours
             </button>
@@ -904,7 +989,7 @@ function renderClassroom() {
           }).join("")}
         </nav>
 
-        ${currentRole === "TEACHER" || currentRole === "ADMIN" ? `
+        ${canManage ? `
           <button class="button button__primary" style="width: 100%; margin-top: 1.25rem; padding: 8px; font-size: 0.85rem;" onclick="openAddChapterModal()">
             + Ajouter une section
           </button>
@@ -976,13 +1061,21 @@ function renderChapterContent(chapter) {
       </button>
     `;
   } else if (currentRole === "TEACHER") {
-    actionButtonsHtml = `
-      <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-        <button class="button button__primary bangers-regular" style="padding: 8px 18px; font-size: 1.1rem;" onclick="openEditChapterModal('${chapter.id}')">
-          ✏️ MODIFIER CETTE SECTION
-        </button>
-      </div>
-    `;
+    if (canUserManageCurrentCourse()) {
+      actionButtonsHtml = `
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <button class="button button__primary bangers-regular" style="padding: 8px 18px; font-size: 1.1rem;" onclick="openEditChapterModal('${chapter.id}')">
+            ✏️ MODIFIER CETTE SECTION
+          </button>
+        </div>
+      `;
+    } else {
+      actionButtonsHtml = `
+        <span style="font-size: 0.85rem; color: #94a3b8; font-style: italic;">
+          👁️ Consultation seule (cours non attribué pour l'édition)
+        </span>
+      `;
+    }
   } else if (currentRole === "ADMIN") {
     actionButtonsHtml = `
       <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
@@ -1054,6 +1147,10 @@ function switchActiveChapter(chapId) {
 }
 
 function openEditChapterModal(chapId) {
+  if (!canUserManageCurrentCourse()) {
+    alert("Action interdite : vous n'êtes pas formateur référent sur cette formation.");
+    return;
+  }
   const chapter = courseChapters.find(c => c.id === chapId);
   if (!chapter) return;
 
@@ -1072,6 +1169,10 @@ function openEditChapterModal(chapId) {
 }
 
 function openAddChapterModal() {
+  if (!canUserManageCurrentCourse()) {
+    alert("Action interdite : vous n'êtes pas formateur référent sur cette formation.");
+    return;
+  }
   document.getElementById("modal-chapter-heading").textContent = "+ AJOUTER UNE NOUVELLE SECTION";
   document.getElementById("modal-chapter-id").value = "";
   document.getElementById("modal-course-id").value = currentCourse.id;
@@ -1090,6 +1191,10 @@ function closeChapterModal() {
 }
 
 function openEditCourseModal() {
+  if (!canUserManageCurrentCourse()) {
+    alert("Action interdite : vous n'êtes pas formateur référent sur cette formation.");
+    return;
+  }
   if (!currentCourse) return;
   document.getElementById("modal-course-heading").textContent = "✏️ MODIFIER LE COURS";
   document.getElementById("manage-course-id").value = currentCourse.id;
@@ -1099,6 +1204,10 @@ function openEditCourseModal() {
 }
 
 function openCreateCourseModal() {
+  if (currentRole !== "ADMIN") {
+    alert("Action interdite : seul un administrateur peut créer une nouvelle formation.");
+    return;
+  }
   document.getElementById("modal-course-heading").textContent = "+ CRÉER UNE NOUVELLE FORMATION";
   document.getElementById("manage-course-id").value = "";
   document.getElementById("manage-course-title").value = "";
@@ -1112,16 +1221,24 @@ function closeCourseManageModal() {
 
 async function handleSaveCourse(event) {
   event.preventDefault();
+  if (!canUserManageCurrentCourse()) {
+    alert("Action interdite : vous n'avez pas les droits pour modifier cette formation.");
+    return;
+  }
   const courseId = document.getElementById("manage-course-id").value;
   const title = document.getElementById("manage-course-title").value.trim();
   const description = document.getElementById("manage-course-description").value.trim();
 
   if (courseId) {
     // Modification du cours
-    await coursApiFetch(`/api/courses/${courseId}`, {
+    const res = await coursApiFetch(`/api/courses/${courseId}`, {
       method: "PUT",
       body: JSON.stringify({ title, description })
     });
+    if (!res || !res.ok) {
+      alert(`Erreur lors de la mise à jour de la formation (${res ? res.status : "réseau"}). Accès refusé.`);
+      return;
+    }
     if (currentCourse) {
       currentCourse.title = title;
       currentCourse.description = description;
@@ -1132,23 +1249,19 @@ async function handleSaveCourse(event) {
     renderClassroom();
   } else {
     // Création d'un nouveau cours
+    if (currentRole !== "ADMIN") {
+      alert("Action interdite : seul un administrateur peut créer une nouvelle formation.");
+      return;
+    }
     const res = await coursApiFetch("/api/courses", {
       method: "POST",
       body: JSON.stringify({ title, description })
     });
-    let newCourse;
-    if (res && res.ok) {
-      newCourse = await res.json();
-    } else {
-      newCourse = {
-        id: "course-" + Date.now(),
-        title,
-        description,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        createdByName: currentUser ? (currentUser.firstName || currentUser.userName) : "Admin"
-      };
+    if (!res || !res.ok) {
+      alert(`Erreur lors de la création de la formation (${res ? res.status : "réseau"}).`);
+      return;
     }
+    const newCourse = await res.json();
     allCourses.unshift(newCourse);
     closeCourseManageModal();
     alert("Formation créée avec succès !");
@@ -1158,6 +1271,10 @@ async function handleSaveCourse(event) {
 
 async function handleSaveChapter(event) {
   event.preventDefault();
+  if (!canUserManageCurrentCourse()) {
+    alert("Action interdite : vous n'êtes pas formateur référent sur cette formation.");
+    return;
+  }
   const chapId = document.getElementById("modal-chapter-id").value;
   const courseId = document.getElementById("modal-course-id").value;
   const title = document.getElementById("modal-chapter-title").value.trim();
@@ -1165,6 +1282,16 @@ async function handleSaveChapter(event) {
 
   if (chapId) {
     const chap = courseChapters.find(c => c.id === chapId);
+    const res = await coursApiFetch(`/api/chapters/${chapId}`, {
+      method: "PUT",
+      body: JSON.stringify({ title, position: chap ? chap.position : 1, content })
+    });
+
+    if (!res || !res.ok) {
+      alert(`Erreur lors de la modification de la section (${res ? res.status : "réseau"}). Accès refusé.`);
+      return;
+    }
+
     if (chap) {
       chap.title = title;
       chap.content = content;
@@ -1174,11 +1301,6 @@ async function handleSaveChapter(event) {
       }
     }
 
-    await coursApiFetch(`/api/chapters/${chapId}`, {
-      method: "PUT",
-      body: JSON.stringify({ title, position: chap ? chap.position : 1, content })
-    });
-
     closeChapterModal();
     if (currentRole === "TEACHER") {
       alert("Section modifiée ! Elle a été automatiquement soumise à la validation d'un Administrateur.");
@@ -1186,31 +1308,32 @@ async function handleSaveChapter(event) {
       alert("Section mise à jour avec succès.");
     }
   } else {
+    const res = await coursApiFetch(`/api/chapters/course/${courseId}`, {
+      method: "POST",
+      body: JSON.stringify({ title, position: courseChapters.length + 1, content })
+    });
+
+    if (!res || !res.ok) {
+      alert(`Erreur lors de la création de la section (${res ? res.status : "réseau"}). Accès refusé.`);
+      return;
+    }
+
+    let saved = null;
+    try {
+      saved = await res.json();
+    } catch (_) {}
+
     const newChap = {
-      id: "chap-" + Date.now(),
-      title,
-      position: courseChapters.length + 1,
-      status: (currentRole === "ADMIN") ? "APPROVED" : "PENDING_APPROVAL",
+      id: (saved && saved.id) ? saved.id : ("chap-" + Date.now()),
+      title: (saved && saved.title) ? saved.title : title,
+      position: (saved && saved.position) ? saved.position : (courseChapters.length + 1),
+      status: (saved && saved.status) ? saved.status : ((currentRole === "ADMIN") ? "APPROVED" : "PENDING_APPROVAL"),
       createdByName: currentUser ? (currentUser.firstName || currentUser.userName) : "Enseignant",
       updatedAt: new Date().toISOString(),
-      content
+      content: (saved && saved.content) ? saved.content : content
     };
     courseChapters.push(newChap);
     activeChapterId = newChap.id;
-
-    const res = await coursApiFetch(`/api/chapters/course/${courseId}`, {
-      method: "POST",
-      body: JSON.stringify({ title, position: newChap.position, content })
-    });
-
-    if (res && res.ok) {
-      try {
-        const saved = await res.json();
-        if (saved && saved.id) {
-          newChap.id = saved.id;
-        }
-      } catch (_) {}
-    }
 
     closeChapterModal();
     alert("Nouvelle section créée avec son contenu !");
