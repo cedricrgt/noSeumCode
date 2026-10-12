@@ -498,12 +498,10 @@ test.describe('Test de Composant UI : Isolation du Dashboard Enseignant et Inter
     const activeCoursesSection = page.locator('#teacher-courses-grid');
     await expect(activeCoursesSection).toBeVisible();
 
-    // Vérifier les deux cartes de formation
+    // Vérifier que SEUL le cours assigné apparaît et NON le cours où il est simple inscrit étudiant
     await expect(activeCoursesSection).toContainText('Clean Architecture & Spring Boot 3');
     await expect(activeCoursesSection).toContainText('FORMATEUR RÉFÉRENT');
-    await expect(activeCoursesSection).toContainText('TypeScript & React Avancé');
-    await expect(activeCoursesSection).toContainText('EN COURS');
-    await expect(activeCoursesSection).toContainText('60% complété');
+    await expect(activeCoursesSection).not.toContainText('TypeScript & React Avancé');
 
     // 2. Vérifier la structure du tableau des sections de cours
     const table = page.locator('#teacher-chapters-table');

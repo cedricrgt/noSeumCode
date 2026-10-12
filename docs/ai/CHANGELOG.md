@@ -1797,4 +1797,27 @@ eset-password.html.
    - 215 tests backend exécutés via Maven (`BUILD SUCCESS`, 0 échec, 0 erreur).
    - 21 tests Playwright exécutés (`20 passed, 1 skipped`).
 
+---
+
+## 2026-10-12 | Conversation: 6e223d6b-ce9b-4a35-b341-44d8c5ce59de
+
+**Type**: Cloisonnement Strict des Cours Assignés Formateur & Élimination de la Redondance UI  
+**Auteur**: Antigravity (Agent IA)  
+**Branche**: `fix/teacher-assigned-courses-isolation`  
+**Objectif**: Supprimer l'injection indue des inscriptions étudiantes (`enrolledCourses`) dans l'espace formateur (« Mes cours enseignés ») et unifier l'état vide bienveillant pour supprimer le conflit entre sections.
+
+### Réalisations & Livrables :
+1. **Frontend (`frontend/js/dashboard.js`)** :
+   - `getTeacherActiveCourses()` : exclusion complète d'`enrolledCourses`. Seuls les cours explicitement assignés (`allAvailableCourses` via `/api/courses/my-assigned-courses` pour le formateur, ou catalogue complet en vue superviseur admin) sont retournés.
+   - `renderTeacherCourses()` : affichage direct du composant `.teacher-empty-state` (« Aucun cours ne vous a encore été attribué. Contactez l'administrateur. ») dans `#teacher-courses-grid` lorsque la liste des cours assignés est vide.
+   - `renderTeacherDashboard()` : nettoyage de `#teacher-sections-list` lorsque 0 cours n'est assigné pour éviter d'afficher deux états vides identiques consécutifs sur la même vue.
+   - `loadTeacherData()` : suppression de l'appel superflu à `/api/enrollments/my-courses` pour optimiser le temps de chargement de l'espace formateur.
+2. **Frontend Cache-Busting (`frontend/dashboard.html`)** :
+   - Mise à jour de la chaîne de version : `dashboard.js?v=sprint29.2`.
+3. **Tests UI & E2E (`e2e/tests/teacher-dashboard-isolation.spec.js`)** :
+   - Mise à jour du Test 4 vérifiant que SEUL le cours assigné apparaît avec le badge `FORMATEUR RÉFÉRENT`, et que les cours de pure inscription étudiante n'apparaissent plus dans la vue formateur.
+4. **Validation Complète** :
+   - 20/20 tests Playwright au vert (1 skipped pour credentials distants réels).
+   - 215/215 tests Spring Boot au vert (`BUILD SUCCESS`).
+
 
