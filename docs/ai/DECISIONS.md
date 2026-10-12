@@ -4,7 +4,7 @@
 
  — NoSeumCode
 
-_Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
+_Last updated: 2026-10-12 | Conversation: adbaed0b-0e79-4902-90fa-bfd28b8917c7_
 
 ---
 
@@ -228,6 +228,33 @@ _Last updated: 2026-09-16 | Conversation: e0c9f398-8522-470e-9df1-e11344331037_
 **Alternative rejetée**: 
 - Qualifier de « E2E » des tests Playwright entièrement mockés via `page.route()` (rejetée car cela masque les erreurs 403 de tokens, les incompatibilités de contrat DTO et les erreurs 500 Hibernate, créant un faux sentiment de sécurité).
 **Conséquence**: Éradication des faux positifs en CI/CD, traçabilité nette entre tests de surface UI et validation d'intégration opérationnelle de bout en bout.
+ 
+## ADR-025 — Architecture d'Affectation des Formateurs (course_teacher), Cloisonnement RBAC & Salons Discord Scène / Manga
+**Status**: [ACCEPTED]
+**Décision**: 
+1. **Découplage Strict des Packages Commerciaux et Cours Pédagogiques** :
+   - Découplage complet entre l'offre commerciale (`CourseTier` : `STARTER`, `WEB`, `VIP`) et les cours pédagogiques unitaires (`Course` : `HTML5 & CSS3`, `Git & GitHub`, `JavaScript ES6+`).
+   - Le statut de paiement (`PaymentStatus` : `PAID`, `PENDING`, `FAILED`, `REFUNDED`) est réservé exclusivement aux transactions financières d'inscriptions et ne doit en aucun cas être dévoyé pour modéliser une fonction ou affectation d'enseignant.
+2. **Modélisation Relationnelle `course_teacher` & Résolution Eager Hibernate** :
+   - Création d'une table de liaison Many-to-Many `course_teacher` (`course_id UUID`, `teacher_id UUID`, `assigned_at TIMESTAMP`, `assigned_by_id UUID`) indexée pour relier les entités `Course` et `User` (`Role.TEACHER`).
+   - Requêtage JPQL systématique avec `LEFT JOIN FETCH c.assignedTeachers`, `LEFT JOIN FETCH c.createdBy` et `LEFT JOIN FETCH c.updatedBy` dans `CourseRepository` (`findAllByAssignedTeachersId`, `findAllByAssignedTeacherId`) combiné à `@Transactional(readOnly = true)` pour éliminer toute `LazyInitializationException` lors de la sérialisation DTO.
+3. **Contrôle d'Accès Attributaire (ABAC) & Cloisonnement RBAC Spring Boot** :
+   - Composant dédié `@Component("courseSecurity") CourseSecurity` implémentant `canManageCourse(courseId, authentication)` : autorise l'accès complet pour `ROLE_ADMIN` ou restreint l'accès aux seuls formateurs explicitement assignés au cours via `course_teacher`.
+   - Sécurisation déclarative des méthodes de contrôleur (`CourseController`, `ChapterController`, `ContentController`) par `@PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageCourse(#id, authentication)")`.
+   - Endpoint dédié `/api/courses/my-assigned-courses` cloisonnant l'espace de travail du formateur connecté (`Role.TEACHER`) à ses seuls cours assignés, tandis que l'administrateur conserve la visibilité globale.
+4. **Architecture Discord Hybride : Salons Scène & Salons Vocaux Collaboratifs Manga** :
+   - Cours magistraux interactifs : utilisation des salons Scène Discord (`GUILD_STAGE_VOICE`, Type 13) avec rôles de modérateurs pour les formateurs (`SPEAK`, `STREAM`, `PRIORITY_SPEAKER`, `MUTE_MEMBERS`) et auditeurs silencieux par défaut avec levée de main (`REQUEST_TO_SPEAK`) pour les apprenants.
+   - Ateliers collaboratifs permanents : 3 salons vocaux thématiques Manga (`GUILD_VOICE`, Type 2) ouverts à tous les apprenants vérifiés avec permissions de stream/partage d'écran et détection de voix (`CONNECT`, `SPEAK`, `STREAM`, `USE_VAD`) :
+     * 🏴‍☠️ `luffy-code-lab` (One Piece) — Partage d'idées et projets collaboratifs.
+     * ⚡ `goku-dojo-live` (Dragon Ball) — Pair programming intensif et révision technique.
+     * 🍥 `naruto-team-hub` (Naruto) — Travaux pratiques collectifs et hackathons.
+5. **Validation E2E Dé-mockée (ADR-024)** :
+   - Suite `sprint30-lifecycle-e2e.spec.js` traversant l'intégralité du cycle de vie sans aucune interception réseau (`page.route()`) : assignation Admin -> reconnexion Formateur -> isolation des cours & rejet 403 d'édition non assignée -> reconnexion Apprenant -> validation d'accès Discord Scène et salons Manga.
+**Alternative rejetée**: 
+- Surcharger le champ `payment_status` ou `enrollment.tier` pour désigner les formateurs (rejetée car cela mélange logique comptable et habilitations académiques).
+- Créer un salon vocal Discord individuel par cours ou par section (rejetée car cela dilue la communauté et dépasse rapidement les quotas de salons de guildes Discord).
+- Continuer d'utiliser des mocks réseau `page.route()` en tests E2E (rejetée par l'ADR-024 car cela masque les erreurs de session Hibernate, les rejets de sécurité 403 et les ruptures de contrats DTO).
+**Conséquence**: Architecture sécurisée et cloisonnée de bout en bout, isolation garantie des responsabilités pédagogiques, ergonomie Discord optimisée pour la cohésion apprenant, et couverture de recette E2E 100% réelle et reproductible.
 
 
 

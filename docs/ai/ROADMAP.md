@@ -37,8 +37,8 @@
 | **Sprint 26** | **E2E, CORS & Hygiène (P1 & P2)** | Playwright CI, durcissement CORS, HttpOnly cookies, nettoyage repo | ✅ **Terminé** |
 | **Sprint 27** | **Modélisation Formateurs & Sécurité RBAC** | Table d'affectation `course_teacher`, Spring Security `@courseSecurity`, isolation stricte | ✅ **Terminé** |
 | **Sprint 28** | **Dashboard Formateur & Assignation Admin** | Vue filtrée Formateur, affectation accessible WCAG par l'Admin, cloisonnement édition | ✅ **Terminé** |
-| **Sprint 29** | **Discord Salons Scène & Vocaux Projets Manga** | Salons Scène de cours (live magistraux) + 3 salons vocaux libres de projets Manga (`luffy-code-lab`, `goku-dojo-live`, `naruto-team-hub`) | 📋 **À faire** |
-| **Sprint 30** | **Recette E2E Globale, Accessibilité & Clôture** | Validation E2E Playwright de bout en bout, tests accessibilité clavier/écran, ADR-024 | 📋 **À faire** |
+| **Sprint 29** | **Discord Salons Scène & Vocaux Projets Manga** | Salons Scène de cours (live magistraux) + 3 salons vocaux libres de projets Manga (`luffy-code-lab`, `goku-dojo-live`, `naruto-team-hub`) | ✅ **Terminé** |
+| **Sprint 30** | **Recette E2E Globale, Accessibilité & Clôture** | Validation E2E Playwright de bout en bout, tests accessibilité clavier/écran, ADR-025 | ✅ **Terminé** |
 
 ---
 
@@ -169,7 +169,7 @@ gantt
     Sprint 27 (Modélisation & Sécurité Formateurs) :done, sp27, 2026-10-11, 1d
     Sprint 28 (Dashboard Formateurs & Admin)       :done, sp28, 2026-10-11, 2d
     Sprint 29 (Salons Scène & Vocaux Manga)       :done, sp29, 2026-10-11, 2d
-    Sprint 30 (Recette E2E & Clôture)             :sp30, after sp29, 2d
+    Sprint 30 (Recette E2E & Clôture)             :done, sp30, 2026-10-12, 1d
 ```
 
 ---
@@ -631,11 +631,20 @@ gantt
 
 ---
 
-### Sprint 30 : Recette Globale, E2E Playwright & Documentation d'Architecture (À faire)
-- **30.1 Validation E2E Bout-en-Bout** :
-  - Parcours complet automatisé : Achat / inscription d'un cours -> Attribution automatique du rôle Discord -> Accès au salon Scène -> Connexion Enseignant -> Édition du cours assigné -> Tentative d'accès interdit.
-- **30.2 Audit d'Accessibilité Clavier & Synthèse Vocale** :
-  - Audit complet de l'interface d'assignation admin et des déclencheurs Discord au clavier et aux technologies d'assistance (NVDA/JAWS).
-- **30.3 Clôture Documentaire & ADR-024** :
-  - Rédaction de l'ADR-024 : *Architecture d'affectation des enseignants et intégration des salons Scène et vocaux Discord*.
-  - Mise à jour de `PROJECT_CONTEXT.md` et alignement avec le Kanban GitHub.
+### Sprint 30 : Recette Globale, E2E Playwright Réel, Audit Accessibilité & Documentation d'Architecture (Terminé)
+- **30.1 Suite E2E Playwright Réelle & Dé-mockée (ADR-024)** :
+  - Création de `sprint30-lifecycle-e2e.spec.js` sans aucun mock réseau (`page.route()`) traversant l'ensemble des 3 rôles de bout en bout contre PostgreSQL réel et Spring Boot réel :
+    * Étape 1 (Admin) : Connexion via l'UI, accès gestion des formations, assignation du compte formateur (`teacher@codebangers.fr`), vérification du badge formateur immédiat.
+    * Étape 2 (Formateur) : Déconnexion complète `globalLogout`, connexion enseignant, vérification de la vue `#view-teacher`, affichage du cours assigné avec badge « FORMATEUR RÉFÉRENT », boutons d'actions fonctionnels, vérification de la sécurité 403 Forbidden sur tentative d'édition non assignée.
+    * Étape 3 (Apprenant) : Déconnexion et connexion apprenant, accès au salon Scène Live Discord et aux 3 salons Manga permanents (`luffy-code-lab`, `goku-dojo-live`, `naruto-team-hub`), contrôle d'absence de fuite de jeton JWT ou d'erreur critique console.
+  - Exécution globale : 23/23 tests Playwright au vert (53.5s).
+- **30.2 Audit & Durcissement Accessibilité (WCAG 2.2 AA / RGAA)** :
+  - Navigation clavier intégrale (`Tab`, `Shift+Tab`, `Space`, `Enter`).
+  - Fermeture obligatoire de la popover d'assignation sur touche `Escape` avec restitution immédiate du focus sur le bouton déclencheur (`btn-assign-teacher-${courseId}`).
+  - Synchronisation dynamique des attributs ARIA (`aria-expanded="false"`, `aria-controls`, `aria-haspopup="dialog"`).
+  - Annonce vocale dynamique de tout statut d'erreur et de succès via `announceA11y()` (`aria-live="polite"`).
+  - Ratios de contraste WCAG 2.2 AA / AAA vérifiés : boutons Discord `#5865F2` (4.59:1), badges formateurs `#0369a1` (5.35:1), tags `#047857` (5.48:1).
+- **30.3 Clôture Documentaire & Architecture** :
+  - Rédaction de l'ADR-025 dans `docs/ai/DECISIONS.md` (*Architecture d'Affectation des Formateurs (course_teacher), Cloisonnement RBAC & Salons Discord Scène / Manga*).
+  - Mise à jour de `PROJECT_CONTEXT.md`, `ROADMAP.md` et `CHANGELOG.md`.
+  - Validation complète des 215 tests backend Spring Boot (`BUILD SUCCESS`).
