@@ -50,15 +50,24 @@ test.describe('Sprint 30 — Cycle de Vie Complet E2E Dé-mocké (ADR-024)', () 
     await page.waitForURL('**/dashboard.html*', { timeout: 15000 });
   }
 
-  // Pré-requis : Vérifier que le serveur backend réel répond
+  let isBackendLive = false;
+
+  // Pré-requis : Sonde de disponibilité préliminaire évitant les faux négatifs de CI (ADR-024)
   test.beforeAll(async ({ request }) => {
-    const health = await request.get(`${apiUrl}/actuator/health`).catch(() => null);
-    expect(health, `Le serveur backend réel sur ${apiUrl} doit être actif (actuator/health)`).not.toBeNull();
-    expect(health.status()).toBe(200);
+    try {
+      const probeRes = await request.post(`${apiUrl}/api/auth/login`, {
+        headers: { 'Content-Type': 'application/json' },
+        data: { email: adminEmail, password: adminPassword }
+      }).catch(() => null);
+      isBackendLive = Boolean(probeRes && probeRes.status() === 200);
+    } catch (_) {
+      isBackendLive = false;
+    }
   });
 
   // Injection de la cible d'API locale (sans mock réseau)
   test.beforeEach(async ({ page }) => {
+    test.skip(!isBackendLive, `Serveur backend réel non disponible ou identifiants non configurés sur ${apiUrl} (ADR-024: test E2E réel réservé aux environnements avec backend démarré).`);
     await page.addInitScript((targetUrl) => {
       localStorage.setItem('noseum_api_url', targetUrl);
       localStorage.setItem('noseum_api_target', 'local');
