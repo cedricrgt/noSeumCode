@@ -1846,5 +1846,11 @@ eset-password.html.
 4. **Validation des Tests** :
    - 215 tests backend Spring Boot exécutés via `./mvnw test` : `BUILD SUCCESS` (0 échec, 0 erreur, 2 skipped).
    - 23 tests E2E Playwright exécutés via `npm test` : 23 passed (0 échec, 53.5s).
+5. **Durcissement Contrôle d'Accès Formateur sur la Salle de Cours (`app.html` & `cours.js`)** :
+   - Blocage par `renderAccessGate("⛔ Cours Non Attribué")` lorsqu'un enseignant navigue directement via URL sur une formation qui ne lui est pas attribuée dans `course.assignedTeachers`.
+   - Masquage strict des contrôles de modification (« Modifier le cours », « + Ajouter une section », « ✏️ MODIFIER CETTE SECTION ») pour tout utilisateur non formateur référent via `canUserManageCurrentCourse()`.
+   - Contrôle obligatoire du statut HTTP (`res.ok`) sur toutes les mutations de cours et chapitres dans `cours.js` : éradication des faux succès visuels en mémoire lors d'un rejet 403 Forbidden du backend.
+   - Ajout de `@Transactional(readOnly = true)` et résolution par `chapterRepository.findByIdWithAssociations(chapterId)` dans `CourseSecurity.java`.
+   - Cache-busting mis à jour dans `frontend/app.html` (`cours.js?v=sprint30.2`).
 
 

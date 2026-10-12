@@ -9,11 +9,13 @@ import com.codebangers.backend.user.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
 
 @Component("courseSecurity")
+@Transactional(readOnly = true)
 public class CourseSecurity {
 
     private final CourseRepository courseRepository;
@@ -70,7 +72,8 @@ public class CourseSecurity {
             return true;
         }
 
-        return chapterRepository.findById(chapterId)
+        return chapterRepository.findByIdWithAssociations(chapterId)
+                .or(() -> chapterRepository.findById(chapterId))
                 .map(ch -> ch.getCourse() != null ? ch.getCourse().getId() : null)
                 .map(courseId -> canManageCourse(courseId, authentication))
                 .orElse(false);

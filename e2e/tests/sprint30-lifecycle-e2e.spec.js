@@ -200,6 +200,17 @@ test.describe('Sprint 30 — Cycle de Vie Complet E2E Dé-mocké (ADR-024)', () 
     // Le backend doit rejeter avec HTTP 403 Forbidden
     expect(illicitAttemptStatus).toBe(403);
 
+    // Test de sécurité UI : navigation directe par URL à un cours non attribué (blocage Access Gate)
+    await page.goto('/app.html?id=c2000000-0000-0000-0000-000000000002');
+    const accessGateHeading = page.locator('text=⛔ Cours Non Attribué');
+    await expect(accessGateHeading).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('button:has-text("Modifier le cours")')).toHaveCount(0);
+    await expect(page.locator('button:has-text("Ajouter une section")')).toHaveCount(0);
+
+    // Revenir au dashboard pour la suite
+    await page.goto('/dashboard.html');
+    await expect(teacherView).toBeVisible({ timeout: 10000 });
+
     // =========================================================================
     // ÉTAPE 3 : Apprenant — Espaces Discord Scène & Salons Vocaux Manga
     // =========================================================================

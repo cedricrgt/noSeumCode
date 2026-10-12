@@ -85,6 +85,7 @@ class CourseSecurityTest {
         when(courseRepository.isTeacherAssignedToCourse(course.getId(), teacherB.getId())).thenReturn(false);
 
         when(chapterRepository.findById(chapter.getId())).thenReturn(Optional.of(chapter));
+        when(chapterRepository.findByIdWithAssociations(chapter.getId())).thenReturn(Optional.of(chapter));
         when(contentRepository.findById(content.getId())).thenReturn(Optional.of(content));
     }
 
@@ -171,6 +172,7 @@ class CourseSecurityTest {
     @DisplayName("Non-existent chapter returns false")
     void nonExistentChapterReturnsFalse() {
         UUID unknownChapterId = UUID.randomUUID();
+        when(chapterRepository.findByIdWithAssociations(unknownChapterId)).thenReturn(Optional.empty());
         when(chapterRepository.findById(unknownChapterId)).thenReturn(Optional.empty());
 
         Authentication auth = mockAuth(teacherA, "ROLE_TEACHER");
