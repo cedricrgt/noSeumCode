@@ -28,7 +28,7 @@ public class StripeGatewayImpl implements StripeGateway {
 
     public StripeGatewayImpl(
             @Value("${stripe.secret.key:${STRIPE_SECRET_KEY:}}") String stripeSecretKey,
-            @Value("${stripe.publishable.key:${STRIPE_PUBLISHABLE_KEY:pk_test_2BsFfeoXfXOvjtOnGf24JH6E00S9sVcIEG}}") String stripePublishableKey,
+            @Value("${stripe.publishable.key:${STRIPE_PUBLISHABLE_KEY:}}") String stripePublishableKey,
             @Value("${stripe.success.url:${STRIPE_SUCCESS_URL:http://localhost:3000/success.html}}") String defaultSuccessUrl,
             @Value("${stripe.cancel.url:${STRIPE_CANCEL_URL:${app.frontend.url:http://localhost:3000}/cours.html}}") String defaultCancelUrl,
             @Value("${stripe.return.url:${STRIPE_RETURN_URL:${app.frontend.url:http://localhost:3000}/success.html}}") String defaultReturnUrl) {

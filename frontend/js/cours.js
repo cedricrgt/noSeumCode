@@ -1548,11 +1548,14 @@ function parseMarkdown(md) {
 }
 
 function escapeHtml(text) {
-  if (!text) return "";
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  if (text === null || text === undefined) return "";
+  return String(text).replace(/[&<>'"]/g, tag => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "'": "&#39;",
+    '"': "&quot;"
+  }[tag] || tag));
 }
 
 document.addEventListener("DOMContentLoaded", initCoursPage);

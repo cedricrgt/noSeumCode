@@ -124,6 +124,7 @@ public class SecurityConfig {
                                                 .requestMatchers("/login/oauth2/**", "/oauth2/**").permitAll()
                                                 .requestMatchers("/actuator/health").permitAll()
                                                 .requestMatchers("/api/payments/webhook", "/api/payments/webhook/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/config/stripe-key", "/api/config/**").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/api/chapters/**", "/api/contents/**").permitAll()
                                                 .requestMatchers("/api/**").authenticated()
                                                 .anyRequest().authenticated())

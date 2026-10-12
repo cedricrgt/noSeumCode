@@ -445,6 +445,42 @@ function ensureStripeJsLoaded() {
 }
 window.ensureStripeJsLoaded = ensureStripeJsLoaded;
 
+let cachedStripePublishableKey = null;
+
+async function resolveStripePublishableKey(directKey) {
+  if (directKey && typeof directKey === "string" && directKey.trim().length > 0) {
+    cachedStripePublishableKey = directKey.trim();
+    return cachedStripePublishableKey;
+  }
+  if (cachedStripePublishableKey) {
+    return cachedStripePublishableKey;
+  }
+  // 1. Attribut data-stripe-key sur le body ou balise meta
+  const dataKey = (typeof document !== "undefined" && document.body?.dataset?.stripeKey)
+    || (typeof document !== "undefined" && document.querySelector('meta[name="stripe-key"]')?.getAttribute("content"))
+    || (typeof document !== "undefined" && document.querySelector('meta[name="stripe-publishable-key"]')?.getAttribute("content"));
+  if (dataKey && dataKey.trim().length > 0) {
+    cachedStripePublishableKey = dataKey.trim();
+    return cachedStripePublishableKey;
+  }
+  // 2. Appel dynamique GET /api/config/stripe-key
+  try {
+    const apiBase = (typeof window !== "undefined" && window.API_BASE_URL) || "https://api.noseumcode.fr";
+    const res = await fetch(`${apiBase}/api/config/stripe-key`);
+    if (res.ok) {
+      const config = await res.json();
+      if (config && config.publishableKey && config.publishableKey.trim().length > 0) {
+        cachedStripePublishableKey = config.publishableKey.trim();
+        return cachedStripePublishableKey;
+      }
+    }
+  } catch (err) {
+    console.warn("Échec de la récupération dynamique de la clé publique Stripe:", err);
+  }
+  return null;
+}
+window.resolveStripePublishableKey = resolveStripePublishableKey;
+
 /**
  * Ferme le Paywall intégré et détruit proprement l'instance Stripe Embedded Checkout.
  * Intercepte la fermeture (post-abandon) avec la proposition downsell si aucun add-on mentor n'a été choisi.
@@ -860,7 +896,10 @@ async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortI
     }
 
     // 3. Initialiser Stripe Embedded Checkout et le monter dans la modale
-    const publishableKey = data.publishableKey || "pk_test_2BsFfeoXfXOvjtOnGf24JH6E00S9sVcIEG";
+    const publishableKey = await resolveStripePublishableKey(data.publishableKey);
+    if (!publishableKey) {
+      throw new Error("Clé de paiement publique Stripe non configurée. Impossible d'initialiser le terminal de paiement sécurisé.");
+    }
     const stripe = StripeObj(publishableKey);
 
     const checkout = await stripe.initEmbeddedCheckout({

@@ -1853,4 +1853,42 @@ eset-password.html.
    - Ajout de `@Transactional(readOnly = true)` et résolution par `chapterRepository.findByIdWithAssociations(chapterId)` dans `CourseSecurity.java`.
    - Cache-busting mis à jour dans `frontend/app.html` (`cours.js?v=sprint30.2`).
 
+---
+
+## 2026-10-12 | Conversation: 1dc514db-cf23-4101-a832-21521eb36d95
+
+**Type**: Remédiation de Sécurité (Audit Aikido) : Bumps Jackson (CVE), Neutralisation Sinks XSS & Éradication Secrets Stripe  
+**Auteur**: Antigravity (Agent IA)  
+**Branche**: `fix/security-remediation-jackson-xss-secrets`  
+**Objectif**: Remédier de manière exhaustive aux vulnérabilités identifiées lors de l'audit Aikido Security :
+1. P0 Dépendances Backend : Corriger les CVEs Jackson via forçage de versions sécurisées (`tools.jackson:3.1.7` et `com.fasterxml.jackson:2.21.7`).
+2. P0 Frontend XSS : Neutraliser les puits d'injection DOM dans `dashboard.js`, `article.js` et `cours.js`.
+3. P1 Secrets & Hygiène Git : Éradiquer la clé Stripe publiable hardcodée de l'ensemble des sources backend et bundles frontend, exposer un endpoint public sécurisé `GET /api/config/stripe-key` et sécuriser `.gitignore`.
+
+### Réalisations & Livrables :
+1. **Dépendances Backend & Résolution Jackson (`backend/pom.xml`)** :
+   - Ajout des propriétés `<jackson-bom.version>3.1.7</jackson-bom.version>` et `<jackson-2-bom.version>2.21.7</jackson-2-bom.version>`.
+   - Ajout d'une section `<dependencyManagement>` explicite contraignant `tools.jackson.core:jackson-core:3.1.7`, `tools.jackson.core:jackson-databind:3.1.7`, `com.fasterxml.jackson.core:jackson-core:2.21.7` et `com.fasterxml.jackson.core:jackson-databind:2.21.7`.
+   - Validation de l'arbre effectif avec `./mvnw dependency:list | Select-String "jackson"` (3.1.7 et 2.21.7 effectives).
+2. **Neutralisation Sinks DOM XSS (`frontend/js/dashboard.js`, `article.js`, `cours.js`)** :
+   - `dashboard.js` : substitution de `toast.innerHTML = message;` par `toast.textContent = message;`.
+   - `dashboard.js` (`syncDiscordRoles()`) : élimination des lectures/écritures de `btn.dataset.originalHtml` non échappées au profit d'un composant de bascule d'état sécurisé et déterministe avec `aria-busy` et constante statique typée.
+   - `dashboard.js` & `cours.js` : durcissement de la fonction `escapeHtml()` pour échapper `&`, `<`, `>`, `"`, et `'`.
+   - `article.js` : introduction d'une fonction `escapeHtml()` robuste et échappement systématique des champs interpolés (`article.image`, `article.title`, `article.subtitle`, `article.tags`, `article.intro`, `section.heading`, `section.text`, `article.conclusion`).
+3. **Éradication des Secrets & Résolution Dynamique Stripe Key** :
+   - Purge de la clé de test hardcodée `pk_test_2BsFfeoXfXOvjtOnGf24JH6E00S9sVcIEG` de `frontend/js/header.js`, `frontend/js/header.min.js`, `backend/src/main/resources/application.properties` et `StripeGatewayImpl.java`.
+   - Création de `PaymentConfigController.java` (`GET /api/config/stripe-key`) retournant `{ "publishableKey": "..." }` à partir de la propriété d'environnement `stripe.publishable.key`.
+   - Autorisation publique du endpoint dans `SecurityConfig.java` (`/api/config/stripe-key`, `/api/config/**`).
+   - Implémentation de `resolveStripePublishableKey(directKey)` dans `frontend/js/header.js` avec résolution en cascade (backend payload -> dataset/meta -> endpoint API `/api/config/stripe-key`).
+   - Ajout des tests unitaires `PaymentConfigControllerTest.java` (2 tests validant le retour configuré et le comportement clé absente).
+   - Recompilation et minification des bundles frontend via `node build.js`.
+   - Ajout de `pr-preview/`, `pr-preview/**` et `.deploy-cache/` dans `.gitignore`.
+4. **Validation des Tests & Intégrité** :
+   - 217 tests backend Spring Boot exécutés via `./mvnw test` : `BUILD SUCCESS` (0 échec, 0 erreur, 2 tests ignorés).
+   - 20 tests E2E Playwright exécutés : 20 passés (3 ignorés pour credentials réels, 0 erreur).
+   - `git grep "pk_test_2BsFfeoXfXOvjtOnGf24JH6E00S9sVcIEG"` : 0 occurrence dans le code exécutable.
+5. **Project Memory & Issues** :
+   - Clôture et passage à « ✅ RÉSOLU » des fiches ISSUE-037, ISSUE-038 et ISSUE-039 dans `docs/ai/KNOWN_ISSUES.md`.
+
+
 

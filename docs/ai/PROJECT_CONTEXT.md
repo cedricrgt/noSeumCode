@@ -50,9 +50,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `feat/sprint-30-recette-e2e-a11y-adr`
-## Current State: Sprint 30 (Recette Globale, E2E Playwright Réel, Audit Accessibilité & Documentation d'Architecture) validé et terminé : suite E2E Playwright 100% réelle et dé-mockée (sprint30-lifecycle-e2e.spec.js) validant les 3 rôles (Admin, Formateur, Apprenant) conformément à l'ADR-024 ; audit WCAG 2.2 AA / RGAA validé (navigation clavier, Escape et restitution de focus, annonces vocales aria-live, contrastes >= 4.5:1) ; ADR-025 consigné ; 215 tests backend Spring Boot et 23 tests E2E Playwright au vert sans aucun échec ni régression.
-## Next Steps: Clôture de l'Issue GitHub #161, soumission de la Pull Request vers develop, validation et déploiement staging.
+## Active Branch: `fix/security-remediation-jackson-xss-secrets`
+## Current State: Remédiation de Sécurité (Audit Aikido) validée : Dépendances Jackson contraintes en 3.1.7 et 2.21.7 (CVEs P0 corrigées) ; Sinks DOM XSS P0 neutralisés dans dashboard.js, article.js et cours.js ; Éradication P1 de la clé Stripe hardcodée avec mise en place du endpoint sécurisé GET /api/config/stripe-key et résolution dynamique côté frontend ; pr-preview/ exclu dans .gitignore ; 217 tests backend Spring Boot et 20 tests E2E Playwright au vert sans régression.
+## Next Steps: Soumission de la PR vers develop, rotation manuelle de la clé Stripe sur le Dashboard Stripe (acct_1GYAtuAmRX1Xf5vu), et résolution des 29 sous-issues sur Aikido Security.
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN
