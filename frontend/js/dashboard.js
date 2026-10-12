@@ -1458,15 +1458,7 @@ async function loadTeacherData() {
     }
   }
 
-  // Also fetch enrolled courses for teachers
-  try {
-    const enrollRes = await apiFetch("/api/enrollments/my-courses");
-    if (enrollRes && enrollRes.ok) {
-      enrolledCourses = await enrollRes.json();
-    }
-  } catch (_) {}
-
-  // Rendu immédiat des cours assignés et actifs pour un affichage instantané sans blocage
+  // Rendu immédiat des cours assignés pour un affichage instantané sans blocage
   renderTeacherCourses();
 
   // Load teacher chapters for assigned courses
@@ -1507,7 +1499,7 @@ async function loadTeacherData() {
 function getTeacherActiveCourses() {
   const courseMap = new Map();
 
-  // 1. Cours assignés en tant que Formateur Référent
+  // Cours assignés en tant que Formateur Référent (ou l'ensemble du catalogue pour l'Admin en vue superviseur)
   if (Array.isArray(allAvailableCourses)) {
     allAvailableCourses.forEach(c => {
       courseMap.set(c.id, {
@@ -1517,31 +1509,6 @@ function getTeacherActiveCourses() {
         isTeacherAssigned: true,
         chaptersCount: c.chaptersCount
       });
-    });
-  }
-
-  // 2. Cours auxquels l'enseignant est également inscrit
-  if (Array.isArray(enrolledCourses)) {
-    enrolledCourses.forEach(ec => {
-      const cId = ec.courseId || ec.id;
-      if (courseMap.has(cId)) {
-        const existing = courseMap.get(cId);
-        existing.progress = ec.progress;
-        existing.tier = ec.tier || existing.tier;
-        existing.cohortName = ec.cohortName;
-        existing.lifetimeAccess = ec.lifetimeAccess;
-      } else {
-        courseMap.set(cId, {
-          id: cId,
-          title: ec.courseTitle || ec.title,
-          description: ec.courseDescription || ec.description,
-          isTeacherAssigned: false,
-          progress: ec.progress,
-          tier: ec.tier || "STARTER",
-          cohortName: ec.cohortName,
-          lifetimeAccess: ec.lifetimeAccess
-        });
-      }
     });
   }
 
@@ -1557,13 +1524,16 @@ function renderTeacherCourses() {
 
   if (courses.length === 0) {
     grid.innerHTML = `
-      <div style="text-align: center; padding: 2.5rem 1.5rem; background: #ffffff; border-radius: 20px; border: 2px dashed #cbd5e1; grid-column: 1 / -1;">
-        <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(88, 101, 242, 0.1); color: #5865F2; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-        </div>
-        <h3 style="font-size: 1.15rem; color: var(--dash-dark-navy); margin-bottom: 0.4rem;">Aucun cours enseigné pour le moment</h3>
-        <p style="color: var(--dash-text-muted); font-size: 0.9rem; margin-bottom: 0;">
-          Dès qu'un administrateur vous affecte à un cours ou que vous rejoignez une formation, vous retrouverez ici l'accès direct aux modules, aux ressources et à la scène live.
+      <div class="teacher-empty-state" role="status" style="width: 100%; text-align: center; padding: 3rem 1.5rem; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 16px; grid-column: 1 / -1;">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 1rem auto; color: #64748b; display: block;" aria-hidden="true">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--dash-dark-navy); margin-bottom: 0.5rem;">
+          Aucun cours ne vous a encore été attribué. Contactez l'administrateur.
+        </h3>
+        <p style="font-size: 0.88rem; color: var(--dash-text-muted); max-width: 520px; margin: 0 auto; line-height: 1.6;">
+          Dès qu'un administrateur vous aura affecté à une formation, vous pourrez ajouter, éditer et soumettre vos chapitres pédagogiques.
         </p>
       </div>
     `;
@@ -1656,20 +1626,7 @@ function renderTeacherDashboard() {
     if (statPending) statPending.textContent = "0";
     if (statRejected) statRejected.textContent = "0";
     if (container) {
-      container.innerHTML = `
-        <div class="teacher-empty-state" role="status" style="width: 100%; text-align: center; padding: 3rem 1.5rem; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 16px;">
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 1rem auto; color: #64748b; display: block;" aria-hidden="true">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-          </svg>
-          <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--dash-dark-navy); margin-bottom: 0.5rem;">
-            Aucun cours ne vous a encore été attribué. Contactez l'administrateur.
-          </h3>
-          <p style="font-size: 0.88rem; color: var(--dash-text-muted); max-width: 520px; margin: 0 auto; line-height: 1.6;">
-            Dès qu'un administrateur vous aura affecté à une formation, vous pourrez ajouter, éditer et soumettre vos chapitres pédagogiques.
-          </p>
-        </div>
-      `;
+      container.innerHTML = "";
     }
     return;
   }
