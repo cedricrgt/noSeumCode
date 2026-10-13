@@ -307,4 +307,24 @@ class DiscordServiceTest {
         assertNotNull(status.mangaVoiceChannels());
         assertFalse(status.mangaVoiceChannels().isEmpty());
     }
+
+    @Test
+    @DisplayName("Devrait résoudre les URLs Scène par cours selon le sujet et le tier (Sprint 31)")
+    void shouldResolveCourseStageUrlsCorrectly() {
+        when(discordGateway.getHtmlCssStageChannelUrl()).thenReturn("https://discord.com/channels/guild123/stage-html-css");
+        when(discordGateway.getJavascriptStageChannelUrl()).thenReturn("https://discord.com/channels/guild123/stage-js");
+        when(discordGateway.getGitDeployStageChannelUrl()).thenReturn("https://discord.com/channels/guild123/stage-git-deploy");
+        when(discordGateway.getGitCicdStageChannelUrl()).thenReturn("https://discord.com/channels/guild123/stage-git-cicd");
+
+        assertEquals("https://discord.com/channels/guild123/stage-html-css",
+                discordService.resolveStageChannelUrlForCourse("html-css", EnrollmentTier.STARTER));
+        assertEquals("https://discord.com/channels/guild123/stage-js",
+                discordService.resolveStageChannelUrlForCourse("JavaScript moderne", EnrollmentTier.WEB));
+        assertEquals("https://discord.com/channels/guild123/stage-git-deploy",
+                discordService.resolveStageChannelUrlForCourse("git-github", EnrollmentTier.STARTER));
+        assertEquals("https://discord.com/channels/guild123/stage-git-cicd",
+                discordService.resolveStageChannelUrlForCourse("git-github", EnrollmentTier.WEB));
+        assertEquals("https://discord.gg/noseumcode",
+                discordService.resolveStageChannelUrlForCourse(null, EnrollmentTier.STARTER));
+    }
 }

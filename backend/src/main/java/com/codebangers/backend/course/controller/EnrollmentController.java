@@ -7,6 +7,8 @@ import com.codebangers.backend.course.model.Enrollment.PaymentStatus;
 import com.codebangers.backend.course.service.EnrollmentService;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.service.UserService;
+import com.codebangers.backend.discord.service.DiscordService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,10 +26,17 @@ public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
     private final UserService userService;
+    private final DiscordService discordService;
 
-    public EnrollmentController(EnrollmentService enrollmentService, UserService userService) {
+    @Autowired
+    public EnrollmentController(EnrollmentService enrollmentService, UserService userService, @Autowired(required = false) DiscordService discordService) {
         this.enrollmentService = enrollmentService;
         this.userService = userService;
+        this.discordService = discordService;
+    }
+
+    public EnrollmentController(EnrollmentService enrollmentService, UserService userService) {
+        this(enrollmentService, userService, null);
     }
 
     private User getAuthenticatedUser(Jwt jwt) {
@@ -220,6 +229,12 @@ public class EnrollmentController {
             response.setCohortId(enrollment.getCohort().getId());
             response.setCohortName(enrollment.getCohort().getName());
             response.setCohortSlug(enrollment.getCohort().getSlug());
+        }
+        if (discordService != null && enrollment.getCourse() != null) {
+            String slugOrTitle = enrollment.getCourse().getSlug() != null && !enrollment.getCourse().getSlug().isBlank()
+                    ? enrollment.getCourse().getSlug()
+                    : enrollment.getCourse().getTitle();
+            response.setStageChannelUrl(discordService.resolveStageChannelUrlForCourse(slugOrTitle, enrollment.getTier()));
         }
         return response;
     }

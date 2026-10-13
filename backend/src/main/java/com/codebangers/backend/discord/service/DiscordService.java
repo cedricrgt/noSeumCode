@@ -121,6 +121,30 @@ public class DiscordService {
     }
 
     /**
+     * Résout l'URL du salon Scène direct propre à un cours donné (Sprint 31).
+     * Mappe le slug/titre du cours (HTML/CSS, JS, Git) et le palier sur le salon Scène dédié.
+     */
+    public String resolveStageChannelUrlForCourse(String courseSlugOrTitle, EnrollmentTier tier) {
+        if (courseSlugOrTitle == null || courseSlugOrTitle.isBlank()) {
+            return discordGateway.getInviteUrl();
+        }
+        String normalized = courseSlugOrTitle.toLowerCase(Locale.ROOT);
+        if (normalized.contains("html") || normalized.contains("css")) {
+            return discordGateway.getHtmlCssStageChannelUrl();
+        }
+        if (normalized.contains("javascript") || normalized.contains("js")) {
+            return discordGateway.getJavascriptStageChannelUrl();
+        }
+        if (normalized.contains("git")) {
+            if (tier == EnrollmentTier.WEB || tier == EnrollmentTier.VIP || normalized.contains("pro") || normalized.contains("cicd") || normalized.contains("ci/cd")) {
+                return discordGateway.getGitCicdStageChannelUrl();
+            }
+            return discordGateway.getGitDeployStageChannelUrl();
+        }
+        return discordGateway.getStarterStageChannelUrl();
+    }
+
+    /**
      * Associe un compte Discord à un utilisateur existant NoSeumCode.
      */
     public User linkDiscordAccount(User user, String discordUserId, String discordUsername, String discordAvatar, String userAccessToken) {

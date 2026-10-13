@@ -39,6 +39,7 @@
 | **Sprint 28** | **Dashboard Formateur & Assignation Admin** | Vue filtrée Formateur, affectation accessible WCAG par l'Admin, cloisonnement édition | ✅ **Terminé** |
 | **Sprint 29** | **Discord Salons Scène & Vocaux Projets Manga** | Salons Scène de cours (live magistraux) + 3 salons vocaux libres de projets Manga (`luffy-code-lab`, `goku-dojo-live`, `naruto-team-hub`) | ✅ **Terminé** |
 | **Sprint 30** | **Recette E2E Globale, Accessibilité & Clôture** | Validation E2E Playwright de bout en bout, tests accessibilité clavier/écran, ADR-025 | ✅ **Terminé** |
+| **Sprint 31** | **Identité Mentor, Transparence Packs & Architecture Discord par Matière** | Bio véridique CDA & Formateur Bachelor (B1/B2), 4 badges SVG #00ff87, répartition 2h live + 2h labo, suppression fausse rareté, salons Discord Scène par cours + vocaux manga mutualisés | ✅ **Terminé** |
 
 ---
 
