@@ -50,9 +50,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `feat/sprint31-mentor-bio-discord-refactor`
-## Current State: Sprint 31 validé : Refonte complète de la bio mentor (Concepteur Développeur & Formateur Bachelor B1/B2, badges vectoriels SVG #00ff87, suppression des allégations trompeuses sur tout le projet et les blogs SSG) ; Transparence du modèle pédagogique des packs (Starter 12h live + 12h labo projet, Web Pro 24h live + 24h labo projet, rythme 4h/semaine) ; Suppression de la fausse rareté sur les ateliers Toussaint (jauge sobre 6 places) ; Architecture Discord par cours (catégories métiers avec salons textuels et salons Scène type 13 créés en direct) et catégorie mutualisée PROJETS D'ÉQUIPE (salons vocaux standards luffy, goku, naruto) ; Refonte du Dashboard Apprenant avec accès dynamique au Live Scène par cours et suppression des blocs statiques. Tests backend et E2E au vert.
-## Next Steps: Ouverture de la PR vers develop, revue par Cédric et merge manuel sur GitHub.
+## Active Branch: `feat/discord-student-spaces-and-rules`
+## Current State: Espaces Discord Apprenants & Charte Communautaire validés : Suppression intégrale des anciens espaces PACK STARTER et PACK WEB ; Restructuration conviviale de la catégorie ESPACE ÉTUDIANTS (#discussion-de-comptoir, #la-clinique-du-code, #vos-bangers-perso) ; Publication de la charte officielle NoSeumCode dans #rules via embed vert signature #00ff87.
+## Next Steps: Ouverture de la PR vers develop, merge manuel et suivi de la communauté.
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN
