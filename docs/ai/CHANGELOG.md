@@ -1947,7 +1947,7 @@ eset-password.html.
    - Position 2 : `#vos-bangers-perso` (topic : « Partage tes créations, portfolios et side-projects ! Présente ce que tu as codé et reçois des retours bienveillants. »).
 3. **Publication & Nettoyage Règlement Officiel `#rules`** :
    - Mise à jour des permissions du bot `NoSeumCode_Agent` sur `#rules` (`SendMessages`, `EmbedLinks`).
-   - Embed de charte publié et affiné avec 6 règles d'or (Bienveillance & Zéro Jugement, Respect, Rôle des salons avec exemple concret de bloc de code en backticks Markdown pour #la-clinique-du-code, Scènes & Vocaux d'équipe, Zéro spam/démarchage MP, Sécurité/Tokens/Secrets avec mention générique clés API).
+   - Embed de charte publié et affiné avec 6 règles d'or (Bienveillance & Zéro Jugement, Respect, Rôle des salons avec exemple didactique en backticks échappés pour voir littéralement la syntaxe des 3 backticks Markdown sans interprétation de bloc pour #la-clinique-du-code, Scènes & Vocaux d'équipe, Zéro spam/démarchage MP, Sécurité/Tokens/Secrets avec mention générique clés API).
    - Suppression du footer et timestamp pour un rendu sobre et intemporel.
 
 
