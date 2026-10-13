@@ -1945,9 +1945,10 @@ eset-password.html.
    - Position 0 : `#discussion-de-comptoir` (topic : « Espace détente & pause-café. On se lâche, on rigole et on décompresse dans le respect mutuel ! »).
    - Position 1 : `#la-clinique-du-code` (topic : « Un bug vicieux ? Une galère CSS ou Git ? Pose ta question avec ton code formaté ou ton repo, on t'aide à débloquer ! »).
    - Position 2 : `#vos-bangers-perso` (topic : « Partage tes créations, portfolios et side-projects ! Présente ce que tu as codé et reçois des retours bienveillants. »).
-3. **Publication Règlement Officiel `#rules`** :
+3. **Publication & Nettoyage Règlement Officiel `#rules`** :
    - Mise à jour des permissions du bot `NoSeumCode_Agent` sur `#rules` (`SendMessages`, `EmbedLinks`).
-   - Embed de charte publié avec 6 règles d'or (Bienveillance & Zéro Jugement, Respect, Rôle des salons, Scènes & Vocaux manga, Zéro spam/démarchage MP, Sécurité/Tokens/Secrets).
+   - Embed de charte publié et affiné avec 6 règles d'or (Bienveillance & Zéro Jugement, Respect, Rôle des salons, Scènes & Vocaux d'équipe, Zéro spam/démarchage MP, Sécurité/Tokens/Secrets avec mention générique clés API).
+   - Suppression du footer et timestamp pour un rendu sobre et intemporel.
 
 
 
