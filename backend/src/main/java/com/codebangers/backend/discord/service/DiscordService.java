@@ -1,5 +1,7 @@
 package com.codebangers.backend.discord.service;
 
+import com.codebangers.backend.course.model.Course;
+import com.codebangers.backend.course.model.CourseTier;
 import com.codebangers.backend.course.model.Enrollment;
 import com.codebangers.backend.course.model.Enrollment.PaymentStatus;
 import com.codebangers.backend.course.model.EnrollmentTier;
@@ -103,13 +105,7 @@ public class DiscordService {
         }
 
         // Apprenants inscrits : résolution selon le palier payé le plus élevé
-        List<Enrollment> enrollments = enrollmentRepository.findByUserId(user.getId());
-        EnrollmentTier highestTier = enrollments.stream()
-                .filter(e -> e.getPaymentStatus() == PaymentStatus.PAID)
-                .map(Enrollment::getTier)
-                .filter(Objects::nonNull)
-                .max(Comparator.comparingInt(EnrollmentTier::getLevel))
-                .orElse(null);
+        EnrollmentTier highestTier = resolveHighestTier(user);
 
         if (highestTier == EnrollmentTier.VIP || highestTier == EnrollmentTier.WEB) {
             return discordGateway.getWebStageChannelUrl();
@@ -239,19 +235,69 @@ public class DiscordService {
     }
 
     /**
+     * Résout le palier actif le plus élevé de l'utilisateur en fonction de ses inscriptions payées ('PAID')
+     * et des exigences réelles de chaque cours (STARTER, WEB, VIP).
+     * Si l'utilisateur n'a aucune inscription payée active, retourne null.
+     */
+    public EnrollmentTier resolveHighestTier(User user) {
+        if (user == null) return null;
+
+        List<Enrollment> enrollments = enrollmentRepository.findByUserId(user.getId());
+        if (enrollments == null || enrollments.isEmpty()) {
+            return null;
+        }
+
+        List<Enrollment> paidEnrollments = enrollments.stream()
+                .filter(e -> e.getPaymentStatus() == PaymentStatus.PAID)
+                .toList();
+
+        if (paidEnrollments.isEmpty()) {
+            return null;
+        }
+
+        return paidEnrollments.stream()
+                .map(this::resolveTierForEnrollment)
+                .filter(Objects::nonNull)
+                .max(Comparator.comparingInt(EnrollmentTier::getLevel))
+                .orElse(null);
+    }
+
+    private EnrollmentTier resolveTierForEnrollment(Enrollment enrollment) {
+        if (enrollment == null) return null;
+        Course course = enrollment.getCourse();
+        EnrollmentTier enrollmentTier = enrollment.getTier();
+
+        if (course != null) {
+            String slug = course.getSlug() != null ? course.getSlug().toLowerCase(Locale.ROOT) : "";
+            String title = course.getTitle() != null ? course.getTitle().toLowerCase(Locale.ROOT) : "";
+            CourseTier courseTier = course.getRequiredTier();
+
+            // Cours ou pack VIP
+            if (courseTier == CourseTier.VIP || slug.contains("vip") || title.contains("vip") || enrollmentTier == EnrollmentTier.VIP) {
+                return EnrollmentTier.VIP;
+            }
+            // Cours ou pack Web (ex: JavaScript, Pack Web Pro)
+            if (courseTier == CourseTier.WEB || slug.contains("pack-web") || slug.contains("javascript") || slug.contains("js")
+                    || title.contains("javascript") || slug.contains("cicd") || slug.contains("ci/cd")) {
+                return EnrollmentTier.WEB;
+            }
+            // Cours Starter (ex: HTML & CSS, Git Déploiement)
+            if (courseTier == CourseTier.STARTER || slug.contains("starter") || slug.contains("html") || slug.contains("git")) {
+                return EnrollmentTier.STARTER;
+            }
+        }
+
+        return enrollmentTier != null ? enrollmentTier : EnrollmentTier.STARTER;
+    }
+
+    /**
      * Détermine les rôles Discord à attribuer selon les inscriptions payantes de l'utilisateur.
      */
     public List<String> resolveTargetRoleIds(User user) {
         List<String> roleIds = new ArrayList<>();
         if (user == null) return roleIds;
 
-        List<Enrollment> enrollments = enrollmentRepository.findByUserId(user.getId());
-        EnrollmentTier highestTier = enrollments.stream()
-                .filter(e -> e.getPaymentStatus() == PaymentStatus.PAID)
-                .map(Enrollment::getTier)
-                .filter(Objects::nonNull)
-                .max(Comparator.comparingInt(EnrollmentTier::getLevel))
-                .orElse(null);
+        EnrollmentTier highestTier = resolveHighestTier(user);
 
         if (highestTier != null) {
             switch (highestTier) {
@@ -289,13 +335,7 @@ public class DiscordService {
             names.add("Formateur");
         }
 
-        List<Enrollment> enrollments = enrollmentRepository.findByUserId(user.getId());
-        EnrollmentTier highestTier = enrollments.stream()
-                .filter(e -> e.getPaymentStatus() == PaymentStatus.PAID)
-                .map(Enrollment::getTier)
-                .filter(Objects::nonNull)
-                .max(Comparator.comparingInt(EnrollmentTier::getLevel))
-                .orElse(null);
+        EnrollmentTier highestTier = resolveHighestTier(user);
 
         if (highestTier != null) {
             switch (highestTier) {

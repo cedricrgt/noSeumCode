@@ -139,7 +139,15 @@ public class EnrollmentService {
     }
 
     public Enrollment enrollUserInCourse(User user, UUID courseId) {
-        return enrollUserInCourse(user, courseId, EnrollmentTier.WEB, null);
+        Course course = courseRepository.findById(courseId)
+            .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
+        EnrollmentTier tier = EnrollmentTier.STARTER;
+        if (course.getRequiredTier() == CourseTier.VIP) {
+            tier = EnrollmentTier.VIP;
+        } else if (course.getRequiredTier() == CourseTier.WEB) {
+            tier = EnrollmentTier.WEB;
+        }
+        return enrollUserInCourse(user, courseId, tier, null);
     }
 
     public Enrollment enrollUserInCourse(User user, UUID courseId, EnrollmentTier tier, Cohort cohort) {
@@ -174,7 +182,15 @@ public class EnrollmentService {
                 }
             }
         } else if (status == PaymentStatus.PAID) {
-            enrollInBundleCourses(saved.getUser(), oldTier, saved.getCohort(), status);
+            Course course = saved.getCourse();
+            boolean isBundle = course != null && (
+                    "pack-starter".equals(course.getSlug()) ||
+                    "pack-web-pro".equals(course.getSlug()) ||
+                    "pack-mentorat-vip".equals(course.getSlug())
+            );
+            if (isBundle) {
+                enrollInBundleCourses(saved.getUser(), oldTier, saved.getCohort(), status);
+            }
         }
 
         syncDiscordRolesIfLinked(saved.getUser());
@@ -182,22 +198,45 @@ public class EnrollmentService {
     }
 
     public Enrollment setCoursePaymentStatusForUser(UUID userId, UUID courseId, PaymentStatus status) {
-        return setCoursePaymentStatusForUser(userId, courseId, status, EnrollmentTier.WEB, null);
+        Course course = courseRepository.findById(courseId)
+            .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
+        EnrollmentTier tier = EnrollmentTier.STARTER;
+        if (course.getRequiredTier() == CourseTier.VIP) {
+            tier = EnrollmentTier.VIP;
+        } else if (course.getRequiredTier() == CourseTier.WEB) {
+            tier = EnrollmentTier.WEB;
+        }
+        return setCoursePaymentStatusForUser(userId, courseId, status, tier, null);
     }
 
     public Enrollment setCoursePaymentStatusForUser(UUID userId, UUID courseId, PaymentStatus status, EnrollmentTier tier, Cohort cohort) {
         Optional<Enrollment> existing = enrollmentRepository.findByUserIdAndCourseId(userId, courseId);
         Enrollment saved;
-        EnrollmentTier effectiveTier = tier != null ? tier : (existing.map(Enrollment::getTier).orElse(EnrollmentTier.WEB));
+        EnrollmentTier effectiveTier = tier != null ? tier : (existing.map(Enrollment::getTier).orElse(null));
 
-        // Auto-detect tier from courseId via slug if not explicitly specified
-        Course c3 = courseRepository.findBySlug("pack-mentorat-vip").orElse(null);
-        Course c2 = courseRepository.findBySlug("pack-web-pro").orElse(null);
-        if (c3 != null && courseId.equals(c3.getId())) {
-            effectiveTier = EnrollmentTier.VIP;
-        } else if (c2 != null && courseId.equals(c2.getId()) && effectiveTier != EnrollmentTier.VIP) {
-            effectiveTier = EnrollmentTier.WEB;
+        Course targetCourse = courseRepository.findById(courseId).orElse(null);
+        if (targetCourse != null) {
+            if (targetCourse.getRequiredTier() == CourseTier.VIP || "pack-mentorat-vip".equals(targetCourse.getSlug())) {
+                effectiveTier = EnrollmentTier.VIP;
+            } else if (targetCourse.getRequiredTier() == CourseTier.WEB || "pack-web-pro".equals(targetCourse.getSlug())) {
+                if (effectiveTier != EnrollmentTier.VIP) {
+                    effectiveTier = EnrollmentTier.WEB;
+                }
+            } else if (targetCourse.getRequiredTier() == CourseTier.STARTER || "pack-starter".equals(targetCourse.getSlug()) || "html-css".equals(targetCourse.getSlug()) || "git-github".equals(targetCourse.getSlug())) {
+                if (effectiveTier == null) {
+                    effectiveTier = EnrollmentTier.STARTER;
+                }
+            }
         }
+        if (effectiveTier == null) {
+            effectiveTier = EnrollmentTier.STARTER;
+        }
+
+        boolean isBundle = targetCourse != null && (
+                "pack-starter".equals(targetCourse.getSlug()) ||
+                "pack-web-pro".equals(targetCourse.getSlug()) ||
+                "pack-mentorat-vip".equals(targetCourse.getSlug())
+        );
 
         if (existing.isPresent()) {
             Enrollment enrollment = existing.get();
@@ -217,7 +256,7 @@ public class EnrollmentService {
                         enrollmentRepository.save(other);
                     }
                 }
-            } else if (status == PaymentStatus.PAID) {
+            } else if (status == PaymentStatus.PAID && isBundle) {
                 enrollInBundleCourses(saved.getUser(), effectiveTier, cohort, status);
             }
         } else {
@@ -228,7 +267,7 @@ public class EnrollmentService {
             Enrollment newEnrollment = new Enrollment(user, course, status, 0, effectiveTier, cohort);
             saved = enrollmentRepository.save(newEnrollment);
 
-            if (status == PaymentStatus.PAID) {
+            if (status == PaymentStatus.PAID && isBundle) {
                 enrollInBundleCourses(user, effectiveTier, cohort, status);
             }
         }
