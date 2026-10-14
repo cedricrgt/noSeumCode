@@ -1950,6 +1950,39 @@ eset-password.html.
    - Embed de charte publié et affiné avec 6 règles d'or (Bienveillance & Zéro Jugement, Respect, Rôle des salons avec exemple didactique complet pour #la-clinique-du-code : syntaxe en backticks échappés + aperçu du rendu formaté, Scènes & Vocaux d'équipe, Zéro spam/démarchage MP, Sécurité/Tokens/Secrets avec mention générique clés API).
    - Suppression du footer et timestamp pour un rendu sobre et intemporel.
 
+---
+
+## 2026-10-14 | Conversation: 78b884e6-84ea-404a-a060-415fd8960054 (Suite)
+
+**Type**: Correctif de sécurité & synchronisation — Révocation des accès Discord lors de la désinscription d'un cours  
+**Auteur**: Antigravity (Agent IA)  
+**Branche**: `fix/discord-course-unenroll-permissions-sync`  
+**Objectif**: Corriger la persistance indue d'accès aux salons Discord de formation lorsqu'un étudiant est désinscrit d'un cours unitaire ou de l'ensemble de ses formations.
+
+### Causes racines identifiées :
+1. *Absence totale d'overwrites de permissions sur les catégories et salons de cours Discord* : Les catégories `HTML & CSS`, `JavaScript`, `Git & GitHub - Fondation`, `Git & GitHub - Pro` ainsi que `👥 PROJETS D'ÉQUIPE` avaient été créées avec `overwrites: []`, héritant de la visibilité publique `@everyone` (accès en lecture et vocal ouvert à tout membre du serveur, même sans aucun rôle ou après désinscription).
+2. *Calcul de palier défaillant dans `DiscordService`* : `resolveTargetRoleIds` et `resolveRoleNamesForUser` lisaient directement `e.getTier()` sur les inscriptions restantes sans vérifier si le cours sous-jacent appartenait au niveau requis (ex: si un apprenant était désinscrit de JavaScript mais conservait HTML & CSS, l'inscription HTML & CSS conservait le tier `WEB` estampillé lors de l'achat, empêchant la rétrogradation vers `STARTER` et le retrait du rôle `Student Web`).
+3. *Auto-enrôlement et tier forcé à WEB dans `EnrollmentService`* : `enrollUserInCourse` et `setCoursePaymentStatusForUser` hardcoder `EnrollmentTier.WEB` par défaut et déclenchaient `enrollInBundleCourses` même lors d'inscriptions unitaires à un cours unique (ex: HTML & CSS).
+
+### Réalisations & Corrections :
+1. **Verrouillage strict des permissions Discord (serveur de production)** :
+   - Catégorie `HTML & CSS` : `@everyone` en `deny: [ViewChannel]`, accès restreint à `Student Starter`, `Student Web`, `Student VIP`, `Teacher`, `NoSeumCode_Agent`. Salons `#cours-html-css` et `Live HTML & CSS` synchronisés.
+   - Catégorie `Git & GitHub - Fondation` : `@everyone` en `deny: [ViewChannel]`, accès restreint à `Student Starter`, `Student Web`, `Student VIP`, `Teacher`, `NoSeumCode_Agent`. Salons `#git-deploy` et `Live Git Deploy` synchronisés.
+   - Catégorie `JavaScript` : `@everyone` en `deny: [ViewChannel]`, accès restreint à `Student Web`, `Student VIP`, `Teacher`, `NoSeumCode_Agent` (`Student Starter` exclu). Salons `#cours-javascript` et `Live JavaScript` synchronisés.
+   - Catégorie `Git & GitHub - Pro` : `@everyone` en `deny: [ViewChannel]`, accès restreint à `Student Web`, `Student VIP`, `Teacher`, `NoSeumCode_Agent` (`Student Starter` exclu). Salons `#git-cicd` et `Live Git CI/CD` synchronisés.
+   - Catégorie `👥 PROJETS D'ÉQUIPE` : `@everyone` en `deny: [ViewChannel]`, accès restreint aux apprenants (`Student`), formateurs (`Teacher`) et bot. Salons vocaux `luffy`, `goku`, `naruto` synchronisés.
+2. **Refonte du calcul de palier dans `DiscordService`** :
+   - Implémentation de `resolveHighestTier(User user)` et `resolveTierForEnrollment(Enrollment)` évaluant dynamiquement le palier effectif selon le `requiredTier` et le slug des cours effectivement payés et actifs.
+   - Dès qu'un cours Web (ex: JavaScript) est supprimé, le niveau retombe automatiquement à `STARTER`, entraînant la révocation immédiate du rôle `Student Web` via `discordGateway.removeRoleFromMember`.
+   - Dès que tous les cours sont supprimés, tous les rôles de paliers (`Student Starter`, `Student Web`, `Student VIP`) sont révoqués.
+3. **Isolation des inscriptions unitaires dans `EnrollmentService`** :
+   - Résolution du tier par défaut selon le `requiredTier` du cours ciblé (`STARTER` pour HTML/Git, `WEB` pour JS, `VIP` pour mentorat).
+   - Déclenchement de `enrollInBundleCourses` strictement restreint aux slugs de packs réels (`pack-starter`, `pack-web-pro`, `pack-mentorat-vip`).
+4. **Validation par Tests Unitaires** :
+   - Ajout de 2 nouveaux tests unitaires dans `DiscordServiceTest` validant la rétrogradation et la révocation des rôles Discord lors du retrait de cours.
+   - 17/17 tests `DiscordServiceTest` réussis, 218/218 tests Spring Boot réussis.
+
+
 
 
 

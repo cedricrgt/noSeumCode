@@ -327,4 +327,43 @@ class DiscordServiceTest {
         assertEquals("https://discord.gg/noseumcode",
                 discordService.resolveStageChannelUrlForCourse(null, EnrollmentTier.STARTER));
     }
+
+    @Test
+    @DisplayName("Devrait rétrograder du palier Web à Starter et révoquer le rôle Web quand le cours Web est retiré")
+    void shouldRevokeWebRoleWhenWebCourseRemovedAndOnlyStarterRemains() {
+        testUser.setDiscordUserId("discord-999");
+        Course htmlCourse = new Course("HTML & CSS", "desc");
+        htmlCourse.setSlug("html-css");
+        htmlCourse.setRequiredTier(com.codebangers.backend.course.model.CourseTier.STARTER);
+
+        Enrollment starterEnrollment = new Enrollment(testUser, htmlCourse, PaymentStatus.PAID, 10, EnrollmentTier.STARTER, null);
+        when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(List.of(starterEnrollment));
+        when(discordGateway.getGuildMember("discord-999")).thenReturn(Optional.of(
+                new DiscordMemberDto("discord-999", "jean", null, null, List.of("role-web-456", "role-starter-123"), "2026-09-28")
+        ));
+
+        DiscordStatusResponse response = discordService.syncUserRoles(testUser);
+
+        // Doit conserver le rôle Starter mais retirer le rôle Web
+        verify(discordGateway).addRoleToMember("discord-999", "role-starter-123");
+        verify(discordGateway).removeRoleFromMember("discord-999", "role-web-456");
+        verify(discordGateway, never()).removeRoleFromMember("discord-999", "role-starter-123");
+    }
+
+    @Test
+    @DisplayName("Devrait révoquer tous les rôles de cours quand l'apprenant est retiré de tous les cours")
+    void shouldRevokeAllCourseRolesWhenAllCoursesRemoved() {
+        testUser.setDiscordUserId("discord-999");
+        when(enrollmentRepository.findByUserId(testUser.getId())).thenReturn(List.of());
+        when(discordGateway.getGuildMember("discord-999")).thenReturn(Optional.of(
+                new DiscordMemberDto("discord-999", "jean", null, null, List.of("role-starter-123"), "2026-09-28")
+        ));
+
+        DiscordStatusResponse response = discordService.syncUserRoles(testUser);
+
+        // Tous les rôles de tiers doivent être révoqués
+        verify(discordGateway).removeRoleFromMember("discord-999", "role-starter-123");
+        verify(discordGateway).removeRoleFromMember("discord-999", "role-web-456");
+        verify(discordGateway).removeRoleFromMember("discord-999", "role-vip-789");
+    }
 }

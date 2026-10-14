@@ -1,6 +1,6 @@
 # PROJECT_CONTEXT.md — NoSeumCode
 
-_Last updated: 2026-10-12 | Conversation: adbaed0b-0e79-4902-90fa-bfd28b8917c7_
+_Last updated: 2026-10-14 | Conversation: 78b884e6-84ea-404a-a060-415fd8960054_
 
 > ⚠️ **VERITÉ TECHNIQUE ABSOLUE** : Les agents IA intervenant sur ce projet DOIVENT considérer le code source actuel et les fichiers de configuration de l'infrastructure (comme les .yml, .htaccess, Dockerfile) comme l'unique vérité technique absolue. La documentation AI (y compris ce fichier) reflète l'intention architecturale, mais en cas de conflit apparent, c'est le code réel et les configurations du dépôt qui priment.
 
@@ -50,9 +50,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `feat/discord-student-spaces-and-rules`
-## Current State: Espaces Discord Apprenants & Charte Communautaire validés : Suppression intégrale des anciens espaces PACK STARTER et PACK WEB ; Restructuration conviviale de la catégorie ESPACE ÉTUDIANTS (#discussion-de-comptoir, #la-clinique-du-code, #vos-bangers-perso) ; Publication de la charte officielle NoSeumCode dans #rules via embed vert signature #00ff87.
-## Next Steps: Ouverture de la PR vers develop, merge manuel et suivi de la communauté.
+## Active Branch: `fix/discord-course-unenroll-permissions-sync`
+## Current State: Permissions Discord verrouillées sur les catégories de cours (`HTML & CSS`, `JavaScript`, `Git & GitHub - Fondation`, `Git & GitHub - Pro`, `👥 PROJETS D'ÉQUIPE`) avec `@everyone` restreint en lecture et accès conditionné aux rôles tiers (`Student Starter`, `Student Web`, `Student VIP`). Refonte du calcul de palier dans `DiscordService` et de l'enrôlement unitaire dans `EnrollmentService` pour garantir la rétrogradation et la révocation des rôles Discord lors de la suppression d'inscriptions. 218/218 tests validés.
+## Next Steps: Push de la branche de fix vers GitHub, création de la PR vers `develop` via `gh pr create`, et revue finale.
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN
