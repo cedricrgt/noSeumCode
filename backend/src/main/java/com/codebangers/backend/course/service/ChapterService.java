@@ -3,6 +3,9 @@ package com.codebangers.backend.course.service;
 import com.codebangers.backend.chapter.model.Chapter;
 import com.codebangers.backend.chapter.repository.ChapterRepository;
 import com.codebangers.backend.content.model.Content;
+import com.codebangers.backend.course.dto.LiveRecapBatchRequest;
+import com.codebangers.backend.course.dto.LiveRecapBatchResponse;
+import com.codebangers.backend.course.dto.LiveRecapSubChapterDto;
 import com.codebangers.backend.course.model.ApprovalStatus;
 import com.codebangers.backend.course.model.Course;
 import com.codebangers.backend.course.repository.CourseRepository;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -265,5 +269,114 @@ public class ChapterService {
 
     public void deleteChapter(UUID chapterId) {
         chapterRepository.deleteById(chapterId);
+    }
+
+    public LiveRecapBatchResponse createLiveRecapBatch(LiveRecapBatchRequest request, User author) {
+        if (request == null) {
+            throw new IllegalArgumentException("La requête de récapitulatif live ne peut pas être nulle.");
+        }
+        if (request.getSessionTitle() == null || request.getSessionTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Le titre de la session live est obligatoire.");
+        }
+
+        Course course;
+        if (request.getCourseId() != null) {
+            course = courseRepository.findById(request.getCourseId())
+                    .orElseThrow(() -> new IllegalArgumentException("Cours introuvable avec l'identifiant: " + request.getCourseId()));
+        } else if (request.getCourseSlug() != null && !request.getCourseSlug().trim().isEmpty()) {
+            course = courseRepository.findBySlug(request.getCourseSlug().trim())
+                    .orElseThrow(() -> new IllegalArgumentException("Cours introuvable avec le slug: " + request.getCourseSlug()));
+        } else {
+            throw new IllegalArgumentException("Un identifiant de cours (courseId) ou un slug (courseSlug) est requis.");
+        }
+
+        // Détermination de la prochaine position pour le chapitre racine
+        List<Chapter> rootChapters = chapterRepository.findRootChaptersByCourseId(course.getId());
+        int nextPos = rootChapters.stream()
+                .mapToInt(c -> c.getPosition() != null ? c.getPosition() : 0)
+                .max()
+                .orElse(0) + 1;
+
+        // Création du Chapitre Parent (statut PENDING_APPROVAL pour validation enseignant/admin)
+        Chapter rootChapter = new Chapter(course, request.getSessionTitle().trim(), nextPos);
+        rootChapter.setCreatedBy(author);
+        rootChapter.setStatus(ApprovalStatus.PENDING_APPROVAL);
+        rootChapter.setSubmittedAt(LocalDateTime.now());
+
+        if ((request.getSummary() != null && !request.getSummary().isBlank()) ||
+            (request.getVideoUrl() != null && !request.getVideoUrl().isBlank())) {
+            StringBuilder sb = new StringBuilder();
+            if (request.getSummary() != null && !request.getSummary().isBlank()) {
+                sb.append("> ").append(request.getSummary().trim()).append("\n\n");
+            }
+            if (request.getVideoUrl() != null && !request.getVideoUrl().isBlank()) {
+                sb.append("📺 **Replay Vidéo de la session :** [Visionner la conférence en plein écran](")
+                  .append(request.getVideoUrl().trim())
+                  .append(")\n");
+            }
+            Content rootContent = new Content(rootChapter, Content.ContentType.MARKDOWN, sb.toString().trim(), 1);
+            rootContent.setMediaUrl(request.getVideoUrl());
+            rootContent.setCreatedBy(author);
+            rootContent.setStatus(ApprovalStatus.PENDING_APPROVAL);
+            rootContent.setSubmittedAt(LocalDateTime.now());
+            rootChapter.addContent(rootContent);
+        }
+
+        Chapter savedRoot = chapterRepository.save(rootChapter);
+        List<UUID> subChapterIds = new ArrayList<>();
+
+        if (request.getSubChapters() != null && !request.getSubChapters().isEmpty()) {
+            int subIndex = 1;
+            for (LiveRecapSubChapterDto subDto : request.getSubChapters()) {
+                int pos = subDto.getPosition() != null ? subDto.getPosition() : subIndex;
+                Chapter subChapter = new Chapter(course, savedRoot, subDto.getTitle().trim(), pos);
+                subChapter.setCreatedBy(author);
+                subChapter.setStatus(ApprovalStatus.PENDING_APPROVAL);
+                subChapter.setSubmittedAt(LocalDateTime.now());
+
+                StringBuilder mdBody = new StringBuilder();
+                if (subDto.getVideoTimestampStart() != null && !subDto.getVideoTimestampStart().isBlank()) {
+                    mdBody.append("⏱️ *Début du segment : ").append(subDto.getVideoTimestampStart().trim()).append("*\n\n");
+                }
+                if (subDto.getMarkdownContent() != null) {
+                    mdBody.append(subDto.getMarkdownContent().trim());
+                }
+
+                String media = (subDto.getMediaUrl() != null && !subDto.getMediaUrl().isBlank())
+                        ? subDto.getMediaUrl().trim()
+                        : request.getVideoUrl();
+
+                Content subContent = new Content(subChapter, Content.ContentType.MARKDOWN, mdBody.toString(), 1);
+                subContent.setMediaUrl(media);
+                subContent.setCreatedBy(author);
+                subContent.setStatus(ApprovalStatus.PENDING_APPROVAL);
+                subContent.setSubmittedAt(LocalDateTime.now());
+                subChapter.addContent(subContent);
+
+                Chapter savedSub = chapterRepository.save(subChapter);
+                subChapterIds.add(savedSub.getId());
+                subIndex++;
+            }
+        }
+
+        notificationService.notifyAdmins(
+                "Nouveau récapitulatif live généré",
+                (author != null ? author.getUserName() : "Le système d'ingestion") +
+                        " a généré le récapitulatif live \"" + savedRoot.getTitle() + "\" (" + subChapterIds.size() + " sous-chapitres) dans le cours \"" + course.getTitle() + "\" pour relecture et approbation.",
+                savedRoot.getId(),
+                "CHAPTER"
+        );
+
+        return new LiveRecapBatchResponse(
+                savedRoot.getId(),
+                course.getId(),
+                course.getTitle(),
+                course.getSlug(),
+                savedRoot.getTitle(),
+                savedRoot.getStatus(),
+                subChapterIds.size(),
+                subChapterIds,
+                savedRoot.getCreatedAt() != null ? savedRoot.getCreatedAt() : LocalDateTime.now()
+        );
     }
 }

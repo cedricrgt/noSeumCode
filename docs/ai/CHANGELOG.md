@@ -1982,6 +1982,34 @@ eset-password.html.
    - Ajout de 2 nouveaux tests unitaires dans `DiscordServiceTest` validant la rétrogradation et la révocation des rôles Discord lors du retrait de cours.
    - 17/17 tests `DiscordServiceTest` réussis, 218/218 tests Spring Boot réussis.
 
+---
+
+## 2026-10-14 | Conversation: a02e5665-5412-4472-a968-c431cfa7f586
+
+**Type**: Fonctionnalité majeure & Architecture — Pipeline Ingestion Live Discord vers Récapitulatifs de Cours (Sprint 32)  
+**Auteur**: Antigravity (Agent IA)  
+**Branche**: `feat/discord-live-course-recap-pipeline`  
+**Objectif**: Sauvegarder les conférences live Discord, traiter la matière didactique par IA, extraire l'essentiel du cours et structurer automatiquement en chapitres / sous-chapitres Markdown intégrés dans le cours correspondant (`/cours.html`).
+
+### Réalisations & Architecture :
+1. **Confrontation Contradictoire d'Experts & Décision d'Architecture** :
+   - Rapport d'analyse consigné dans `architecture-discord-live-to-course-recap.md`.
+   - Rejet de la capture vidéo directe par bot Discord : l'API Bot ne supporte aucun flux vidéo et le chiffrement E2EE DAVE (MLS) bloque les bots vocaux conventionnels.
+   - Validation de la capture OBS Studio locale par le formateur avec multi-pistes matérielles (Piste 1 Micro formateur isolé / Piste 2 Audio Discord).
+   - Conformité RGPD totale : ingestion IA restreinte à la voix de l'enseignant reformulant les questions des apprenants (zéro traitement de données biométriques d'élèves).
+   - Publication sécurisée avec workflow d'approbation humaine (`ApprovalStatus.PENDING_APPROVAL`) pour révision enseignant avant affichage public (ADR-025).
+2. **Backend Spring Boot 3 — API Batch Atomique** :
+   - Création des DTOs `LiveRecapBatchRequest`, `LiveRecapSubChapterDto`, et `LiveRecapBatchResponse`.
+   - Méthode transactionnelle `createLiveRecapBatch` dans `ChapterService` résolvant le cours par UUID ou par slug (`html-css`), créant le chapitre racine parent et l'ensemble des sous-chapitres ordonnés avec leur contenu `ContentType.MARKDOWN` en une seule transaction atomique.
+   - Nouveaux endpoints sécurisés dans `ChapterController` : `POST /api/chapters/course/{courseId}/live-recap` (protégé par `@courseSecurity.canManageCourse`) et `POST /api/chapters/live-recap` (admin).
+3. **Script d'Ingestion CLI (`scripts/ingest-live-recap.js`)** :
+   - Script Node.js autonome supportant l'upload de fichiers audio/vidéo volumineux via Gemini File API, le prompting didactique structuré (JSON Schema déterministe), et le mode mock/dry-run pour CI/CD.
+4. **Validation par Tests Unitaires & Intégration** :
+   - Ajout de 2 tests unitaires dans `ChapterServiceTest` validant la création de la hiérarchie parent/enfant et la gestion d'erreurs.
+   - Création de `ChapterControllerSecurityTest` (2 tests réussis).
+   - 224/224 tests Spring Boot réussis (0 échec, 0 erreur).
+
+
 
 
 

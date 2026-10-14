@@ -3,10 +3,13 @@ package com.codebangers.backend.course.controller;
 import com.codebangers.backend.chapter.model.Chapter;
 import com.codebangers.backend.course.dto.ChapterRequest;
 import com.codebangers.backend.course.dto.ChapterResponse;
+import com.codebangers.backend.course.dto.LiveRecapBatchRequest;
+import com.codebangers.backend.course.dto.LiveRecapBatchResponse;
 import com.codebangers.backend.course.service.ChapterService;
 import com.codebangers.backend.course.service.EnrollmentService;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.repository.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -139,6 +142,36 @@ public class ChapterController {
             return new ResponseEntity<>(mapToResponse(chapter), HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/course/{courseId}/live-recap")
+    @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageCourse(#courseId, authentication)")
+    public ResponseEntity<?> createLiveRecapBatch(
+            @PathVariable UUID courseId,
+            @Valid @RequestBody LiveRecapBatchRequest request,
+            @AuthenticationPrincipal Jwt jwt) {
+        try {
+            request.setCourseId(courseId);
+            User author = getAuthenticatedUser(jwt);
+            LiveRecapBatchResponse response = chapterService.createLiveRecapBatch(request, author);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/live-recap")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> createLiveRecapBatchAdmin(
+            @Valid @RequestBody LiveRecapBatchRequest request,
+            @AuthenticationPrincipal Jwt jwt) {
+        try {
+            User author = getAuthenticatedUser(jwt);
+            LiveRecapBatchResponse response = chapterService.createLiveRecapBatch(request, author);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
 
