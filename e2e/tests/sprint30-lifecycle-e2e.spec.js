@@ -234,18 +234,14 @@ test.describe('Sprint 30 — Cycle de Vie Complet E2E Dé-mocké (ADR-024)', () 
     const studentView = page.locator('#view-student');
     await expect(studentView).toBeVisible({ timeout: 10000 });
 
-    // Bouton de direct Scène Live Discord présent
-    const btnStudentStage = page.locator('#btn-student-join-stage');
-    await expect(btnStudentStage).toBeVisible();
+    // Accès Scène Live dynamique par cours (Sprint 31)
+    const courseLiveStageBtns = studentView.locator('.btn-course-live-stage');
+    await expect(courseLiveStageBtns.first()).toBeVisible({ timeout: 10000 });
 
-    // Vérifier la présence des 3 salons vocaux Manga permanents dans l'espace Apprenant
-    const luffyRoom = studentView.locator('text=luffy-code-lab');
-    const gokuRoom = studentView.locator('text=goku-dojo-live');
-    const narutoRoom = studentView.locator('text=naruto-team-hub');
-
-    await expect(luffyRoom).toBeVisible({ timeout: 10000 });
-    await expect(gokuRoom).toBeVisible();
-    await expect(narutoRoom).toBeVisible();
+    // Vérifier le découplage Discord : suppression des salons vocaux Manga statiques du dashboard (mutualisés sur Discord)
+    await expect(studentView.locator('text=luffy-code-lab')).toHaveCount(0);
+    await expect(studentView.locator('text=goku-dojo-live')).toHaveCount(0);
+    await expect(studentView.locator('text=naruto-team-hub')).toHaveCount(0);
 
     // Vérifier qu'aucune fuite de token n'est exposée dans le DOM
     const bodyText = await page.locator('body').innerText();

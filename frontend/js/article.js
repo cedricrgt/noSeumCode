@@ -89,7 +89,7 @@ async function loadArticle() {
           "author": {
             "@type": "Person",
             "name": "Cédric Ragot",
-            "jobTitle": "Ingénieur Senior & Formateur NoSeumCode"
+            "jobTitle": "Concepteur Développeur & Formateur NoSeumCode"
           },
           "publisher": {
             "@type": "Organization",
@@ -188,9 +188,9 @@ async function loadArticle() {
             </div>
             <div class="article-author-card__info">
               <h3 class="bangers-regular">Cédric Ragot</h3>
-              <p class="article-author-card__role">Ingénieur Senior &amp; Formateur NoSeumCode</p>
+              <p class="article-author-card__role">Fondateur de NoSeumCode · Concepteur Développeur &amp; Formateur</p>
               <p class="article-author-card__bio">
-                Ingénieur senior et formateur, il a développé des plateformes web complexes en production avant de fonder NoSeumCode pour enseigner le code aux débutants avec une pédagogie 100% pratique, humaine et sans jargon inutile.
+                Concepteur développeur et formateur passionné, il a enseigné le développement web en Bachelor informatique avant de fonder NoSeumCode pour t'apprendre à coder sur de vrais projets.
               </p>
             </div>
           </section>

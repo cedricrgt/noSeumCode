@@ -50,9 +50,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `fix/security-remediation-jackson-xss-secrets`
-## Current State: Remédiation de Sécurité (Audit Aikido) validée : Dépendances Jackson contraintes en 3.1.7 et 2.21.7 (CVEs P0 corrigées) ; Sinks DOM XSS P0 neutralisés dans dashboard.js, article.js et cours.js ; Éradication P1 de la clé Stripe hardcodée avec mise en place du endpoint sécurisé GET /api/config/stripe-key et résolution dynamique côté frontend ; pr-preview/ exclu dans .gitignore ; 217 tests backend Spring Boot et 20 tests E2E Playwright au vert sans régression.
-## Next Steps: Soumission de la PR vers develop, rotation manuelle de la clé Stripe sur le Dashboard Stripe (acct_1GYAtuAmRX1Xf5vu), et résolution des 29 sous-issues sur Aikido Security.
+## Active Branch: `feat/sprint31-mentor-bio-discord-refactor`
+## Current State: Sprint 31 validé : Refonte complète de la bio mentor (Concepteur Développeur & Formateur Bachelor B1/B2, badges vectoriels SVG #00ff87, suppression des allégations trompeuses sur tout le projet et les blogs SSG) ; Transparence du modèle pédagogique des packs (Starter 12h live + 12h labo projet, Web Pro 24h live + 24h labo projet, rythme 4h/semaine) ; Suppression de la fausse rareté sur les ateliers Toussaint (jauge sobre 6 places) ; Architecture Discord par cours (catégories métiers avec salons textuels et salons Scène type 13 créés en direct) et catégorie mutualisée PROJETS D'ÉQUIPE (salons vocaux standards luffy, goku, naruto) ; Refonte du Dashboard Apprenant avec accès dynamique au Live Scène par cours et suppression des blocs statiques. Tests backend et E2E au vert.
+## Next Steps: Ouverture de la PR vers develop, revue par Cédric et merge manuel sur GitHub.
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN

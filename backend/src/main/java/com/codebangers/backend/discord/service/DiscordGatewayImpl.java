@@ -36,6 +36,10 @@ public class DiscordGatewayImpl implements DiscordGateway {
     private final String inviteUrl;
     private final String stageStarterChannelId;
     private final String stageWebChannelId;
+    private final String stageHtmlCssChannelId;
+    private final String stageJavascriptChannelId;
+    private final String stageGitFondationChannelId;
+    private final String stageGitProChannelId;
     private final String voiceLuffyChannelId;
     private final String voiceGokuChannelId;
     private final String voiceNarutoChannelId;
@@ -52,9 +56,13 @@ public class DiscordGatewayImpl implements DiscordGateway {
             @Value("${discord.community.invite-url:https://discord.gg/noseumcode}") String inviteUrl,
             @Value("${discord.channels.stage.starter:}") String stageStarterChannelId,
             @Value("${discord.channels.stage.web:}") String stageWebChannelId,
-            @Value("${discord.channels.voice.luffy:}") String voiceLuffyChannelId,
-            @Value("${discord.channels.voice.goku:}") String voiceGokuChannelId,
-            @Value("${discord.channels.voice.naruto:}") String voiceNarutoChannelId,
+            @Value("${discord.channels.stage.html-css:1559561876050808974}") String stageHtmlCssChannelId,
+            @Value("${discord.channels.stage.javascript:1559561877175148564}") String stageJavascriptChannelId,
+            @Value("${discord.channels.stage.git-fondation:1559561878345355426}") String stageGitFondationChannelId,
+            @Value("${discord.channels.stage.git-pro:1559561880119279726}") String stageGitProChannelId,
+            @Value("${discord.channels.voice.luffy:1559561368896802858}") String voiceLuffyChannelId,
+            @Value("${discord.channels.voice.goku:1559561389591498782}") String voiceGokuChannelId,
+            @Value("${discord.channels.voice.naruto:1559561405827514498}") String voiceNarutoChannelId,
             RestClient.Builder restClientBuilder) {
         this.botToken = botToken != null ? botToken.trim() : "";
         this.guildId = guildId != null ? guildId.trim() : "";
@@ -65,6 +73,10 @@ public class DiscordGatewayImpl implements DiscordGateway {
         this.inviteUrl = inviteUrl != null && !inviteUrl.isBlank() ? inviteUrl.trim() : "https://discord.gg/noseumcode";
         this.stageStarterChannelId = stageStarterChannelId != null ? stageStarterChannelId.trim() : "";
         this.stageWebChannelId = stageWebChannelId != null ? stageWebChannelId.trim() : "";
+        this.stageHtmlCssChannelId = stageHtmlCssChannelId != null ? stageHtmlCssChannelId.trim() : "";
+        this.stageJavascriptChannelId = stageJavascriptChannelId != null ? stageJavascriptChannelId.trim() : "";
+        this.stageGitFondationChannelId = stageGitFondationChannelId != null ? stageGitFondationChannelId.trim() : "";
+        this.stageGitProChannelId = stageGitProChannelId != null ? stageGitProChannelId.trim() : "";
         this.voiceLuffyChannelId = voiceLuffyChannelId != null ? voiceLuffyChannelId.trim() : "";
         this.voiceGokuChannelId = voiceGokuChannelId != null ? voiceGokuChannelId.trim() : "";
         this.voiceNarutoChannelId = voiceNarutoChannelId != null ? voiceNarutoChannelId.trim() : "";
@@ -73,6 +85,26 @@ public class DiscordGatewayImpl implements DiscordGateway {
                 .baseUrl(DISCORD_API_BASE_URL)
                 .defaultHeader(HttpHeaders.USER_AGENT, "NoSeumCode-Backend/1.0")
                 .build();
+    }
+
+    public DiscordGatewayImpl(
+            String botToken,
+            String guildId,
+            String starterRoleId,
+            String webRoleId,
+            String vipRoleId,
+            String defaultRoleId,
+            String inviteUrl,
+            String stageStarterChannelId,
+            String stageWebChannelId,
+            String voiceLuffyChannelId,
+            String voiceGokuChannelId,
+            String voiceNarutoChannelId,
+            RestClient.Builder restClientBuilder) {
+        this(botToken, guildId, starterRoleId, webRoleId, vipRoleId, defaultRoleId, inviteUrl,
+                stageStarterChannelId, stageWebChannelId,
+                "", "", "", "",
+                voiceLuffyChannelId, voiceGokuChannelId, voiceNarutoChannelId, restClientBuilder);
     }
 
     public DiscordGatewayImpl(
@@ -279,6 +311,26 @@ public class DiscordGatewayImpl implements DiscordGateway {
     }
 
     @Override
+    public String getStageHtmlCssChannelId() {
+        return stageHtmlCssChannelId;
+    }
+
+    @Override
+    public String getStageJavascriptChannelId() {
+        return stageJavascriptChannelId;
+    }
+
+    @Override
+    public String getStageGitFondationChannelId() {
+        return stageGitFondationChannelId;
+    }
+
+    @Override
+    public String getStageGitProChannelId() {
+        return stageGitProChannelId;
+    }
+
+    @Override
     public String getVoiceLuffyChannelId() {
         return voiceLuffyChannelId;
     }
@@ -301,6 +353,26 @@ public class DiscordGatewayImpl implements DiscordGateway {
     @Override
     public String getWebStageChannelUrl() {
         return buildChannelUrl(stageWebChannelId);
+    }
+
+    @Override
+    public String getHtmlCssStageChannelUrl() {
+        return buildChannelUrl(stageHtmlCssChannelId);
+    }
+
+    @Override
+    public String getJavascriptStageChannelUrl() {
+        return buildChannelUrl(stageJavascriptChannelId);
+    }
+
+    @Override
+    public String getGitDeployStageChannelUrl() {
+        return buildChannelUrl(stageGitFondationChannelId);
+    }
+
+    @Override
+    public String getGitCicdStageChannelUrl() {
+        return buildChannelUrl(stageGitProChannelId);
     }
 
     @Override

@@ -22,6 +22,7 @@ public class EnrollmentResponse {
     private String cohortName;
     private String cohortSlug;
     private Boolean lifetimeAccess;
+    private String stageChannelUrl;
 
     public EnrollmentResponse() {
     }
@@ -148,5 +149,13 @@ public class EnrollmentResponse {
 
     public void setLifetimeAccess(Boolean lifetimeAccess) {
         this.lifetimeAccess = lifetimeAccess;
+    }
+
+    public String getStageChannelUrl() {
+        return stageChannelUrl;
+    }
+
+    public void setStageChannelUrl(String stageChannelUrl) {
+        this.stageChannelUrl = stageChannelUrl;
     }
 }

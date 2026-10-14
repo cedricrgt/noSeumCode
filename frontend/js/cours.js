@@ -192,7 +192,7 @@ async function loadInitialData() {
           ...course,
           slug: "pack-mentorat-vip",
           title: "Pack Mentorat VIP – L'Accompagnement Sur-Mesure",
-          description: "L'accélération ultime avec un formateur senior dédié : tout le Pack Web Pro + 4h de mentorat individuel en visio, revues de code et coaching carrière.",
+          description: "L'accélération ultime avec ton mentor dédié : tout le Pack Web Pro + 4h de mentorat individuel en visio, revues de code et coaching carrière.",
           priceInCents: course.priceInCents || 64800,
           requiredTier: "VIP",
           level: "ACCOMPAGNE",
@@ -242,7 +242,7 @@ async function loadInitialData() {
         id: "c3000000-0000-0000-0000-000000000003",
         slug: "pack-mentorat-vip",
         title: "Pack Mentorat VIP – L'Accompagnement Sur-Mesure",
-        description: "L'accélération ultime avec un formateur senior dédié : tout le Pack Web Pro + 4h de mentorat individuel en visio, revues de code et coaching carrière.",
+        description: "L'accélération ultime avec ton mentor dédié : tout le Pack Web Pro + 4h de mentorat individuel en visio, revues de code et coaching carrière.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 20).toISOString(),
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4).toISOString(),
         createdByName: "Cédric Ragot",
@@ -540,7 +540,7 @@ function renderCourseCatalog() {
         <div style="background: rgba(0, 255, 135, 0.1); border-left: 4px solid #00a85a; padding: 0.9rem 1.25rem; border-radius: 0 8px 8px 0; margin-top: 1rem;">
           <strong style="color: var(--dark-navy);">Tu te demandes s'il faut être fort en maths pour réussir ?</strong>
           <span style="color: #334155; display: block; font-size: 0.95rem; margin-top: 0.25rem;">
-            Spoiler : aucune équation n'est demandée pour coder des sites web. <a href="blog/faut-il-etre-bon-en-maths-pour-apprendre-a-coder" style="color: #047857; font-weight: 700; text-decoration: underline;">Lire l'analyse complète de notre ingénieur formateur →</a>
+            Spoiler : aucune équation n'est demandée pour coder des sites web. <a href="blog/faut-il-etre-bon-en-maths-pour-apprendre-a-coder" style="color: #047857; font-weight: 700; text-decoration: underline;">Lire l'analyse complète de notre formateur →</a>
           </span>
         </div>
       </div>

@@ -42,10 +42,27 @@ public interface DiscordGateway {
 
     String getVoiceNarutoChannelId();
 
-    // URLs directes des salons (Sprint 29)
+    // Identifiants des salons Scène par cours (Sprint 31)
+    String getStageHtmlCssChannelId();
+
+    String getStageJavascriptChannelId();
+
+    String getStageGitFondationChannelId();
+
+    String getStageGitProChannelId();
+
+    // URLs directes des salons (Sprint 29 & 31)
     String getStarterStageChannelUrl();
 
     String getWebStageChannelUrl();
+
+    String getHtmlCssStageChannelUrl();
+
+    String getJavascriptStageChannelUrl();
+
+    String getGitDeployStageChannelUrl();
+
+    String getGitCicdStageChannelUrl();
 
     String getLuffyVoiceChannelUrl();
 

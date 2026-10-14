@@ -49,3 +49,5 @@ conception/*
 # Tooling / hooks
 .codex/
 .github/hooks/
+
+video/

@@ -14,8 +14,6 @@
       theme: "HTML & CSS",
       description: "Découvre les balises sémantiques, le style moderne avec Flexbox, et construis ta première page web responsive guidé pas à pas par ton mentor. Zéro prérequis.",
       maxParticipants: 6,
-      registeredCount: 3,
-      remainingSeats: 3,
       isFull: false,
       isUserRegistered: false,
       startDate: "2026-10-26T10:00:00",
@@ -27,8 +25,6 @@
       theme: "JavaScript",
       description: "Passe à l'action avec JavaScript : variables, fonctions, événements et manipulation dynamique du DOM pour créer une application interactive et réactive.",
       maxParticipants: 6,
-      registeredCount: 4,
-      remainingSeats: 2,
       isFull: false,
       isUserRegistered: false,
       startDate: "2026-10-27T10:00:00",
@@ -40,8 +36,6 @@
       theme: "Git & GitHub",
       description: "Apprends à utiliser Git comme les développeurs en entreprise : commits propres, branches, gestion des conflits et hébergement de ton code sur GitHub.",
       maxParticipants: 6,
-      registeredCount: 2,
-      remainingSeats: 4,
       isFull: false,
       isUserRegistered: false,
       startDate: "2026-10-28T10:00:00",
@@ -53,8 +47,6 @@
       theme: "Mini-Projet Guidé",
       description: "Mets en pratique toutes les compétences acquises lors d'un atelier immersif de 2h : construis et personnalise ton portfolio en direct avec retours instantanés du mentor.",
       maxParticipants: 6,
-      registeredCount: 5,
-      remainingSeats: 1,
       isFull: false,
       isUserRegistered: false,
       startDate: "2026-10-29T10:00:00",
@@ -148,18 +140,18 @@
       if (response.ok) {
         const data = await response.json();
         if (Array.isArray(data) && data.length > 0) {
-          renderWorkshops(data);
+          renderWorkshops(data, true);
           return;
         }
       }
-      renderWorkshops(FALLBACK_WORKSHOPS);
+      renderWorkshops(FALLBACK_WORKSHOPS, false);
     } catch (err) {
       console.warn("API workshops inaccessible, utilisation du catalogue de secours Toussaint", err);
-      renderWorkshops(FALLBACK_WORKSHOPS);
+      renderWorkshops(FALLBACK_WORKSHOPS, false);
     }
   }
 
-  function renderWorkshops(workshops) {
+  function renderWorkshops(workshops, isFromApi = false) {
     const grid = document.getElementById("workshops-grid");
     if (!grid) return;
 
@@ -167,25 +159,60 @@
 
     workshops.forEach((ws) => {
       const max = ws.maxParticipants || 6;
-      const registered = ws.registeredCount || 0;
+      const registered = ws.registeredCount !== undefined ? ws.registeredCount : 0;
       const remaining = ws.remainingSeats !== undefined ? ws.remainingSeats : Math.max(0, max - registered);
-      const isFull = ws.isFull || remaining <= 0;
+      const isFull = ws.isFull || (isFromApi && remaining <= 0);
       const isRegistered = Boolean(ws.isUserRegistered);
 
-      const percent = Math.min(100, Math.round((registered / max) * 100));
+      let jaugeHtml = "";
+      if (isFromApi && ws.registeredCount !== undefined) {
+        const percent = Math.min(100, Math.round((registered / max) * 100));
+        let gaugeClass = "workshop-jauge__progress";
+        let seatClass = "workshop-jauge__seats--available";
+        let statusText = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg> Plus que ${remaining} place${remaining > 1 ? "s" : ""} disponible${remaining > 1 ? "s" : ""}`;
 
-      let gaugeClass = "workshop-jauge__progress";
-      let seatClass = "workshop-jauge__seats--available";
-      let statusText = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg> Plus que ${remaining} place${remaining > 1 ? "s" : ""} disponible${remaining > 1 ? "s" : ""}`;
+        if (isFull) {
+          gaugeClass += " workshop-jauge__progress--full";
+          seatClass = "workshop-jauge__seats--full";
+          statusText = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> Atelier complet (jauge de 6 atteinte)`;
+        } else if (remaining <= 2) {
+          gaugeClass += " workshop-jauge__progress--limited";
+          seatClass = "workshop-jauge__seats--limited";
+          statusText = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Dernières places ! (plus que ${remaining})`;
+        }
 
-      if (isFull) {
-        gaugeClass += " workshop-jauge__progress--full";
-        seatClass = "workshop-jauge__seats--full";
-        statusText = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> Atelier complet (jauge de 6 atteinte)`;
-      } else if (remaining <= 2) {
-        gaugeClass += " workshop-jauge__progress--limited";
-        seatClass = "workshop-jauge__seats--limited";
-        statusText = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Dernières places ! (plus que ${remaining})`;
+        jaugeHtml = `
+          <div class="workshop-jauge" aria-label="Jauge de places disponibles">
+            <div class="workshop-jauge__header">
+              <span class="workshop-jauge__label">Jauge session (Google Meet)</span>
+              <span class="workshop-jauge__seats ${seatClass}">
+                <strong>${registered}</strong> / ${max} inscrits
+              </span>
+            </div>
+            <div class="workshop-jauge__bar" role="progressbar" aria-valuenow="${registered}" aria-valuemin="0" aria-valuemax="${max}">
+              <div class="${gaugeClass}" style="width: ${percent}%;"></div>
+            </div>
+            <div class="workshop-jauge__caption">
+              <span>${statusText}</span>
+              <span>Accompagnement individuel</span>
+            </div>
+          </div>
+        `;
+      } else {
+        jaugeHtml = `
+          <div class="workshop-jauge" aria-label="Jauge de places disponibles">
+            <div class="workshop-jauge__header">
+              <span class="workshop-jauge__label">Jauge session (Google Meet)</span>
+              <span class="workshop-jauge__seats workshop-jauge__seats--available">
+                <strong>6 places</strong> par atelier
+              </span>
+            </div>
+            <div class="workshop-jauge__caption" style="margin-top: 0.5rem;">
+              <span>Promotion limitée à 6 élèves max</span>
+              <span>Accompagnement individuel</span>
+            </div>
+          </div>
+        `;
       }
 
       const card = document.createElement("article");
@@ -209,21 +236,7 @@
         <h3 class="workshop-card__title">${escapeHtml(ws.title)}</h3>
         <p class="workshop-card__description">${escapeHtml(ws.description || "")}</p>
 
-        <div class="workshop-jauge" aria-label="Jauge de places disponibles">
-          <div class="workshop-jauge__header">
-            <span class="workshop-jauge__label">Jauge session (Google Meet)</span>
-            <span class="workshop-jauge__seats ${seatClass}">
-              <strong>${registered}</strong> / ${max} inscrits
-            </span>
-          </div>
-          <div class="workshop-jauge__bar" role="progressbar" aria-valuenow="${registered}" aria-valuemin="0" aria-valuemax="${max}">
-            <div class="${gaugeClass}" style="width: ${percent}%;"></div>
-          </div>
-          <div class="workshop-jauge__caption">
-            <span>${statusText}</span>
-            <span>Accompagnement individuel</span>
-          </div>
-        </div>
+        ${jaugeHtml}
 
         <div class="workshop-card__action">
           ${renderActionButton(ws, isRegistered, isFull)}

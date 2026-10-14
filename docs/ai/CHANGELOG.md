@@ -1890,5 +1890,37 @@ eset-password.html.
 5. **Project Memory & Issues** :
    - Clôture et passage à « ✅ RÉSOLU » des fiches ISSUE-037, ISSUE-038 et ISSUE-039 dans `docs/ai/KNOWN_ISSUES.md`.
 
+---
+
+## 2026-10-13 | Conversation: 78b884e6-84ea-404a-a060-415fd8960054
+
+**Type**: SPRINT 31 — Refonte Identité Mentor, Transparence des Packs & Architecture Discord par Cours  
+**Auteur**: Antigravity (Agent IA)  
+**Branche**: `feat/sprint31-mentor-bio-discord-refactor`  
+**Objectif**: 
+1. Bio Fondateur & Badges SVG : Remplacement intégral des allégations trompeuses par la réalité du parcours de Cédric (CDA Bac+3/4, formateur Bachelor B1 & B2), 4 badges vectoriels SVG `#00ff87` sans émoji brut, mise à jour des métadonnées JSON-LD Person et régénération SSG des articles de blog.
+2. Transparence des Packs : Découpage transparent du volume horaire (Starter 24h = 12h live + 12h labo projet, Web Pro 48h = 24h live + 24h labo projet, rythme 4h/semaine).
+3. Workshops Toussaint : Éradication de la fausse rareté dans `workshops.js` (compteurs hardcodés et badges d'urgence supprimés sur données locales).
+4. Architecture Discord par Matière : Création en direct sur le serveur des catégories de cours avec salons Scène (type 13) dédiés (HTML & CSS, JS, Git Deploy, Git CI/CD) et regroupement des salons vocaux manga épurés (`luffy`, `goku`, `naruto`) dans la catégorie mutualisée `👥 PROJETS D'ÉQUIPE`.
+5. Dashboard Apprenant : Suppression des blocs vocaux statiques, intégration dynamique du bouton Scène Live par carte de cours actif avec repli gracieux et résolution d'URL dédiée.
+
+### Réalisations & Livrables :
+1. **Frontend & SEO / SSG (`index.html`, `starter.html`, `pack-web.html`, `article.js`, `build-static.js`, `articles.json`)** :
+   - Bio fondatrice et titre H2 réalignés dans la section `#mentor`.
+   - Badges vectoriels SVG `#00ff87` avec accessibilité (`aria-hidden="true"`, touch targets).
+   - Régénération des 6 articles de blog statiques (`node frontend/build-static.js`) avec JSON-LD `Person` mis à jour.
+   - Paliers 24h et 48h découpés en 12h+12h et 24h+24h dans toutes les pages de formation et tableau comparatif.
+   - Catalogue de repli `FALLBACK_WORKSHOPS` épuré des compteurs factices.
+2. **Backend Spring Boot & Configuration Discord (`application.properties`, `application-prod.properties`, `DiscordGateway`, `DiscordService`, `EnrollmentController`)** :
+   - Ajout des identifiants et URLs des salons Scène de cours dans les profils de configuration.
+   - Méthode `resolveStageChannelUrlForCourse(courseSlugOrTitle, tier)` dans `DiscordService` et getters dédiés dans `DiscordGateway`.
+   - Enrichissement de `EnrollmentResponse` avec le champ `stageChannelUrl` propagé par `EnrollmentController`.
+   - 21 tests unitaires validés avec succès (`DiscordGatewayImplTest`, `DiscordServiceTest`, `EnrollmentSecurityTest`).
+3. **Dashboard Apprenant & E2E (`dashboard.html`, `dashboard.js`, `sprint30-lifecycle-e2e.spec.js`)** :
+   - Retrait du bandeau supérieur statique `#student-live-bar` et de `mangaRoomsHtml`.
+   - Bouton `.btn-course-live-stage` intégré sur chaque carte de formation active pointant vers `handleJoinCourseStage(targetUrl)`.
+   - Mise à jour du test E2E de cycle de vie pour valider le bouton live dynamique par cours et la purge des salons manga du dashboard.
+   - 21 tests Playwright exécutés avec succès.
+
 
 
