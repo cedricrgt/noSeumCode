@@ -64,7 +64,6 @@
       "educationalLevel": "Beginner",
       "inLanguage": "fr",
       "timeRequired": "P6W",
-      "totalHistoricalEnrollment": 48,
       "offers": {
         "@type": "Offer",
         "category": "Paid",
@@ -309,7 +308,7 @@
                 299 <span class="currency">€</span>
               </div>
               <div class="pricing-klarna-badge">
-                <span>ou <strong>3x 109 €</strong> sans frais avec <strong>Klarna</strong></span>
+                <span>ou <strong>3x 109 €</strong> avec <strong>Klarna</strong> (soit 327 € au total)</span>
               </div>
             </div>
 
@@ -340,7 +339,7 @@
               </li>
               <li class="pricing-feature">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Projet portfolio prêt à être présenté</span>
+                <span>2 projets concrets en ligne à montrer fièrement</span>
               </li>
             </ul>
 
@@ -379,7 +378,7 @@
           const checked = toggle && toggle.checked;
           if (checked) {
             if (priceAmount) priceAmount.textContent = "498";
-            if (klarnaText) klarnaText.innerHTML = "ou <strong>3x 166 €</strong> sans frais avec <strong>Klarna</strong>";
+            if (klarnaText) klarnaText.innerHTML = "ou <strong>3x 166 €</strong> avec <strong>Klarna</strong> (soit 498 € au total)";
             if (addonCard) addonCard.style.borderColor = "#00ff87";
             if (ctaBtn) {
               ctaBtn.href = "app.html?id=starter&checkout=true&addon=mentor_4sessions";
@@ -387,7 +386,7 @@
             }
           } else {
             if (priceAmount) priceAmount.textContent = "299";
-            if (klarnaText) klarnaText.innerHTML = "ou <strong>3x 109 €</strong> sans frais avec <strong>Klarna</strong>";
+            if (klarnaText) klarnaText.innerHTML = "ou <strong>3x 109 €</strong> avec <strong>Klarna</strong> (soit 327 € au total)";
             if (addonCard) addonCard.style.borderColor = "rgba(0, 255, 135, 0.25)";
             if (ctaBtn) {
               ctaBtn.href = "app.html?id=starter&checkout=true";

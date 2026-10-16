@@ -2,11 +2,11 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('Vérification des correctifs CRO, UX, SSG et SEO (Debrief)', () => {
 
-  test('Hero header promet 2 Packs et ne mentionne plus 3 Packs', async ({ page }) => {
+  test('Hero header promet les promotions en direct et ne mentionne plus 3 Packs', async ({ page }) => {
     await page.goto('/');
     const heroBtn = page.locator('a[data-track-cta="hero_view_packages"]');
     await expect(heroBtn).toBeVisible();
-    await expect(heroBtn).toContainText('Voir nos 2 Packs');
+    await expect(heroBtn).toContainText('Découvrir les promotions en direct');
     await expect(heroBtn).not.toContainText('3 Packs');
   });
 

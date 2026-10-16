@@ -11,7 +11,7 @@ test.describe('Vérification du Frontend Code Bangers (NoSeumCode)', () => {
     await page.goto('/');
     const mainHeader = page.locator('h1');
     await expect(mainHeader).toBeVisible();
-    await expect(mainHeader).toContainText('Sans le seum');
+    await expect(mainHeader).toContainText('Deviens développeur web sans rester bloqué');
   });
 
 });
