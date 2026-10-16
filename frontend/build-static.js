@@ -182,11 +182,11 @@ for (const [id, article] of Object.entries(articlesData)) {
               <span class="section-tag" style="background: rgba(0, 255, 135, 0.15); color: #00ff87;">Passe à l'action</span>
               <h3 class="bangers-regular">Prêt à construire tes propres projets web ?</h3>
               <p class="poppins-regular">
-                Rejoins nos parcours interactifs dès 299 € (ou 3x 109 € sans frais) avec garantie 14 jours satisfait ou remboursé, ou télécharge notre programme complet de formation.
+                Rejoins nos promotions en direct dès 299 € (ou 3x 109 € avec Klarna) avec garantie 14 jours satisfait ou remboursé, ou télécharge notre programme complet de formation.
               </p>
               <div class="article-cta-box__buttons">
                 <a href="../index.html#parcours" class="button button__primary bangers-regular">
-                  Découvrir les Packs NoSeumCode ↓
+                  Découvrir les Promotions en Direct (6 places max) ↓
                 </a>
                 <button type="button" popovertarget="hubspot-popover" class="button button__secondary bangers-regular">
                   Télécharger le Programme (PDF)

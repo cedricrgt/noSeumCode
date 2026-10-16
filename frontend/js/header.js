@@ -298,10 +298,43 @@ function switchGlobalAuthTab(tab) {
   const loginView = document.getElementById("global-auth-login-view");
   const regView = document.getElementById("global-auth-register-view");
   const forgotView = document.getElementById("global-auth-forgot-view");
+  const checkoutView = document.getElementById("global-auth-checkout-view");
+  const tabsNav = document.querySelector(".auth-tabs-nav");
+  const modalTitle = document.querySelector("#auth-popover .popover__title");
+  const modalTagline = document.querySelector("#auth-popover .popover__tagline");
   const loginBtn = document.getElementById("global-tab-btn-login");
   const regBtn = document.getElementById("global-tab-btn-register");
 
   clearGlobalAuthAlert();
+
+  if (tab === "checkout") {
+    if (loginView) loginView.style.display = "none";
+    if (regView) regView.style.display = "none";
+    if (forgotView) forgotView.style.display = "none";
+    if (checkoutView) checkoutView.style.display = "block";
+    if (tabsNav) tabsNav.style.display = "none";
+    if (modalTitle) modalTitle.textContent = "RÉSERVATION EXPRESS";
+    if (modalTagline) modalTagline.textContent = "Rejoins ta promotion en direct de 6 élèves max";
+
+    const pendingTitle = sessionStorage.getItem("noseum_pending_checkout_course_title");
+    const pendingPrice = sessionStorage.getItem("noseum_pending_checkout_course_price");
+    const recapTitle = document.getElementById("checkout-recap-title");
+    const recapPrice = document.getElementById("checkout-recap-price");
+    if (recapTitle && pendingTitle) recapTitle.textContent = pendingTitle;
+    if (recapPrice && pendingPrice) recapPrice.innerHTML = `Total : <strong style="color: #00ff87;">${pendingPrice}</strong>`;
+
+    setTimeout(() => {
+      const nameInput = document.getElementById("global-checkout-name");
+      if (nameInput) nameInput.focus();
+    }, 100);
+    return;
+  }
+
+  // Restauration des éléments masqués en mode checkout
+  if (checkoutView) checkoutView.style.display = "none";
+  if (tabsNav) tabsNav.style.display = "flex";
+  if (modalTitle) modalTitle.textContent = "ESPACE MEMBRE";
+  if (modalTagline) modalTagline.textContent = "Connecte-toi ou crée ton compte pour booster tes compétences";
 
   if (tab === "login") {
     if (loginView) loginView.style.display = "block";
@@ -615,7 +648,7 @@ function getPaywallSyllabusHtml(tier, addon) {
         </div>
       </div>
       <div style="margin-top: 0.85rem; padding: 0.65rem 0.85rem; background: rgba(37, 99, 235, 0.12); border: 1px solid rgba(37, 99, 235, 0.3); border-radius: 8px; font-size: 0.82rem; color: #93c5fd;">
-        <strong>Inclus :</strong> Accès immédiat et mises à jour à vie • Communauté Discord d'entraide • Éligible Klarna 3x 109 € sans frais • Garantie 14 jours satisfait ou remboursé.
+        <strong>Inclus :</strong> Accès immédiat et replays à vie • Salon Discord dédié • Éligible Klarna 3x 109 € • Garantie 14 jours satisfait ou remboursé.
       </div>
     `;
   } else {
@@ -651,7 +684,7 @@ function getPaywallSyllabusHtml(tier, addon) {
         </div>
       </div>
       <div style="margin-top: 0.85rem; padding: 0.65rem 0.85rem; background: rgba(0, 255, 135, 0.12); border: 1px solid rgba(0, 255, 135, 0.3); border-radius: 8px; font-size: 0.82rem; color: #a7f3d0;">
-        <strong>Inclus :</strong> Tout le Pack Starter + JS + Bonus Git/GitHub • Accès prioritaire Discord • Éligible Klarna 3x 160 € sans frais • Garantie 14 jours.
+        <strong>Inclus :</strong> Tout le Pack Starter + JS + Bonus Git/GitHub • Salon Discord dédié • Éligible Klarna 3x 160 € • Garantie 14 jours.
       </div>
     `;
   }
@@ -725,8 +758,7 @@ async function openStripePaywall(courseId, courseTitle, priceText, tier, cohortI
       sessionStorage.removeItem("noseum_pending_checkout_addon");
     }
 
-    openGlobalAuthModal("register");
-    showGlobalAuthAlert(`Connectez-vous ou créez votre compte pour acheter "${courseTitle}" (${priceText}). Le paiement sécurisé s'affichera directement après connexion.`, "info");
+    openGlobalAuthModal("checkout");
     return;
   }
 
@@ -1347,6 +1379,123 @@ async function handleGlobalEmailRegister(e) {
     }
   }
 }
+
+async function handleGlobalCheckoutRegister(e) {
+  if (e) e.preventDefault();
+  clearGlobalAuthAlert();
+
+  const nameInput = document.getElementById("global-checkout-name");
+  const emailInput = document.getElementById("global-checkout-email");
+  const submitBtn = document.getElementById("global-checkout-submit-btn");
+
+  if (!nameInput || !emailInput) return;
+
+  const rawName = nameInput.value.trim();
+  const email = emailInput.value.trim();
+
+  if (!rawName || !email) {
+    showGlobalAuthAlert("Veuillez renseigner votre prénom et votre adresse email.", "error");
+    return;
+  }
+
+  // Parse first and last name
+  const parts = rawName.split(/\s+/);
+  const firstName = parts[0];
+  const lastName = parts.length > 1 ? parts.slice(1).join(" ") : parts[0];
+
+  // Generate safe username (3 to 30 chars, alphanumeric + underscore)
+  const cleanBase = firstName.toLowerCase().replace(/[^a-z0-9]/g, "") || "eleve";
+  const userName = (cleanBase.slice(0, 15) + "_" + Math.floor(1000 + Math.random() * 9000));
+
+  // Generate random strong password (16 characters)
+  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+  let password = "";
+  for (let i = 0; i < 16; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  const role = "STUDENT";
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "INITIALISATION DU PAIEMENT...";
+  }
+
+  try {
+    const response = await fetch(`${window.API_BASE_URL}/api/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ firstName, lastName, userName, email, password, role })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const user = {
+        id: data.userId,
+        userName: data.userName,
+        firstName: data.firstName || firstName,
+        lastName: data.lastName || lastName,
+        email: data.email,
+        role: data.role || role,
+        avatarUrl: data.avatarUrl
+      };
+
+      localStorage.setItem("noseum_token", data.accessToken);
+      if (data.refreshToken) {
+        localStorage.setItem("noseum_refresh_token", data.refreshToken);
+      }
+      localStorage.setItem("noseum_user", JSON.stringify(user));
+      checkUserAuthHeader();
+
+      const pendingCourseId = sessionStorage.getItem("noseum_pending_checkout_course_id");
+      const pendingTitle = sessionStorage.getItem("noseum_pending_checkout_course_title") || "";
+      const pendingPrice = sessionStorage.getItem("noseum_pending_checkout_course_price") || "";
+      const pendingTier = sessionStorage.getItem("noseum_pending_checkout_tier") || "";
+      const pendingAddon = sessionStorage.getItem("noseum_pending_checkout_addon") || null;
+
+      sessionStorage.removeItem("noseum_pending_checkout_course_id");
+      sessionStorage.removeItem("noseum_pending_checkout_course_title");
+      sessionStorage.removeItem("noseum_pending_checkout_course_price");
+      sessionStorage.removeItem("noseum_pending_checkout_tier");
+      sessionStorage.removeItem("noseum_pending_checkout_addon");
+
+      showGlobalAuthAlert("Inscription validée ! Ouverture du paiement sécurisé...", "success");
+      setTimeout(async () => {
+        closeGlobalAuthModal();
+        await openStripePaywall(pendingCourseId, pendingTitle, pendingPrice, pendingTier, null, pendingAddon);
+      }, 350);
+    } else {
+      let errMsg = "";
+      try {
+        const errData = await response.json();
+        if (errData.message) errMsg = errData.message;
+      } catch (_) { }
+
+      // Si l'utilisateur existe déjà, on le bascule directement sur l'écran de login
+      if (response.status === 409 || errMsg.toLowerCase().includes("email") || errMsg.toLowerCase().includes("déjà") || errMsg.toLowerCase().includes("already")) {
+        switchGlobalAuthTab("login");
+        const loginEmailInput = document.getElementById("global-login-email");
+        if (loginEmailInput) {
+          loginEmailInput.value = email;
+        }
+        showGlobalAuthAlert(`Un compte existe déjà avec l'adresse ${email}. Connectez-vous avec votre mot de passe pour finaliser votre réservation.`, "info");
+        const passInput = document.getElementById("global-login-password");
+        if (passInput) passInput.focus();
+      } else {
+        showGlobalAuthAlert(errMsg || "Une erreur est survenue lors de l'inscription.", "error");
+      }
+    }
+  } catch (err) {
+    console.error("Checkout register error:", err);
+    showGlobalAuthAlert("Impossible de joindre le serveur. Assurez-vous que le backend est démarré.", "error");
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "CONTINUER VERS LE PAIEMENT SÉCURISÉ →";
+    }
+  }
+}
+window.handleGlobalCheckoutRegister = handleGlobalCheckoutRegister;
 
 async function handleGlobalForgotPassword(e) {
   e.preventDefault();

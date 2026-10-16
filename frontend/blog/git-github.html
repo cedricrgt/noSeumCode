@@ -135,6 +135,7 @@
           <li class="navbar__link"><a href="../index.html">Accueil</a></li>
           <li class="navbar__link"><a href="../index.html#parcours">Nos Parcours</a></li>
           <li class="navbar__link"><a href="../index.html#services">La Méthode</a></li>
+          <li class="navbar__link"><a href="../workshops.html" style="color: #00ff87; font-weight: 600;">Ateliers Gratuits (Live)</a></li>
           <li class="navbar__link"><a href="../index.html#faq">FAQ</a></li>
         </ul>
       </nav>
@@ -236,11 +237,11 @@
               <span class="section-tag" style="background: rgba(0, 255, 135, 0.15); color: #00ff87;">Passe à l'action</span>
               <h3 class="bangers-regular">Prêt à construire tes propres projets web ?</h3>
               <p class="poppins-regular">
-                Rejoins nos parcours interactifs dès 299 € (ou 3x 109 € sans frais) avec garantie 14 jours satisfait ou remboursé, ou télécharge notre programme complet de formation.
+                Rejoins nos promotions en direct dès 299 € (ou 3x 109 € avec Klarna) avec garantie 14 jours satisfait ou remboursé, ou télécharge notre programme complet de formation.
               </p>
               <div class="article-cta-box__buttons">
                 <a href="../index.html#parcours" class="button button__primary bangers-regular">
-                  Découvrir les Packs NoSeumCode ↓
+                  Découvrir les Promotions en Direct (6 places max) ↓
                 </a>
                 <button type="button" popovertarget="hubspot-popover" class="button button__secondary bangers-regular">
                   Télécharger le Programme (PDF)
@@ -568,6 +569,58 @@
 
       <div style="text-align: center; margin-top: 1.25rem; font-size: 0.85rem; color: #cbd5e0;">
         Déjà un compte ? 
+        <a href="#" onclick="switchGlobalAuthTab('login'); return false;" style="color: #00ff87; font-weight: 600; text-decoration: underline;">
+          Se connecter
+        </a>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         VUE 4 : INSCRIPTION EXPRESS TUNNEL DE VENTE
+         Permet un achat rapide sans friction (Prénom + Email uniquement)
+         ========================================== -->
+    <div id="global-auth-checkout-view" style="display: none;">
+      <div id="checkout-recap-box" style="background: rgba(0, 255, 135, 0.06); border: 1px solid rgba(0, 255, 135, 0.25); border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
+        <div style="font-size: 0.8rem; text-transform: uppercase; color: #00ff87; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 0.25rem;">
+          Formation en direct (6 places max)
+        </div>
+        <div id="checkout-recap-title" style="font-size: 1.05rem; font-weight: 700; color: #fff;">
+          Pack Starter — Fondations Web
+        </div>
+        <div id="checkout-recap-price" style="font-size: 0.9rem; color: #cbd5e0; margin-top: 0.2rem;">
+          Total : <strong style="color: #00ff87;">299 €</strong>
+        </div>
+      </div>
+
+      <p style="font-size: 0.85rem; color: #cbd5e0; margin-bottom: 1rem; text-align: center;">
+        Indique ton prénom et email pour accéder directement au paiement sécurisé :
+      </p>
+
+      <form id="global-checkout-form" onsubmit="handleGlobalCheckoutRegister(event)">
+        <div style="margin-bottom: 1rem;">
+          <label for="global-checkout-name" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e0; margin-bottom: 0.35rem;">
+            Prénom (ou Prénom &amp; Nom)
+          </label>
+          <input id="global-checkout-name" name="fullName" autocomplete="name" placeholder="Ex: Alex" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.7rem 0.9rem; font-size: 0.9rem; outline: none;" />
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <label for="global-checkout-email" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e0; margin-bottom: 0.35rem;">
+            Adresse Email
+          </label>
+          <input id="global-checkout-email" type="email" name="email" autocomplete="email" placeholder="alex@exemple.com" required style="width: 100%; background: #070e18; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 0.7rem 0.9rem; font-size: 0.9rem; outline: none;" />
+          <span style="font-size: 0.75rem; color: #94a3b8; display: block; margin-top: 0.35rem;">
+            Tes accès aux salons Discord et aux replays te seront envoyés à cette adresse.
+          </span>
+        </div>
+
+        <button type="submit" id="global-checkout-submit-btn" class="button button__primary bangers-regular" style="width: 100%; padding: 12px; font-size: 1.25rem; border: none; cursor: pointer; border-radius: 8px; background: #00ff87; color: #070e18;">
+          CONTINUER VERS LE PAIEMENT SÉCURISÉ →
+        </button>
+      </form>
+
+      <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.85rem; color: #cbd5e0;">
+        <span>Déjà inscrit ?</span>
         <a href="#" onclick="switchGlobalAuthTab('login'); return false;" style="color: #00ff87; font-weight: 600; text-decoration: underline;">
           Se connecter
         </a>

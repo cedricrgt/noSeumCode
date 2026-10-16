@@ -171,6 +171,7 @@ gantt
     Sprint 28 (Dashboard Formateurs & Admin)       :done, sp28, 2026-10-11, 2d
     Sprint 29 (Salons Scène & Vocaux Manga)       :done, sp29, 2026-10-11, 2d
     Sprint 30 (Recette E2E & Clôture)             :done, sp30, 2026-10-12, 1d
+    Sprint 32 (Copywriting & Tunnel Live)         :done, sp32, 2026-10-16, 1d
 ```
 
 ---
@@ -649,3 +650,24 @@ gantt
   - Rédaction de l'ADR-025 dans `docs/ai/DECISIONS.md` (*Architecture d'Affectation des Formateurs (course_teacher), Cloisonnement RBAC & Salons Discord Scène / Manga*).
   - Mise à jour de `PROJECT_CONTEXT.md`, `ROADMAP.md` et `CHANGELOG.md`.
   - Validation complète des 215 tests backend Spring Boot (`BUILD SUCCESS`).
+
+---
+
+### Sprint 32 : Refonte Copywriting, Harmonisation Tunnel Live & Optimisation CRO (Terminé)
+- **32.1 Repositionnement Hero & Piliers en Direct (`frontend/index.html`)** :
+  - Titre H1 : « Deviens développeur web sans rester bloqué sur ton écran. »
+  - Sous-titre axé sur les promotions Discord de 6 élèves max, zéro théorie inutile et création de projets fiers.
+  - CTA Principal : « Découvrir les promotions en direct (6 places max) ↓ ».
+  - Piliers réalignés sur l'apprentissage actif sans copier bêtement, résolution de bugs en direct et entraide Discord.
+- **32.2 Suppression Totale des Mentions Asynchrones Trompeuses** :
+  - Remplacement de toutes les mentions « à ton rythme » / « vidéos quand tu veux » par le rythme réel des cohortes : 4h/semaine en direct (2h cours interactif + 2h labo projet guidé) avec replays à vie pour réviser.
+- **32.3 Promesses Réalistes Débutants & Preuve Sociale Éthique** :
+  - Suppression des promesses excessives (« convaincre un recruteur / contrats freelance ») au profit de projets concrets en ligne dont l'élève est fier.
+  - Zéro faux avis ou chiffres fictifs : valorisation des Ateliers Découvertes Gratuits de 2h (`workshops.html`) comme réassurance éthique majeure (encart accueil `#preuves`, bannières blog, lien direct dans le header).
+- **32.4 Tunnel d'Achat Fluidifié & Auth Wall Express (CRO)** :
+  - Suppression du mur d'inscription lourd à 6 champs avant paiement Stripe.
+  - Implémentation d'une vue d'inscription express à 2 champs (Prénom + Email) dans `header.js` et `popovers-shared.html`, génération transparente des identifiants et ouverture immédiate de Stripe Embedded Checkout in-app.
+  - Bascule fluide vers la vue Connexion avec email pré-rempli en cas de compte déjà existant (HTTP 409).
+- **32.5 Harmonisation Tarifs & Résolution ISSUE-030 (Klarna)** :
+  - Suppression de « sans frais » sur tout le site (3x 109 € = 327 €, 3x 160 € = 480 €, 3x 216 € = 648 €).
+  - Correction de l'offre VIP Schema.org sur `pack-web.html` calée sur 648.00 EUR (au lieu de 879.00 EUR).

@@ -1982,6 +1982,39 @@ eset-password.html.
    - Ajout de 2 nouveaux tests unitaires dans `DiscordServiceTest` validant la rétrogradation et la révocation des rôles Discord lors du retrait de cours.
    - 17/17 tests `DiscordServiceTest` réussis, 218/218 tests Spring Boot réussis.
 
+---
+
+## 2026-10-16 | Conversation: 0810e06e-5c27-4ae1-8951-f13885d32b19
+
+**Type**: Refonte Marketing, Copywriting Cohortes Live & Optimisation CRO du Tunnel de Vente (Sprint 32)  
+**Auteur**: Antigravity (Agent IA)  
+**Branche**: `feat/sprint-32-conversion-funnel-copywriting`  
+**Objectif**: Réaligner fidèlement le positionnement pédagogique (cours en direct en promotions de 6 élèves max sur Discord), éliminer les mentions asynchrones trompeuses, adapter les promesses pour débutants, valoriser les ateliers gratuits comme preuve sociale éthique et supprimer la friction de l'Auth Wall avant paiement Stripe.
+
+### Réalisations & Livrables :
+1. **Repositionnement Hero & Piliers (`frontend/index.html`)** :
+   - H1 : « Deviens développeur web sans rester bloqué sur ton écran. »
+   - Sous-titre : « Des sessions en direct par petits groupes de 6 élèves, zéro théorie inutile : crée tes premières applications en ligne et sois fier de ton portfolio. »
+   - CTA Principal : « Découvrir les promotions en direct (6 places max) ↓ »
+   - Piliers 1, 2 et 3 reformulés : focus sur le code en direct, le déblocage en live, les projets concrets hébergés en ligne et l'entraide en salon Discord.
+2. **Clarification du format Live & Élimination de l'Asynchrone trompeur** :
+   - Élimination des mentions « à ton rythme » / « vidéos courtes quand tu veux » au profit du rythme réel : 4h par semaine en direct (2h cours interactif + 2h labo projet guidé) avec replays à vie en bonus de révision.
+   - Clarification des créneaux en soirée et week-end sur Discord vocal et partage d'écran.
+3. **Preuve Sociale Éthique & Ateliers Découvertes Gratuits (`workshops.html`)** :
+   - Zéro faux avis ou chiffres fictifs : mise en avant des Ateliers Découvertes Gratuits de 2h comme canal privilégié de réassurance et d'acquisition.
+   - Ajout d'encarts de réassurance sur l'accueil (`#preuves`) et bannières visuelles en fin d'articles de blog (`faut-il-etre-bon-en-maths`, `setup-vscode-debutant`).
+   - Ajout du lien direct « Ateliers Gratuits (Live) » dans la barre de navigation du header (`frontend/partials/header.html`).
+4. **Fluidification de l'Auth Wall & Inscription Express Checkout (CRO)** :
+   - Refonte du flux d'achat pour visiteur non connecté dans `frontend/js/header.js` et `frontend/partials/popovers-shared.html` : remplacement du formulaire d'inscription bloquant à 6 champs par une vue Express à 2 champs (Prénom + Email).
+   - Génération transparente des identifiants et mot de passe sécurisé, inscription automatique `POST /api/auth/register`, sauvegarde du JWT et ouverture immédiate du composant Stripe Embedded Checkout (`#stripe-paywall-modal`).
+   - Bascule fluide vers la vue Connexion avec email pré-rempli en cas de compte existant (HTTP 409).
+5. **Résolution Exhaustive ISSUE-030 (Klarna)** :
+   - Suppression systématique de la mention trompeuse « sans frais » sur tout le site (`index.html`, `starter.html`, `pack-web.html`, `suivi-mentor.html`, `cgv.html`, `articles.json`, scripts JS).
+   - Correction Schema.org JSON-LD de l'option VIP sur `pack-web.html` calée sur 648.00 EUR (au lieu de 879.00 EUR).
+6. **Tests & Compilation** :
+   - Compilation et minification des bundles CSS/JS via `node build.js` et `node build-static.js`.
+   - Tests backend validés avec succès (`AuthControllerTest`, `PaymentCheckoutServiceTest`).
+
 
 
 

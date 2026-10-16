@@ -64,11 +64,10 @@
       "educationalLevel": "Intermediate",
       "inLanguage": "fr",
       "timeRequired": "P12W",
-      "totalHistoricalEnrollment": 74,
       "offers": [
         {
           "@type": "Offer",
-          "name": "Pack Web Standard",
+          "name": "Pack Web Pro Standard",
           "category": "Paid",
           "price": "449.00",
           "priceCurrency": "EUR",
@@ -78,9 +77,9 @@
         },
         {
           "@type": "Offer",
-          "name": "Pack Mentorat VIP (Pack Web + 4h coaching 1-to-1)",
+          "name": "Pack Web Pro + Suivi Mentor (Pack Web + 4h coaching 1-to-1)",
           "category": "Paid",
-          "price": "879.00",
+          "price": "648.00",
           "priceCurrency": "EUR",
           "availability": "https://schema.org/InStock",
           "url": "https://noseumcode.fr/formations/pack-web",
@@ -146,7 +145,7 @@
           </h1>
           <p class="formation-subtitle">
             Le programme le plus plébiscité pour passer du statut d'initié à celui de créateur web accompli. 
-            Maîtrise la logique de programmation, manipule le DOM, consomme des APIs réelles et prépare des projets portfolio qui impressionnent les recruteurs.
+            Maîtrise la logique de programmation, manipule le DOM, consomme des APIs réelles et conçois des projets concrets hébergés en ligne dont tu seras fier.
           </p>
 
           <div class="formation-meta-pills">
@@ -284,11 +283,11 @@
                 </div>
                 <div class="formation-faq-item">
                   <h4>Comment s'organise l'option Mentorat VIP ?</h4>
-                  <p>L'option VIP te donne accès à 4 heures de coaching individuel 1-to-1 avec Cédric. Les créneaux sont planifiés selon tes disponibilités pour faire des revues de code poussées ou t'entraîner à des entretiens.</p>
+                  <p>L'option VIP te donne accès à 4 heures de coaching individuel 1-to-1 avec Cédric. Les créneaux sont planifiés selon tes disponibilités pour faire des revues de code poussées, débloquer tes projets ou approfondir des concepts clés.</p>
                 </div>
                 <div class="formation-faq-item">
                   <h4>Comment fonctionne le paiement en plusieurs fois Klarna ?</h4>
-                  <p>Lors de la validation de commande Stripe, sélectionne l'option Klarna. Tu étales le règlement en 3 ou 4 mensualités égales sans aucun frais additionnel.</p>
+                  <p>Lors de la validation de commande Stripe, sélectionne l'option Klarna pour étaler facilement ton règlement en 3 mensualités.</p>
                 </div>
               </div>
             </section>
@@ -303,7 +302,7 @@
                 <span id="pack-price-amount">449</span> <span class="currency">€</span>
               </div>
               <div class="pricing-klarna-badge">
-                <span id="pack-klarna-text">ou <strong>3x 160 €</strong> sans frais avec <strong>Klarna</strong></span>
+                <span id="pack-klarna-text">ou <strong>3x 160 €</strong> avec <strong>Klarna</strong></span>
               </div>
             </div>
 
@@ -397,7 +396,7 @@
           const checked = toggle && toggle.checked;
           if (checked) {
             if (priceAmount) priceAmount.textContent = "648";
-            if (klarnaText) klarnaText.innerHTML = "ou <strong>3x 216 €</strong> sans frais avec <strong>Klarna</strong>";
+            if (klarnaText) klarnaText.innerHTML = "ou <strong>3x 216 €</strong> avec <strong>Klarna</strong>";
             if (addonCard) addonCard.style.borderColor = "#00ff87";
             if (ctaBtn) {
               ctaBtn.href = "app.html?id=pack-web&checkout=true&addon=mentor_4sessions";
@@ -405,7 +404,7 @@
             }
           } else {
             if (priceAmount) priceAmount.textContent = "449";
-            if (klarnaText) klarnaText.innerHTML = "ou <strong>3x 160 €</strong> sans frais avec <strong>Klarna</strong>";
+            if (klarnaText) klarnaText.innerHTML = "ou <strong>3x 160 €</strong> avec <strong>Klarna</strong>";
             if (addonCard) addonCard.style.borderColor = "rgba(0, 255, 135, 0.25)";
             if (ctaBtn) {
               ctaBtn.href = "app.html?id=pack-web&checkout=true";

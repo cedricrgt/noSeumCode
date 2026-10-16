@@ -319,10 +319,10 @@ function renderCourseCatalog() {
           <span style="font-size: 1.5rem;">🔥</span>
           <div>
             <strong style="color: var(--dark-navy); font-size: 1.05rem;">Nouvelle Offre NoSeumCode : Les 3 Packs d'Apprentissage Web</strong>
-            <p style="margin: 0; font-size: 0.88rem; color: #475569;">Paiement fractionné en 2x ou 3x sans frais disponible avec <strong>Klarna</strong> • Accès à vie et garantie 14 jours satisfait ou remboursé.</p>
+            <p style="margin: 0; font-size: 0.88rem; color: #475569;">Paiement fractionné en 3x disponible avec <strong>Klarna</strong> • Accès à vie et garantie 14 jours satisfait ou remboursé.</p>
           </div>
         </div>
-        <span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">Paiement Klarna 2x/3x</span>
+        <span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;">Paiement Klarna 3x</span>
       </div>
 
       <div class="card-grid">
@@ -342,7 +342,7 @@ function renderCourseCatalog() {
           let tierColor = "#0284c7";
           let tierBg = "rgba(2, 132, 199, 0.12)";
           let popularBadge = `<span style="background: rgba(0, 217, 255, 0.15); color: #00d9ff; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;">Idéal Débutant</span>`;
-          let installmentHtml = `<div style="font-size: 0.8rem; color: #334155; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem;"><span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.68rem; padding: 1px 5px; border-radius: 3px;">Klarna</span> ou <strong>3x 109 €</strong> sans frais</div>`;
+          let installmentHtml = `<div style="font-size: 0.8rem; color: #334155; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem;"><span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.68rem; padding: 1px 5px; border-radius: 3px;">Klarna</span> ou <strong>3x 109 €</strong></div>`;
           let featuresHtml = `
             <ul class="package-features poppins-regular" style="text-align: left; list-style: none; padding: 0; line-height: 1.6; font-size: 0.82rem; margin: 0.75rem 0; color: #475569;">
               <li>✓ <strong>Formation HTML5 Complète</strong> (Structure & SEO)</li>
@@ -362,7 +362,7 @@ function renderCourseCatalog() {
             tierColor = "#d97706";
             tierBg = "rgba(217, 119, 6, 0.12)";
             popularBadge = `<span style="background: rgba(255, 51, 102, 0.15); color: #ff3366; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;">10 Places / Mois</span>`;
-            installmentHtml = `<div style="font-size: 0.8rem; color: #334155; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem;"><span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.68rem; padding: 1px 5px; border-radius: 3px;">Klarna</span> ou <strong>3x 135 €</strong> sans frais</div>`;
+            installmentHtml = `<div style="font-size: 0.8rem; color: #334155; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem;"><span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.68rem; padding: 1px 5px; border-radius: 3px;">Klarna</span> ou <strong>3x 216 €</strong></div>`;
             featuresHtml = `
               <ul class="package-features poppins-regular" style="text-align: left; list-style: none; padding: 0; line-height: 1.6; font-size: 0.82rem; margin: 0.75rem 0; color: #475569;">
                 <li>✓ <strong>L'intégralité du Pack Web Pro</strong> + Git & GitHub</li>
@@ -380,7 +380,7 @@ function renderCourseCatalog() {
             tierColor = "#059669";
             tierBg = "rgba(16, 185, 129, 0.15)";
             popularBadge = `<span style="background: #00ff87; color: #070e18; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;">Le Plus Populaire</span>`;
-            installmentHtml = `<div style="font-size: 0.8rem; color: #334155; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem;"><span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.68rem; padding: 1px 5px; border-radius: 3px;">Klarna</span> ou <strong>3x 160 €</strong> sans frais</div>`;
+            installmentHtml = `<div style="font-size: 0.8rem; color: #334155; display: flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem;"><span style="background: #ffb3c7; color: #0a0a0a; font-weight: 700; font-size: 0.68rem; padding: 1px 5px; border-radius: 3px;">Klarna</span> ou <strong>3x 160 €</strong></div>`;
             featuresHtml = `
               <ul class="package-features poppins-regular" style="text-align: left; list-style: none; padding: 0; line-height: 1.6; font-size: 0.82rem; margin: 0.75rem 0; color: #475569;">
                 <li>✓ <strong>Tout le Pack Starter inclus</strong> (HTML5 + CSS3)</li>

@@ -182,10 +182,9 @@ _Last updated: 2026-10-12 | Audit de Sécurité Aikido (Secrets, SAST XSS & SCA 
 3. Résolution dynamique d'URL avec `resolveAssetPath("workshops.html")` et binding systématique des événements `click` et `touchend` assurant une navigation directe (ou un scroll fluide vers `#workshops-grid` si déjà sur la page des ateliers).
 4. Synchronisation du fallback statique de `frontend/partials/header.html` avec les items sémantiques et le lien vers `workshops.html`.
 
-### ISSUE-030 🟡 Mention "3x sans frais" trompeuse hors homepage
-**Files**: `frontend/js/cours.js` (L.288-349), `frontend/formations/starter.html`, `frontend/formations/pack-web.html`.
-**Risk**: 3x 109 EUR = 327 EUR > 299 EUR comptant : "sans frais" est une pratique commerciale potentiellement trompeuse (Code de la consommation). Corrige sur `index.html` (Sprint 18), pas encore ailleurs.
-**Fix needed**: Remplacer par le total reel (327 / 480 EUR) ou aligner les prix pour que le fractionne soit reellement sans frais.
+### ISSUE-030 ✅ Mention "3x sans frais" trompeuse éliminée sur tout le site [RÉSOLU Sprint 32]
+**Status**: Résolu dans Sprint 32.
+**Fix applied**: Suppression exhaustive de la mention trompeuse "sans frais" sur l'ensemble des pages et scripts (`frontend/formations/starter.html`, `frontend/formations/pack-web.html`, `frontend/suivi-mentor.html`, `frontend/cgv.html`, `frontend/js/cours.js`, `frontend/js/header.js`, `frontend/js/article.js`, `frontend/blog/*.html`, `frontend/data/articles.json`). Alignement rigoureux sur les mensualités Klarna réelles (3x 109 € = 327 €, 3x 160 € = 480 €, 3x 216 € = 648 €).
 
 ### ISSUE-031 ✅ Usurpation de session Stripe dans confirm-session [RÉSOLU Sprint 25]
 **Status**: Résolu dans Sprint 25.
