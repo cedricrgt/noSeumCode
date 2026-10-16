@@ -14,4 +14,14 @@ test.describe('Vérification du Frontend Code Bangers (NoSeumCode)', () => {
     await expect(mainHeader).toContainText('Deviens développeur web sans rester bloqué');
   });
 
+  test('Le lien Ateliers Gratuits (Live) dans la navigation bascule en dark navy au hover', async ({ page }) => {
+    await page.goto('/');
+    const workshopsLink = page.locator('.navbar__link--workshops a');
+    await expect(workshopsLink).toBeVisible();
+    await expect(workshopsLink).toContainText('Ateliers Gratuits (Live)');
+
+    await workshopsLink.hover();
+    await expect(workshopsLink).toHaveCSS('color', 'rgb(10, 22, 40)');
+  });
+
 });
