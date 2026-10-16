@@ -583,9 +583,10 @@ html {
   color: var(--primary-green);
 }
 
-.navbar__link.active {
-  color: var(--primary-dark);
-  font-weight: 600;
+.navbar__link.active,
+.navbar__link.active a {
+  color: var(--text-dark);
+  font-weight: 700;
 }
 
 .navbar__link.active::after {

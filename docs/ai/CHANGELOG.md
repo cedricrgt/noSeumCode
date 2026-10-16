@@ -2019,7 +2019,20 @@ eset-password.html.
    - Compilation et minification des bundles CSS/JS via `node build.js` et `node build-static.js`.
    - Tests E2E Playwright validés au vert : `tests/home.spec.js` (3/3) et `tests/cro-ux-seo.spec.js` (9/9).
 
+---
 
+## [2026-10-16] — Correctif Contraste Navbar : Maintien de la Police Sombre et Grasse sur Lien Actif
+**Conversation**: `b736771d-41a9-4dc9-86ea-545fdde241cd`  
+**Auteur**: Antigravity (Agent IA)  
+**Branche**: `feat/sprint-32-conversion-funnel-copywriting`  
+**Objectif**: Corriger le contraste du lien actif (`.navbar__link.active`) sur fond de header clair en conservant la police sombre (`var(--text-dark)` / `#2d3748`) et grasse (`font-weight: 700`), éliminant toute variable invalide ou couleur claire illisible.
 
-
-
+### Réalisations & Livrables :
+1. **Styles CSS (`frontend/styles/components/header.css`, `frontend/styles/bundle.css`)** :
+   - Remplacement de `color: var(--primary-dark); font-weight: 600;` par `color: var(--text-dark); font-weight: 700;` sur `.navbar__link.active` et `.navbar__link.active a`.
+   - Préservation du contraste sur le header clair (`#ffffff`) et de l'indicateur d'ancrage vert sans perte de lisibilité du texte.
+2. **Recompilation des Bundles** :
+   - Exécution de `node build.js` : mise à jour de tous les bundles minifiés (`homepage.min.css`, `workshops.min.css`, `formations.min.css`, `article.min.css`, `thanks.min.css`, `en-construction.min.css`).
+3. **Tests E2E Playwright (`e2e/tests/home.spec.js`)** :
+   - Ajout du test validant que `.navbar__link.active` possède `font-weight: 700` et `color: rgb(45, 55, 72)`.
+   - Validation de la suite `tests/home.spec.js` (4/4 tests au vert).
