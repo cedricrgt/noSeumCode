@@ -24,4 +24,12 @@ test.describe('Vérification du Frontend Code Bangers (NoSeumCode)', () => {
     await expect(workshopsLink).toHaveCSS('color', 'rgb(10, 22, 40)');
   });
 
+  test('Le lien actif dans la navigation conserve une police sombre et grasse (contraste sur fond clair)', async ({ page }) => {
+    await page.goto('/');
+    const activeLink = page.locator('.navbar__link.active');
+    await expect(activeLink).toBeVisible();
+    await expect(activeLink).toHaveCSS('font-weight', '700');
+    await expect(activeLink).toHaveCSS('color', 'rgb(45, 55, 72)');
+  });
+
 });
