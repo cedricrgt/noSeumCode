@@ -2011,9 +2011,13 @@ eset-password.html.
 5. **Résolution Exhaustive ISSUE-030 (Klarna)** :
    - Suppression systématique de la mention trompeuse « sans frais » sur tout le site (`index.html`, `starter.html`, `pack-web.html`, `suivi-mentor.html`, `cgv.html`, `articles.json`, scripts JS).
    - Correction Schema.org JSON-LD de l'option VIP sur `pack-web.html` calée sur 648.00 EUR (au lieu de 879.00 EUR).
-6. **Tests & Compilation** :
+6. **Correctif UI & A11y du Lien Navbar Ateliers Gratuits** :
+   - Remplacement du style inline hardcodé sur `<a>` par la classe `.navbar__link--workshops` (`frontend/partials/header.html` et templates de blog).
+   - Définition d'une couleur accessible au repos (`#047857`, ratio > 5:1 WCAG AA) et bascule explicite au survol (`:hover`) vers le noir brandé (`var(--dark-navy)` / `#0a1628`), éliminant l'illisibilité vert sur vert sous la pastille dynamique.
+   - Ajout d'un test Playwright dédié dans `e2e/tests/home.spec.js` vérifiant le changement de couleur au hover.
+7. **Tests & Compilation** :
    - Compilation et minification des bundles CSS/JS via `node build.js` et `node build-static.js`.
-   - Tests backend validés avec succès (`AuthControllerTest`, `PaymentCheckoutServiceTest`).
+   - Tests E2E Playwright validés au vert : `tests/home.spec.js` (3/3) et `tests/cro-ux-seo.spec.js` (9/9).
 
 
 
