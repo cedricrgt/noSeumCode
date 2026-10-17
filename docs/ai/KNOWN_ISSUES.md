@@ -264,6 +264,22 @@ _Last updated: 2026-10-12 | Audit de Sécurité Aikido (Secrets, SAST XSS & SCA 
 3. Résolution effective confirmée via `./mvnw dependency:list | Select-String "jackson"` (3.1.7 et 2.21.7 résolus à 100%).
 4. Validation par la suite complète de 217 tests Spring Boot (`./mvnw test` : 0 échec, 0 régression).
 
+### ISSUE-040 ✅ [SyntaxError workshops.js] Erreur de syntaxe bloquant le chargement des ateliers [RÉSOLU]
+**Status**: Résolu.
+**Symptôme**: Sur la page `https://develop.noseumcode.fr/workshops.html`, la liste des ateliers ne se chargeait pas du tout (grille `#workshops-grid` vide). La console navigateur affichait : `workshops.js:317 Uncaught SyntaxError: missing ) after argument list`.
+**Causes racines identifiées** :
+1. *Guillemets doubles non échappés dans des chaînes de toast* : Dans `frontend/js/workshops.js` à la ligne 317 (et lignes 333, 336, 340, 368, 382, 396, 399), les appels `showToast("<svg width="18" ...", "error")` utilisaient des guillemets doubles extérieurs non échappés alors que les attributs internes du SVG (`width="18"`, `viewBox="0 0 24 24"`) contenaient également des guillemets doubles. Lors du parsing initial du script, le moteur JavaScript interrompait la chaîne à `"<svg width="` et levait un `SyntaxError`, empêchant l'évaluation de l'intégralité du script et bloquant l'enregistrement du listener `DOMContentLoaded` et l'appel à `fetchWorkshops()`.
+2. *Interpolation XSS potentielle* : Le message d'erreur serveur `msg` (`response.json()`) était injecté directement dans `container.innerHTML` sans passer par `escapeHtml()`.
+3. *Émojis génériques dans les toasts* : Utilisation d'émojis Unicode (`⏳`) dans `checkPendingWorkshopRegistration()` et `downloadHubspotCsv()` au lieu d'icônes SVG vectorielles brandées.
+4. *Résolution d'API non résiliente* : Dépendance directe à `window.API_BASE_URL` pouvant générer des URLs `undefined/api/...` si l'en-tête ne s'était pas initialisé.
+**Fix appliqué** :
+1. Remplacement systématique des délimiteurs par des gabarits de chaînes ES6 (template literals avec backticks `` ` ``) sur tous les messages `showToast()`, éliminant les collisions de guillemets doubles et les conflits d'apostrophes françaises (`d'annuler`).
+2. Encapsulation sécurisée `${escapeHtml(msg)}` pour neutraliser tout vecteur d'injection HTML/XSS.
+3. Remplacement des émojis Unicode par des composants SVG vectoriels.
+4. Implémentation du résolveur dynamique `getApiBaseUrl()` avec repli sur `https://api.noseumcode.fr`.
+5. Invalidation immédiate du cache navigateur dans `frontend/workshops.html` via `workshops.js?v=sprint12.1`.
+6. Validation par tests unitaires `node -c` et ajout de la suite E2E Playwright `e2e/tests/workshops.spec.js` (23/23 tests passés avec succès).
+
 ## Fausses Hypothèses à Éviter
 - Ne pas supposer que les environnements de production et de développement doivent partager la même politique CORS : en production, les wildcards (`*.noseumcode.fr`) et les origines localhost/LAN doivent impérativement être rejetés pour prévenir les attaques de cross-origin non autorisées.
 - Ne pas supposer que Playwright peut s'exécuter dans un runner CI GitHub Actions sans installer au préalable les binaires des navigateurs : `npx playwright install --with-deps chromium` est indispensable.
@@ -300,5 +316,6 @@ _Last updated: 2026-10-12 | Audit de Sécurité Aikido (Secrets, SAST XSS & SCA 
 - Ne pas supposer qu'un script CSR de rendu dynamique (`article.js`) peut subsister sans risque sur une page HTML pré-générée en SSG : en l'absence de paramètre URL `?id=`, il écrase le contenu statique par un message "Article non trouvé". Il doit impérativement être retiré lors du build statique.
 - Ne pas supposer qu'un LMS privé (`parcours.html`) peut être indexable et porter la même sémantique que l'ancre commerciale de tarification (`#parcours`) : un espace de cours privé doit impérativement porter l'attribut `<meta name="robots" content="noindex, nofollow">`, être retiré du `sitemap.xml`, et utiliser une URL d'application dédiée (`app.html`).
 - Ne pas supposer que créer des catégories ou salons Discord sans `permission_overwrites` les rend privés : par défaut dans l'API Discord, les salons sans overwrite héritent des permissions de la guilde où `@everyone` possède `ViewChannel = true`. Les canaux de cours et salons de projet doivent impérativement déclarer un overwrite explicite `deny: [ViewChannel]` sur le rôle `@everyone` et autoriser explicitement les rôles autorisés (`Student Starter`, `Student Web`, etc.). De plus, lors de l'inscription à un cours unitaire, l'apprenant ne doit pas être sur-estampillé avec le niveau `WEB` par défaut ni inscrit automatiquement aux cours frères d'un pack non acheté, sous peine d'empêcher la rétrogradation et la révocation des accès Discord lors de la suppression de l'inscription.
+- Ne pas supposer qu'on peut encapsuler des fragments HTML/SVG contenant des attributs avec guillemets doubles (`width="18"`) dans des littéraux de chaînes délimités par des guillemets doubles (`"..."`) sans provoquer un `SyntaxError: missing ) after argument list` au parse-time : cela brise la chaîne dès le premier attribut et paralyse l'évaluation de l'intégralité du script JavaScript. Toujours privilégier les gabarits de chaînes ES6 avec backticks (`` `...` ``) qui tolèrent sans échappement à la fois les guillemets doubles du HTML et les apostrophes simples de la langue française (`d'annuler`).
 
 
