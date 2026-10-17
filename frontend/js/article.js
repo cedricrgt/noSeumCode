@@ -162,7 +162,7 @@ async function loadArticle() {
               .join("")}
           </div>
 
-          <!-- Encadré d'appel à l'action contextuel (Sprint 16 / Task 16.3) -->
+          <!-- Encadré d'appel à l'action contextuel -->
           <aside class="article-cta-box">
             <div class="article-cta-box__content">
               <span class="section-tag" style="background: rgba(0, 255, 135, 0.15); color: #00ff87;">Passe à l'action</span>

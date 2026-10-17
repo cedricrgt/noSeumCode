@@ -60,7 +60,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             throw new IllegalArgumentException("No email provided by provider: " + registrationId);
         }
 
-        // Cas 1 : Liaison explicite de compte déclenchée par un apprenant connecté (Sprint 11)
+        // Cas 1 : Liaison explicite de compte déclenchée par un apprenant déjà connecté
         String linkEmail = extractLinkingEmailFromContext();
         User user;
 

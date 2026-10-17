@@ -21,7 +21,7 @@ import java.util.*;
 
 /**
  * Service métier de gestion de l'intégration Discord, liaison des comptes apprenants
- * et résolution des accès aux salons Scène et salons Manga multi-projets (Sprint 11 & 29).
+ * et résolution des accès aux salons Scène et salons Manga multi-projets.
  */
 @Service
 @Transactional
@@ -86,7 +86,7 @@ public class DiscordService {
 
     /**
      * Résout l'URL du salon Scène direct selon le statut modérateur (ADMIN/TEACHER)
-     * ou le palier d'inscription payante de l'apprenant (Sprint 29).
+     * ou le palier d'inscription payante de l'apprenant.
      */
     public String resolveStageChannelUrl(User user) {
         if (user == null) return null;
@@ -117,7 +117,7 @@ public class DiscordService {
     }
 
     /**
-     * Résout l'URL du salon Scène direct propre à un cours donné (Sprint 31).
+     * Résout l'URL du salon Scène direct propre à un cours donné.
      * Mappe le slug/titre du cours (HTML/CSS, JS, Git) et le palier sur le salon Scène dédié.
      */
     public String resolveStageChannelUrlForCourse(String courseSlugOrTitle, EnrollmentTier tier) {

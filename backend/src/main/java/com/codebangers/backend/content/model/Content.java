@@ -72,10 +72,6 @@ public class Content {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    // =========================
-    // Constructors
-    // =========================
-
     public Content() {
     }
 
@@ -93,10 +89,6 @@ public class Content {
         this.mediaUrl = mediaUrl;
         this.position = position;
     }
-
-    // =========================
-    // Getters & Setters
-    // =========================
 
     public UUID getId() {
         return id;
@@ -217,10 +209,6 @@ public class Content {
     public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
     }
-
-    // =========================
-    // Enum
-    // =========================
 
     public enum ContentType {
         TEXT,

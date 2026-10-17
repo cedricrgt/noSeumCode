@@ -2061,3 +2061,27 @@ eset-password.html.
    - Création de la suite de tests Playwright E2E `e2e/tests/workshops.spec.js` validant l'absence d'erreur JS au chargement et la présence effective des ateliers dans `#workshops-grid`.
    - Exécution complète de la suite Playwright : 23/23 tests passés avec succès (0 régression).
 
+---
+
+## 2026-10-17 | Conversation: 369b0bab-86c0-4c31-8af8-a911e7b93c20
+
+**Type**: Refactoring des commentaires & Ajout de la documentation backend  
+**Auteur**: Antigravity (Agent IA)  
+**Branche**: `fix/workshops-syntax-error`  
+**Objectif**: Nettoyer l'ensemble des commentaires redondants, bannières et étiquettes éphémères de sprints sur tout le code, préserver les commentaires d'architecture, sécurité (OWASP) et règles métier, et rédiger le README manquant du backend.
+
+### Réalisations & Livrables :
+1. **Nettoyage des Commentaires Backend & Frontend** :
+   - Suppression des bannières évidentes (`// Constructors`, `// Getters & Setters`) sur les entités JPA et DTOs (`Chapter`, `Cohort`, `Content`, `Course`, `Enrollment`, `User`, `Workshop`, etc.).
+   - Suppression des commentaires paraphrasant le code (`// Test Refresh`, `// Parse first and last name`, `// Payment badge`, `// Account status badge`, `// Restore`, `// Soft delete`).
+   - Remplacement de tous les tags éphémères de sprints (`Sprint 8..31`) par des libellés sémantiques pérennes.
+   - Préservation des invariants clés : jauge de 6 élèves (ADR-013), analytics privacy-first (ADR-015), règles de sécurité anti-énumération et révocation de tokens.
+   - Correction de l'encodage de caractères dans `StripeGatewayImpl.java`.
+2. **Création de la Documentation Backend (`backend/README.md`)** :
+   - Création d'un README complet conforme aux standards `documentation-templates` : stack Java 21 / Spring Boot 4 / Flyway, démarrage rapide, architecture modulaire, matrice RBAC et suite de tests.
+3. **Recompilation & Validation** :
+   - Exécution de `node build.js` : mise à jour des bundles CSS minifiés.
+   - Exécution de `./mvnw test-compile` : succès (134 fichiers sources et 33 classes de test).
+   - Exécution du test E2E Playwright `tests/workshops.spec.js` : succès au vert.
+
+

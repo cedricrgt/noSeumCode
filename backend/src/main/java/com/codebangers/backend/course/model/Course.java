@@ -96,10 +96,6 @@ public class Course {
     )
     private Set<User> assignedTeachers = new HashSet<>();
 
-    // =========================
-    // Constructors
-    // =========================
-
     public Course() {
     }
 
@@ -107,10 +103,6 @@ public class Course {
         this.title = title;
         this.description = description;
     }
-
-    // =========================
-    // Getters & Setters
-    // =========================
 
     public UUID getId() {
         return id;

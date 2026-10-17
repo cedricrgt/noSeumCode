@@ -1,5 +1,5 @@
 /**
- * NoSeumCode — Analytics Cookieless & Privacy-First (ADR-015 / Sprint 9)
+ * NoSeumCode — Analytics Cookieless & Privacy-First (ADR-015)
  * 
  * Solution conforme au RGPD (exemptée de consentement CNIL car 100% cookieless,
  * sans fingerprinting intrusif ni collecte de données personnelles).

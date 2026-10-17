@@ -1680,7 +1680,7 @@ html {
 }
 
 
-/* Rassurance Parents & Jeunes (Sprint 9 / Task 9.1) */
+/* Rassurance Parents & Jeunes */
 
 .rassurance {
   padding: var(--spacing-4xl) var(--spacing-xl);
@@ -1948,7 +1948,7 @@ html {
 }
 
 
-/* Macaron Garantie 14 jours (Sprint 18 / Task 18.4) */
+/* Macaron Garantie 14 jours */
 .guarantee-seal {
   display: flex;
   align-items: center;
@@ -2014,7 +2014,7 @@ html {
   color: #e2e8f0;
 }
 
-/* Order Bump Suivi Mentor (Sprint 18 / Task 18.2) : 100% HTML + CSS, aucune injection JS */
+/* Order Bump Suivi Mentor : 100% HTML + CSS, aucune injection JS */
 .order-bump {
   display: flex;
   align-items: flex-start;
@@ -2071,7 +2071,7 @@ html {
   font-weight: 700;
 }
 
-/* Section preuves factuelles (Sprint 18 / Task 18.3) */
+/* Section preuves factuelles */
 .proof {
   padding: var(--spacing-4xl) var(--spacing-xl);
 }
@@ -2117,7 +2117,7 @@ html {
 }
 
 
-/* Section Ton Mentor (Sprint 9 / Task 9.2) */
+/* Section Ton Mentor */
 
 .mentor {
   padding: var(--spacing-4xl) var(--spacing-xl);

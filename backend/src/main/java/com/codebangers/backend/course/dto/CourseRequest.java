@@ -18,8 +18,6 @@ public class CourseRequest {
     private Boolean isPublished;
     private com.codebangers.backend.course.model.CourseTier requiredTier;
 
-    // Constructors
-
     public CourseRequest() {
     }
 
@@ -38,8 +36,6 @@ public class CourseRequest {
         this.level = level;
         this.isPublished = isPublished;
     }
-
-    // Getters & Setters
 
     public String getTitle() {
         return title;

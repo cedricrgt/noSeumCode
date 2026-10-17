@@ -161,7 +161,7 @@
   }
 }
 
-/* Breadcrumbs (Sprint 16 / SEO Sémantique) */
+/* Breadcrumbs (SEO Sémantique) */
 .breadcrumb {
   margin-bottom: 1.5rem;
   font-size: 0.85rem;
@@ -281,7 +281,7 @@
   color: #0f172a;
 }
 
-/* Contextual Call To Action Box (Sprint 16 / Task 16.3) */
+/* Contextual Call To Action Box */
 .article-cta-box {
   margin: 3.5rem 0;
   background: linear-gradient(135deg, #070e18 0%, #0d1e34 100%);

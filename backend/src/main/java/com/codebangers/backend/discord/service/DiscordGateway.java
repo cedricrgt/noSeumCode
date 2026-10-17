@@ -31,7 +31,7 @@ public interface DiscordGateway {
 
     String getDefaultRoleId();
 
-    // Identifiants des salons (Sprint 29)
+    // Salons vocaux et scéniques globaux (Discord Stage & Manga Voice Lounges)
     String getStageStarterChannelId();
 
     String getStageWebChannelId();
@@ -42,7 +42,7 @@ public interface DiscordGateway {
 
     String getVoiceNarutoChannelId();
 
-    // Identifiants des salons Scène par cours (Sprint 31)
+    // Salons de scène dédiés par cours (Lives et ateliers pratiques)
     String getStageHtmlCssChannelId();
 
     String getStageJavascriptChannelId();
@@ -51,7 +51,7 @@ public interface DiscordGateway {
 
     String getStageGitProChannelId();
 
-    // URLs directes des salons (Sprint 29 & 31)
+    // Liens profonds (Deep links) vers les salons de formation Discord
     String getStarterStageChannelUrl();
 
     String getWebStageChannelUrl();

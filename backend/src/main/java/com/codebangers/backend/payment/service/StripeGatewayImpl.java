@@ -66,7 +66,7 @@ public class StripeGatewayImpl implements StripeGateway {
         } else if (course.getPriceInCents() != null && course.getPriceInCents() > 0) {
             unitAmount = course.getPriceInCents();
         } else {
-            throw new IllegalStateException("Le prix du cours doit Ǧtre dǸfini en base de donnǸes.");
+            throw new IllegalStateException("Le prix du cours doit être défini en base de données.");
         }
 
         if (addon != null && !addon.isBlank()) {

@@ -70,7 +70,6 @@ public class PasswordResetService {
         // Nettoyer les anciens tokens non utilisés de cet utilisateur
         passwordResetTokenRepository.deleteByUser(user);
 
-        // Générer un jeton cryptographique sécurisé
         String rawToken = TokenHashUtils.generateSecureRandomToken(32);
         String tokenHash = TokenHashUtils.hashToken(rawToken);
 
@@ -78,11 +77,9 @@ public class PasswordResetService {
         PasswordResetToken resetToken = new PasswordResetToken(tokenHash, user, expiryDate);
         passwordResetTokenRepository.save(resetToken);
 
-        // Construire l'URL de réinitialisation
         String delimiter = resetPasswordBaseUrl.contains("?") ? "&" : "?";
         String resetUrl = resetPasswordBaseUrl + delimiter + "token=" + rawToken;
 
-        // Envoyer l'email
         emailService.sendPasswordResetEmail(user.getEmail(), user.getFirstName(), resetUrl);
         log.info("Lien de réinitialisation généré et envoyé pour l'utilisateur: {}", user.getEmail());
     }
@@ -109,11 +106,9 @@ public class PasswordResetService {
             throw new IllegalArgumentException("Ce compte est inaccessible");
         }
 
-        // Mettre à jour le mot de passe hashé
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
 
-        // Marquer le jeton comme utilisé
         resetToken.setUsed(true);
         passwordResetTokenRepository.save(resetToken);
 

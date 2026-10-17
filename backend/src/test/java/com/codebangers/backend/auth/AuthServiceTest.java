@@ -101,7 +101,6 @@ class AuthServiceTest {
 
         AuthService authService = new AuthService(userRepository, passwordEncoder, jwtService, refreshTokenService, passwordResetService, 1);
 
-        // Test Refresh
         RefreshTokenRequest refreshReq = new RefreshTokenRequest("raw-refresh-token");
         AuthResponse mockedResponse = new AuthResponse();
         mockedResponse.setAccessToken("new-access");
@@ -110,17 +109,14 @@ class AuthServiceTest {
         AuthResponse refreshed = authService.refreshToken(refreshReq);
         assertEquals("new-access", refreshed.getAccessToken());
 
-        // Test Forgot Password
         ForgotPasswordRequest forgotReq = new ForgotPasswordRequest("user@example.com");
         authService.forgotPassword(forgotReq);
         verify(passwordResetService).initiatePasswordReset("user@example.com");
 
-        // Test Reset Password
         ResetPasswordRequest resetReq = new ResetPasswordRequest("token123", "newPassword123!");
         authService.resetPassword(resetReq);
         verify(passwordResetService).resetPassword(resetReq);
 
-        // Test Logout
         authService.logout(refreshReq);
         verify(refreshTokenService).revokeToken("raw-refresh-token");
     }

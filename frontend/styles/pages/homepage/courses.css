@@ -99,7 +99,7 @@
 }
 
 
-/* Macaron Garantie 14 jours (Sprint 18 / Task 18.4) */
+/* Macaron Garantie 14 jours */
 .guarantee-seal {
   display: flex;
   align-items: center;
@@ -165,7 +165,7 @@
   color: #e2e8f0;
 }
 
-/* Order Bump Suivi Mentor (Sprint 18 / Task 18.2) : 100% HTML + CSS, aucune injection JS */
+/* Order Bump Suivi Mentor : 100% HTML + CSS, aucune injection JS */
 .order-bump {
   display: flex;
   align-items: flex-start;
@@ -222,7 +222,7 @@
   font-weight: 700;
 }
 
-/* Section preuves factuelles (Sprint 18 / Task 18.3) */
+/* Section preuves factuelles */
 .proof {
   padding: var(--spacing-4xl) var(--spacing-xl);
 }

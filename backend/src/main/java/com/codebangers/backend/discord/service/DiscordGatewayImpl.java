@@ -19,7 +19,7 @@ import java.util.*;
  * Adaptateur d'intégration HTTP avec l'API Discord v10 (ADR-010).
  * Gère l'ajout d'utilisateurs au serveur Discord (OAuth2 access token + guilds.join),
  * l'attribution dynamique de rôles et la résolution des URLs directes des salons Scène
- * et des salons vocaux Manga (Sprint 29).
+ * et des salons vocaux communautaires Manga.
  */
 @Component
 public class DiscordGatewayImpl implements DiscordGateway {

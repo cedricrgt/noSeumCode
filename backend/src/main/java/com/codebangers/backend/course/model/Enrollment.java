@@ -51,10 +51,6 @@ public class Enrollment {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
-    // =========================
-    // Constructors
-    // =========================
-
     public Enrollment() {
     }
 
@@ -81,10 +77,6 @@ public class Enrollment {
         this.tier = tier != null ? tier : EnrollmentTier.WEB;
         this.cohort = cohort;
     }
-
-    // =========================
-    // Getters & Setters
-    // =========================
 
     public UUID getId() {
         return id;
@@ -153,10 +145,6 @@ public class Enrollment {
     public void setCompletedAt(LocalDateTime completedAt) {
         this.completedAt = completedAt;
     }
-
-    // =========================
-    // Enum
-    // =========================
 
     public enum PaymentStatus {
         PENDING,
