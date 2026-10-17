@@ -77,10 +77,6 @@ public class Cohort {
     @OneToMany(mappedBy = "cohort")
     private List<Enrollment> enrollments = new ArrayList<>();
 
-    // =========================
-    // Constructors
-    // =========================
-
     public Cohort() {
     }
 
@@ -91,10 +87,6 @@ public class Cohort {
         this.maxStudents = maxStudents != null ? maxStudents : 6;
         this.status = CohortStatus.OPEN;
     }
-
-    // =========================
-    // Getters & Setters
-    // =========================
 
     public UUID getId() {
         return id;

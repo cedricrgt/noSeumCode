@@ -159,7 +159,7 @@ async function loadInitialData() {
   const coursesRes = await coursApiFetch("/api/courses");
   if (coursesRes && coursesRes.ok) {
     const rawCourses = await coursesRes.json();
-    // Aligner sur les 3 Packages officiels (ADR-013, Sprint 14 & Briefing 2026-09)
+    // Aligner sur les 3 Packages officiels (ADR-013)
     allCourses = rawCourses.map(course => {
       const slug = (course.slug || "").toLowerCase();
       const title = (course.title || "").toLowerCase();
@@ -1230,7 +1230,6 @@ async function handleSaveCourse(event) {
   const description = document.getElementById("manage-course-description").value.trim();
 
   if (courseId) {
-    // Modification du cours
     const res = await coursApiFetch(`/api/courses/${courseId}`, {
       method: "PUT",
       body: JSON.stringify({ title, description })
@@ -1248,7 +1247,6 @@ async function handleSaveCourse(event) {
     alert("Formation mise à jour avec succès.");
     renderClassroom();
   } else {
-    // Création d'un nouveau cours
     if (currentRole !== "ADMIN") {
       alert("Action interdite : seul un administrateur peut créer une nouvelle formation.");
       return;

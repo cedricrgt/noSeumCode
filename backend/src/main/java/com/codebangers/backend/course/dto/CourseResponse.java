@@ -24,8 +24,6 @@ public class CourseResponse {
     private com.codebangers.backend.course.model.CourseTier requiredTier;
     private List<TeacherResponse> assignedTeachers = new ArrayList<>();
 
-    // Constructors
-
     public CourseResponse() {
     }
 
@@ -71,8 +69,6 @@ public class CourseResponse {
         this.level = level;
         this.isPublished = isPublished;
     }
-
-    // Getters & Setters
 
     public UUID getId() {
         return id;

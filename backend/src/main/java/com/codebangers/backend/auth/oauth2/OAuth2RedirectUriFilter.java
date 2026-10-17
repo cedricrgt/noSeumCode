@@ -112,7 +112,7 @@ public class OAuth2RedirectUriFilter extends OncePerRequestFilter {
                 }
             }
 
-            // Capture account linking token if present (Sprint 11)
+            // Capture account linking token if present for cross-account authentication
             String linkToken = request.getParameter(LINK_TOKEN_PARAM);
             if (linkToken != null && !linkToken.isBlank() && jwtDecoder != null) {
                 try {

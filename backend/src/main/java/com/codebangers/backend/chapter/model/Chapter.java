@@ -80,10 +80,6 @@ public class Chapter {
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Content> contents = new ArrayList<>();
 
-    // =========================
-    // Constructors
-    // =========================
-
     public Chapter() {
     }
 
@@ -99,10 +95,6 @@ public class Chapter {
         this.title = title;
         this.position = position;
     }
-
-    // =========================
-    // Getters & Setters
-    // =========================
 
     public UUID getId() {
         return id;

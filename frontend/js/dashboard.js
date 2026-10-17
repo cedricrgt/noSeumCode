@@ -40,7 +40,7 @@ let allAvailableCourses = [];
 let activeDashboardView = null;
 let cachedDiscordData = null;
 
-// Navigation sécurisée et immédiate vers la communauté Discord (Sprint 11)
+// Navigation sécurisée et immédiate vers la communauté Discord
 function scrollToDiscordSection() {
   let section = null;
   if (typeof activeDashboardView !== "undefined" && activeDashboardView === "TEACHER") {
@@ -176,7 +176,7 @@ async function loadStoredAuth() {
 
   updateUserUI();
 
-  // Notification après liaison de compte Discord (Sprint 11)
+  // Notification après liaison de compte Discord
   if (sessionStorage.getItem("noseum_discord_linked") === "true") {
     sessionStorage.removeItem("noseum_discord_linked");
     setTimeout(() => {
@@ -224,7 +224,7 @@ async function loadStoredAuth() {
     return;
   }
 
-  // Si une inscription à un atelier découverte Toussaint est encore en attente (ex: redirection post-auth ou OAuth)
+  // Si une inscription à un atelier découverte est encore en attente (ex: redirection post-auth ou OAuth)
   const pendingWorkshopId = localStorage.getItem("noseum_pending_workshop_id") || sessionStorage.getItem("noseum_pending_workshop_id");
   if (pendingWorkshopId) {
     localStorage.removeItem("noseum_pending_workshop_id");
@@ -343,7 +343,6 @@ function applyDashboardView(viewRole) {
   const teacherView = document.getElementById("view-teacher");
   const adminView = document.getElementById("view-admin");
 
-  // Mise à jour des boutons du switcher
   const btnAdmin = document.getElementById("btn-view-admin");
   const btnTeacher = document.getElementById("btn-view-teacher");
   const btnStudent = document.getElementById("btn-view-student");
@@ -725,7 +724,7 @@ function openCourseViewer(courseId, title) {
 }
 
 // ==========================================
-// 4b. Ateliers Découvertes Toussaint (Student Workshops)
+// 4b. Ateliers Découvertes (Student Workshops)
 // ==========================================
 
 let enrolledWorkshops = [];
@@ -921,7 +920,7 @@ async function openStripeCustomerPortal() {
 window.openStripeCustomerPortal = openStripeCustomerPortal;
 
 // ==========================================
-// 4d. Communauté Discord & Liaison Compte Apprenant (Sprint 11)
+// 4d. Communauté Discord & Liaison Compte Apprenant
 // ==========================================
 
 async function loadDiscordStatus() {
@@ -2484,7 +2483,6 @@ function renderAdminUsers() {
       roleBadgeLabel = `${ICONS.admin} ADMIN`;
     }
 
-    // Payment badge
     const pStatus = (user.paymentStatus || "FREE").toUpperCase();
     let paymentBadgeClass = "payment-badge-free";
     let paymentLabel = "Gratuit";
@@ -2503,7 +2501,6 @@ function renderAdminUsers() {
       paymentLabel = "Échoué";
     }
 
-    // Account status badge
     const isDeleted = user.isDeleted === true || user.deleted === true;
     const isBlocked = user.isBlocked === true || user.blocked === true;
 
@@ -3004,7 +3001,6 @@ async function handleToggleDeleteUser(userId, isCurrentlyDeleted) {
   const userName = targetUser ? (targetUser.firstName || targetUser.userName) : "l'utilisateur";
 
   if (isCurrentlyDeleted) {
-    // Restore
     let response = await apiFetch(`/api/users/${userId}/restore`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -3032,7 +3028,6 @@ async function handleToggleDeleteUser(userId, isCurrentlyDeleted) {
       showGlobalDashboardToast(`Échec : ${errMsg}`, "error");
     }
   } else {
-    // Soft delete
     if (!confirm(`Confirmer la suppression (soft-delete) de ${userName} ? (Les données restent conservées en base avec le statut DELETED).`)) return;
 
     let response = await apiFetch(`/api/users/${userId}`, {

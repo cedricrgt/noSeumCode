@@ -127,7 +127,7 @@ concatFiles(formationsDist, [
 ]);
 minifyFile(formationsDist);
 
-// 7. JS Minification (Sprint 10 / Task 10.2)
+// 7. JS Minification
 console.log('\n📦 Minification des scripts JavaScript…');
 const jsDir = path.join(frontendDir, 'js');
 

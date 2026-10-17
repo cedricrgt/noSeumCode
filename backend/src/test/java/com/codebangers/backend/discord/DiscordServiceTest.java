@@ -309,7 +309,7 @@ class DiscordServiceTest {
     }
 
     @Test
-    @DisplayName("Devrait résoudre les URLs Scène par cours selon le sujet et le tier (Sprint 31)")
+    @DisplayName("Devrait résoudre les URLs Scène par cours selon le sujet et le tier")
     void shouldResolveCourseStageUrlsCorrectly() {
         when(discordGateway.getHtmlCssStageChannelUrl()).thenReturn("https://discord.com/channels/guild123/stage-html-css");
         when(discordGateway.getJavascriptStageChannelUrl()).thenReturn("https://discord.com/channels/guild123/stage-js");

@@ -797,7 +797,7 @@ body.dashboard-body {
   text-decoration: underline;
 }
 
-/* ─── Sprint 28: Formateurs Référents & Isolation Dashboard ─── */
+/* ─── Formateurs Référents & Isolation Dashboard ─── */
 .teacher-badges-list {
   display: flex;
   flex-wrap: wrap;

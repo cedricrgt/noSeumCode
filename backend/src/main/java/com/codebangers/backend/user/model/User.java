@@ -42,9 +42,7 @@ public class User {
     @Column(name = "avatar_url", length = 500)
     private String avatarUrl;
 
-    // =========================
-    // Discord Integration (Sprint 11)
-    // =========================
+    // Intégration Discord
     @Column(name = "discord_user_id", length = 50)
     private String discordUserId;
 
@@ -100,10 +98,6 @@ public class User {
     @JoinColumn(name = "blocked_by_id")
     private User blockedBy;
 
-    // =========================
-    // Constructors
-    // =========================
-
     public User() {
     }
 
@@ -115,10 +109,6 @@ public class User {
         this.password = password;
         this.role = role != null ? role : Role.USER;
     }
-
-    // =========================
-    // Getters & Setters
-    // =========================
 
     public UUID getId() {
         return id;

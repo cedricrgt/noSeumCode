@@ -57,7 +57,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String userName = user.getUserName() != null ? user.getUserName() : "";
         String firstName = user.getFirstName() != null ? user.getFirstName() : "";
         String email = user.getEmail() != null ? user.getEmail() : "";
-        // Nettoyage éventuel du cookie de liaison (Sprint 11)
+        // Nettoyage éventuel du cookie de liaison de compte tiers (Discord)
         boolean isSecure = request.isSecure() || "https".equalsIgnoreCase(request.getHeader("X-Forwarded-Proto"));
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
@@ -107,7 +107,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             for (Cookie cookie : request.getCookies()) {
                 if (OAuth2RedirectUriFilter.REDIRECT_URI_COOKIE_NAME.equals(cookie.getName())) {
                     String uri = cookie.getValue();
-                    // Delete cookie
                     ResponseCookie deleteCookie = ResponseCookie.from(OAuth2RedirectUriFilter.REDIRECT_URI_COOKIE_NAME, "")
                             .path("/")
                             .httpOnly(true)

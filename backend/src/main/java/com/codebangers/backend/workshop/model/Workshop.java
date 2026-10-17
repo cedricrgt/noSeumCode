@@ -70,10 +70,6 @@ public class Workshop {
     @OneToMany(mappedBy = "workshop", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserWorkshop> registrations = new ArrayList<>();
 
-    // =========================
-    // Constructors
-    // =========================
-
     public Workshop() {
         this.maxParticipants = 6;
     }
@@ -95,10 +91,6 @@ public class Workshop {
         this.startDate = startDate;
         this.endDate = endDate;
     }
-
-    // =========================
-    // Getters & Setters
-    // =========================
 
     public UUID getId() {
         return id;
