@@ -71,6 +71,20 @@
     }
   }
 
+  function getApiBaseUrl() {
+    if (typeof window !== "undefined" && window.API_BASE_URL) {
+      return window.API_BASE_URL;
+    }
+    const customUrl = typeof localStorage !== "undefined" ? localStorage.getItem("noseum_api_url") : null;
+    if (customUrl) return customUrl;
+    const target = typeof localStorage !== "undefined" ? localStorage.getItem("noseum_api_target") : null;
+    if (target === "local") {
+      const host = (typeof window !== "undefined" && window.location.hostname) ? window.location.hostname : "localhost";
+      return `http://${host}:8080`;
+    }
+    return "https://api.noseumcode.fr";
+  }
+
   function getAuthHeaders() {
     const token = localStorage.getItem("noseum_token");
     const headers = { "Content-Type": "application/json" };
@@ -133,7 +147,7 @@
     if (!grid) return;
 
     try {
-      const response = await fetch(`${window.API_BASE_URL}/api/workshops/upcoming`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/workshops/upcoming`, {
         headers: getAuthHeaders()
       });
 
@@ -291,7 +305,7 @@
     }
 
     try {
-      const response = await fetch(`${window.API_BASE_URL}/api/user-workshops/${workshopId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/user-workshops/${workshopId}`, {
         method: "POST",
         headers: getAuthHeaders()
       });
@@ -299,22 +313,22 @@
       if (response.ok || response.status === 201) {
         localStorage.removeItem("noseum_pending_workshop_id");
         sessionStorage.removeItem("noseum_pending_workshop_id");
-        showToast('<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00ff87" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Félicitations ! Ta place est réservée. <a href="dashboard.html" style="color: #00ff87; text-decoration: underline; margin-left: 8px; font-weight: 700;">Voir mon espace ➔</a>', "success");
+        showToast(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00ff87" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Félicitations ! Ta place est réservée. <a href="dashboard.html" style="color: #00ff87; text-decoration: underline; margin-left: 8px; font-weight: 700;">Voir mon espace ➔</a>`, "success");
         await fetchWorkshops();
       } else if (response.status === 409) {
         localStorage.removeItem("noseum_pending_workshop_id");
         sessionStorage.removeItem("noseum_pending_workshop_id");
-        showToast('<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Tu es déjà inscrit(e) à cet atelier ! <a href="dashboard.html" style="color: #00e5ff; text-decoration: underline; margin-left: 8px; font-weight: 700;">Voir mon espace ➔</a>', "info");
+        showToast(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Tu es déjà inscrit(e) à cet atelier ! <a href="dashboard.html" style="color: #00e5ff; text-decoration: underline; margin-left: 8px; font-weight: 700;">Voir mon espace ➔</a>`, "info");
         await fetchWorkshops();
       } else {
         const errData = await response.json().catch(() => ({}));
         const msg = errData.message || "Impossible de réserver cette place.";
-        showToast(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> ${msg}`, "error");
+        showToast(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> ${escapeHtml(msg)}`, "error");
         await fetchWorkshops();
       }
     } catch (err) {
       console.error("Erreur lors de la réservation de l'atelier:", err);
-      showToast("<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Erreur de communication avec le serveur. Veuillez réessayer.", "error");
+      showToast(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Erreur de communication avec le serveur. Veuillez réessayer.`, "error");
     }
   }
 
@@ -324,20 +338,20 @@
     }
 
     try {
-      const response = await fetch(`${window.API_BASE_URL}/api/user-workshops/workshop/${workshopId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/user-workshops/workshop/${workshopId}`, {
         method: "DELETE",
         headers: getAuthHeaders()
       });
 
       if (response.ok || response.status === 204) {
-        showToast("<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Ta réservation a été annulée. La place a été libérée.", "info");
+        showToast(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Ta réservation a été annulée. La place a été libérée.`, "info");
         await fetchWorkshops();
       } else {
-        showToast("<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Impossible d'annuler cette réservation.", "error");
+        showToast(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Impossible d'annuler cette réservation.`, "error");
       }
     } catch (err) {
       console.error("Erreur lors de l'annulation de l'atelier:", err);
-      showToast("<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Erreur de communication avec le serveur.", "error");
+      showToast(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Erreur de communication avec le serveur.`, "error");
     }
   }
 
@@ -357,7 +371,7 @@
     const token = localStorage.getItem("noseum_token");
 
     if (pendingId && token) {
-      showToast("⏳ Validation de ta réservation en cours...", "info");
+      showToast(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Validation de ta réservation en cours...`, "info");
       await registerToWorkshop(pendingId);
     }
   }
@@ -365,21 +379,21 @@
   async function downloadHubspotCsv(workshopId = null) {
     const token = localStorage.getItem("noseum_token");
     if (!token) {
-      showToast("<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Veuillez vous connecter avec un compte administrateur.", "error");
+      showToast(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Veuillez vous connecter avec un compte administrateur.`, "error");
       return;
     }
     try {
-      showToast("⏳ Génération de l'export CSV HubSpot en cours...", "info");
+      showToast(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Génération de l'export CSV HubSpot en cours...`, "info");
       const url = workshopId
-        ? `${window.API_BASE_URL}/api/user-workshops/export/hubspot-csv?workshopId=${encodeURIComponent(workshopId)}`
-        : `${window.API_BASE_URL}/api/user-workshops/export/hubspot-csv`;
+        ? `${getApiBaseUrl()}/api/user-workshops/export/hubspot-csv?workshopId=${encodeURIComponent(workshopId)}`
+        : `${getApiBaseUrl()}/api/user-workshops/export/hubspot-csv`;
 
       const res = await fetch(url, {
         headers: { "Authorization": `Bearer ${token}` }
       });
 
       if (!res.ok) {
-        showToast("<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Erreur lors de l'exportation (droits administrateur requis).", "error");
+        showToast(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Erreur lors de l'exportation (droits administrateur requis).`, "error");
         return;
       }
 
@@ -393,10 +407,10 @@
       a.click();
       a.remove();
       window.URL.revokeObjectURL(downloadUrl);
-      showToast("<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Fichier CSV HubSpot téléchargé avec succès !", "success");
+      showToast(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Fichier CSV HubSpot téléchargé avec succès !`, "success");
     } catch (err) {
       console.error("Erreur téléchargement CSV HubSpot:", err);
-      showToast("<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Impossible de télécharger le fichier CSV.", "error");
+      showToast(`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -3px; margin-right: 6px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Impossible de télécharger le fichier CSV.`, "error");
     }
   }
 

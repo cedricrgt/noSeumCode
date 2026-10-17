@@ -50,9 +50,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `fix/discord-course-unenroll-permissions-sync`
-## Current State: Permissions Discord verrouillées sur les catégories de cours (`HTML & CSS`, `JavaScript`, `Git & GitHub - Fondation`, `Git & GitHub - Pro`, `👥 PROJETS D'ÉQUIPE`) avec `@everyone` restreint en lecture et accès conditionné aux rôles tiers (`Student Starter`, `Student Web`, `Student VIP`). Refonte du calcul de palier dans `DiscordService` et de l'enrôlement unitaire dans `EnrollmentService` pour garantir la rétrogradation et la révocation des rôles Discord lors de la suppression d'inscriptions. 218/218 tests validés.
-## Next Steps: Push de la branche de fix vers GitHub, création de la PR vers `develop` via `gh pr create`, et revue finale.
+## Active Branch: `fix/workshops-syntax-error`
+## Current State: Résolution du SyntaxError dans `workshops.js` causé par des guillemets doubles non échappés sur le balisage SVG de `showToast()`. Neutralisation XSS avec `escapeHtml()`, remplacement des émojis par des composants SVG vectoriels, sécurisation de la résolution API avec `getApiBaseUrl()`, et invalidation du cache navigateur dans `workshops.html` (`v=sprint12.1`). Suite Playwright validée au vert (23/23).
+## Next Steps: Push de la branche `fix/workshops-syntax-error` vers GitHub et ouverture de la Pull Request vers `develop` via `gh pr create`.
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 ## Roles: STUDENT | TEACHER | ADMIN

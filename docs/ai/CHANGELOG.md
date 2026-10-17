@@ -2036,3 +2036,28 @@ eset-password.html.
 3. **Tests E2E Playwright (`e2e/tests/home.spec.js`)** :
    - Ajout du test validant que `.navbar__link.active` possède `font-weight: 700` et `color: rgb(45, 55, 72)`.
    - Validation de la suite `tests/home.spec.js` (4/4 tests au vert).
+
+---
+
+## 2026-10-17 | Conversation: ae08ead5-1080-4748-bce8-2bf5a220bfb1
+
+**Type**: Correctif SyntaxError workshops.js & Déblocage du chargement de la liste des ateliers  
+**Auteur**: Antigravity (Agent IA)  
+**Branche**: `fix/workshops-syntax-error`  
+**Objectif**: Corriger l'erreur de syntaxe (`SyntaxError: missing ) after argument list`) à la ligne 317 de `frontend/js/workshops.js` empêchant l'exécution du script et figeant l'affichage de la grille des ateliers sur `develop.noseumcode.fr/workshops.html`.
+
+### Réalisations & Livrables :
+1. **Résolution du SyntaxError (`frontend/js/workshops.js`)** :
+   - Remplacement des guillemets doubles extérieurs non échappés par des gabarits de chaînes (template literals ES6 avec backticks) sur tous les appels `showToast()` intégrant du balisage SVG (lignes 317, 333, 336, 340, 368, 382, 396, 399).
+   - Élimination des conflits de guillemets doubles internes aux attributs SVG (`width="18"`, `viewBox="..."`) et protection contre les apostrophes de la langue française (`d'annuler`).
+2. **Durcissement de Sécurité XSS & Résilience API** :
+   - Neutralisation XSS : encapsulation de `${msg}` provenant des réponses API serveur avec `escapeHtml(msg)` dans la notification d'erreur.
+   - Remplacement de l'émoji Unicode générique (`⏳`) par une icône vectorielle SVG conforme à l'identité visuelle NoSeumCode.
+   - Ajout de la fonction `getApiBaseUrl()` dynamique et résiliente pour éliminer tout risque de résolution vers `undefined/api/...`.
+3. **Invalidation du Cache Navigateur (`frontend/workshops.html`)** :
+   - Mise à jour du cache-buster de `workshops.js?v=sprint12` vers `workshops.js?v=sprint12.1` pour forcer le rafraîchissement immédiat côté client sans délai de cache HTTP.
+4. **Tests & Validation** :
+   - Validation syntaxique Node.js (`node -c`) sur l'ensemble des scripts JS de `frontend/js/`.
+   - Création de la suite de tests Playwright E2E `e2e/tests/workshops.spec.js` validant l'absence d'erreur JS au chargement et la présence effective des ateliers dans `#workshops-grid`.
+   - Exécution complète de la suite Playwright : 23/23 tests passés avec succès (0 régression).
+
