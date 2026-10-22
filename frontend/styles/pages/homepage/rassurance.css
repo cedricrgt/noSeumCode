@@ -154,12 +154,33 @@
   line-height: 1.55;
 }
 
-@media (max-width: 640px) {
-  .rassurance__card {
-    padding: var(--spacing-lg);
+@media (max-width: 768px) {
+  .rassurance {
+    padding: var(--spacing-2xl) 1.25rem;
   }
-  
+
+  .rassurance__header {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .rassurance__grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .rassurance__card {
+    padding: 1.25rem 1rem;
+    gap: var(--spacing-md);
+  }
+
   .rassurance__title {
     font-size: 1.5rem;
   }
 }
+
+@media (max-width: 480px) {
+  .rassurance {
+    padding: var(--spacing-xl) 1rem;
+  }
+}
+

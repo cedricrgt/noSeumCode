@@ -88,7 +88,7 @@
 
 @media (max-width: 768px) {
   .faq {
-    padding: var(--spacing-2xl) var(--spacing-sm);
+    padding: var(--spacing-2xl) 1.25rem;
   }
 
   .faq__summary {
@@ -96,3 +96,18 @@
     padding: var(--spacing-md);
   }
 }
+
+@media (max-width: 480px) {
+  .faq {
+    padding: var(--spacing-xl) 1rem;
+  }
+
+  .faq__summary {
+    padding: 1rem 0.75rem;
+  }
+
+  .faq__answer {
+    padding: 0 0.75rem 1rem;
+  }
+}
+

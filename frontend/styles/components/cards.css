@@ -183,3 +183,10 @@
 .card-paddingtop .card__imageContainer {
   height: 250px;
 }
+
+@media (max-width: 768px) {
+  .card__main {
+    padding: 1.25rem 1rem;
+  }
+}
+

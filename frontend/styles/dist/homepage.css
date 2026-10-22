@@ -46,8 +46,23 @@
 @media (max-width: 768px) {
   :root {
     --header-height: calc(80px + var(--banner-height));
+    --spacing-xl: 1.5rem;
+    --spacing-2xl: 2rem;
+    --spacing-3xl: 2.75rem;
+    --spacing-4xl: 3.5rem;
   }
 }
+
+@media (max-width: 480px) {
+  :root {
+    --spacing-lg: 1.25rem;
+    --spacing-xl: 1.25rem;
+    --spacing-2xl: 1.5rem;
+    --spacing-3xl: 2rem;
+    --spacing-4xl: 2.5rem;
+  }
+}
+
 
 body {
   font-family: "Poppins", sans-serif;
@@ -212,6 +227,10 @@ section[id], div[id] {
   margin-bottom: var(--spacing-xl);
 }
 
+p {
+  text-align: left;
+}
+
 .card-grid {
   --min-column-size: 320px;
   --gap: var(--spacing-xl);
@@ -219,14 +238,43 @@ section[id], div[id] {
   display: grid;
   gap: var(--gap);
   justify-content: center;
-  grid-template-columns: repeat(auto-fit, minmax(var(--min-column-size), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--min-column-size)), 1fr));
   text-align: left;
 }
 
 .section {
   padding: var(--spacing-3xl) var(--spacing-xl);
+  text-align: left;
+}
+
+.section-header,
+.courses__header,
+.mentor__header,
+.proof__header,
+.rassurance__header,
+.faq__title,
+.text-center {
   text-align: center;
 }
+
+@media (max-width: 768px) {
+  .section {
+    padding: var(--spacing-2xl) 1.25rem;
+  }
+
+  .card-grid {
+    --min-column-size: 100%;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding: var(--spacing-xl) 1rem;
+  }
+}
+
 
 .section--dark {
   background: linear-gradient(135deg, #0a1628 0%, #1a2332 100%);
@@ -521,6 +569,13 @@ html {
 .card-paddingtop .card__imageContainer {
   height: 250px;
 }
+
+@media (max-width: 768px) {
+  .card__main {
+    padding: 1.25rem 1rem;
+  }
+}
+
 
 
 
@@ -1571,9 +1626,16 @@ html {
 
 @media (max-width: 768px) {
   .hero {
-    padding: calc(var(--header-height) + var(--spacing-3xl)) var(--spacing-xl) var(--spacing-3xl);
+    padding: calc(var(--header-height) + var(--spacing-lg)) 1.25rem var(--spacing-2xl);
   }
 }
+
+@media (max-width: 480px) {
+  .hero {
+    padding: calc(var(--header-height) + var(--spacing-sm)) 1rem var(--spacing-xl);
+  }
+}
+
 
 @keyframes bounce {
   0%,
@@ -1675,9 +1737,17 @@ html {
 
 .presentation__cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: var(--spacing-xl);
 }
+
+@media (max-width: 768px) {
+  .presentation__cards {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+}
+
 
 
 /* Rassurance Parents & Jeunes */
@@ -1836,15 +1906,36 @@ html {
   line-height: 1.55;
 }
 
-@media (max-width: 640px) {
-  .rassurance__card {
-    padding: var(--spacing-lg);
+@media (max-width: 768px) {
+  .rassurance {
+    padding: var(--spacing-2xl) 1.25rem;
   }
-  
+
+  .rassurance__header {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .rassurance__grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .rassurance__card {
+    padding: 1.25rem 1rem;
+    gap: var(--spacing-md);
+  }
+
   .rassurance__title {
     font-size: 1.5rem;
   }
 }
+
+@media (max-width: 480px) {
+  .rassurance {
+    padding: var(--spacing-xl) 1rem;
+  }
+}
+
 
 
 .courses__header {
@@ -1854,7 +1945,7 @@ html {
 
 .courses__cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: var(--spacing-xl);
 }
 
@@ -2116,6 +2207,121 @@ html {
   color: #e2e8f0;
 }
 
+/* Accordion Package Cards (Mobile-first UX optimization) */
+.package-accordion {
+  margin: 0.85rem 0;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+  transition: all var(--transition-fast);
+}
+
+.card-featured .package-accordion {
+  border: 1px solid rgba(0, 255, 135, 0.25);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.package-accordion__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #0369a1;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.package-accordion__summary::-webkit-details-marker {
+  display: none;
+}
+
+.package-accordion__summary::after {
+  content: "▾";
+  font-size: 1.1rem;
+  transition: transform var(--transition-fast);
+}
+
+.package-accordion[open] > .package-accordion__summary::after {
+  transform: rotate(180deg);
+}
+
+.card-featured .package-accordion__summary {
+  color: #00ff87;
+}
+
+.package-accordion__content {
+  padding: 0.5rem 1rem 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.card-featured .package-accordion__content {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (min-width: 769px) {
+  .package-accordion {
+    border: none;
+    background: transparent;
+    margin: 0;
+  }
+  .card-featured .package-accordion {
+    border: none;
+    background: transparent;
+  }
+  .package-accordion__summary {
+    display: none;
+  }
+  .package-accordion__content {
+    padding: 0;
+    border-top: none;
+  }
+  .card-featured .package-accordion__content {
+    border-top: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-package {
+    padding: 1.5rem 1.1rem;
+  }
+
+  .courses__cards {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .comparison-table-section {
+    display: none !important;
+  }
+
+  .proof {
+    padding: var(--spacing-2xl) 1.25rem;
+  }
+
+  .proof__grid {
+    gap: var(--spacing-md);
+  }
+
+  .proof__item {
+    padding: 1.25rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-package {
+    padding: 1.25rem 0.9rem;
+  }
+
+  .proof {
+    padding: var(--spacing-xl) 1rem;
+  }
+}
+
+
 
 /* Section Ton Mentor */
 
@@ -2163,6 +2369,7 @@ html {
 .mentor__avatar {
   width: 240px;
   height: 240px;
+  max-width: 100%;
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid var(--primary-green);
@@ -2245,7 +2452,7 @@ html {
 
 .mentor__pillars {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: var(--spacing-xl);
 }
 
@@ -2374,12 +2581,74 @@ html {
   }
 }
 
+@media (max-width: 768px) {
+  .mentor {
+    padding: var(--spacing-2xl) 1.25rem;
+  }
+
+  .mentor__container {
+    gap: var(--spacing-xl);
+  }
+
+  .mentor__hero {
+    padding: 1.5rem 1rem;
+    gap: var(--spacing-lg);
+  }
+
+  .mentor__avatar {
+    width: 160px;
+    height: 160px;
+  }
+
+  .mentor__pillars {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .mentor__pillar-card {
+    padding: 1.25rem 1rem;
+  }
+
+  .mentor__vip-cta {
+    padding: 1.5rem 1rem;
+    gap: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .mentor {
+    padding: var(--spacing-xl) 1rem;
+  }
+
+  .mentor__avatar {
+    width: 130px;
+    height: 130px;
+  }
+
+  .mentor__name {
+    font-size: 1.75rem;
+  }
+
+  .mentor__vip-title {
+    font-size: 1.35rem;
+  }
+}
+
+
 
 .blogCards__cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: var(--spacing-xl);
 }
+
+@media (max-width: 768px) {
+  .blogCards__cards {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+}
+
 
 
 .faq {
@@ -2472,7 +2741,7 @@ html {
 
 @media (max-width: 768px) {
   .faq {
-    padding: var(--spacing-2xl) var(--spacing-sm);
+    padding: var(--spacing-2xl) 1.25rem;
   }
 
   .faq__summary {
@@ -2481,15 +2750,45 @@ html {
   }
 }
 
+@media (max-width: 480px) {
+  .faq {
+    padding: var(--spacing-xl) 1rem;
+  }
+
+  .faq__summary {
+    padding: 1rem 0.75rem;
+  }
+
+  .faq__answer {
+    padding: 0 0.75rem 1rem;
+  }
+}
+
+
 
 .footer {
   background: var(--dark-navy);
   color: var(--white);
   padding: var(--spacing-3xl) var(--spacing-xl) var(--spacing-xl);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: var(--spacing-2xl);
 }
+
+@media (max-width: 768px) {
+  .footer {
+    padding: var(--spacing-2xl) 1.25rem var(--spacing-xl);
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .footer {
+    padding: var(--spacing-xl) 1rem var(--spacing-md);
+  }
+}
+
 
 .footer__nav {
   display: grid;
