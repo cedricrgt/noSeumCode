@@ -1,0 +1,11 @@
+{
+  "title": "WORKSHOPS TOUSSAINT GRATUITS",
+  "subtitle": "Boost tes skills gratuitement durant 2 heures en direct avec ton mentor !",
+  "emoji": "🍁",
+  "sessions": [
+    { "date": "Lun 26/10 (10h-12h)", "topic": "HTML & CSS" },
+    { "date": "Mar 27/10 (10h-12h)", "topic": "JavaScript" },
+    { "date": "Mer 28/10 (10h-12h)", "topic": "Git & GitHub" },
+    { "date": "Jeu 29/10 (10h-12h)", "topic": "Mini-Projet Guidé" }
+  ]
+}
