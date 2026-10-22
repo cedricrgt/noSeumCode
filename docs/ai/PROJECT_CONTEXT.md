@@ -50,12 +50,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `fix/mobile-responsive-ux-layout`
-## Current State: Correction de la mise en page et de l'ergonomie mobile : réduction des espacements latéraux excessifs, élimination du débordement horizontal sous 447px (#services et #mentor), intégration d'un accordéon compact sous le prix sur les cartes d'offres, masquage du tableau comparatif 800px sur mobile, et alignement systématique des paragraphes à gauche. Validation automatisée Playwright multi-résolutions (360px à 1024px) avec 0 overflow et suite E2E au vert (23/23).
-## Next Steps: Push de la branche `fix/mobile-responsive-ux-layout` vers GitHub et ouverture de la Pull Request vers `develop` via `gh pr create`.
-## Active Branch: `docs/sync-roadmap-status`
-## Current State: Synchronisation de `ROADMAP.md` pour refléter l'achèvement effectif de l'intégralité des 29 sprints initiaux du Kanban GitHub et des sprints 30 à 32. Validation factuelle dans le code source (SSG blog, Dockerfile, idempotence Stripe, découpage PaymentController/Service, Testcontainers, MDC logging).
-## Next Steps: Push de la branche `docs/sync-roadmap-status` et création de la PR vers `develop` via `gh pr create`.
+## Active Branch: `fix/cache-busting-assets`
+## Current State: Invalidation des query parameters de cache sur les assets clients (`homepage.min.css?v=20261022.1` et `script.min.js?v=20261022.1`) pour contourner le cache Cloudflare (cf-cache-status: HIT) et le cache disque navigateur persistant (max-age=31536000) empêchant le rendu des nouveautés responsive sur develop.noseumcode.fr.
+## Next Steps: Push de la branche `fix/cache-busting-assets` vers GitHub et ouverture de la Pull Request vers `develop` via `gh pr create`.
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 

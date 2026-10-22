@@ -2135,5 +2135,22 @@ eset-password.html.
 4. **Contexte Projet (`docs/ai/PROJECT_CONTEXT.md`)** :
    - Mise à jour de la branche active vers `docs/sync-roadmap-status`.
 
+---
+
+## 2026-10-22 | Conversation: c00c8d49-400c-408b-a2be-d169d82938d9
+
+**Type**: Correctif Cache-Busting CDN/Navigateur (`homepage.min.css` & `script.min.js`)  
+**Auteur**: Antigravity (Agent IA)  
+**Branche**: `fix/cache-busting-assets`  
+**Objectif**: Forcer l'invalidation du cache Cloudflare (`cf-cache-status: HIT`) et du cache disque des navigateurs mobiles pour propager instantanément les correctifs de mise en page responsive sans attendre l'expiration du `max-age=31536000` (1 an).
+
+### Réalisations & Livrables :
+1. **Invalidation du Cache Navigateur & CDN (`frontend/index.html`, `frontend/suivi-mentor.html`)** :
+   - Incrément de `homepage.min.css?v=sprint18.2` vers `homepage.min.css?v=20261022.1`.
+   - Incrément de `script.min.js?v=sprint15` vers `script.min.js?v=20261022.1`.
+2. **Recompilation & Minification** :
+   - Exécution de `node frontend/build.js` pour synchroniser l'ensemble des fichiers distribués (`homepage.min.css`, `script.min.js`, etc.).
+
+
 
 
