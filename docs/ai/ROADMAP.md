@@ -1,38 +1,38 @@
-# ROADMAP.md â€” Feuille de Route Commerciale NoSeumCode
+# ROADMAP.md — Feuille de Route Commerciale NoSeumCode
 
-> _DerniÃ¨re mise Ã  jour : 2026-10-04_  
-> _Objectif : Transformer le MVP NoSeumCode en produit final, sÃ©curisÃ©, commercialisable et prÃªt pour la production._
+> _Dernière mise à jour : 2026-10-22_  
+> _Objectif : Transformer le MVP NoSeumCode en produit final, sécurisé, commercialisable et prêt pour la production._
 
 ---
 
-## ðŸŽ¯ Vue d'ensemble des Sprints
+## 🎯 Vue d'ensemble des Sprints
 
-| Sprint | ThÃ¨me Principal | Objectif ClÃ© | Statut |
+| Sprint | Thème Principal | Objectif Clé | Statut |
 | :--- | :--- | :--- | :--- |
-| **Sprint 1** | **SÃ©curitÃ© & Paywall Serveur** | Bloquer l'accÃ¨s gratuit aux cours et sÃ©curiser le webhook Stripe (HMAC SHA-256) | âœ… **TerminÃ©** |
-| **Sprint 2** | **Tunnel de Vente & MonÃ©tisation** | IntÃ©grer Stripe Embedded Checkout rÃ©el et mÃ©tadonnÃ©es marchandes | âœ… **TerminÃ©** |
-| **Sprint 3** | **Auth, Comptes & E-mails** | Mot de passe oubliÃ©, emails transactionnels Brevo, sessions RTR 7 jours | âœ… **TerminÃ©** |
-| **Sprint 4** | **Quick Wins Conversion, Leads & LÃ©gal** | RÃ©parer les CTA Hero, dÃ©bloquer CSP HubSpot, sÃ©curiser `thanks.html`, pages lÃ©gales | âœ… **TerminÃ©** |
-| **Sprint 5** | **Portail Client Stripe** | Factures PDF, reÃ§us d'achat et gestion des moyens de paiement apprenant | âœ… **TerminÃ©** |
-| **Sprint 6** | **Workshops Gratuits Toussaint** | Bandeau header rÃ©activÃ©, page dÃ©diÃ©e `workshops.html`, jauge stricte 6 Ã©lÃ¨ves max | âœ… **TerminÃ©** |
-| **Sprint 7** | **Nouvelle Gamme & AccÃ¨s Cohortes** | Pack Starter (accÃ¨s replays Ã  vie), Pack Web, option VIP, Klarna BNPL via Stripe | âœ… **TerminÃ©** |
-| **Sprint 8** | **Performance Web & SEO Technique** | Compression images (<800 Ko), rendu statique dÃ©diÃ© formations, fix CLS, cache Apache | âœ… **TerminÃ©** |
-| **Sprint 9** | **Copywriting & Rassurance Parents/Jeunes** | Refonte Hero, section Ton Mentor, rassurance parents, Analytics RGPD cookieless | âœ… **TerminÃ©** |
-| **Sprint 10** | **Optimisation PageSpeed & Core Web Vitals** | LCP < 1.5s, Ã©radication CLS 0.175 sur Hero, dÃ©ferrement Stripe & GPU compositing | âœ… **TerminÃ©** |
-| **Sprint 11** | **IntÃ©gration Discord & CommunautÃ©** | OAuth2 Discord (`identify`, `email`, `guilds.join`), liaison compte, auto-join guild et synchronisation dynamique des rÃ´les selon le palier (Starter, Web, VIP) | âœ… **TerminÃ©** |
-| **Sprint 12** | **Web Performance, BFCache & Cache Policy** | DÃ©blocage BFCache (.htaccess), cache 1 an CSS/JS, versioning assets, Ã©lagage Google Fonts (-35Ko) | âœ… **TerminÃ©** |
-| **Sprint 13** | **Socle Technique, SÃ©curitÃ© Serveur & Assets** | DÃ©blocage CSP HubSpot, cache Apache Ã©tendu, SEO technique (robots.txt, sitemap), compression WebP (>5 Mo) et 3 pages lÃ©gales | âœ… **TerminÃ©** |
-| **Sprint 14** | **Nouvelle Architecture des Offres (3 Packages)** | ModÃ©lisation catalogue `cours.js` (Starter 89 â‚¬, Web Pro 179 â‚¬, VIP 389 â‚¬), alignement Stripe, navigation `header.html` et page parcours | âœ… **TerminÃ©** |
-| **Sprint 15** | **Refonte Copywriting Homepage & SEO SÃ©mantique** | Copywriting validÃ©, H1/Hero percutant, suppression du double regard, grille des 3 offres `#parcours`, FAQ 6 questions et mots-clÃ©s cibles | âœ… **TerminÃ©** |
-| **Sprint 16** | **Tunnel Lead Magnet, Onboarding & Cocon Blog** | SÃ©curisation `thanks.html` (liens PDF + upsell), onboarding `success.html`, gabarit cocon blog (`article.html`) et recette globale | âœ… **TerminÃ©** |
-| **Sprint 17** | **Urgences Vitales CRO & SEO (24h)** | Correction prix 3x, redirections 301 (.htaccess), fix canonical blog, CTA hero workshops, pack unique `thanks.html` | âœ… **TerminÃ©** |
-| **Sprint 18** | **Optimisation StratÃ©gique & IA / AEO (1 sem)** | DonnÃ©es structurÃ©es JSON-LD Course/FAQPage, Order Bump HTML Suivi Mentor (+199 â‚¬), avis preuve sociale, macaron garantie 14j | âœ… **TerminÃ©** |
-| **Sprint 19** | **Architecture Statique & SSG (1 mois)** | Suppression CSR Header/Footer via script de build Node.js, gÃ©nÃ©ration physique des articles (/blog/*.html), alignement sitemap.xml | ðŸ“‹ **Ã€ faire** |
-| **Sprint 20** | **Urgences Déploiement & Sécurité (P0)** | Correction Build Docker, suppression SUPERUSER, suppression DELETE Flyway, correction env | 🚧 **À faire** |
-| **Sprint 21** | **Consolidation Métier & Idempotence Stripe (P1)** | Idempotence Webhooks, prix DB, course slugs, Rate Limiting X-Forwarded-For | 🚧 **À faire** |
-| **Sprint 22** | **Dette Technique & Architecture (P2)** | Découpage PaymentController/Service, Bounded Contexts, Testcontainers, UI core | 🚧 **À faire** |
-| **Sprint 23** | **Finalisation Idempotence Stripe & Infra (P0)** | Entité StripeEvent, logique idempotence, vérification droits DBA, branch protection | 🚧 **À faire** |
-| **Sprint 24** | **Qualité, CI/CD et Observabilité (P1 & P2)** | Nettoyage secrets env, Testcontainers PostgreSQL, refactoring métier, Correlation ID | 🚧 **À faire** |
+| **Sprint 1** | **Sécurité & Paywall Serveur** | Bloquer l'accès gratuit aux cours et sécuriser le webhook Stripe (HMAC SHA-256) | ✅ **Terminé** |
+| **Sprint 2** | **Tunnel de Vente & Monétisation** | Intégrer Stripe Embedded Checkout réel et métadonnées marchandes | ✅ **Terminé** |
+| **Sprint 3** | **Auth, Comptes & E-mails** | Mot de passe oublié, emails transactionnels Brevo, sessions RTR 7 jours | ✅ **Terminé** |
+| **Sprint 4** | **Quick Wins Conversion, Leads & Légal** | Réparer les CTA Hero, débloquer CSP HubSpot, sécuriser `thanks.html`, pages légales | ✅ **Terminé** |
+| **Sprint 5** | **Portail Client Stripe** | Factures PDF, reçus d'achat et gestion des moyens de paiement apprenant | ✅ **Terminé** |
+| **Sprint 6** | **Workshops Gratuits Toussaint** | Bandeau header réactivé, page dédiée `workshops.html`, jauge stricte 6 élèves max | ✅ **Terminé** |
+| **Sprint 7** | **Nouvelle Gamme & Accès Cohortes** | Pack Starter (accès replays à vie), Pack Web, option VIP, Klarna BNPL via Stripe | ✅ **Terminé** |
+| **Sprint 8** | **Performance Web & SEO Technique** | Compression images (<800 Ko), rendu statique dédié formations, fix CLS, cache Apache | ✅ **Terminé** |
+| **Sprint 9** | **Copywriting & Rassurance Parents/Jeunes** | Refonte Hero, section Ton Mentor, rassurance parents, Analytics RGPD cookieless | ✅ **Terminé** |
+| **Sprint 10** | **Optimisation PageSpeed & Core Web Vitals** | LCP < 1.5s, éradication CLS 0.175 sur Hero, déferrement Stripe & GPU compositing | ✅ **Terminé** |
+| **Sprint 11** | **Intégration Discord & Communauté** | OAuth2 Discord (`identify`, `email`, `guilds.join`), liaison compte, auto-join guild et synchronisation dynamique des rôles selon le palier (Starter, Web, VIP) | ✅ **Terminé** |
+| **Sprint 12** | **Web Performance, BFCache & Cache Policy** | Déblocage BFCache (.htaccess), cache 1 an CSS/JS, versioning assets, élagage Google Fonts (-35Ko) | ✅ **Terminé** |
+| **Sprint 13** | **Socle Technique, Sécurité Serveur & Assets** | Déblocage CSP HubSpot, cache Apache étendu, SEO technique (robots.txt, sitemap), compression WebP (>5 Mo) et 3 pages légales | ✅ **Terminé** |
+| **Sprint 14** | **Nouvelle Architecture des Offres (3 Packages)** | Modélisation catalogue `cours.js` (Starter 89 €, Web Pro 179 €, VIP 389 €), alignement Stripe, navigation `header.html` et page parcours | ✅ **Terminé** |
+| **Sprint 15** | **Refonte Copywriting Homepage & SEO Sémantique** | Copywriting validé, H1/Hero percutant, suppression du double regard, grille des 3 offres `#parcours`, FAQ 6 questions et mots-clés cibles | ✅ **Terminé** |
+| **Sprint 16** | **Tunnel Lead Magnet, Onboarding & Cocon Blog** | Sécurisation `thanks.html` (liens PDF + upsell), onboarding `success.html`, gabarit cocon blog (`article.html`) et recette globale | ✅ **Terminé** |
+| **Sprint 17** | **Urgences Vitales CRO & SEO (24h)** | Correction prix 3x, redirections 301 (.htaccess), fix canonical blog, CTA hero workshops, pack unique `thanks.html` | ✅ **Terminé** |
+| **Sprint 18** | **Optimisation Stratégique & IA / AEO (1 sem)** | Données structurées JSON-LD Course/FAQPage, Order Bump HTML Suivi Mentor (+199 €), avis preuve sociale, macaron garantie 14j | ✅ **Terminé** |
+| **Sprint 19** | **Architecture Statique & SSG (1 mois)** | Suppression CSR Header/Footer via script de build Node.js, génération physique des articles (/blog/*.html), alignement sitemap.xml | ✅ **Terminé** |
+| **Sprint 20** | **Urgences Déploiement & Sécurité (P0)** | Correction Build Docker, suppression SUPERUSER, suppression DELETE Flyway, correction env | ✅ **Terminé** |
+| **Sprint 21** | **Consolidation Métier & Idempotence Stripe (P1)** | Idempotence Webhooks, prix DB, course slugs, Rate Limiting X-Forwarded-For | ✅ **Terminé** |
+| **Sprint 22** | **Dette Technique & Architecture (P2)** | Découpage PaymentController/Service, Bounded Contexts, Testcontainers, UI core | ✅ **Terminé** |
+| **Sprint 23** | **Finalisation Idempotence Stripe & Infra (P0)** | Entité StripeEvent, logique idempotence, vérification droits DBA, branch protection | ✅ **Terminé** |
+| **Sprint 24** | **Qualité, CI/CD et Observabilité (P1 & P2)** | Nettoyage secrets env, Testcontainers PostgreSQL, refactoring métier, Correlation ID | ✅ **Terminé** |
 | **Sprint 25** | **Sécurité Métier & Idempotence Stripe (P0)** | IDOR, usurpation session, verrou idempotence Stripe DB | ✅ **Terminé** |
 | **Sprint 26** | **E2E, CORS & Hygiène (P1 & P2)** | Playwright CI, durcissement CORS, HttpOnly cookies, nettoyage repo | ✅ **Terminé** |
 | **Sprint 27** | **Modélisation Formateurs & Sécurité RBAC** | Table d'affectation `course_teacher`, Spring Security `@courseSecurity`, isolation stricte | ✅ **Terminé** |
@@ -40,6 +40,7 @@
 | **Sprint 29** | **Discord Salons Scène & Vocaux Projets Manga** | Salons Scène de cours (live magistraux) + 3 salons vocaux libres de projets Manga (`luffy-code-lab`, `goku-dojo-live`, `naruto-team-hub`) | ✅ **Terminé** |
 | **Sprint 30** | **Recette E2E Globale, Accessibilité & Clôture** | Validation E2E Playwright de bout en bout, tests accessibilité clavier/écran, ADR-025 | ✅ **Terminé** |
 | **Sprint 31** | **Identité Mentor, Transparence Packs & Architecture Discord par Matière** | Bio véridique CDA & Formateur Bachelor (B1/B2), 4 badges SVG #00ff87, répartition 2h live + 2h labo, suppression fausse rareté, salons Discord Scène par cours + vocaux manga mutualisés | ✅ **Terminé** |
+| **Sprint 32** | **Copywriting Cohortes Live, Inscription Express & CRO** | Repositionnement Hero live, inscription express 2 champs (CRO), suppression totale "sans frais" et valorisation des ateliers gratuits | ✅ **Terminé** |
 
 ---
 
@@ -142,36 +143,37 @@ gantt
     Recette E2E & Audit PageSpeed CWV (16.4) :done, s16_4, 2026-09-30, 2026-09-30
 
     section Sprint 17 : Urgences Vitales CRO & SEO
-    Correction Tarifs 3x & Checkout (17.1)   :active, s17_1, 2026-10-03, 2026-10-04
-    Redirections HTTP 301 Apache (17.2)      :active, s17_2, 2026-10-03, 2026-10-04
-    Retrait Canonical article.html (17.3)    :active, s17_3, 2026-10-03, 2026-10-04
-    CTA Hero workshops.html (17.4)           :active, s17_4, 2026-10-03, 2026-10-04
-    Nettoyage Pack Unique thanks.html (17.5) :active, s17_5, 2026-10-03, 2026-10-04
+    Correction Tarifs 3x & Checkout (17.1)   :done, s17_1, 2026-10-03, 2026-10-04
+    Redirections HTTP 301 Apache (17.2)      :done, s17_2, 2026-10-03, 2026-10-04
+    Retrait Canonical article.html (17.3)    :done, s17_3, 2026-10-03, 2026-10-04
+    CTA Hero workshops.html (17.4)           :done, s17_4, 2026-10-03, 2026-10-04
+    Nettoyage Pack Unique thanks.html (17.5) :done, s17_5, 2026-10-03, 2026-10-04
 
-    section Sprint 18 : Optimisation StratÃ©gique & IA
-    JSON-LD Schema Course & FAQPage (18.1)   :s18_1, 2026-10-05, 2026-10-08
-    Order Bump HTML Mentorat (18.2)          :s18_2, 2026-10-05, 2026-10-09
-    Preuve Sociale & Avis RÃ©els (18.3)       :s18_3, 2026-10-06, 2026-10-09
-    Macaron Garantie 14 Jours (18.4)         :s18_4, 2026-10-07, 2026-10-10
+    section Sprint 18 : Optimisation Stratégique & IA
+    JSON-LD Schema Course & FAQPage (18.1)   :done, s18_1, 2026-10-05, 2026-10-08
+    Order Bump HTML Mentorat (18.2)          :done, s18_2, 2026-10-05, 2026-10-09
+    Preuve Sociale & Avis Réels (18.3)       :done, s18_3, 2026-10-06, 2026-10-09
+    Macaron Garantie 14 Jours (18.4)         :done, s18_4, 2026-10-07, 2026-10-10
 
     section Sprint 19 : Architecture Statique & SSG
-    Build Script SSG Header/Footer (19.1)    :s19_1, 2026-10-12, 2026-10-20
-    GÃ©nÃ©ration Physique Blog /blog/ (19.2)   :s19_2, 2026-10-15, 2026-10-25
-    CohÃ©rence DÃ©terministe Sitemap (19.3)    :s19_3, 2026-10-20, 2026-10-28
+    Build Script SSG Header/Footer (19.1)    :done, s19_1, 2026-10-12, 2026-10-20
+    Génération Physique Blog /blog/ (19.2)   :done, s19_2, 2026-10-15, 2026-10-25
+    Cohérence Déterministe Sitemap (19.3)    :done, s19_3, 2026-10-20, 2026-10-28
     section Phase 3 (Architecture & Déploiement)
-    Sprint 20 (Urgences & Sécurité) :active, sp20, 2026-10-07, 2d
-    Sprint 21 (Modèle Métier)       :sp21, after sp20, 3d
-    Sprint 22 (Dette Technique)     :sp22, after sp21, 5d
-    Sprint 23 (Idempotence & Infra) :sp23, after sp22, 2d
-    Sprint 24 (Qualité & CI/CD)     :sp24, after sp23, 3d
-    Sprint 25 (Sécurité & Idempotence):done, sp25, 2026-10-08, 1d
-    Sprint 26 (E2E, CORS & Nettoyage) :done, sp26, 2026-10-09, 1d
+    Sprint 20 (Urgences & Sécurité) :done, sp20, 2026-10-07, 2026-10-08
+    Sprint 21 (Modèle Métier)       :done, sp21, 2026-10-08, 2026-10-08
+    Sprint 22 (Dette Technique)     :done, sp22, 2026-10-08, 2026-10-08
+    Sprint 23 (Idempotence & Infra) :done, sp23, 2026-10-08, 2026-10-08
+    Sprint 24 (Qualité & CI/CD)     :done, sp24, 2026-10-08, 2026-10-08
+    Sprint 25 (Sécurité & Idempotence):done, sp25, 2026-10-08, 2026-10-08
+    Sprint 26 (E2E, CORS & Nettoyage) :done, sp26, 2026-10-09, 2026-10-09
     section Phase 4 (Pédagogie, Formateurs & Salons Discord)
-    Sprint 27 (Modélisation & Sécurité Formateurs) :done, sp27, 2026-10-11, 1d
-    Sprint 28 (Dashboard Formateurs & Admin)       :done, sp28, 2026-10-11, 2d
-    Sprint 29 (Salons Scène & Vocaux Manga)       :done, sp29, 2026-10-11, 2d
-    Sprint 30 (Recette E2E & Clôture)             :done, sp30, 2026-10-12, 1d
-    Sprint 32 (Copywriting & Tunnel Live)         :done, sp32, 2026-10-16, 1d
+    Sprint 27 (Modélisation & Sécurité Formateurs) :done, sp27, 2026-10-11, 2026-10-11
+    Sprint 28 (Dashboard Formateurs & Admin)       :done, sp28, 2026-10-11, 2026-10-11
+    Sprint 29 (Salons Scène & Vocaux Manga)       :done, sp29, 2026-10-11, 2026-10-11
+    Sprint 30 (Recette E2E & Clôture)             :done, sp30, 2026-10-12, 2026-10-12
+    Sprint 31 (Identité Mentor & Discord)         :done, sp31, 2026-10-13, 2026-10-13
+    Sprint 32 (Copywriting & Tunnel Live)         :done, sp32, 2026-10-16, 2026-10-16
 ```
 
 ---
@@ -467,85 +469,80 @@ gantt
 
 ---
 
-### Sprint 19 : Assainissement de l'Architecture & Rendu Statique SSG (1 mois)
-- **19.1 Ã‰radication du Client-Side Rendering (CSR) Header/Footer via Script de Build Node.js** :
+### Sprint 19 : Assainissement de l'Architecture & Rendu Statique SSG (Terminé)
+- **19.1 Éradication du Client-Side Rendering (CSR) Header/Footer via Script de Build Node.js** :
   - Remplacement de l'injection JavaScript asynchrone (`<div id="header-placeholder">` / `header.js`) par une compilation statique locale.
-  - Mise en place d'un script de build Node.js lÃ©ger (`build-static.js`) fusionnant `header.html`, le contenu de chaque page et `footer.html` en fichiers HTML statiques complets avant dÃ©ploiement.
-  - Conservation de l'architecture Vanilla sans dÃ©pendance Ã  un framework lourd (Next.js/Astro) tout en garantissant une visibilitÃ© 100% immÃ©diate pour les crawlers de recherche.
-- **19.2 Rendu Statique DÃ©diÃ© du Blog (SSG Blog / Fiches Physiques)** :
-  - Ã‰limination du modÃ¨le `article.html?id=...` non indexable au profit de pages physiques gÃ©nÃ©rÃ©es pour chaque article (ex: `/blog/apprendre-a-coder-debutant.html`).
-  - Chaque fichier gÃ©nÃ©rÃ© intÃ¨gre son contenu textuel en dur dans le DOM, des balises `<title>`, `<meta description>`, Open Graph et donnÃ©es structurÃ©es Schema.org `BlogPosting` uniques.
-- **19.3 CohÃ©rence DÃ©terministe du Sitemap & Routage (`frontend/sitemap.xml`, `frontend/.htaccess`)** :
-  - Alignement rigoureux des URLs dÃ©clarÃ©es dans le sitemap avec l'arborescence des fichiers statiques rÃ©ellement servis.
-  - Harmonisation des rÃ¨gles de rÃ©Ã©criture d'URL Apache pour garantir des URLs propres sans extension `.html` sans rupture de liens.
-
-
-
-
+  - Mise en place d'un script de build Node.js léger (`build-static.js`) fusionnant `header.html`, le contenu de chaque page et `footer.html` en fichiers HTML statiques complets avant déploiement.
+  - Conservation de l'architecture Vanilla sans dépendance à un framework lourd (Next.js/Astro) tout en garantissant une visibilité 100% immédiate pour les crawlers de recherche.
+- **19.2 Rendu Statique Dédié du Blog (SSG Blog / Fiches Physiques)** :
+  - Élimination du modèle `article.html?id=...` non indexable au profit de pages physiques générées pour chaque article (ex: `/blog/apprendre-a-coder-debutant.html`).
+  - Chaque fichier généré intègre son contenu textuel en dur dans le DOM, des balises `<title>`, `<meta description>`, Open Graph et données structurées Schema.org `BlogPosting` uniques.
+- **19.3 Cohérence Déterministe du Sitemap & Routage (`frontend/sitemap.xml`, `frontend/.htaccess`)** :
+  - Alignement rigoureux des URLs déclarées dans le sitemap avec l'arborescence des fichiers statiques réellement servis.
+  - Harmonisation des règles de réécriture d'URL Apache pour garantir des URLs propres sans extension `.html` sans rupture de liens.
 
 ---
 
-### Sprint 20 : Urgences DÃ©ploiement & SÃ©curitÃ© Infrastructure (P0)
+### Sprint 20 : Urgences Déploiement & Sécurité Infrastructure (P0) (Terminé)
 - **20.1 Correction du Build Docker (`backend/dockerfile`, `docker-compose.yml`)** :
   - Renommer le fichier `backend/dockerfile` en `backend/Dockerfile`.
   - S'assurer que le `docker-compose.yml` cible correctement le fichier en respectant la casse stricte de Linux.
-  - Valider la rÃ©solution par un run de validation CI.
-- **20.2 SÃ©curisation du Script de DÃ©ploiement (`.github/workflows/deploy.yml`)** :
-  - Supprimer l'attribution du privilÃ¨ge `SUPERUSER` au rÃ´le PostgreSQL de l'application. Ne conserver que les droits standard de lecture/Ã©criture.
-  - Retirer l'instruction `DELETE FROM flyway_schema_history WHERE success = false;`. Toute migration Ã©chouÃ©e doit Ãªtre corrigÃ©e manuellement.
-- **20.3 Alignement CI/CD de la Base de DonnÃ©es (`.github/workflows/backend-ci.yml`)** :
-  - Mettre Ã  jour l'image de base de la CI de `postgres:15` vers `postgres:16-alpine`.
+  - Valider la résolution par un run de validation CI.
+- **20.2 Sécurisation du Script de Déploiement (`.github/workflows/deploy.yml`)** :
+  - Supprimer l'attribution du privilège `SUPERUSER` au rôle PostgreSQL de l'application. Ne conserver que les droits standard de lecture/écriture.
+  - Retirer l'instruction `DELETE FROM flyway_schema_history WHERE success = false;`. Toute migration échouée doit être corrigée manuellement.
+- **20.3 Alignement CI/CD de la Base de Données (`.github/workflows/backend-ci.yml`)** :
+  - Mettre à jour l'image de base de la CI de `postgres:15` vers `postgres:16-alpine`.
 - **20.4 Assainissement de l'Environnement Frontend (`frontend/.env.example`)** :
-  - Ã‰liminer la variable `DATABASE_URL` du fichier modÃ¨le.
-- **20.5 Structuration Typologique de la MÃ©moire IA (`docs/ai/`)** :
-  - Ajouter un encart de contexte global forÃ§ant les agents IA Ã  considÃ©rer le code et les fichiers de configuration comme vÃ©ritÃ© technique absolue.
-  - ImplÃ©menter les statuts d'Ã©tat (`CURRENT`, `ACCEPTED`, `SUPERSEDED`) sur l'ensemble de la documentation dÃ©cisionnelle.
+  - Éliminer la variable `DATABASE_URL` du fichier modèle.
+- **20.5 Structuration Typologique de la Mémoire IA (`docs/ai/`)** :
+  - Ajouter un encart de contexte global forçant les agents IA à considérer le code et les fichiers de configuration comme vérité technique absolue.
+  - Implémenter les statuts d'état (`CURRENT`, `ACCEPTED`, `SUPERSEDED`) sur l'ensemble de la documentation décisionnelle.
 
 ---
 
-### Sprint 21 : Consolidation du ModÃ¨le MÃ©tier & Idempotence Stripe (P1)
-- **21.1 Ã‰radication des DonnÃ©es MÃ©tier en Dur (`PaymentService.java`, `StripeGatewayImpl.java`)** :
-  - Extraire les prix codÃ©s en dur (29900L, 44900L) de l'implÃ©mentation Stripe.
+### Sprint 21 : Consolidation du Modèle Métier & Idempotence Stripe (P1) (Terminé)
+- **21.1 Éradication des Données Métier en Dur (`PaymentService.java`, `StripeGatewayImpl.java`)** :
+  - Extraire les prix codés en dur (29900L, 44900L) de l'implémentation Stripe.
   - Remplacer les appels d'instanciation manuelle d'UUID par des recherches via `slug` ou `code_produit`.
 - **21.2 Idempotence Stricte des Webhooks Stripe (`StripeWebhookService.java`)** :
-  - CrÃ©er la table PostgreSQL `stripe_event` via Flyway (colonnes : `id`, `stripe_event_id UNIQUE`, `type`, `processed_at`).
-  - Bloquer toute exÃ©cution mÃ©tier si le `stripe_event_id` a dÃ©jÃ  Ã©tÃ© traitÃ©.
+  - Créer la table PostgreSQL `stripe_event` via Flyway (colonnes : `id`, `stripe_event_id UNIQUE`, `type`, `processed_at`).
+  - Bloquer toute exécution métier si le `stripe_event_id` a déjà été traité.
 - **21.3 Durcissement CORS et Rate Limiting (`SecurityConfig.java`)** :
-  - Substituer la politique CORS permissive de dÃ©veloppement Ã  une politique stricte pilotÃ©e par profil.
-  - VÃ©rifier la bonne prise en charge de `X-Forwarded-For` avec la configuration de proxy Nginx.
-- **21.4 Feuille de Route Auth : PrÃ©paration Migration JWT** :
-  - RÃ©diger les spÃ©cifications pour la migration de la persistance du JWT (du `localStorage` vers un cookie `HttpOnly Secure SameSite`).
+  - Substituer la politique CORS permissive de développement à une politique stricte pilotée par profil.
+  - Vérifier la bonne prise en charge de `X-Forwarded-For` avec la configuration de proxy Nginx.
+- **21.4 Feuille de Route Auth : Préparation Migration JWT** :
+  - Rédiger les spécifications pour la migration de la persistance du JWT (du `localStorage` vers un cookie `HttpOnly Secure SameSite`).
 
 ---
 
-### Sprint 22 : RÃ©sorption de la Dette Technique & Architecture (P2)
-- **22.1 DÃ©coupage des Classes Centrales de Paiement (`PaymentController.java`, `PaymentService.java`)** :
-  - Scinder `PaymentController` en responsabilitÃ©s REST limitÃ©es : `CheckoutController`, `StripeWebhookController`, et `AdminPaymentController`.
-  - Diviser `PaymentService` en sous-services dÃ©diÃ©s (`CheckoutService`, `EnrollmentProvisioningService`, `PaymentStatusService`).
-- **22.2 RÃ©organisation Modulaire des Bounded Contexts** :
-  - Aligner progressivement l'arborescence des packages Java sur les vÃ©ritables domaines d'affaires (`identity/`, `catalog/`, `commerce/`, `learning/`, `mentoring/`).
-- **22.3 Fiabilisation de l'IntÃ©gration via Testcontainers** :
+### Sprint 22 : Résorption de la Dette Technique & Architecture (P2) (Terminé)
+- **22.1 Découpage des Classes Centrales de Paiement (`PaymentController.java`, `PaymentService.java`)** :
+  - Scinder `PaymentController` en responsabilités REST limitées : `CheckoutController`, `StripeWebhookController`, et `AdminPaymentController`.
+  - Diviser `PaymentService` en sous-services dédiés (`CheckoutService`, `EnrollmentProvisioningService`, `PaymentStatusService`).
+- **22.2 Réorganisation Modulaire des Bounded Contexts** :
+  - Aligner progressivement l'arborescence des packages Java sur les véritables domaines d'affaires (`identity/`, `catalog/`, `commerce/`, `learning/`, `mentoring/`).
+- **22.3 Fiabilisation de l'Intégration via Testcontainers** :
   - Introduire Testcontainers pour PostgreSQL dans le cycle de tests backend.
 - **22.4 Architecture Modulaire du Frontend Vanilla** :
-  - Structurer le rÃ©pertoire client sous la forme : `core/`, `features/` et `ui/`.
-
+  - Structurer le répertoire client sous la forme : `core/`, `features/` et `ui/`.
 
 ---
 
-### Sprint 23 : Finalisation Idempotence Stripe & SÃ©curisation Infra (P0)
-- **23.1 EntitÃ© et Repository StripeEvent** : Mapping JPA de la table `stripe_event`.
-- **23.2 Logique d'idempotence Webhook** : Extraction de `event.id` du payload Stripe, vÃ©rification de non-existence en base avant traitement, et sauvegarde de l'Ã©vÃ©nement.
-- **23.3 Assainissement du script de dÃ©ploiement** : Suppression du nettoyage Flyway (`DELETE FROM flyway_schema_history`) et du masquage d'erreur du healthcheck (`|| echo`).
-- **23.4 RÃ©vocation des droits DBA applicatifs** : Ajustement des requÃªtes de crÃ©ation d'utilisateur dans le dÃ©ploiement pour n'octroyer que les permissions DML/DDL de base.
+### Sprint 23 : Finalisation Idempotence Stripe & Sécurisation Infra (P0) (Terminé)
+- **23.1 Entité et Repository StripeEvent** : Mapping JPA de la table `stripe_event`.
+- **23.2 Logique d'idempotence Webhook** : Extraction de `event.id` du payload Stripe, vérification de non-existence en base avant traitement, et sauvegarde de l'événement.
+- **23.3 Assainissement du script de déploiement** : Suppression du nettoyage Flyway (`DELETE FROM flyway_schema_history`) et du masquage d'erreur du healthcheck (`|| echo`).
+- **23.4 Révocation des droits DBA applicatifs** : Ajustement des requêtes de création d'utilisateur dans le déploiement pour n'octroyer que les permissions DML/DDL de base.
 - **23.5 Protection des branches GitHub** : Activation des *Branch Protection Rules* sur `develop` et `main` (PR et CI obligatoires).
 
 ---
 
-### Sprint 24 : QualitÃ©, CI/CD et ObservabilitÃ© (P1 & P2)
-- **24.1 Nettoyage des scories du projet** : Suppression de `STRIPE_SECRET_KEY` du `.env.example` frontend et suppression des `.DS_Store` trackÃ©s via `git rm --cached`.
-- **24.2 ImplÃ©mentation de Testcontainers** : Ajout de Testcontainers PostgreSQL pour les tests de la couche de persistance.
-- **24.3 DÃ©coupage `PaymentController` et `PaymentService`** : Refactoring pour Ã©liminer les "God Classes" de la logique de paiement.
-- **24.4 ObservabilitÃ© (Correlation ID)** : Mise en place d'un filtre interceptant ou gÃ©nÃ©rant un Request ID injectÃ© dans le contexte de log (MDC) pour toutes les requÃªtes entrantes.
+### Sprint 24 : Qualité, CI/CD et Observabilité (P1 & P2) (Terminé)
+- **24.1 Nettoyage des scories du projet** : Suppression de `STRIPE_SECRET_KEY` du `.env.example` frontend et suppression des `.DS_Store` trackés via `git rm --cached`.
+- **24.2 Implémentation de Testcontainers** : Ajout de Testcontainers PostgreSQL pour les tests de la couche de persistance.
+- **24.3 Découpage `PaymentController` et `PaymentService`** : Refactoring pour éliminer les "God Classes" de la logique de paiement.
+- **24.4 Observabilité (Correlation ID)** : Mise en place d'un filtre interceptant ou générant un Request ID injecté dans le contexte de log (MDC) pour toutes les requêtes entrantes.
 
 
 
@@ -650,6 +647,15 @@ gantt
   - Rédaction de l'ADR-025 dans `docs/ai/DECISIONS.md` (*Architecture d'Affectation des Formateurs (course_teacher), Cloisonnement RBAC & Salons Discord Scène / Manga*).
   - Mise à jour de `PROJECT_CONTEXT.md`, `ROADMAP.md` et `CHANGELOG.md`.
   - Validation complète des 215 tests backend Spring Boot (`BUILD SUCCESS`).
+
+---
+
+### Sprint 31 : Identité Mentor, Transparence Packs & Architecture Discord par Matière (Terminé)
+- **31.1 Bio Fondateur & Badges SVG** : Remplacement des allégations par le parcours réel de Cédric (CDA Bac+3/4, formateur Bachelor B1 & B2), 4 badges SVG `#00ff87` sans émoji brut, mise à jour des métadonnées JSON-LD Person et régénération SSG des articles de blog.
+- **31.2 Transparence des Packs** : Découpage transparent du volume horaire (Starter 24h = 12h live + 12h labo projet, Web Pro 48h = 24h live + 24h labo projet, rythme 4h/semaine).
+- **31.3 Éradication Fausse Rareté Workshops** : Suppression des compteurs factices et badges d'urgence trompeurs dans `workshops.js`.
+- **31.4 Architecture Discord par Matière** : Création des catégories de cours avec salons Scène dédiés (HTML & CSS, JS, Git Deploy, Git CI/CD) et salons vocaux manga mutualisés (`luffy`, `goku`, `naruto`) en catégorie Équipe.
+- **31.5 Dashboard Apprenant** : Intégration dynamique du bouton Scène Live par carte de cours actif avec résolution d'URL dédiée.
 
 ---
 
