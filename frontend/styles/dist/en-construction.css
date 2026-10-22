@@ -46,8 +46,23 @@
 @media (max-width: 768px) {
   :root {
     --header-height: calc(80px + var(--banner-height));
+    --spacing-xl: 1.5rem;
+    --spacing-2xl: 2rem;
+    --spacing-3xl: 2.75rem;
+    --spacing-4xl: 3.5rem;
   }
 }
+
+@media (max-width: 480px) {
+  :root {
+    --spacing-lg: 1.25rem;
+    --spacing-xl: 1.25rem;
+    --spacing-2xl: 1.5rem;
+    --spacing-3xl: 2rem;
+    --spacing-4xl: 2.5rem;
+  }
+}
+
 
 body {
   font-family: "Poppins", sans-serif;
@@ -212,6 +227,10 @@ section[id], div[id] {
   margin-bottom: var(--spacing-xl);
 }
 
+p {
+  text-align: left;
+}
+
 .card-grid {
   --min-column-size: 320px;
   --gap: var(--spacing-xl);
@@ -219,14 +238,43 @@ section[id], div[id] {
   display: grid;
   gap: var(--gap);
   justify-content: center;
-  grid-template-columns: repeat(auto-fit, minmax(var(--min-column-size), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--min-column-size)), 1fr));
   text-align: left;
 }
 
 .section {
   padding: var(--spacing-3xl) var(--spacing-xl);
+  text-align: left;
+}
+
+.section-header,
+.courses__header,
+.mentor__header,
+.proof__header,
+.rassurance__header,
+.faq__title,
+.text-center {
   text-align: center;
 }
+
+@media (max-width: 768px) {
+  .section {
+    padding: var(--spacing-2xl) 1.25rem;
+  }
+
+  .card-grid {
+    --min-column-size: 100%;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding: var(--spacing-xl) 1rem;
+  }
+}
+
 
 .section--dark {
   background: linear-gradient(135deg, #0a1628 0%, #1a2332 100%);
@@ -521,6 +569,13 @@ html {
 .card-paddingtop .card__imageContainer {
   height: 250px;
 }
+
+@media (max-width: 768px) {
+  .card__main {
+    padding: 1.25rem 1rem;
+  }
+}
+
 
 
 
@@ -1579,9 +1634,24 @@ html {
   color: var(--white);
   padding: var(--spacing-3xl) var(--spacing-xl) var(--spacing-xl);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: var(--spacing-2xl);
 }
+
+@media (max-width: 768px) {
+  .footer {
+    padding: var(--spacing-2xl) 1.25rem var(--spacing-xl);
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .footer {
+    padding: var(--spacing-xl) 1rem var(--spacing-md);
+  }
+}
+
 
 .footer__nav {
   display: grid;

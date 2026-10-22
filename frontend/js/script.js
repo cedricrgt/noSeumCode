@@ -206,11 +206,29 @@ function initOrderBumpPricing() {
   }
 }
 
+// Synchronize Package Accordions: auto-collapse on mobile (<= 768px), keep open on desktop
+function syncPackageAccordions() {
+  const isDesktop = window.innerWidth > 768;
+  document.querySelectorAll(".package-accordion").forEach((accordion) => {
+    if (isDesktop) {
+      accordion.setAttribute("open", "");
+    } else {
+      accordion.removeAttribute("open");
+    }
+  });
+}
+
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initOrderBumpPricing);
+  document.addEventListener("DOMContentLoaded", () => {
+    initOrderBumpPricing();
+    syncPackageAccordions();
+  });
 } else {
   initOrderBumpPricing();
+  syncPackageAccordions();
 }
+window.addEventListener("resize", syncPackageAccordions);
+
 
 console.log(
   "%cNoSeumCode - Code ton avenir!",

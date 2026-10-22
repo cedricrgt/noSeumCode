@@ -2084,4 +2084,38 @@ eset-password.html.
    - Exécution de `./mvnw test-compile` : succès (134 fichiers sources et 33 classes de test).
    - Exécution du test E2E Playwright `tests/workshops.spec.js` : succès au vert.
 
+---
+
+## 2026-10-22 | Conversation: c00c8d49-400c-408b-a2be-d169d82938d9
+
+**Type**: Correctif UX & Responsive Mobile (Paddings, Débordements <447px, Accordéon Cartes & Masquage Tableau Comparatif)  
+**Auteur**: Antigravity (Agent IA)  
+**Branche**: `fix/mobile-responsive-ux-layout`  
+**Objectif**: Résoudre les anomalies ergonomiques et de mise en page sur mobile : marges excessives créant des colonnes de texte trop étroites, débordement horizontal sous 447px sur `#services` et `#mentor`, scrolling excessif des cartes d'offres via un accordéon sous le prix, retrait du tableau comparatif défilant sur mobile, et rétablissement de l'alignement à gauche des paragraphes.
+
+### Réalisations & Livrables :
+1. **Optimisation des Espacements & Paddings Mobiles (`reset.css`, `utilities.css`, `hero.css`, `cards.css`, `rassurance.css`, `faq.css`, `footer.css`)** :
+   - Redéfinition des variables de spacing pour mobile (`--spacing-xl: 1.5rem`, `--spacing-2xl: 2rem`, `--spacing-3xl: 2.75rem`, `--spacing-4xl: 3.5rem` sous 768px, et `1rem` - `1.25rem` sous 480px).
+   - Réduction du padding latéral des sections de 48px à 20px (1.25rem) sous 768px et 16px (1rem) sous 480px, libérant plus de 50px de largeur utile pour la lecture sans effet colonne étroite.
+2. **Élimination du Débordement Horizontal sous 447px (`mentor.css`, `presentation.css`, `utilities.css`, `blog.css`, `courses.css`)** :
+   - Passage des grilles rigides `minmax(300px, 1fr)` et `minmax(280px, 1fr)` en colonnes fluides `1fr` sous 768px avec `minmax(min(100%, ...), 1fr)`.
+   - Ajustement de la taille de l'avatar formateur (`.mentor__avatar`) de 240px fixes à 160px (et 130px sous 480px) avec `max-width: 100%`, et réduction des paddings de `.mentor__hero` et `.mentor__pillar-card`.
+3. **Normalisation de l'Alignement Typographique** :
+   - Rétablissement de `text-align: left` par défaut pour tous les paragraphes (`p`) et sections (`.section`).
+   - Suppression du style inline `text-align: center` sur `.package-tagline` dans `frontend/index.html`.
+   - Centrage réservé exclusivement aux titres et sous-titres des en-têtes de sections (`.section-title`, `.section-subtitle`, `.section-header`, `.text-center`).
+4. **Accordéon Mobile sur les Cartes d'Offres (`frontend/index.html`, `courses.css`, `script.js`)** :
+   - Intégration d'un composant `<details class="package-accordion">` sous le prix regroupant les fonctionnalités détaillées et le programme modulaire.
+   - Sur mobile (<= 768px) : l'accordéon est replié par défaut via `syncPackageAccordions()`, réduisant la hauteur de chaque carte de ~900px à ~350px pour un balayage rapide des deux offres.
+   - Sur grand écran (> 768px) : l'accordéon reste automatiquement ouvert et son bouton masqué (`display: none`), préservant la comparaison côte à côte sans friction.
+   - Préservation des sélecteurs et éléments interactifs (`#bump-starter`, `#btn-buy-starter`, `#bump-web-pro`, `#btn-buy-web-pro`) pour les flux de conversion et les tests automatisés.
+5. **Traitement Mobile du Tableau Comparatif (`courses.css`, `index.html`)** :
+   - Ajout de la classe `.comparison-table-section` et masquage complet sous 768px (`display: none !important;`).
+   - Justification UX : élimination d'un anti-pattern de défilement horizontal (800px sur écran 375px affichant une seule colonne) redondant à 100% avec les 2 cartes d'offres situées directement au-dessus.
+6. **Validation & Compilation** :
+   - Recompilation et minification complètes via `node frontend/build.js` (`homepage.min.css`, `script.min.js`, etc.).
+   - Validation automatisée Playwright multi-écrans (360px, 375px, 414px, 447px, 480px, 768px, 1024px) confirmant `overflow: false` sur tous les viewports.
+   - Suite complète de tests E2E `e2e/` validée à 100% (23 passed, 3 skipped).
+
+
 

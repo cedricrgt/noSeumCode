@@ -46,8 +46,23 @@
 @media (max-width: 768px) {
   :root {
     --header-height: calc(80px + var(--banner-height));
+    --spacing-xl: 1.5rem;
+    --spacing-2xl: 2rem;
+    --spacing-3xl: 2.75rem;
+    --spacing-4xl: 3.5rem;
   }
 }
+
+@media (max-width: 480px) {
+  :root {
+    --spacing-lg: 1.25rem;
+    --spacing-xl: 1.25rem;
+    --spacing-2xl: 1.5rem;
+    --spacing-3xl: 2rem;
+    --spacing-4xl: 2.5rem;
+  }
+}
+
 
 body {
   font-family: "Poppins", sans-serif;

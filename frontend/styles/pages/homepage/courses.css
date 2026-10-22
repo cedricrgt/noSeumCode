@@ -5,7 +5,7 @@
 
 .courses__cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: var(--spacing-xl);
 }
 
@@ -266,3 +266,118 @@
   line-height: 1.4;
   color: #e2e8f0;
 }
+
+/* Accordion Package Cards (Mobile-first UX optimization) */
+.package-accordion {
+  margin: 0.85rem 0;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+  transition: all var(--transition-fast);
+}
+
+.card-featured .package-accordion {
+  border: 1px solid rgba(0, 255, 135, 0.25);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.package-accordion__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #0369a1;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.package-accordion__summary::-webkit-details-marker {
+  display: none;
+}
+
+.package-accordion__summary::after {
+  content: "▾";
+  font-size: 1.1rem;
+  transition: transform var(--transition-fast);
+}
+
+.package-accordion[open] > .package-accordion__summary::after {
+  transform: rotate(180deg);
+}
+
+.card-featured .package-accordion__summary {
+  color: #00ff87;
+}
+
+.package-accordion__content {
+  padding: 0.5rem 1rem 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.card-featured .package-accordion__content {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (min-width: 769px) {
+  .package-accordion {
+    border: none;
+    background: transparent;
+    margin: 0;
+  }
+  .card-featured .package-accordion {
+    border: none;
+    background: transparent;
+  }
+  .package-accordion__summary {
+    display: none;
+  }
+  .package-accordion__content {
+    padding: 0;
+    border-top: none;
+  }
+  .card-featured .package-accordion__content {
+    border-top: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-package {
+    padding: 1.5rem 1.1rem;
+  }
+
+  .courses__cards {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .comparison-table-section {
+    display: none !important;
+  }
+
+  .proof {
+    padding: var(--spacing-2xl) 1.25rem;
+  }
+
+  .proof__grid {
+    gap: var(--spacing-md);
+  }
+
+  .proof__item {
+    padding: 1.25rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-package {
+    padding: 1.25rem 0.9rem;
+  }
+
+  .proof {
+    padding: var(--spacing-xl) 1rem;
+  }
+}
+

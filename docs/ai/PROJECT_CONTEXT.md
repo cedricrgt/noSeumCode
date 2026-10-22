@@ -50,10 +50,11 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `fix/workshops-syntax-error`
-## Current State: Résolution du SyntaxError dans `workshops.js` causé par des guillemets doubles non échappés sur le balisage SVG de `showToast()`. Neutralisation XSS avec `escapeHtml()`, remplacement des émojis par des composants SVG vectoriels, sécurisation de la résolution API avec `getApiBaseUrl()`, et invalidation du cache navigateur dans `workshops.html` (`v=sprint12.1`). Suite Playwright validée au vert (23/23).
-## Next Steps: Push de la branche `fix/workshops-syntax-error` vers GitHub et ouverture de la Pull Request vers `develop` via `gh pr create`.
+## Active Branch: `fix/mobile-responsive-ux-layout`
+## Current State: Correction de la mise en page et de l'ergonomie mobile : réduction des espacements latéraux excessifs, élimination du débordement horizontal sous 447px (#services et #mentor), intégration d'un accordéon compact sous le prix sur les cartes d'offres, masquage du tableau comparatif 800px sur mobile, et alignement systématique des paragraphes à gauche. Validation automatisée Playwright multi-résolutions (360px à 1024px) avec 0 overflow et suite E2E au vert (23/23).
+## Next Steps: Push de la branche `fix/mobile-responsive-ux-layout` vers GitHub et ouverture de la Pull Request vers `develop` via `gh pr create`.
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
+
 
 ## Roles: STUDENT | TEACHER | ADMIN
 ## Modèle Relationnel Formateurs & Endpoints Dédiés:

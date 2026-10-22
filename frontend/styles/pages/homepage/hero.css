@@ -195,9 +195,16 @@
 
 @media (max-width: 768px) {
   .hero {
-    padding: calc(var(--header-height) + var(--spacing-3xl)) var(--spacing-xl) var(--spacing-3xl);
+    padding: calc(var(--header-height) + var(--spacing-lg)) 1.25rem var(--spacing-2xl);
   }
 }
+
+@media (max-width: 480px) {
+  .hero {
+    padding: calc(var(--header-height) + var(--spacing-sm)) 1rem var(--spacing-xl);
+  }
+}
+
 
 @keyframes bounce {
   0%,
