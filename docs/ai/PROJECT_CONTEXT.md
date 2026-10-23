@@ -50,9 +50,9 @@ frontend/
 - **Staging / Dev Frontend**: o2switch (`https://develop.noseumcode.fr`) via push on `develop` (`ftp-dev.yml` -> `develop.noseumcode.fr/`). Document Root cPanel: `noseumcode.fr/yefa3951/develop.noseumcode.fr`.
 - **Backend API**: Oracle Cloud VM (`https://api.noseumcode.fr`) via push on `develop` (`deploy.yml`).
 
-## Active Branch: `fix/cache-busting-assets`
-## Current State: Invalidation des query parameters de cache sur les assets clients (`homepage.min.css?v=20261022.1` et `script.min.js?v=20261022.1`) pour contourner le cache Cloudflare (cf-cache-status: HIT) et le cache disque navigateur persistant (max-age=31536000) empêchant le rendu des nouveautés responsive sur develop.noseumcode.fr.
-## Next Steps: Push de la branche `fix/cache-busting-assets` vers GitHub et ouverture de la Pull Request vers `develop` via `gh pr create`.
+## Active Branch: `fix/stripe-publishable-key-env`
+## Current State: Résolution de l'absence de la clé publique Stripe dans le pipeline CI/CD Oracle (deploy.yml) et support dual-variable STRIPE_PUBLISHABLE_KEY / STRIPE_PUBLIC_KEY dans le backend Spring Boot.
+## Next Steps: Push de la branche `fix/stripe-publishable-key-env` et ouverture de la PR vers `develop`.
 ## Git Governance: Never push directly to `develop` (triggers auto-deploy to Oracle VM and o2switch dev). Work on dedicated branches (`feat/*`, `fix/*`, `docs/*`) and open PRs to `develop` for manual merge (ADR-009). All commit messages and PR descriptions must be written strictly in English (Conventional Commits, zero emojis, zero boilerplate).
 
 

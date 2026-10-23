@@ -15,7 +15,7 @@ public class PaymentConfigController {
     private final String stripePublishableKey;
 
     public PaymentConfigController(
-            @Value("${stripe.publishable.key:${STRIPE_PUBLISHABLE_KEY:}}") String stripePublishableKey) {
+            @Value("${stripe.publishable.key:${STRIPE_PUBLISHABLE_KEY:${STRIPE_PUBLIC_KEY:}}}") String stripePublishableKey) {
         this.stripePublishableKey = stripePublishableKey != null ? stripePublishableKey : "";
     }
 

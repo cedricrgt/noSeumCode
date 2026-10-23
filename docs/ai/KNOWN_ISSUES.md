@@ -280,7 +280,22 @@ _Last updated: 2026-10-12 | Audit de Sécurité Aikido (Secrets, SAST XSS & SCA 
 5. Invalidation immédiate du cache navigateur dans `frontend/workshops.html` via `workshops.js?v=sprint12.1`.
 6. Validation par tests unitaires `node -c` et ajout de la suite E2E Playwright `e2e/tests/workshops.spec.js` (23/23 tests passés avec succès).
 
+### ISSUE-041 ✅ [Stripe] Clé publique Stripe Publishable absente de deploy.yml et discordance de nommage [RÉSOLU]
+**Status**: Résolu.
+**Symptôme**: Sur le frontend, l'ouverture du terminal de paiement échoue avec l'erreur : `Error: Clé de paiement publique Stripe non configurée. Impossible d'initialiser le terminal de paiement sécurisé.`
+**Causes racines identifiées** :
+1. *Variable absente du pipeline CI/CD deploy.yml* : Le workflow `deploy.yml` générant le `.env` de production sur la VM Oracle ne transmettait ni `STRIPE_PUBLISHABLE_KEY` ni `STRIPE_PUBLIC_KEY`. À chaque déploiement sur `develop`, `backend/.env` était réécrit sans cette variable, écrasant toute configuration manuelle.
+2. *Discordance de nommage* : Dans GitHub Secrets et dans les conventions Stripe, la clé est parfois nommée `STRIPE_PUBLIC_KEY`, tandis que le backend Spring Boot attendait strictement `${STRIPE_PUBLISHABLE_KEY}`.
+3. *Non-rechargement Docker* : La modification du `.env` sur la machine hôte sans recréation du conteneur ne rechargeait pas les variables d'environnement du conteneur en cours d'exécution.
+**Fix appliqué** :
+1. Mise à jour de `deploy.yml` pour injecter `${{ secrets.STRIPE_PUBLISHABLE_KEY || secrets.STRIPE_PUBLIC_KEY }}` dans SSH `env`, `envs`, `.env.tpl` et `VARS_TO_SUBST`.
+2. Support dual-variable dans `application.properties`, `PaymentConfigController` et `StripeGatewayImpl` : `${stripe.publishable.key:${STRIPE_PUBLISHABLE_KEY:${STRIPE_PUBLIC_KEY:}}}`.
+3. Tests unitaires Spring Boot validés à 100%.
+
 ## Fausses Hypothèses à Éviter
+- Ne pas supposer qu'éditer manuellement `.env` sur la VM Oracle persiste après un déploiement GitHub Actions : `deploy.yml` réécrit intégralement `backend/.env` via `envsubst` à partir de `.env.tpl`. Toute variable manquante dans `deploy.yml` est écrasée.
+- Ne pas supposer que Spring Boot résout automatiquement `STRIPE_PUBLIC_KEY` quand il est configuré avec `${STRIPE_PUBLISHABLE_KEY}` : toujours déclarer les alias `${STRIPE_PUBLISHABLE_KEY:${STRIPE_PUBLIC_KEY:}}` pour tolérer les deux conventions.
+- Ne pas supposer qu'éditer `.env` sur l'hôte Docker met à jour les conteneurs en cours d'exécution : un conteneur en cours d'exécution conserve les variables d'environnement injectées à son instanciation ; un redémarrage (`docker compose up -d` ou `docker compose restart backend`) est indispensable.
 - Ne pas supposer que les environnements de production et de développement doivent partager la même politique CORS : en production, les wildcards (`*.noseumcode.fr`) et les origines localhost/LAN doivent impérativement être rejetés pour prévenir les attaques de cross-origin non autorisées.
 - Ne pas supposer que Playwright peut s'exécuter dans un runner CI GitHub Actions sans installer au préalable les binaires des navigateurs : `npx playwright install --with-deps chromium` est indispensable.
 - Ne pas commiter de fichiers contenant des caractères non-ASCII ou des tirets cadratins (`–`) sans vérifier la normalisation Unicode : sous Windows et Mac, cela crée des doublons avec mojibake (`ÔÇô`) et des conflits de chemins d'accès Git.

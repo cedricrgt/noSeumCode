@@ -2154,3 +2154,24 @@ eset-password.html.
 
 
 
+
+---
+
+## 2026-10-23 | Conversation: 7e4ac773-b035-473c-8cf3-65bda6a8f6ec
+
+**Type**: Correctif Configuration Stripe CI/CD & Dual Variable Key Resolution
+**Auteur**: Antigravity (Agent IA)
+**Branche**: `fix/stripe-publishable-key-env`
+**Objectif**: Corriger l'échec d'initialisation du paywall Stripe (`Error: Clé de paiement publique Stripe non configurée`) causé par l'absence d'injection de la clé publique dans le workflow GitHub Actions `deploy.yml` et par la discordance de nommage entre conventions (`STRIPE_PUBLISHABLE_KEY` vs `STRIPE_PUBLIC_KEY`).
+
+### Réalisations & Livrables :
+1. **Pipeline de Déploiement CI/CD (`.github/workflows/deploy.yml`)** :
+   - Ajout de `STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY || secrets.STRIPE_PUBLIC_KEY }}` dans le bloc d'environnement SSH action.
+   - Ajout de `STRIPE_PUBLISHABLE_KEY` dans la liste `envs`.
+   - Ajout des variables `STRIPE_PUBLISHABLE_KEY` et `STRIPE_PUBLIC_KEY` dans le template `backend/.env.tpl` et dans `VARS_TO_SUBST`.
+2. **Résolution Robuste Dual-Variable dans le Backend Spring Boot** :
+   - Mise à jour de `application.properties` : `stripe.publishable.key=${STRIPE_PUBLISHABLE_KEY:${STRIPE_PUBLIC_KEY:}}`.
+   - Mise à jour de `PaymentConfigController.java` (`GET /api/config/stripe-key`) et de `StripeGatewayImpl.java` pour supporter les deux alias de variables d'environnement.
+3. **Tests & Validation** :
+   - Exécution complète des tests Spring Boot ciblés (`PaymentConfigControllerTest`, `PaymentCheckoutServiceTest`) : 22 tests passés avec succès, 0 échec.
+   - Documentation de l'anomalie dans `docs/ai/KNOWN_ISSUES.md` (ISSUE-041).
