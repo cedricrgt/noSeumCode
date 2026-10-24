@@ -1,6 +1,6 @@
 # ROADMAP.md — Feuille de Route Commerciale NoSeumCode
 
-> _Dernière mise à jour : 2026-10-22_  
+> _Dernière mise à jour : 2026-10-24_  
 > _Objectif : Transformer le MVP NoSeumCode en produit final, sécurisé, commercialisable et prêt pour la production._
 
 ---
@@ -41,6 +41,7 @@
 | **Sprint 30** | **Recette E2E Globale, Accessibilité & Clôture** | Validation E2E Playwright de bout en bout, tests accessibilité clavier/écran, ADR-025 | ✅ **Terminé** |
 | **Sprint 31** | **Identité Mentor, Transparence Packs & Architecture Discord par Matière** | Bio véridique CDA & Formateur Bachelor (B1/B2), 4 badges SVG #00ff87, répartition 2h live + 2h labo, suppression fausse rareté, salons Discord Scène par cours + vocaux manga mutualisés | ✅ **Terminé** |
 | **Sprint 32** | **Copywriting Cohortes Live, Inscription Express & CRO** | Repositionnement Hero live, inscription express 2 champs (CRO), suppression totale "sans frais" et valorisation des ateliers gratuits | ✅ **Terminé** |
+| **Sprint 33** | **E-mails Transactionnels Brevo, DNS & Flux Reset MDP** | Configuration SMTP Brevo, authentification DNS (SPF, DKIM, DMARC), flux frontend mot de passe oublié & emails transactionnels | 🟡 **À venir** |
 
 ---
 
@@ -174,6 +175,8 @@ gantt
     Sprint 30 (Recette E2E & Clôture)             :done, sp30, 2026-10-12, 2026-10-12
     Sprint 31 (Identité Mentor & Discord)         :done, sp31, 2026-10-13, 2026-10-13
     Sprint 32 (Copywriting & Tunnel Live)         :done, sp32, 2026-10-16, 2026-10-16
+    section Phase 5 (Emails Transactionnels & Parcours Utilisateur)
+    Sprint 33 (E-mails Brevo & Reset MDP)         :active, sp33, 2026-10-24, 2026-10-31
 ```
 
 ---
@@ -677,3 +680,21 @@ gantt
 - **32.5 Harmonisation Tarifs & Résolution ISSUE-030 (Klarna)** :
   - Suppression de « sans frais » sur tout le site (3x 109 € = 327 €, 3x 160 € = 480 €, 3x 216 € = 648 €).
   - Correction de l'offre VIP Schema.org sur `pack-web.html` calée sur 648.00 EUR (au lieu de 879.00 EUR).
+
+---
+
+### Sprint 33 : E-mails Transactionnels Brevo, Authentification DNS & Flux Frontend Mot de Passe Oublié (À venir)
+- **33.1 Déclaration & Authentification DNS Brevo (`noseumcode.fr`)** :
+  - Déclaration et validation du domaine d'envoi dans le portail Brevo.
+  - Configuration des enregistrements DNS TXT (DKIM, SPF avec inclusion `include:spf.brevo.com`, DMARC `v=DMARC1; p=none`) chez le registrar / DNS (o2switch) pour garantir la délivrabilité et éviter le blocage antispam (Gmail, Outlook, Yahoo).
+- **33.2 Injection des Variables d'Environnement SMTP en Production** :
+  - Renseignement des secrets SMTP dans l'environnement de production sur la VM Oracle Cloud (`SMTP_HOST=smtp-relay.brevo.com`, `SMTP_PORT=587`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `MAIL_FROM=noreply@noseumcode.fr`).
+  - Validation du passage de `EmailServiceImpl` du mode simulation au mode envoi réel via `JavaMailSender`.
+- **33.3 Intégration Frontend du Flux Mot de Passe Oublié** :
+  - Ajout du lien d'accès « Mot de passe oublié ? » sur la modale de connexion (`popovers-shared.html`).
+  - Écran / popover de demande de réinitialisation avec saisie de l'e-mail et appel à `POST /api/auth/forgot-password`.
+  - Vue de réinitialisation sécurisée (`reset-password.html` ou vue modale dédiée) avec capture du token hashé, saisie et confirmation du nouveau mot de passe, et soumission à `POST /api/auth/reset-password`.
+  - Gestion des feedbacks utilisateurs (expiration du jeton 30 min, toast de confirmation, redirection vers connexion).
+- **33.4 Extension des Gabarits Transactionnels HTML** :
+  - Conception et raccordement du gabarit d'e-mail de bienvenue lors de la création de compte.
+  - Conception et raccordement de l'e-mail de confirmation d'achat post-webhook Stripe avec rappel de l'accès aux salons Discord.
