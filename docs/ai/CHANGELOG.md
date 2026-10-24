@@ -2192,3 +2192,21 @@ eset-password.html.
 2. **Gouvernance & Suivi GitHub** :
    - Création de la branche dédiée et ouverture de la PR vers `develop`.
    - Création de l'Issue GitHub correspondante pour le suivi du Sprint 33.
+
+---
+
+## 2026-10-24 | Conversation: 715e00d9-ea61-48f4-a7d5-a6d0822e673d
+
+**Type**: Feature & Analytics Update — Migration vers Plausible Analytics v2 (Anti-Adblock)
+**Auteur**: Antigravity (Agent IA)
+**Branche**: `feat/plausible-v2-anti-adblock-script`
+**Objectif**: Mettre à jour l'intégration de Plausible Analytics vers le nouveau format de script v2 (`pa-wtDrwBfcSoiP0uENJYuK3.js`) pour contourner le blocage des extensions antispam/adblock (uBlock, Brave) et fiabiliser la remontée des métriques.
+
+### Réalisations & Livrables :
+1. **Remplacement du Script Plausible dans l'ensemble des Gabarits HTML** :
+   - Remplacement de `script.tagged-events.outbound-links.js` par `https://plausible.io/js/pa-wtDrwBfcSoiP0uENJYuK3.js` avec chargement `async` et initialisation `plausible.init()`.
+   - Fichiers mis à jour : `index.html`, `app.html`, `workshops.html`, `suivi-mentor.html`, `formations/pack-web.html`, `formations/starter.html`.
+2. **Recompilation SSG & Distribution des Fichiers Statiques** :
+   - Exécution de `build-static.js` et `build.js` pour propager le script vers le dossier distribué `frontend/dist/` et les pages blog physiques SSG.
+3. **Compatibilité du Wrapper d'Événements** :
+   - Maintien de l'interface `window.plausible` compatible avec `analytics.js` pour la traçabilité des conversions CTA et paiements Stripe.

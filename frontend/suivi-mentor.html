@@ -64,18 +64,12 @@
     }
     </script>
 
-    <!-- Plausible Analytics Cookieless & RGPD -->
+        <!-- Privacy-friendly analytics by Plausible (v2 Anti-Adblock) -->
+    <script async src="https://plausible.io/js/pa-wtDrwBfcSoiP0uENJYuK3.js"></script>
     <script>
-      window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments); };
-      window.addEventListener('load', function() {
-        (window.requestIdleCallback || function(cb) { setTimeout(cb, 1); })(function() {
-          var s = document.createElement('script');
-          s.defer = true;
-          s.setAttribute('data-domain', 'noseumcode.fr');
-          s.src = 'https://plausible.io/js/script.tagged-events.outbound-links.js';
-          document.head.appendChild(s);
-        });
-      });
+      window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments); },
+      plausible.init = plausible.init || function(i) { plausible.o = i || {}; };
+      plausible.init();
     </script>
 
     <!-- Google Fonts -->
