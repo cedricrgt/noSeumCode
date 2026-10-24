@@ -786,6 +786,10 @@ html {
   padding: 1.75rem 2rem !important;
   border: 1px solid rgba(0, 255, 135, 0.45) !important;
   box-shadow: 0 25px 70px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 255, 135, 0.22) !important;
+  /* Ensure centering is not overridden by inline styles */
+  position: fixed !important;
+  inset: 0 !important;
+  margin: auto !important;
 }
 
 @media (max-width: 640px) {
