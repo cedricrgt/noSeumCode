@@ -2175,3 +2175,20 @@ eset-password.html.
 3. **Tests & Validation** :
    - Exécution complète des tests Spring Boot ciblés (`PaymentConfigControllerTest`, `PaymentCheckoutServiceTest`) : 22 tests passés avec succès, 0 échec.
    - Documentation de l'anomalie dans `docs/ai/KNOWN_ISSUES.md` (ISSUE-041).
+
+---
+
+## 2026-10-24 | Conversation: 715e00d9-ea61-48f4-a7d5-a6d0822e673d
+
+**Type**: Roadmap Update — Sprint 33 (Brevo Transactional Emails & Password Reset Flow)
+**Auteur**: Antigravity (Agent IA)
+**Branche**: `docs/roadmap-sprint-33-brevo-transactional-emails`
+**Objectif**: Planifier le Sprint 33 couvrant la configuration SMTP Brevo, la validation DNS (SPF, DKIM, DMARC), le raccordement frontend du flux mot de passe oublié et les templates transactionnels.
+
+### Réalisations & Livrables :
+1. **Feuille de Route (`docs/ai/ROADMAP.md`)** :
+   - Ajout du Sprint 33 dans la vue d'ensemble et le diagramme de Gantt (Phase 5 : E-mails Transactionnels & Parcours Utilisateur).
+   - Spécification détaillée des sous-tâches 33.1 (DNS Brevo), 33.2 (Variables d'environnement Oracle VM), 33.3 (Intégration frontend reset MDP) et 33.4 (Templates transactionnels bienvenue/achat).
+2. **Gouvernance & Suivi GitHub** :
+   - Création de la branche dédiée et ouverture de la PR vers `develop`.
+   - Création de l'Issue GitHub correspondante pour le suivi du Sprint 33.
