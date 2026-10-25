@@ -2210,3 +2210,23 @@ eset-password.html.
    - Exécution de `build-static.js` et `build.js` pour propager le script vers le dossier distribué `frontend/dist/` et les pages blog physiques SSG.
 3. **Compatibilité du Wrapper d'Événements** :
    - Maintien de l'interface `window.plausible` compatible avec `analytics.js` pour la traçabilité des conversions CTA et paiements Stripe.
+
+
+## 2026-10-25 | Conversation: 7e4ac773-b035-473c-8cf3-65bda6a8f6ec
+
+**Type**: Fix mobile UX — burger menu scroll lock
+**Auteur**: Antigravity (Agent IA)
+**Branche**: `fix/mobile-burger-scroll`
+**PR**: #185
+
+### Problème résolu :
+En mobile, l'ouverture du menu burger laissait le fond de page scroller au lieu du menu. Les boutons "Se connecter" et "Télécharger le programme" étaient inaccessibles.
+
+### Réalisations :
+1. **`frontend/styles/components/header.css`** :
+   - `.header__navbar` ouvert : hauteur `100vh` → `calc(100dvh - var(--header-height, 80px))` + `overflow-y: auto` + `-webkit-overflow-scrolling: touch`
+   - Ajout de `body.menu-open { overflow: hidden; touch-action: none }` pour bloquer le scroll du background
+2. **`frontend/js/header.js`** :
+   - Ajout de `initBurgerMenuScroll()` : écoute `change` sur `#burger-toggle` pour toggler `.menu-open` sur `body`
+   - Fermeture propre du menu (uncheck + removeClass) au clic d'un lien de navigation mobile
+3. **Build** : `header.min.js` et tous les bundles CSS dist reconstruits
