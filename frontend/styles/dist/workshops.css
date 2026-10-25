@@ -1108,7 +1108,10 @@ html {
 
 
   .burger-toggle:checked~.header__container .header__navbar {
-    height: 100vh;
+    /* Use dvh so iOS Safari address bar is excluded */
+    height: calc(100dvh - var(--header-height, 80px));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     border-top: 1px solid var(--light-gray);
   }
 
@@ -1117,6 +1120,12 @@ html {
     opacity: 1;
     transition-delay: 0.2s;
   }
+}
+
+/* Lock background scroll when mobile burger menu is open */
+body.menu-open {
+  overflow: hidden;
+  touch-action: none;
 }
 
 

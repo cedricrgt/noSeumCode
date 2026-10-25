@@ -1706,6 +1706,25 @@ async function updatePromoBanner() {
   }
 }
 
+function initBurgerMenuScroll() {
+  const toggle = document.getElementById("burger-toggle");
+  if (!toggle) return;
+
+  // Lock / unlock body scroll when burger menu opens / closes
+  toggle.addEventListener("change", () => {
+    document.body.classList.toggle("menu-open", toggle.checked);
+  });
+
+  // Close menu + unlock body when a nav link is clicked
+  const navLinks = document.querySelectorAll(".header__navbar .navbar__link a");
+  navLinks.forEach((link) => {
+    link.addEventListener("click", () => {
+      toggle.checked = false;
+      document.body.classList.remove("menu-open");
+    });
+  });
+}
+
 function setActiveNavLink() {
   const navLinks = document.querySelectorAll(".navbar__link");
   const currentPath = window.location.pathname;
@@ -1773,6 +1792,7 @@ function initScrollEffect() {
 document.addEventListener("DOMContentLoaded", async () => {
   await loadPartials();
   initScrollEffect();
+  initBurgerMenuScroll();
 });
 
 
