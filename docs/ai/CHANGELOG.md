@@ -2245,3 +2245,21 @@ Cause : Cloudflare conservait en cache edge les bundles CSS minifiés (`styles/d
 ### Réalisations :
 1. **HTML templates** : Bump systématique de tous les liens vers les bundles CSS (`homepage.min.css`, `article.min.css`, `formations.min.css`, `workshops.min.css`, `thanks.min.css`, `en-construction.min.css`) vers `?v=sprint19` dans toutes les pages HTML (`index.html`, `app.html`, blogs SSG, formations, etc.).
 2. **Rebuild des bundles** : Exécution de `build.js` et `build-static.js`.
+
+
+## 2026-10-25 | Conversation: 7e4ac773-b035-473c-8cf3-65bda6a8f6ec
+
+**Type**: Layout & UI adjustment — test environment banner moved to footer, workshops promo banner commented
+**Auteur**: Antigravity (Agent IA)
+**Branche**: `feat/test-banner-in-footer`
+
+### Problème résolu :
+Le bandeau "Environnement de test" flottait en overlay fixe au bas de l'écran (`position: fixed; bottom: 0;`), gênant la navigation sur mobile. De plus, le bandeau promotionnel vert des workshops en haut du header devait être désactivé sans être supprimé.
+
+### Réalisations :
+1. **`frontend/partials/header.html`** : Bandeau `.promo-banner` des workshops commenté proprement.
+2. **`frontend/partials/footer.html`** : Intégration statique du bandeau `#dev-env-indicator` dans la grille du pied de page, masqué par défaut et activé uniquement sur l'hôte `develop.noseumcode.fr`.
+3. **`frontend/styles/reset.css`** : Mise à jour de `--banner-height: 0px` pour éviter tout espacement blanc superflu dans le header fixe, avec règle `:root:has(.promo-banner)` pour réactivation automatique si décommenté.
+4. **`frontend/styles/pages/homepage/footer.css`** : Ajout des styles `.dev-env-banner` alignés sur la charte sombre du footer.
+5. **`frontend/js/header.js`** : Suppression de l'injection dynamique en `position: fixed` au profit du contrôle de visibilité du bandeau dans le footer.
+6. **Rebuild des bundles** : Exécution de `build.js` et `build-static.js`.
