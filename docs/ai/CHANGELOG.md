@@ -2230,3 +2230,18 @@ En mobile, l'ouverture du menu burger laissait le fond de page scroller au lieu 
    - Ajout de `initBurgerMenuScroll()` : écoute `change` sur `#burger-toggle` pour toggler `.menu-open` sur `body`
    - Fermeture propre du menu (uncheck + removeClass) au clic d'un lien de navigation mobile
 3. **Build** : `header.min.js` et tous les bundles CSS dist reconstruits
+
+
+## 2026-10-25 | Conversation: 7e4ac773-b035-473c-8cf3-65bda6a8f6ec
+
+**Type**: Fix CSS cache busting — Cloudflare edge cache bypass
+**Auteur**: Antigravity (Agent IA)
+**Branche**: `fix/css-cache-busting-burger-menu`
+
+### Problème résolu :
+Sur les appareils mobiles connectés via develop.noseumcode.fr (derrière Cloudflare), le menu burger restait non scrollable et le fond n'était pas figé, alors qu'en local (192.168.1.9:3000) tout fonctionnait parfaitement.
+Cause : Cloudflare conservait en cache edge les bundles CSS minifiés (`styles/dist/homepage.min.css?v=20261022.1`, etc.) avec un `max-age=31536000` (1 an), servant une version obsolète sans `body.menu-open` ni `100dvh`.
+
+### Réalisations :
+1. **HTML templates** : Bump systématique de tous les liens vers les bundles CSS (`homepage.min.css`, `article.min.css`, `formations.min.css`, `workshops.min.css`, `thanks.min.css`, `en-construction.min.css`) vers `?v=sprint19` dans toutes les pages HTML (`index.html`, `app.html`, blogs SSG, formations, etc.).
+2. **Rebuild des bundles** : Exécution de `build.js` et `build-static.js`.
