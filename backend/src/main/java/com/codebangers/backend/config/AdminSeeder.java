@@ -34,11 +34,7 @@ public class AdminSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) {
         if (adminPassword == null || adminPassword.isBlank()) {
-<<<<<<< HEAD
             log.warn("No ADMIN_PASSWORD configured. Admin seeding skipped.");
-=======
-            log.warn("⚠️ Aucun mot de passe admin configuré dans ADMIN_PASSWORD. Seeding ignoré.");
->>>>>>> main
             return;
         }
 
@@ -51,22 +47,14 @@ public class AdminSeeder implements CommandLineRunner {
             admin.setUserName("admin");
             admin.setPassword(passwordEncoder.encode(adminPassword));
             userRepository.save(admin);
-<<<<<<< HEAD
             log.info("Admin account updated: {}", admin.getEmail());
-=======
-            log.info("✅ Compte Administrateur mis à jour : {}", admin.getEmail());
->>>>>>> main
         } else if (byUserName.isPresent()) {
             User admin = byUserName.get();
             admin.setEmail(adminEmail != null ? adminEmail : "admin@codebangers.fr");
             admin.setRole(Role.ADMIN);
             admin.setPassword(passwordEncoder.encode(adminPassword));
             userRepository.save(admin);
-<<<<<<< HEAD
             log.info("Admin account updated with email: {}", admin.getEmail());
-=======
-            log.info("✅ Compte 'admin' mis à jour avec email : {}", admin.getEmail());
->>>>>>> main
         } else {
             User admin = new User(
                     "admin",
@@ -78,25 +66,8 @@ public class AdminSeeder implements CommandLineRunner {
             );
             admin.setProvider("LOCAL");
             userRepository.save(admin);
-<<<<<<< HEAD
             log.info("Admin account created: {}", admin.getEmail());
         }
-=======
-            log.info("✅ Compte Administrateur créé avec succès : {}", admin.getEmail());
-        }
-
-        // Vérification et journalisation de tous les comptes pour diagnostic
-        userRepository.findAll().forEach(u -> {
-            if ("admin@codebangers.fr".equalsIgnoreCase(u.getEmail()) || "admin".equalsIgnoreCase(u.getUserName())) {
-                if (u.getRole() != Role.ADMIN) {
-                    u.setRole(Role.ADMIN);
-                    userRepository.save(u);
-                }
-            }
-            log.info("📋 Utilisateur en base : ID={} | Email={} | Username={} | Role={} | Blocked={} | Deleted={}",
-                    u.getId(), u.getEmail(), u.getUserName(), u.getRole(), u.isBlocked(), u.isDeleted());
-        });
->>>>>>> main
     }
 }
 

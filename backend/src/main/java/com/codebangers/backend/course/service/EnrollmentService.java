@@ -1,6 +1,5 @@
 package com.codebangers.backend.course.service;
 
-<<<<<<< HEAD
 import com.codebangers.backend.cohort.model.Cohort;
 import com.codebangers.backend.config.exception.DuplicateResourceException;
 import com.codebangers.backend.config.exception.ResourceNotFoundException;
@@ -9,13 +8,6 @@ import com.codebangers.backend.course.model.CourseTier;
 import com.codebangers.backend.course.model.Enrollment;
 import com.codebangers.backend.course.model.Enrollment.PaymentStatus;
 import com.codebangers.backend.course.model.EnrollmentTier;
-=======
-import com.codebangers.backend.config.exception.DuplicateResourceException;
-import com.codebangers.backend.config.exception.ResourceNotFoundException;
-import com.codebangers.backend.course.model.Enrollment;
-import com.codebangers.backend.course.model.Enrollment.PaymentStatus;
-import com.codebangers.backend.course.model.Course;
->>>>>>> main
 import com.codebangers.backend.course.repository.CourseRepository;
 import com.codebangers.backend.course.repository.EnrollmentRepository;
 import com.codebangers.backend.user.model.User;
@@ -34,16 +26,12 @@ public class EnrollmentService {
     private final EnrollmentRepository enrollmentRepository;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
-<<<<<<< HEAD
     private final com.codebangers.backend.payment.service.EnrollmentProvisioningService enrollmentProvisioningService;
     private com.codebangers.backend.discord.service.DiscordService discordService;
-=======
->>>>>>> main
 
     public EnrollmentService(EnrollmentRepository enrollmentRepository,
                            CourseRepository courseRepository,
                            UserRepository userRepository) {
-<<<<<<< HEAD
         this(enrollmentRepository, courseRepository, userRepository, null, null);
     }
 
@@ -75,11 +63,6 @@ public class EnrollmentService {
                 // Silently handle Discord sync error to avoid breaking database transaction
             }
         }
-=======
-        this.enrollmentRepository = enrollmentRepository;
-        this.courseRepository = courseRepository;
-        this.userRepository = userRepository;
->>>>>>> main
     }
 
     @Transactional(readOnly = true)
@@ -102,7 +85,6 @@ public class EnrollmentService {
         return enrollmentRepository.findByUserId(userId);
     }
 
-<<<<<<< HEAD
     /**
      * Vérifie si un utilisateur dispose des droits d'accès complets/payants à un cours (ADR-013).
      * Les rôles ADMIN et TEACHER disposent d'un accès universel sans restriction.
@@ -171,22 +153,13 @@ public class EnrollmentService {
     public Enrollment enrollUserInCourse(User user, UUID courseId, EnrollmentTier tier, Cohort cohort) {
         Course course = courseRepository.findById(courseId)
             .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
-=======
-    public Enrollment enrollUserInCourse(User user, UUID courseId) {
-        Course course = courseRepository.findById(courseId)
-            .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
->>>>>>> main
 
         Optional<Enrollment> existing = enrollmentRepository.findByUserIdAndCourseId(user.getId(), courseId);
         if (existing.isPresent()) {
             throw new DuplicateResourceException("User already enrolled in this course");
         }
 
-<<<<<<< HEAD
         Enrollment enrollment = new Enrollment(user, course, PaymentStatus.PENDING, 0, tier, cohort);
-=======
-        Enrollment enrollment = new Enrollment(user, course);
->>>>>>> main
         return enrollmentRepository.save(enrollment);
     }
 
@@ -194,7 +167,6 @@ public class EnrollmentService {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
             .orElseThrow(() -> new ResourceNotFoundException("Enrollment", enrollmentId));
 
-<<<<<<< HEAD
         EnrollmentTier oldTier = enrollment.getTier();
         enrollment.setPaymentStatus(status);
         Enrollment saved = enrollmentRepository.save(enrollment);
@@ -287,24 +259,11 @@ public class EnrollmentService {
             } else if (status == PaymentStatus.PAID && isBundle) {
                 enrollInBundleCourses(saved.getUser(), effectiveTier, cohort, status);
             }
-=======
-        enrollment.setPaymentStatus(status);
-        return enrollmentRepository.save(enrollment);
-    }
-
-    public Enrollment setCoursePaymentStatusForUser(UUID userId, UUID courseId, PaymentStatus status) {
-        Optional<Enrollment> existing = enrollmentRepository.findByUserIdAndCourseId(userId, courseId);
-        if (existing.isPresent()) {
-            Enrollment enrollment = existing.get();
-            enrollment.setPaymentStatus(status);
-            return enrollmentRepository.save(enrollment);
->>>>>>> main
         } else {
             User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", userId));
             Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
-<<<<<<< HEAD
             Enrollment newEnrollment = new Enrollment(user, course, status, 0, effectiveTier, cohort);
             saved = enrollmentRepository.save(newEnrollment);
 
@@ -399,31 +358,15 @@ public class EnrollmentService {
             .orElseThrow(() -> new ResourceNotFoundException("Enrollment", enrollmentId));
 
         enrollment.setProgress(progress);
-=======
-            Enrollment newEnrollment = new Enrollment(user, course, status, 0);
-            return enrollmentRepository.save(newEnrollment);
-        }
-    }
-
-    public Enrollment updateProgress(UUID enrollmentId, Integer progress) {
-        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
-            .orElseThrow(() -> new ResourceNotFoundException("Enrollment", enrollmentId));
-
-        enrollment.setProgress(Math.min(100, Math.max(0, progress)));
->>>>>>> main
         return enrollmentRepository.save(enrollment);
     }
 
     public void deleteEnrollment(UUID enrollmentId) {
-<<<<<<< HEAD
         Optional<Enrollment> enrollmentOpt = enrollmentRepository.findById(enrollmentId);
         User user = enrollmentOpt.map(Enrollment::getUser).orElse(null);
         enrollmentRepository.deleteById(enrollmentId);
         if (user != null) {
             syncDiscordRolesIfLinked(user);
         }
-=======
-        enrollmentRepository.deleteById(enrollmentId);
->>>>>>> main
     }
 }

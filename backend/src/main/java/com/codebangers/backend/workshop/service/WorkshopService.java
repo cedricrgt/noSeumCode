@@ -45,38 +45,28 @@ public class WorkshopService {
 
     public Workshop createWorkshop(String title, String description,
                                  LocalDateTime startDate, LocalDateTime endDate, User createdBy) {
-<<<<<<< HEAD
         return createWorkshop(title, null, description, 6, startDate, endDate, createdBy);
     }
 
     public Workshop createWorkshop(String title, String theme, String description,
                                  Integer maxParticipants, LocalDateTime startDate,
                                  LocalDateTime endDate, User createdBy) {
-=======
->>>>>>> main
         if (endDate.isBefore(startDate)) {
             throw new IllegalArgumentException("End date must be after start date");
         }
 
-<<<<<<< HEAD
         Workshop workshop = new Workshop(title, theme, description, maxParticipants, startDate, endDate);
-=======
-        Workshop workshop = new Workshop(title, description, startDate, endDate);
->>>>>>> main
         workshop.setCreatedBy(createdBy);
         return workshopRepository.save(workshop);
     }
 
     public Workshop updateWorkshop(UUID workshopId, String title, String description,
                                  LocalDateTime startDate, LocalDateTime endDate) {
-<<<<<<< HEAD
         return updateWorkshop(workshopId, title, null, description, 6, startDate, endDate);
     }
 
     public Workshop updateWorkshop(UUID workshopId, String title, String theme, String description,
                                  Integer maxParticipants, LocalDateTime startDate, LocalDateTime endDate) {
-=======
->>>>>>> main
         if (endDate.isBefore(startDate)) {
             throw new IllegalArgumentException("End date must be after start date");
         }
@@ -85,13 +75,9 @@ public class WorkshopService {
             .orElseThrow(() -> new ResourceNotFoundException("Workshop", workshopId));
 
         workshop.setTitle(title);
-<<<<<<< HEAD
         workshop.setTheme(theme);
         workshop.setDescription(description);
         workshop.setMaxParticipants(maxParticipants != null ? maxParticipants : 6);
-=======
-        workshop.setDescription(description);
->>>>>>> main
         workshop.setStartDate(startDate);
         workshop.setEndDate(endDate);
         return workshopRepository.save(workshop);

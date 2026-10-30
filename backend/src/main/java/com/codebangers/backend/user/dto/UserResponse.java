@@ -26,11 +26,6 @@ public class UserResponse {
     private int enrolledCoursesCount = 0;
     private String paymentStatus = "FREE";
 
-<<<<<<< HEAD
-=======
-    // Constructors
-
->>>>>>> main
     public UserResponse() {
     }
 
@@ -55,11 +50,6 @@ public class UserResponse {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-<<<<<<< HEAD
-=======
-
-    // Getters & Setters
->>>>>>> main
 
     public UUID getId() {
         return id;

@@ -1,6 +1,5 @@
 package com.codebangers.backend.auth.oauth2;
 
-<<<<<<< HEAD
 import com.codebangers.backend.auth.service.RefreshTokenService;
 import com.codebangers.backend.config.JwtService;
 import com.codebangers.backend.user.model.User;
@@ -13,14 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
-=======
-import com.codebangers.backend.config.JwtService;
-import com.codebangers.backend.user.model.User;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
->>>>>>> main
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -34,7 +25,6 @@ import java.nio.charset.StandardCharsets;
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtService jwtService;
-<<<<<<< HEAD
     private final RefreshTokenService refreshTokenService;
     private final String defaultRedirectUri;
     private final OAuth2RedirectUriFilter redirectUriFilter;
@@ -48,15 +38,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         this.refreshTokenService = refreshTokenService;
         this.redirectUriFilter = redirectUriFilter;
         this.defaultRedirectUri = defaultRedirectUri;
-=======
-    private final String redirectUri;
-
-    public OAuth2AuthenticationSuccessHandler(
-            JwtService jwtService,
-            @Value("${app.oauth2.authorized-redirect-uri:http://localhost:3000/dashboard.html}") String redirectUri) {
-        this.jwtService = jwtService;
-        this.redirectUri = redirectUri;
->>>>>>> main
     }
 
     @Override
@@ -66,7 +47,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             return;
         }
 
-<<<<<<< HEAD
         String targetRedirectUri = resolveTargetRedirectUri(request, response);
 
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
@@ -112,24 +92,12 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                         "&firstName=" + URLEncoder.encode(firstName, StandardCharsets.UTF_8) +
                         "&email=" + URLEncoder.encode(email, StandardCharsets.UTF_8) +
                         discordParam)
-=======
-        CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-        User user = oAuth2User.getUser();
-        String token = jwtService.generateToken(user);
-
-        String targetUrl = UriComponentsBuilder.fromUriString(redirectUri)
-                .fragment("token=" + token +
-                        "&role=" + user.getRole().name() +
-                        "&userName=" + URLEncoder.encode(user.getUserName(), StandardCharsets.UTF_8) +
-                        "&firstName=" + URLEncoder.encode(user.getFirstName(), StandardCharsets.UTF_8))
->>>>>>> main
                 .build()
                 .toUriString();
 
         clearAuthenticationAttributes(request);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
-<<<<<<< HEAD
 
     private String resolveTargetRedirectUri(HttpServletRequest request, HttpServletResponse response) {
         boolean isSecure = request.isSecure() || "https".equalsIgnoreCase(request.getHeader("X-Forwarded-Proto"));
@@ -171,6 +139,4 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         // 3. Fallback to default
         return defaultRedirectUri;
     }
-=======
->>>>>>> main
 }

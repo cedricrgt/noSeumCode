@@ -7,7 +7,6 @@ public class WorkshopResponse {
 
     private UUID id;
     private String title;
-<<<<<<< HEAD
     private String theme;
     private String description;
     private Integer maxParticipants;
@@ -15,9 +14,6 @@ public class WorkshopResponse {
     private Integer remainingSeats;
     private Boolean isFull;
     private Boolean isUserRegistered;
-=======
-    private String description;
->>>>>>> main
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private LocalDateTime createdAt;
@@ -36,7 +32,6 @@ public class WorkshopResponse {
         this.endDate = endDate;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-<<<<<<< HEAD
         this.maxParticipants = 6;
         this.registeredCount = 0;
         this.remainingSeats = 6;
@@ -62,8 +57,6 @@ public class WorkshopResponse {
         this.endDate = endDate;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-=======
->>>>>>> main
     }
 
     public UUID getId() {
@@ -82,7 +75,6 @@ public class WorkshopResponse {
         this.title = title;
     }
 
-<<<<<<< HEAD
     public String getTheme() {
         return theme;
     }
@@ -91,8 +83,6 @@ public class WorkshopResponse {
         this.theme = theme;
     }
 
-=======
->>>>>>> main
     public String getDescription() {
         return description;
     }
@@ -101,7 +91,6 @@ public class WorkshopResponse {
         this.description = description;
     }
 
-<<<<<<< HEAD
     public Integer getMaxParticipants() {
         return maxParticipants;
     }
@@ -142,8 +131,6 @@ public class WorkshopResponse {
         isUserRegistered = userRegistered;
     }
 
-=======
->>>>>>> main
     public LocalDateTime getStartDate() {
         return startDate;
     }

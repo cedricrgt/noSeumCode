@@ -5,10 +5,7 @@ import com.codebangers.backend.course.repository.EnrollmentRepository;
 import com.codebangers.backend.user.dto.RoleUpdateRequest;
 import com.codebangers.backend.user.dto.UserRequest;
 import com.codebangers.backend.user.dto.UserResponse;
-<<<<<<< HEAD
 import com.codebangers.backend.user.model.Role;
-=======
->>>>>>> main
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.service.UserService;
 import jakarta.validation.Valid;
@@ -36,7 +33,6 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-<<<<<<< HEAD
     public ResponseEntity<List<UserResponse>> getAllUsers(@RequestParam(required = false) Role role) {
         List<User> users = userService.getAllUsersForAdmin();
         if (role != null) {
@@ -44,10 +40,6 @@ public class UserController {
                 .filter(u -> u.getRole() == role)
                 .toList();
         }
-=======
-    public ResponseEntity<List<UserResponse>> getAllUsers() {
-        List<User> users = userService.getAllUsersForAdmin();
->>>>>>> main
         List<UserResponse> responses = users.stream()
             .map(this::mapToResponse)
             .collect(Collectors.toList());
@@ -64,11 +56,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or #id.toString() == authentication.token.claims['userId']")
-<<<<<<< HEAD
     public ResponseEntity<?> updateUser(@PathVariable UUID id, @Valid @RequestBody UserRequest request) {
-=======
-    public ResponseEntity<?> updateUser(@PathVariable UUID id, @RequestBody UserRequest request) {
->>>>>>> main
         try {
             User user = userService.updateUser(id, request);
             return ResponseEntity.ok(mapToResponse(user));
@@ -169,7 +157,6 @@ public class UserController {
                 response.setPaymentStatus("GRATUIT");
             } else {
                 boolean hasPaid = enrollments.stream().anyMatch(e -> e.getPaymentStatus() == Enrollment.PaymentStatus.PAID);
-<<<<<<< HEAD
                 boolean hasRefunded = enrollments.stream().anyMatch(e -> e.getPaymentStatus() == Enrollment.PaymentStatus.REFUNDED);
                 boolean hasFailed = enrollments.stream().anyMatch(e -> e.getPaymentStatus() == Enrollment.PaymentStatus.FAILED);
                 if (hasPaid) {
@@ -181,9 +168,6 @@ public class UserController {
                 } else {
                     response.setPaymentStatus("EN ATTENTE");
                 }
-=======
-                response.setPaymentStatus(hasPaid ? "PAYÉ" : "EN ATTENTE");
->>>>>>> main
             }
         } catch (Exception e) {
             response.setEnrolledCoursesCount(0);

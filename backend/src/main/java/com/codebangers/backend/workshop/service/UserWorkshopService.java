@@ -2,27 +2,18 @@ package com.codebangers.backend.workshop.service;
 
 import com.codebangers.backend.config.exception.DuplicateResourceException;
 import com.codebangers.backend.config.exception.ResourceNotFoundException;
-<<<<<<< HEAD
 import com.codebangers.backend.user.model.Role;
-=======
->>>>>>> main
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.workshop.model.UserWorkshop;
 import com.codebangers.backend.workshop.model.Workshop;
 import com.codebangers.backend.workshop.repository.UserWorkshopRepository;
 import com.codebangers.backend.workshop.repository.WorkshopRepository;
-<<<<<<< HEAD
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
-=======
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
->>>>>>> main
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -52,16 +43,12 @@ public class UserWorkshopService {
 
     @Transactional(readOnly = true)
     public List<UserWorkshop> getRegistrationsByUser(UUID userId) {
-<<<<<<< HEAD
         return userWorkshopRepository.findByUserIdWithWorkshop(userId);
     }
 
     @Transactional(readOnly = true)
     public int countRegistrationsByWorkshop(UUID workshopId) {
         return userWorkshopRepository.countByWorkshopId(workshopId);
-=======
-        return userWorkshopRepository.findByUserId(userId);
->>>>>>> main
     }
 
     @Transactional(readOnly = true)
@@ -73,7 +60,6 @@ public class UserWorkshopService {
         Workshop workshop = workshopRepository.findById(workshopId)
             .orElseThrow(() -> new ResourceNotFoundException("Workshop", workshopId));
 
-<<<<<<< HEAD
         if (workshop.isDeleted()) {
             throw new ResourceNotFoundException("Workshop is no longer available");
         }
@@ -87,11 +73,6 @@ public class UserWorkshopService {
         int currentCount = userWorkshopRepository.countByWorkshopId(workshopId);
         if (currentCount >= max) {
             throw new IllegalStateException("Cet atelier est complet (jauge maximale de " + max + " participants atteinte).");
-=======
-        Optional<UserWorkshop> existing = userWorkshopRepository.findByUserIdAndWorkshopId(user.getId(), workshopId);
-        if (existing.isPresent()) {
-            throw new DuplicateResourceException("User already registered for this workshop");
->>>>>>> main
         }
 
         UserWorkshop registration = new UserWorkshop(user, workshop);
@@ -106,7 +87,6 @@ public class UserWorkshopService {
         return userWorkshopRepository.save(registration);
     }
 
-<<<<<<< HEAD
     public void unregisterUserFromWorkshop(UUID registrationId, User currentUser) {
         UserWorkshop registration = userWorkshopRepository.findById(registrationId)
             .orElseThrow(() -> new ResourceNotFoundException("Registration", registrationId));
@@ -174,9 +154,4 @@ public class UserWorkshopService {
         }
         return value;
     }
-=======
-    public void unregisterUserFromWorkshop(UUID registrationId) {
-        userWorkshopRepository.deleteById(registrationId);
-    }
->>>>>>> main
 }

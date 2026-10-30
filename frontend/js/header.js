@@ -24,16 +24,12 @@
     return;
   }
 
-<<<<<<< HEAD
   const target = typeof localStorage !== "undefined" ? localStorage.getItem("noseum_api_target") : null;
   if (target === "local") {
     const host = window.location.hostname || "localhost";
     window.API_BASE_URL = `http://${host}:8080`;
     return;
   }
-=======
-  await updatePromoBanner();
->>>>>>> main
 
   // Par défaut (local port 3000, 5500, develop ou prod) : Oracle Cloud VM API
   window.API_BASE_URL = "https://api.noseumcode.fr";
@@ -110,14 +106,7 @@ async function loadPartials() {
         headerPlaceholder.innerHTML = sanitizePartialHTML(headerHtml);
         updatePromoBanner();
 
-        // Visual staging badge on develop subdomain to clearly indicate pre-production environment
-        if (window.location.hostname === "develop.noseumcode.fr" && !document.getElementById("dev-env-indicator")) {
-          const devBanner = document.createElement("div");
-          devBanner.id = "dev-env-indicator";
-          devBanner.style.cssText = "background: #0f172a; color: #38bdf8; text-align: center; font-size: 0.78rem; font-family: 'Poppins', sans-serif; padding: 6px 12px; border-top: 1px solid rgba(56, 189, 248, 0.25); font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; z-index: 99999; position: fixed; bottom: 0; left: 0; width: 100%; pointer-events: none;";
-          devBanner.innerHTML = "<span><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='#38bdf8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -2px;'><path d='M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z'></path></svg></span> <span><strong>Environnement de test NoSeumCode</strong> (develop.noseumcode.fr) — Espace réservé à la pré-production.</span>";
-          document.body.appendChild(devBanner);
-        }
+        // Staging environment indicator is integrated statically in footer.html
       } else if (item.type === "popovers" && popoversPlaceholder && item.html) {
         popoversPlaceholder.innerHTML = sanitizePartialHTML(item.html);
 
@@ -137,19 +126,17 @@ async function loadPartials() {
         loadSchedule();
       } else if (item.type === "footer" && footerPlaceholder && item.html) {
         footerPlaceholder.innerHTML = item.html;
+        if (window.location.hostname === "develop.noseumcode.fr") {
+          const devBanner = document.getElementById("dev-env-indicator");
+          if (devBanner) devBanner.style.display = "flex";
+        }
       }
     }
 
     setActiveNavLink();
-<<<<<<< HEAD
     checkUserAuthHeader();
     initPromoPopup();
     updateHeaderHeightVar();
-=======
-
-    //initPromoPopup();
-
->>>>>>> main
   } catch (error) {
     console.error("Error loading partials:", error);
   }

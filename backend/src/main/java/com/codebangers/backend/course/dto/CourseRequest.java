@@ -10,7 +10,6 @@ public class CourseRequest {
     private String title;
     private String description;
 
-<<<<<<< HEAD
     private Long priceInCents;
     private String currency;
     private String slug;
@@ -18,9 +17,6 @@ public class CourseRequest {
     private String level;
     private Boolean isPublished;
     private com.codebangers.backend.course.model.CourseTier requiredTier;
-=======
-    // Constructors
->>>>>>> main
 
     public CourseRequest() {
     }
@@ -30,7 +26,6 @@ public class CourseRequest {
         this.description = description;
     }
 
-<<<<<<< HEAD
     public CourseRequest(String title, String description, Long priceInCents, String currency, String slug, String thumbnailUrl, String level, Boolean isPublished) {
         this.title = title;
         this.description = description;
@@ -41,9 +36,6 @@ public class CourseRequest {
         this.level = level;
         this.isPublished = isPublished;
     }
-=======
-    // Getters & Setters
->>>>>>> main
 
     public String getTitle() {
         return title;
@@ -60,7 +52,6 @@ public class CourseRequest {
     public void setDescription(String description) {
         this.description = description;
     }
-<<<<<<< HEAD
 
     public Long getPriceInCents() {
         return priceInCents;
@@ -117,6 +108,4 @@ public class CourseRequest {
     public void setRequiredTier(com.codebangers.backend.course.model.CourseTier requiredTier) {
         this.requiredTier = requiredTier;
     }
-=======
->>>>>>> main
 }

@@ -1,9 +1,6 @@
 package com.codebangers.backend.course.model;
 
-<<<<<<< HEAD
 import com.codebangers.backend.cohort.model.Cohort;
-=======
->>>>>>> main
 import com.codebangers.backend.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -32,7 +29,6 @@ public class Enrollment {
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-<<<<<<< HEAD
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cohort_id")
     private Cohort cohort;
@@ -41,8 +37,6 @@ public class Enrollment {
     @Column(name = "tier", nullable = false, length = 30)
     private EnrollmentTier tier = EnrollmentTier.WEB;
 
-=======
->>>>>>> main
     @CreationTimestamp
     @Column(name = "enrolled_at", nullable = false, updatable = false)
     private LocalDateTime enrolledAt;
@@ -57,13 +51,6 @@ public class Enrollment {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
-<<<<<<< HEAD
-=======
-    // =========================
-    // Constructors
-    // =========================
-
->>>>>>> main
     public Enrollment() {
     }
 
@@ -79,7 +66,6 @@ public class Enrollment {
         this.course = course;
         this.paymentStatus = paymentStatus;
         this.progress = progress;
-<<<<<<< HEAD
         this.tier = EnrollmentTier.WEB;
     }
 
@@ -91,13 +77,6 @@ public class Enrollment {
         this.tier = tier != null ? tier : EnrollmentTier.WEB;
         this.cohort = cohort;
     }
-=======
-    }
-
-    // =========================
-    // Getters & Setters
-    // =========================
->>>>>>> main
 
     public UUID getId() {
         return id;
@@ -123,7 +102,6 @@ public class Enrollment {
         this.course = course;
     }
 
-<<<<<<< HEAD
     public Cohort getCohort() {
         return cohort;
     }
@@ -140,8 +118,6 @@ public class Enrollment {
         this.tier = tier;
     }
 
-=======
->>>>>>> main
     public LocalDateTime getEnrolledAt() {
         return enrolledAt;
     }
@@ -170,13 +146,6 @@ public class Enrollment {
         this.completedAt = completedAt;
     }
 
-<<<<<<< HEAD
-=======
-    // =========================
-    // Enum
-    // =========================
-
->>>>>>> main
     public enum PaymentStatus {
         PENDING,
         PAID,

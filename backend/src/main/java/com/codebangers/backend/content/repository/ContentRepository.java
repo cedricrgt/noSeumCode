@@ -7,21 +7,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-<<<<<<< HEAD
 import java.util.Optional;
-=======
->>>>>>> main
 import java.util.UUID;
 
 @Repository
 public interface ContentRepository extends JpaRepository<Content, UUID> {
 
-<<<<<<< HEAD
     @Query("SELECT c FROM Content c JOIN FETCH c.chapter ch JOIN FETCH ch.course WHERE c.id = :id")
     Optional<Content> findByIdWithChapterAndCourse(@Param("id") UUID id);
 
-=======
->>>>>>> main
     @Query("SELECT c FROM Content c WHERE c.chapter.id = :chapterId ORDER BY c.position ASC")
     List<Content> findByChapterId(@Param("chapterId") UUID chapterId);
 

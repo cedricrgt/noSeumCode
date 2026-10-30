@@ -22,11 +22,7 @@ import java.nio.charset.StandardCharsets;
 @Configuration
 public class JwtConfig {
 
-<<<<<<< HEAD
     @Value("${spring.security.oauth2.resourceserver.jwt.secret}")
-=======
-    @Value("${spring.security.oauth2.resourceserver.jwt.secret:codebangers-super-secret-key-change-me-in-production-2026}")
->>>>>>> main
     private String jwtSecret;
 
     @Bean
@@ -53,10 +49,6 @@ public class JwtConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-<<<<<<< HEAD
         return new BCryptPasswordEncoder(13);
-=======
-        return new BCryptPasswordEncoder();
->>>>>>> main
     }
 }

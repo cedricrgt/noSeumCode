@@ -82,7 +82,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-<<<<<<< HEAD
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ApiError> handleIllegalState(IllegalStateException ex, WebRequest request) {
         ApiError error = new ApiError(
@@ -93,8 +92,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-=======
->>>>>>> main
     @ExceptionHandler(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiError> handleMethodArgumentTypeMismatch(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException ex, WebRequest request) {
         String msg = String.format("Le paramètre '%s' avec la valeur '%s' n'est pas valide (format UUID ou type attendu incorrect)", ex.getName(), ex.getValue());
@@ -106,7 +103,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-<<<<<<< HEAD
     @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
     public ResponseEntity<ApiError> handleNoResourceFound(org.springframework.web.servlet.resource.NoResourceFoundException ex, WebRequest request) {
         ApiError error = new ApiError(
@@ -117,8 +113,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
-=======
->>>>>>> main
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(Exception.class)
@@ -127,11 +121,7 @@ public class GlobalExceptionHandler {
         ApiError error = new ApiError(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Internal Server Error",
-<<<<<<< HEAD
                 "Une erreur interne est survenue. Veuillez réessayer ultérieurement.",
-=======
-                ex.getMessage() != null ? ex.getMessage() : "An unexpected error occurred",
->>>>>>> main
                 extractPath(request));
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -1,10 +1,7 @@
 package com.codebangers.backend.course.dto;
 
 import com.codebangers.backend.course.model.Enrollment.PaymentStatus;
-<<<<<<< HEAD
 import com.codebangers.backend.course.model.EnrollmentTier;
-=======
->>>>>>> main
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -20,7 +17,6 @@ public class EnrollmentResponse {
     private Integer progress;
     private LocalDateTime completedAt;
 
-<<<<<<< HEAD
     private EnrollmentTier tier;
     private UUID cohortId;
     private String cohortName;
@@ -28,8 +24,6 @@ public class EnrollmentResponse {
     private Boolean lifetimeAccess;
     private String stageChannelUrl;
 
-=======
->>>>>>> main
     public EnrollmentResponse() {
     }
 
@@ -116,7 +110,6 @@ public class EnrollmentResponse {
     public void setCompletedAt(LocalDateTime completedAt) {
         this.completedAt = completedAt;
     }
-<<<<<<< HEAD
 
     public EnrollmentTier getTier() {
         return tier;
@@ -165,6 +158,4 @@ public class EnrollmentResponse {
     public void setStageChannelUrl(String stageChannelUrl) {
         this.stageChannelUrl = stageChannelUrl;
     }
-=======
->>>>>>> main
 }

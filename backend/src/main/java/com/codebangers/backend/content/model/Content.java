@@ -3,10 +3,7 @@ package com.codebangers.backend.content.model;
 import com.codebangers.backend.chapter.model.Chapter;
 import com.codebangers.backend.course.model.ApprovalStatus;
 import com.codebangers.backend.user.model.User;
-<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonCreator;
-=======
->>>>>>> main
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -75,13 +72,6 @@ public class Content {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-<<<<<<< HEAD
-=======
-    // =========================
-    // Constructors
-    // =========================
-
->>>>>>> main
     public Content() {
     }
 
@@ -100,13 +90,6 @@ public class Content {
         this.position = position;
     }
 
-<<<<<<< HEAD
-=======
-    // =========================
-    // Getters & Setters
-    // =========================
-
->>>>>>> main
     public UUID getId() {
         return id;
     }
@@ -227,16 +210,8 @@ public class Content {
         this.deletedAt = deletedAt;
     }
 
-<<<<<<< HEAD
     public enum ContentType {
         TEXT,
-=======
-    // =========================
-    // Enum
-    // =========================
-
-    public enum ContentType {
->>>>>>> main
         HEADING,
         PARAGRAPH,
         VIDEO,
@@ -244,7 +219,6 @@ public class Content {
         FILE,
         LIST,
         CODE,
-<<<<<<< HEAD
         QUIZ,
         MARKDOWN;
 
@@ -259,8 +233,5 @@ public class Content {
                 throw new IllegalArgumentException("Type de contenu non supporté: " + value);
             }
         }
-=======
-        QUIZ
->>>>>>> main
     }
 }

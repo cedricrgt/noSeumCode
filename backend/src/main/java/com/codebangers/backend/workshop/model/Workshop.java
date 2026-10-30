@@ -70,16 +70,8 @@ public class Workshop {
     @OneToMany(mappedBy = "workshop", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserWorkshop> registrations = new ArrayList<>();
 
-<<<<<<< HEAD
     public Workshop() {
         this.maxParticipants = 6;
-=======
-    // =========================
-    // Constructors
-    // =========================
-
-    public Workshop() {
->>>>>>> main
     }
 
     public Workshop(String title, String description, LocalDateTime startDate, LocalDateTime endDate) {
@@ -87,7 +79,6 @@ public class Workshop {
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
-<<<<<<< HEAD
         this.maxParticipants = 6;
     }
 
@@ -100,13 +91,6 @@ public class Workshop {
         this.startDate = startDate;
         this.endDate = endDate;
     }
-=======
-    }
-
-    // =========================
-    // Getters & Setters
-    // =========================
->>>>>>> main
 
     public UUID getId() {
         return id;
@@ -124,7 +108,6 @@ public class Workshop {
         this.title = title;
     }
 
-<<<<<<< HEAD
     public String getTheme() {
         return theme;
     }
@@ -141,8 +124,6 @@ public class Workshop {
         this.maxParticipants = maxParticipants != null ? maxParticipants : 6;
     }
 
-=======
->>>>>>> main
     public String getDescription() {
         return description;
     }

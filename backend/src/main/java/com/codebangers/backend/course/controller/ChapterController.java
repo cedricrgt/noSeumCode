@@ -1,17 +1,10 @@
 package com.codebangers.backend.course.controller;
 
-<<<<<<< HEAD
 import com.codebangers.backend.chapter.model.Chapter;
 import com.codebangers.backend.course.dto.ChapterRequest;
 import com.codebangers.backend.course.dto.ChapterResponse;
 import com.codebangers.backend.course.service.ChapterService;
 import com.codebangers.backend.course.service.EnrollmentService;
-=======
-import com.codebangers.backend.course.dto.ChapterRequest;
-import com.codebangers.backend.course.dto.ChapterResponse;
-import com.codebangers.backend.chapter.model.Chapter;
-import com.codebangers.backend.course.service.ChapterService;
->>>>>>> main
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.repository.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -23,10 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-<<<<<<< HEAD
 import java.util.Optional;
-=======
->>>>>>> main
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -35,7 +25,6 @@ import java.util.stream.Collectors;
 public class ChapterController {
 
     private final ChapterService chapterService;
-<<<<<<< HEAD
     private final EnrollmentService enrollmentService;
     private final UserRepository userRepository;
 
@@ -44,12 +33,6 @@ public class ChapterController {
                              UserRepository userRepository) {
         this.chapterService = chapterService;
         this.enrollmentService = enrollmentService;
-=======
-    private final UserRepository userRepository;
-
-    public ChapterController(ChapterService chapterService, UserRepository userRepository) {
-        this.chapterService = chapterService;
->>>>>>> main
         this.userRepository = userRepository;
     }
 
@@ -59,7 +42,6 @@ public class ChapterController {
     }
 
     @GetMapping("/{id}")
-<<<<<<< HEAD
     public ResponseEntity<?> getChapterById(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
         Optional<Chapter> opt = chapterService.getChapterById(id);
         if (opt.isEmpty()) {
@@ -87,55 +69,28 @@ public class ChapterController {
         List<Chapter> chapters = chapterService.getRootChaptersByCourse(courseId);
         List<ChapterResponse> responses = chapters.stream()
             .map(ch -> mapToResponse(ch, hasPaid || ch.isFreePreview()))
-=======
-    public ResponseEntity<ChapterResponse> getChapterById(@PathVariable UUID id) {
-        return chapterService.getChapterById(id)
-            .map(chapter -> ResponseEntity.ok(mapToResponse(chapter)))
-            .orElse(ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/course/{courseId}")
-    public ResponseEntity<List<ChapterResponse>> getRootChaptersByCourse(@PathVariable UUID courseId) {
-        List<Chapter> chapters = chapterService.getRootChaptersByCourse(courseId);
-        List<ChapterResponse> responses = chapters.stream()
-            .map(this::mapToResponse)
->>>>>>> main
             .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/course/{courseId}/all")
-<<<<<<< HEAD
     public ResponseEntity<List<ChapterResponse>> getActiveChaptersByCourse(@PathVariable UUID courseId, @AuthenticationPrincipal Jwt jwt) {
         User user = getAuthenticatedUser(jwt);
         boolean hasPaid = enrollmentService.hasPaidAccess(user, courseId);
         List<Chapter> chapters = chapterService.getActiveChaptersByCourse(courseId);
         List<ChapterResponse> responses = chapters.stream()
             .map(ch -> mapToResponse(ch, hasPaid || ch.isFreePreview()))
-=======
-    public ResponseEntity<List<ChapterResponse>> getActiveChaptersByCourse(@PathVariable UUID courseId) {
-        List<Chapter> chapters = chapterService.getActiveChaptersByCourse(courseId);
-        List<ChapterResponse> responses = chapters.stream()
-            .map(this::mapToResponse)
->>>>>>> main
             .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/course/{courseId}/approved")
-<<<<<<< HEAD
     public ResponseEntity<List<ChapterResponse>> getApprovedChaptersByCourse(@PathVariable UUID courseId, @AuthenticationPrincipal Jwt jwt) {
         User user = getAuthenticatedUser(jwt);
         boolean hasPaid = enrollmentService.hasPaidAccess(user, courseId);
         List<Chapter> chapters = chapterService.getApprovedChaptersByCourse(courseId);
         List<ChapterResponse> responses = chapters.stream()
             .map(ch -> mapToResponse(ch, hasPaid || ch.isFreePreview()))
-=======
-    public ResponseEntity<List<ChapterResponse>> getApprovedChaptersByCourse(@PathVariable UUID courseId) {
-        List<Chapter> chapters = chapterService.getApprovedChaptersByCourse(courseId);
-        List<ChapterResponse> responses = chapters.stream()
-            .map(this::mapToResponse)
->>>>>>> main
             .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
     }
@@ -151,7 +106,6 @@ public class ChapterController {
     }
 
     @GetMapping("/{id}/sub-chapters")
-<<<<<<< HEAD
     public ResponseEntity<List<ChapterResponse>> getSubChapters(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
         Optional<Chapter> parentOpt = chapterService.getChapterById(id);
         UUID courseId = parentOpt.map(p -> p.getCourse() != null ? p.getCourse().getId() : null).orElse(null);
@@ -160,22 +114,12 @@ public class ChapterController {
         List<Chapter> chapters = chapterService.getSubChapters(id);
         List<ChapterResponse> responses = chapters.stream()
             .map(ch -> mapToResponse(ch, hasPaid || ch.isFreePreview()))
-=======
-    public ResponseEntity<List<ChapterResponse>> getSubChapters(@PathVariable UUID id) {
-        List<Chapter> chapters = chapterService.getSubChapters(id);
-        List<ChapterResponse> responses = chapters.stream()
-            .map(this::mapToResponse)
->>>>>>> main
             .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
     }
 
     @PostMapping("/course/{courseId}")
-<<<<<<< HEAD
     @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageCourse(#courseId, authentication)")
-=======
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
->>>>>>> main
     public ResponseEntity<?> createChapter(@PathVariable UUID courseId, @RequestBody ChapterRequest request, @AuthenticationPrincipal Jwt jwt) {
         try {
             User author = getAuthenticatedUser(jwt);
@@ -187,11 +131,7 @@ public class ChapterController {
     }
 
     @PostMapping("/{parentId}/sub-chapter")
-<<<<<<< HEAD
     @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageChapter(#parentId, authentication)")
-=======
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
->>>>>>> main
     public ResponseEntity<?> createSubChapter(@PathVariable UUID parentId, @RequestBody ChapterRequest request, @AuthenticationPrincipal Jwt jwt) {
         try {
             User author = getAuthenticatedUser(jwt);
@@ -203,11 +143,7 @@ public class ChapterController {
     }
 
     @PutMapping("/{id}")
-<<<<<<< HEAD
     @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageChapter(#id, authentication)")
-=======
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
->>>>>>> main
     public ResponseEntity<?> updateChapter(@PathVariable UUID id, @RequestBody ChapterRequest request, @AuthenticationPrincipal Jwt jwt) {
         try {
             User editor = getAuthenticatedUser(jwt);
@@ -219,11 +155,7 @@ public class ChapterController {
     }
 
     @PostMapping("/{id}/submit")
-<<<<<<< HEAD
     @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageChapter(#id, authentication)")
-=======
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
->>>>>>> main
     public ResponseEntity<?> submitForApproval(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
         try {
             User user = getAuthenticatedUser(jwt);
@@ -260,11 +192,7 @@ public class ChapterController {
     }
 
     @DeleteMapping("/{id}")
-<<<<<<< HEAD
     @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageChapter(#id, authentication)")
-=======
-    @PreAuthorize("hasRole('ADMIN')")
->>>>>>> main
     public ResponseEntity<?> softDeleteChapter(@PathVariable UUID id) {
         try {
             chapterService.softDeleteChapter(id);
@@ -275,13 +203,10 @@ public class ChapterController {
     }
 
     private ChapterResponse mapToResponse(Chapter chapter) {
-<<<<<<< HEAD
         return mapToResponse(chapter, true);
     }
 
     private ChapterResponse mapToResponse(Chapter chapter, boolean includeContent) {
-=======
->>>>>>> main
         ChapterResponse response = new ChapterResponse(
             chapter.getId(),
             chapter.getCourse() != null ? chapter.getCourse().getId() : null,
@@ -305,12 +230,8 @@ public class ChapterController {
         if (chapter.getReviewedBy() != null) {
             response.setReviewedById(chapter.getReviewedBy().getId());
         }
-<<<<<<< HEAD
         response.setFreePreview(chapter.isFreePreview());
         if (includeContent && chapter.getContents() != null && !chapter.getContents().isEmpty()) {
-=======
-        if (chapter.getContents() != null && !chapter.getContents().isEmpty()) {
->>>>>>> main
             response.setContent(chapter.getContents().get(0).getBody());
         }
         return response;
