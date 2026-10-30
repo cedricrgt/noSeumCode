@@ -27,6 +27,14 @@ minify() {
   echo "  → minify: $output"
 }
 
+minify_js() {
+  local input="$1"
+  local output="${input%.js}.min.js"
+  npx --yes terser "$input" -o "$output" -c -m 2>/dev/null \
+    || cp "$input" "$output"
+  echo "  → minify JS: $output"
+}
+
 # ─── Shared base (reset + typo + all components) ────────────────────────────
 
 BASE_FILES=(
@@ -49,7 +57,9 @@ concat "$DIST/homepage.css" \
   "$STYLES/pages/thanks.css" \
   "$STYLES/pages/homepage/hero.css" \
   "$STYLES/pages/homepage/presentation.css" \
+  "$STYLES/pages/homepage/rassurance.css" \
   "$STYLES/pages/homepage/courses.css" \
+  "$STYLES/pages/homepage/mentor.css" \
   "$STYLES/pages/homepage/blog.css" \
   "$STYLES/pages/homepage/faq.css" \
   "$STYLES/pages/homepage/footer.css"
@@ -82,16 +92,42 @@ concat "$DIST/en-construction.css" \
   "$STYLES/pages/homepage/footer.css"
 minify "$DIST/en-construction.css"
 
+# ─── Formations bundle ──────────────────────────────────────────────────────
+
+echo "Building formations bundle…"
+concat "$DIST/formations.css" \
+  "${BASE_FILES[@]}" \
+  "$STYLES/pages/formations.css" \
+  "$STYLES/pages/homepage/footer.css"
+minify "$DIST/formations.css"
+
+# ─── Workshops bundle ───────────────────────────────────────────────────────
+
+echo "Building workshops bundle…"
+concat "$DIST/workshops.css" \
+  "${BASE_FILES[@]}" \
+  "$STYLES/pages/workshops.css" \
+  "$STYLES/pages/homepage/footer.css"
+minify "$DIST/workshops.css"
+
 echo ""
 echo "✅ CSS bundles built in $DIST/"
 ls -lh "$DIST/"*.min.css
+
+echo ""
+echo "📦 Minifying JavaScript files…"
+minify_js "$SCRIPT_DIR/js/header.js"
+minify_js "$SCRIPT_DIR/js/script.js"
+minify_js "$SCRIPT_DIR/js/popover-hubspot.js"
+
+echo "✅ JS minified successfully!"
 
 # ─── Image optimization ─────────────────────────────────────────────────────
 
 IMG_SRC="$SCRIPT_DIR/images"
 IMG_DIST="$SCRIPT_DIR/images/dist"
 
-if command -v convert &>/dev/null; then
+if command -v magick &>/dev/null || (command -v convert &>/dev/null && convert -version 2>&1 | grep -qi "imagemagick"); then
   echo ""
   echo "Optimizing images…"
 
@@ -115,3 +151,6 @@ else
   echo "⚠️  ImageMagick not found — skipping image optimization (run: brew install imagemagick)"
 fi
 
+
+echo "Building static HTML (SSG)..."
+node "$SCRIPT_DIR/build-static.js"

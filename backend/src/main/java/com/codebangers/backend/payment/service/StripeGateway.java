@@ -1,0 +1,61 @@
+package com.codebangers.backend.payment.service;
+
+import com.codebangers.backend.course.model.Course;
+import com.codebangers.backend.payment.dto.CheckoutSessionResponse;
+import com.codebangers.backend.user.model.User;
+
+public interface StripeGateway {
+
+    /**
+     * Crée une session de paiement hébergée ou embarquée Stripe Checkout pour un utilisateur et un cours donné.
+     *
+     * @param user L'utilisateur apprenant acheteur
+     * @param course Le cours acheté
+     * @param successUrl L'URL de redirection en cas de succès (optionnel)
+     * @param cancelUrl L'URL de redirection en cas d'annulation (optionnel)
+     * @return Les détails de la session créée (sessionId, sessionUrl, clientSecret, publishableKey, montant, devise)
+     */
+    CheckoutSessionResponse createCheckoutSession(User user, Course course, String successUrl, String cancelUrl);
+
+    /**
+     * Crée une session de paiement Stripe Checkout avec sélection explicite du mode (Embedded ou Hosted).
+     *
+     * @param user L'utilisateur apprenant acheteur
+     * @param course Le cours acheté
+     * @param successUrl L'URL de succès (mode Hosted)
+     * @param cancelUrl L'URL d'annulation (mode Hosted)
+     * @param embedded Si true, génère une session en mode EMBEDDED avec clientSecret et returnUrl
+     * @param returnUrl L'URL de retour après paiement pour le mode EMBEDDED
+     * @return Les détails de la session créée
+     */
+    CheckoutSessionResponse createCheckoutSession(User user, Course course, String successUrl, String cancelUrl, boolean embedded, String returnUrl);
+
+    /**
+     * Crée une session de paiement Stripe Checkout avec sélection du tier (Starter, Web, VIP) et cohorte (ADR-013, ADR-014).
+     */
+    CheckoutSessionResponse createCheckoutSession(User user, Course course, String successUrl, String cancelUrl, boolean embedded, String returnUrl, com.codebangers.backend.course.model.EnrollmentTier tier, java.util.UUID cohortId);
+
+    /**
+     * Crée une session de paiement Stripe Checkout avec tier, cohorte et add-on Suivi Mentor.
+     */
+    default CheckoutSessionResponse createCheckoutSession(User user, Course course, String successUrl, String cancelUrl, boolean embedded, String returnUrl, com.codebangers.backend.course.model.EnrollmentTier tier, java.util.UUID cohortId, String addon) {
+        return createCheckoutSession(user, course, successUrl, cancelUrl, embedded, returnUrl, tier, cohortId);
+    }
+
+    /**
+     * Récupère une Checkout Session Stripe par son identifiant.
+     *
+     * @param sessionId L'identifiant de la session Stripe
+     * @return L'objet Session Stripe
+     */
+    com.stripe.model.checkout.Session retrieveSession(String sessionId);
+
+    /**
+     * Crée une session sécurisée Stripe Customer Portal pour permettre à l'apprenant de consulter ses factures et moyens de paiement.
+     *
+     * @param user L'utilisateur apprenant
+     * @param returnUrl L'URL de retour après consultation du portail
+     * @return L'URL sécurisée du portail de facturation Stripe
+     */
+    String createCustomerPortalSession(User user, String returnUrl);
+}

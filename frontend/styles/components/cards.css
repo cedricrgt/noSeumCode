@@ -1,9 +1,10 @@
 .card {
   border-radius: var(--radius-xl);
   overflow: hidden;
-  transition: all var(--transition-normal);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
   display: flex;
   flex-direction: column;
+  text-align: left;
 }
 
 .card:hover {
@@ -62,44 +63,77 @@
 }
 
 .card__tag {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: var(--spacing-sm);
+  background: #070e18;
+  border: 1px solid rgba(0, 255, 135, 0.35);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.card:hover .card__tag {
+  transform: scale(1.05);
+  border-color: var(--primary-green);
+  box-shadow: 0 4px 20px rgba(0, 255, 135, 0.2);
+}
+
+.card__tag-brand-green {
+  background: #070e18;
+  border: 1px solid rgba(0, 255, 135, 0.4);
+  color: var(--primary-green);
+  box-shadow: 0 4px 16px rgba(0, 255, 135, 0.15);
+}
+
+.card__tag-brand-cyan {
+  background: #070e18;
+  border: 1px solid rgba(0, 217, 255, 0.4);
+  color: #00d9ff;
+  box-shadow: 0 4px 16px rgba(0, 217, 255, 0.15);
 }
 
 .card__tag-white {
-  background: var(--white);
+  background: #070e18;
+  border: 1px solid rgba(0, 255, 135, 0.4);
   color: var(--primary-green);
+  box-shadow: 0 4px 16px rgba(0, 255, 135, 0.15);
 }
 
 .card__tag-blue {
-  background: linear-gradient(135deg, #4299e1, #3182ce);
-  color: var(--white);
+  background: #070e18;
+  border: 1px solid rgba(0, 217, 255, 0.4);
+  color: #00d9ff;
+  box-shadow: 0 4px 16px rgba(0, 217, 255, 0.15);
 }
 
 .card__tag-grey {
-  background: linear-gradient(135deg, #718096, #4a5568);
-  color: var(--white);
+  background: #070e18;
+  border: 1px solid rgba(0, 255, 135, 0.4);
+  color: var(--primary-green);
+  box-shadow: 0 4px 16px rgba(0, 255, 135, 0.15);
 }
 
 .card__icon {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
+  display: block;
 }
 
 .card__title {
   font-size: 1.5rem;
   font-weight: 700;
   color: inherit;
+  text-align: left;
 }
 
 .card__paragraphe {
   font-size: 1rem;
   line-height: 1.7;
+  text-align: left;
   flex: 1;
 }
 
@@ -139,7 +173,7 @@
 }
 
 .card__chevron-darken {
-  stroke: var(--primary-green);
+  stroke: #047857;
 }
 
 .card__link:hover .card__chevron,
@@ -149,4 +183,10 @@
 
 .card-paddingtop .card__imageContainer {
   height: 250px;
+}
+
+@media (max-width: 768px) {
+  .card__main {
+    padding: 1.25rem 1rem;
+  }
 }

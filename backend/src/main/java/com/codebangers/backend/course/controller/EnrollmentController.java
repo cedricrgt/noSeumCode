@@ -7,6 +7,8 @@ import com.codebangers.backend.course.model.Enrollment.PaymentStatus;
 import com.codebangers.backend.course.service.EnrollmentService;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.service.UserService;
+import com.codebangers.backend.discord.service.DiscordService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,10 +26,17 @@ public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
     private final UserService userService;
+    private final DiscordService discordService;
 
-    public EnrollmentController(EnrollmentService enrollmentService, UserService userService) {
+    @Autowired
+    public EnrollmentController(EnrollmentService enrollmentService, UserService userService, @Autowired(required = false) DiscordService discordService) {
         this.enrollmentService = enrollmentService;
         this.userService = userService;
+        this.discordService = discordService;
+    }
+
+    public EnrollmentController(EnrollmentService enrollmentService, UserService userService) {
+        this(enrollmentService, userService, null);
     }
 
     private User getAuthenticatedUser(Jwt jwt) {
@@ -51,10 +60,22 @@ public class EnrollmentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EnrollmentResponse> getEnrollmentById(@PathVariable UUID id) {
-        return enrollmentService.getEnrollmentById(id)
-            .map(enrollment -> ResponseEntity.ok(mapToResponse(enrollment)))
-            .orElse(ResponseEntity.notFound().build());
+    @PreAuthorize("hasRole('ADMIN') or @enrollmentSecurity.canAccessEnrollment(#id, authentication)")
+    public ResponseEntity<EnrollmentResponse> getEnrollmentById(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
+        Enrollment enrollment = enrollmentService.getEnrollmentById(id)
+                .orElse(null);
+        if (enrollment == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (jwt != null) {
+            User user = getAuthenticatedUser(jwt);
+            boolean isAdmin = user.getRole() == com.codebangers.backend.user.model.Role.ADMIN;
+            boolean isOwner = enrollment.getUser() != null && enrollment.getUser().getId().equals(user.getId());
+            if (!isAdmin && !isOwner) {
+                throw new org.springframework.security.access.AccessDeniedException("Accès refusé à cette inscription");
+            }
+        }
+        return ResponseEntity.ok(mapToResponse(enrollment));
     }
 
     @GetMapping("/course/{courseId}")
@@ -78,17 +99,30 @@ public class EnrollmentController {
     }
 
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> enrollUserInCourse(@RequestBody EnrollmentRequest request, @AuthenticationPrincipal Jwt jwt) {
         try {
+            User authenticatedUser = getAuthenticatedUser(jwt);
             User user;
             if (request.getUserId() != null) {
-                user = userService.getUserById(request.getUserId())
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                boolean isAdmin = authenticatedUser.getRole() == com.codebangers.backend.user.model.Role.ADMIN;
+                if (!isAdmin && !request.getUserId().equals(authenticatedUser.getId())) {
+                    throw new org.springframework.security.access.AccessDeniedException(
+                            "Seul un administrateur peut inscrire un autre utilisateur.");
+                }
+                if (isAdmin && !request.getUserId().equals(authenticatedUser.getId())) {
+                    user = userService.getUserById(request.getUserId())
+                            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                } else {
+                    user = authenticatedUser;
+                }
             } else {
-                user = getAuthenticatedUser(jwt);
+                user = authenticatedUser;
             }
             Enrollment enrollment = enrollmentService.enrollUserInCourse(user, request.getCourseId());
             return new ResponseEntity<>(mapToResponse(enrollment), HttpStatus.CREATED);
+        } catch (org.springframework.security.access.AccessDeniedException e) {
+            throw e;
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -145,10 +179,18 @@ public class EnrollmentController {
 
     @PutMapping("/{id}/progress")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> updateProgress(@PathVariable UUID id, @RequestParam Integer progress) {
+    public ResponseEntity<?> updateProgress(
+            @PathVariable UUID id,
+            @RequestParam Integer progress,
+            @AuthenticationPrincipal Jwt jwt) {
         try {
-            Enrollment enrollment = enrollmentService.updateProgress(id, progress);
+            User user = getAuthenticatedUser(jwt);
+            Enrollment enrollment = enrollmentService.updateProgress(id, user.getId(), progress);
             return ResponseEntity.ok(mapToResponse(enrollment));
+        } catch (org.springframework.security.access.AccessDeniedException e) {
+            throw e;
+        } catch (com.codebangers.backend.config.exception.ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -178,6 +220,21 @@ public class EnrollmentController {
         if (enrollment.getCourse() != null) {
             response.setCourseTitle(enrollment.getCourse().getTitle());
             response.setCourseDescription(enrollment.getCourse().getDescription());
+        }
+        if (enrollment.getTier() != null) {
+            response.setTier(enrollment.getTier());
+            response.setLifetimeAccess(true);
+        }
+        if (enrollment.getCohort() != null) {
+            response.setCohortId(enrollment.getCohort().getId());
+            response.setCohortName(enrollment.getCohort().getName());
+            response.setCohortSlug(enrollment.getCohort().getSlug());
+        }
+        if (discordService != null && enrollment.getCourse() != null) {
+            String slugOrTitle = enrollment.getCourse().getSlug() != null && !enrollment.getCourse().getSlug().isBlank()
+                    ? enrollment.getCourse().getSlug()
+                    : enrollment.getCourse().getTitle();
+            response.setStageChannelUrl(discordService.resolveStageChannelUrlForCourse(slugOrTitle, enrollment.getTier()));
         }
         return response;
     }

@@ -12,12 +12,23 @@
   height: 38px;
   display: flex;
   align-items: center;
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .promo-banner__track {
   display: inline-block;
   animation: scroll-banner 60s linear infinite;
   padding-left: 100%;
+  will-change: transform;
+}
+
+/* Pause scrolling on hover, keyboard focus, and touch for reliable clickability & a11y */
+.promo-banner:hover .promo-banner__track,
+.promo-banner:focus-within .promo-banner__track,
+.promo-banner:active .promo-banner__track {
+  animation-play-state: paused;
 }
 
 .promo-banner__item {
@@ -34,16 +45,24 @@
   font-size: 0.85rem;
   text-decoration: none;
   transition: var(--transition-normal);
-  border: none;
+  border: solid 1px var(--dark-navy);
   cursor: pointer;
   font-family: inherit;
-  border: solid 1px var(--dark-navy);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
 }
 
-.promo-banner__cta:hover {
+.promo-banner__cta:hover,
+.promo-banner__cta:focus-visible {
   background: var(--primary-green);
   color: var(--dark-navy);
   font-weight: 700;
+  outline: 2px solid var(--dark-navy);
+  outline-offset: 1px;
 }
 
 @keyframes scroll-banner {
@@ -54,5 +73,12 @@
 @media (max-width: 768px) {
   .promo-banner__track {
     animation-duration: 30s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo-banner__track {
+    animation: none;
+    padding-left: 1rem;
   }
 }

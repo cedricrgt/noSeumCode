@@ -1,7 +1,7 @@
 ---
 trigger: glob
-description: Apply when building frontend with vanilla HTML/CSS/JavaScript:   DOM manipulation, event handling, modules, HTTP communication,   state management, form handling.
-globs: {frontend/**/*.js,backend/**/*{Dto,DTO}.java}
+description: "Apply when building frontend with vanilla HTML/CSS/JavaScript: DOM manipulation, event handling, modules, HTTP communication, state management, form handling."
+globs: "{frontend/**/*.js,backend/**/*{Dto,DTO}.java}"
 ---
 
 # Rule 06 – Vanilla JS Frontend Architecture
