@@ -1,14 +1,23 @@
 package com.codebangers.backend.auth;
 
+<<<<<<< HEAD
 import com.codebangers.backend.auth.dto.*;
 import com.codebangers.backend.auth.service.PasswordResetService;
 import com.codebangers.backend.auth.service.RefreshTokenService;
+=======
+import com.codebangers.backend.auth.dto.AuthResponse;
+import com.codebangers.backend.auth.dto.LoginRequest;
+import com.codebangers.backend.auth.dto.RegisterRequest;
+>>>>>>> main
 import com.codebangers.backend.config.JwtService;
 import com.codebangers.backend.user.model.Role;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.repository.UserRepository;
+<<<<<<< HEAD
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+=======
+>>>>>>> main
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +31,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+<<<<<<< HEAD
     private final RefreshTokenService refreshTokenService;
     private final PasswordResetService passwordResetService;
     private final long jwtExpiryHours;
@@ -46,6 +56,16 @@ public class AuthService {
         this.jwtExpiryHours = jwtExpiryHours;
     }
 
+=======
+
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+    }
+
+    @Transactional(readOnly = true)
+>>>>>>> main
     public AuthResponse login(LoginRequest request) {
         Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
         if (userOpt.isEmpty()) {
@@ -67,8 +87,12 @@ public class AuthService {
         }
 
         String token = jwtService.generateToken(user);
+<<<<<<< HEAD
         String refreshToken = (refreshTokenService != null) ? refreshTokenService.createRefreshToken(user) : null;
         return mapToAuthResponse(user, "Connexion réussie", token, refreshToken);
+=======
+        return mapToAuthResponse(user, "Connexion réussie", token);
+>>>>>>> main
     }
 
     public AuthResponse register(RegisterRequest request) {
@@ -94,9 +118,14 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
         String token = jwtService.generateToken(savedUser);
+<<<<<<< HEAD
         String refreshToken = (refreshTokenService != null) ? refreshTokenService.createRefreshToken(savedUser) : null;
 
         return mapToAuthResponse(savedUser, "Compte créé avec succès", token, refreshToken);
+=======
+
+        return mapToAuthResponse(savedUser, "Compte créé avec succès", token);
+>>>>>>> main
     }
 
     @Transactional(readOnly = true)
@@ -105,6 +134,7 @@ public class AuthService {
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
 
         String token = jwtService.generateToken(user);
+<<<<<<< HEAD
         return mapToAuthResponse(user, "Profil récupéré", token, null);
     }
 
@@ -136,6 +166,12 @@ public class AuthService {
 
     private AuthResponse mapToAuthResponse(User user, String message, String token, String refreshToken) {
         long expiresIn = jwtExpiryHours * 3600L;
+=======
+        return mapToAuthResponse(user, "Profil récupéré", token);
+    }
+
+    private AuthResponse mapToAuthResponse(User user, String message, String token) {
+>>>>>>> main
         return new AuthResponse(
                 user.getId(),
                 user.getUserName(),
@@ -145,9 +181,13 @@ public class AuthService {
                 user.getRole().name(),
                 user.getAvatarUrl(),
                 message,
+<<<<<<< HEAD
                 token,
                 refreshToken,
                 expiresIn
+=======
+                token
+>>>>>>> main
         );
     }
 }

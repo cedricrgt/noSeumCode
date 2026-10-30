@@ -3,11 +3,16 @@ package com.codebangers.backend.course.service;
 import com.codebangers.backend.config.exception.DuplicateResourceException;
 import com.codebangers.backend.config.exception.ResourceNotFoundException;
 import com.codebangers.backend.course.model.Course;
+<<<<<<< HEAD
 import com.codebangers.backend.course.model.CourseTier;
 import com.codebangers.backend.course.repository.CourseRepository;
 import com.codebangers.backend.user.model.Role;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.repository.UserRepository;
+=======
+import com.codebangers.backend.course.repository.CourseRepository;
+import com.codebangers.backend.user.model.User;
+>>>>>>> main
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +26,17 @@ import java.util.UUID;
 public class CourseService {
 
     private final CourseRepository courseRepository;
+<<<<<<< HEAD
     private final UserRepository userRepository;
 
     public CourseService(CourseRepository courseRepository, UserRepository userRepository) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
+=======
+
+    public CourseService(CourseRepository courseRepository) {
+        this.courseRepository = courseRepository;
+>>>>>>> main
     }
 
     @Transactional(readOnly = true)
@@ -53,6 +64,7 @@ public class CourseService {
         return courseRepository.findByTitle(title);
     }
 
+<<<<<<< HEAD
     @Transactional(readOnly = true)
     public Optional<Course> getCourseBySlug(String slug) {
         return courseRepository.findBySlug(slug);
@@ -71,6 +83,9 @@ public class CourseService {
     public Course createCourse(String title, String description, Long priceInCents, String currency,
                                String slug, String thumbnailUrl, String level, Boolean isPublished,
                                CourseTier requiredTier, User createdBy) {
+=======
+    public Course createCourse(String title, String description, User createdBy) {
+>>>>>>> main
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Course title cannot be empty");
         }
@@ -79,6 +94,7 @@ public class CourseService {
             throw new DuplicateResourceException("Course with this title already exists");
         }
 
+<<<<<<< HEAD
         if (slug != null && !slug.isBlank()) {
             if (courseRepository.findBySlug(slug).isPresent()) {
                 throw new DuplicateResourceException("Course with this slug already exists");
@@ -111,10 +127,15 @@ public class CourseService {
         if (createdBy != null && createdBy.getRole() == Role.TEACHER) {
             course.addTeacher(createdBy);
         }
+=======
+        Course course = new Course(title, description);
+        course.setCreatedBy(createdBy);
+>>>>>>> main
         return courseRepository.save(course);
     }
 
     public Course updateCourse(UUID courseId, String title, String description, User updatedBy) {
+<<<<<<< HEAD
         return updateCourse(courseId, title, description, null, null, null, null, null, null, null, updatedBy);
     }
 
@@ -129,6 +150,8 @@ public class CourseService {
                                Long priceInCents, String currency, String slug,
                                String thumbnailUrl, String level, Boolean isPublished,
                                CourseTier requiredTier, User updatedBy) {
+=======
+>>>>>>> main
         Course course = courseRepository.findById(courseId)
             .orElseThrow(() -> new ResourceNotFoundException("Course", courseId));
 
@@ -144,6 +167,7 @@ public class CourseService {
             course.setDescription(description);
         }
 
+<<<<<<< HEAD
         if (priceInCents != null) {
             course.setPriceInCents(priceInCents);
         }
@@ -172,6 +196,8 @@ public class CourseService {
             course.setPublished(isPublished);
         }
 
+=======
+>>>>>>> main
         course.setUpdatedBy(updatedBy);
         return courseRepository.save(course);
     }
@@ -189,6 +215,7 @@ public class CourseService {
     public void deleteCourse(UUID courseId) {
         courseRepository.deleteById(courseId);
     }
+<<<<<<< HEAD
 
     @Transactional(readOnly = true)
     public List<Course> getAssignedCoursesForTeacher(UUID teacherId) {
@@ -234,4 +261,6 @@ public class CourseService {
         courseRepository.flush();
         return saved;
     }
+=======
+>>>>>>> main
 }

@@ -96,6 +96,10 @@ public class ChapterService {
         Chapter savedChapter = chapterRepository.save(chapter);
 
         if (savedChapter.getStatus() == ApprovalStatus.PENDING_APPROVAL) {
+<<<<<<< HEAD
+=======
+            // Notification aux admins
+>>>>>>> main
             notificationService.notifyAdmins(
                     "Nouvelle section soumise",
                     (author != null ? (author.getFirstName() != null ? author.getFirstName() + " " + (author.getLastName() != null ? author.getLastName() : "") : author.getUserName()) : "Un enseignant") +
@@ -125,6 +129,10 @@ public class ChapterService {
         Chapter savedChapter = chapterRepository.save(chapter);
 
         if (savedChapter.getStatus() == ApprovalStatus.PENDING_APPROVAL) {
+<<<<<<< HEAD
+=======
+            // Notification aux admins
+>>>>>>> main
             notificationService.notifyAdmins(
                     "Nouvelle sous-section soumise",
                     (author != null ? (author.getFirstName() != null ? author.getFirstName() + " " + (author.getLastName() != null ? author.getLastName() : "") : author.getUserName()) : "Un enseignant") +
@@ -213,6 +221,10 @@ public class ChapterService {
         chapter.setReviewedBy(admin);
         chapter.setRejectionReason(null);
 
+<<<<<<< HEAD
+=======
+        // Notifier l'auteur enseignant
+>>>>>>> main
         if (chapter.getCreatedBy() != null) {
             notificationService.notifyUser(
                     chapter.getCreatedBy(),
@@ -236,6 +248,10 @@ public class ChapterService {
         chapter.setReviewedAt(LocalDateTime.now());
         chapter.setReviewedBy(admin);
 
+<<<<<<< HEAD
+=======
+        // Notifier l'auteur enseignant
+>>>>>>> main
         if (chapter.getCreatedBy() != null) {
             notificationService.notifyUser(
                     chapter.getCreatedBy(),

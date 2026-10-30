@@ -5,18 +5,26 @@ import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.service.UserService;
 import com.codebangers.backend.workshop.dto.UserWorkshopResponse;
 import com.codebangers.backend.workshop.model.UserWorkshop;
+<<<<<<< HEAD
 import com.codebangers.backend.workshop.model.Workshop;
 import com.codebangers.backend.workshop.service.UserWorkshopService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+=======
+import com.codebangers.backend.workshop.service.UserWorkshopService;
+import org.springframework.http.HttpStatus;
+>>>>>>> main
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+<<<<<<< HEAD
 import java.time.LocalDateTime;
+=======
+>>>>>>> main
 import java.util.List;
 import java.util.UUID;
 
@@ -33,7 +41,10 @@ public class UserWorkshopController {
     }
 
     @GetMapping("/workshop/{workshopId}")
+<<<<<<< HEAD
     @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+=======
+>>>>>>> main
     public ResponseEntity<List<UserWorkshopResponse>> getRegistrationsByWorkshop(@PathVariable UUID workshopId) {
         List<UserWorkshopResponse> responses = userWorkshopService.getRegistrationsByWorkshop(workshopId).stream()
             .map(this::mapToResponse)
@@ -42,7 +53,10 @@ public class UserWorkshopController {
     }
 
     @GetMapping("/user/{userId}")
+<<<<<<< HEAD
     @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+=======
+>>>>>>> main
     public ResponseEntity<List<UserWorkshopResponse>> getRegistrationsByUser(@PathVariable UUID userId) {
         List<UserWorkshopResponse> responses = userWorkshopService.getRegistrationsByUser(userId).stream()
             .map(this::mapToResponse)
@@ -50,6 +64,7 @@ public class UserWorkshopController {
         return ResponseEntity.ok(responses);
     }
 
+<<<<<<< HEAD
     @GetMapping(value = "/export/hubspot-csv", produces = "text/csv; charset=UTF-8")
     @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public ResponseEntity<byte[]> exportHubspotCsv(
@@ -62,6 +77,8 @@ public class UserWorkshopController {
             .body(csvData);
     }
 
+=======
+>>>>>>> main
     @GetMapping("/me")
     public ResponseEntity<List<UserWorkshopResponse>> getMyRegistrations(@AuthenticationPrincipal Jwt jwt) {
         User user = resolveUser(jwt);
@@ -88,6 +105,7 @@ public class UserWorkshopController {
     }
 
     @DeleteMapping("/{id}")
+<<<<<<< HEAD
     public ResponseEntity<Void> unregisterUserFromWorkshop(@PathVariable UUID id,
                                                            @AuthenticationPrincipal Jwt jwt) {
         User user = resolveUser(jwt);
@@ -100,6 +118,10 @@ public class UserWorkshopController {
                                                                 @AuthenticationPrincipal Jwt jwt) {
         User user = resolveUser(jwt);
         userWorkshopService.unregisterCurrentUserByWorkshop(workshopId, user);
+=======
+    public ResponseEntity<Void> unregisterUserFromWorkshop(@PathVariable UUID id) {
+        userWorkshopService.unregisterUserFromWorkshop(id);
+>>>>>>> main
         return ResponseEntity.noContent().build();
     }
 
@@ -110,6 +132,7 @@ public class UserWorkshopController {
     }
 
     private UserWorkshopResponse mapToResponse(UserWorkshop registration) {
+<<<<<<< HEAD
         Workshop w = registration.getWorkshop();
         String title = w != null ? w.getTitle() : null;
         String theme = w != null ? w.getTheme() : null;
@@ -126,6 +149,12 @@ public class UserWorkshopController {
             desc,
             start,
             end,
+=======
+        return new UserWorkshopResponse(
+            registration.getId(),
+            registration.getUser().getId(),
+            registration.getWorkshop().getId(),
+>>>>>>> main
             registration.getRegisteredAt(),
             registration.getAttended()
         );

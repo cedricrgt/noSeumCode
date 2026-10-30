@@ -27,6 +27,11 @@ public class UserRequest {
 
     private Role role;
 
+<<<<<<< HEAD
+=======
+    // Constructors
+
+>>>>>>> main
     public UserRequest() {
     }
 
@@ -39,6 +44,11 @@ public class UserRequest {
         this.password = password;
         this.role = role;
     }
+<<<<<<< HEAD
+=======
+
+    // Getters & Setters
+>>>>>>> main
 
     public String getUserName() {
         return userName;

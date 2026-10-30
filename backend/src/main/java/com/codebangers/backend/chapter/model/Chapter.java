@@ -80,6 +80,13 @@ public class Chapter {
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Content> contents = new ArrayList<>();
 
+<<<<<<< HEAD
+=======
+    // =========================
+    // Constructors
+    // =========================
+
+>>>>>>> main
     public Chapter() {
     }
 
@@ -96,6 +103,13 @@ public class Chapter {
         this.position = position;
     }
 
+<<<<<<< HEAD
+=======
+    // =========================
+    // Getters & Setters
+    // =========================
+
+>>>>>>> main
     public UUID getId() {
         return id;
     }
@@ -184,6 +198,7 @@ public class Chapter {
         this.status = published ? ApprovalStatus.APPROVED : ApprovalStatus.DRAFT;
     }
 
+<<<<<<< HEAD
     /**
      * Définit si le chapitre est éligible à la prévisualisation gratuite (preview).
      * Par défaut, le premier chapitre d'un cours (position 1 ou racine) est en accès libre.
@@ -195,6 +210,8 @@ public class Chapter {
         return this.position == null || this.position <= 1;
     }
 
+=======
+>>>>>>> main
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }

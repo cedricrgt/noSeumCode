@@ -1,6 +1,7 @@
 (() => {
   let isLoaded = false;
 
+<<<<<<< HEAD
   // Configure l'écouteur du popover HubSpot
   const setupPopoverListener = (popover) => {
     popover.addEventListener('toggle', (event) => {
@@ -18,18 +19,35 @@
           `;
         }
 
+=======
+  // Fonction qui configure l'écouteur une fois le popover trouvé
+  const setupPopoverListener = (popover) => {
+    
+    popover.addEventListener('toggle', (event) => {
+
+      if (event.newState === 'open' && !isLoaded) {
+        isLoaded = true;
+
+>>>>>>> main
         const script = document.createElement("script");
         script.src = "https://js-eu1.hsforms.net/forms/embed/v2.js";
         script.async = true;
 
         script.onload = () => {
+<<<<<<< HEAD
           setTimeout(() => {
             if (window.hbspt && window.hbspt.forms) {
               if (container) container.innerHTML = "";
+=======
+
+          setTimeout(() => {
+            if (window.hbspt && window.hbspt.forms) {
+>>>>>>> main
               window.hbspt.forms.create({
                 portalId: "147700205",
                 formId: "1a00f0a3-c33c-47e3-9614-b56fdc4a8586",
                 region: "eu1",
+<<<<<<< HEAD
                 target: "#hubspot-form-container",
                 onFormSubmitted: () => {
                   if (typeof window.trackConversion === 'function') {
@@ -56,15 +74,26 @@
               if (container) {
                 container.innerHTML = `<p style="color: #fca5a5; text-align: center; padding: 1rem;">Impossible de charger le formulaire. Veuillez réessayer plus tard ou nous contacter à contact@noseumcode.fr.</p>`;
               }
+=======
+                redirectUrl: "thanks.html",
+                target: "#hubspot-form-container"
+              });
+            } else {
+              console.error("❌ window.hbspt n'est pas défini !");
+>>>>>>> main
             }
           }, 50);
         };
 
         script.onerror = () => {
+<<<<<<< HEAD
           console.error("Chargement du script HubSpot bloqué");
           if (container) {
             container.innerHTML = `<p style="color: #fca5a5; text-align: center; padding: 1rem;">Le chargement du formulaire a été bloqué. Vérifiez vos paramètres ou contactez-nous à contact@noseumcode.fr.</p>`;
           }
+=======
+          console.error("❌ Chargement du script HubSpot bloqué !");
+>>>>>>> main
         };
 
         document.body.appendChild(script);
@@ -72,15 +101,28 @@
     });
   };
 
+<<<<<<< HEAD
+=======
+  // On cherche le popover immédiatement
+>>>>>>> main
   const popover = document.getElementById('hubspot-popover');
   if (popover) {
     setupPopoverListener(popover);
   } else {
+<<<<<<< HEAD
+=======
+    
+    // Si pas trouvé, on observe le DOM en continu jusqu'à ce qu'il apparaisse
+>>>>>>> main
     const observer = new MutationObserver((mutations, obs) => {
       const targetPopover = document.getElementById('hubspot-popover');
       if (targetPopover) {
         setupPopoverListener(targetPopover);
+<<<<<<< HEAD
         obs.disconnect();
+=======
+        obs.disconnect(); // On arrête d'observer une fois trouvé
+>>>>>>> main
       }
     });
 
@@ -89,4 +131,8 @@
       subtree: true
     });
   }
+<<<<<<< HEAD
 })();
+=======
+})();
+>>>>>>> main

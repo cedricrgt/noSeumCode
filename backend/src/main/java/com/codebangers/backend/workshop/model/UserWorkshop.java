@@ -35,6 +35,13 @@ public class UserWorkshop {
     @Column(name = "attended", nullable = false)
     private Boolean attended = false;
 
+<<<<<<< HEAD
+=======
+    // =========================
+    // Constructors
+    // =========================
+
+>>>>>>> main
     public UserWorkshop() {
     }
 
@@ -50,6 +57,13 @@ public class UserWorkshop {
         this.attended = attended;
     }
 
+<<<<<<< HEAD
+=======
+    // =========================
+    // Getters & Setters
+    // =========================
+
+>>>>>>> main
     public UUID getId() {
         return id;
     }

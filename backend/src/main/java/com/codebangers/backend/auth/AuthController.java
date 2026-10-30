@@ -1,6 +1,12 @@
 package com.codebangers.backend.auth;
 
+<<<<<<< HEAD
 import com.codebangers.backend.auth.dto.*;
+=======
+import com.codebangers.backend.auth.dto.AuthResponse;
+import com.codebangers.backend.auth.dto.LoginRequest;
+import com.codebangers.backend.auth.dto.RegisterRequest;
+>>>>>>> main
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,8 +14,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+<<<<<<< HEAD
 import java.util.Map;
 
+=======
+>>>>>>> main
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -26,7 +35,11 @@ public class AuthController {
             AuthResponse response = authService.register(request);
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
+<<<<<<< HEAD
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+=======
+            return ResponseEntity.badRequest().body(e.getMessage());
+>>>>>>> main
         }
     }
 
@@ -36,6 +49,7 @@ public class AuthController {
             AuthResponse response = authService.login(request);
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException ex) {
+<<<<<<< HEAD
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", ex.getMessage()));
         }
     }
@@ -76,20 +90,31 @@ public class AuthController {
             return ResponseEntity.ok(Map.of("message", "Votre mot de passe a été réinitialisé avec succès."));
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
+=======
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+>>>>>>> main
         }
     }
 
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal Jwt jwt) {
         if (jwt == null) {
+<<<<<<< HEAD
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Non authentifié"));
+=======
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non authentifié");
+>>>>>>> main
         }
         try {
             String email = jwt.getSubject();
             AuthResponse response = authService.getCurrentUserProfile(email);
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
+<<<<<<< HEAD
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
+=======
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+>>>>>>> main
         }
     }
 }

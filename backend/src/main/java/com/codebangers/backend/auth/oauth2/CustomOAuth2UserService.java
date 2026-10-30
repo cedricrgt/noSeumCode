@@ -1,5 +1,6 @@
 package com.codebangers.backend.auth.oauth2;
 
+<<<<<<< HEAD
 import com.codebangers.backend.discord.service.DiscordService;
 import com.codebangers.backend.user.model.Role;
 import com.codebangers.backend.user.model.User;
@@ -10,21 +11,33 @@ import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+=======
+import com.codebangers.backend.user.model.Role;
+import com.codebangers.backend.user.model.User;
+import com.codebangers.backend.user.repository.UserRepository;
+>>>>>>> main
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+<<<<<<< HEAD
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Optional;
+=======
+
+import java.util.Optional;
+import java.util.UUID;
+>>>>>>> main
 
 @Service
 @Transactional
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
+<<<<<<< HEAD
     private static final Logger log = LoggerFactory.getLogger(CustomOAuth2UserService.class);
 
     private final UserRepository userRepository;
@@ -35,12 +48,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             @Autowired(required = false) DiscordService discordService) {
         this.userRepository = userRepository;
         this.discordService = discordService;
+=======
+    private final UserRepository userRepository;
+
+    public CustomOAuth2UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+>>>>>>> main
     }
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
+<<<<<<< HEAD
         String userAccessToken = (userRequest.getAccessToken() != null)
                 ? userRequest.getAccessToken().getTokenValue()
                 : null;
@@ -49,10 +69,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return processOAuth2User(registrationId, oAuth2User, userAccessToken);
         } catch (Exception ex) {
             log.error("Erreur lors du traitement OAuth2 pour provider {}: {}", registrationId, ex.getMessage());
+=======
+
+        try {
+            return processOAuth2User(registrationId, oAuth2User);
+        } catch (Exception ex) {
+>>>>>>> main
             throw new OAuth2AuthenticationException("Erreur d'authentification OAuth2 : " + ex.getMessage());
         }
     }
 
+<<<<<<< HEAD
     private OAuth2User processOAuth2User(String registrationId, OAuth2User oAuth2User, String userAccessToken) {
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, oAuth2User.getAttributes());
 
@@ -87,6 +114,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         if (userOptional.isPresent()) {
             user = userOptional.get();
+=======
+    private OAuth2User processOAuth2User(String registrationId, OAuth2User oAuth2User) {
+        OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, oAuth2User.getAttributes());
+
+        if (userInfo.getEmail() == null || userInfo.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Email non fourni par le service " + registrationId);
+        }
+
+        Optional<User> userOptional = userRepository.findByEmail(userInfo.getEmail());
+        User user;
+
+        if (userOptional.isPresent()) {
+            user = userOptional.get();
+            // Mettre à jour les informations de profil si nécessaire
+>>>>>>> main
             if (userInfo.getImageUrl() != null && !userInfo.getImageUrl().isBlank()) {
                 user.setAvatarUrl(userInfo.getImageUrl());
             }
@@ -96,6 +138,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             }
             user = userRepository.save(user);
         } else {
+<<<<<<< HEAD
             user = registerNewOAuth2User(registrationId, userInfo);
         }
 
@@ -138,6 +181,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return null;
     }
 
+=======
+            // Créer un nouvel utilisateur avec le rôle STUDENT par défaut
+            user = registerNewOAuth2User(registrationId, userInfo);
+        }
+
+        return new CustomOAuth2User(user, oAuth2User.getAttributes());
+    }
+
+>>>>>>> main
     private User registerNewOAuth2User(String registrationId, OAuth2UserInfo userInfo) {
         String baseUsername = (userInfo.getFirstName() != null ? userInfo.getFirstName() : "user")
                 .toLowerCase()
@@ -158,7 +210,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 firstName,
                 lastName,
                 userInfo.getEmail(),
+<<<<<<< HEAD
                 null, // No password for OAuth2 users
+=======
+                null, // Pas de mot de passe requis pour OAuth2
+>>>>>>> main
                 Role.STUDENT
         );
         user.setProvider(registrationId.toUpperCase());

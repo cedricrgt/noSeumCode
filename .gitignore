@@ -40,6 +40,7 @@ yarn-error.log*
 #conception
 out/*
 conception/*
+<<<<<<< HEAD
 
 # antigravity rules
 .agents/rules/rule-18-web-animation
@@ -51,3 +52,9 @@ conception/*
 .github/hooks/
 
 video/
+=======
+docs/*
+
+# antigravity rules
+.agents/rules/rule-18-web-animation
+>>>>>>> main

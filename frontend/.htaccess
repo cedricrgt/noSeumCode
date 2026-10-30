@@ -87,9 +87,15 @@ RewriteRule ^suivi-mentor/?$ suivi-mentor.html [L,QSA]
 # Redirection "En construction" (supprimer ce bloc quand le site est prêt)
 # ----------------------------------------------------------------------
 # RewriteCond %{REMOTE_ADDR} !^12\.34\.56\.78$
+<<<<<<< HEAD
 # RewriteCond %{REQUEST_URI} !/en-construction\.html$
 # RewriteCond %{REQUEST_URI} !\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|otf|json)$ [NC]
 # RewriteRule ^(.*)$ /en-construction.html [R=503,L]
+=======
+#RewriteCond %{REQUEST_URI} !/en-construction\.html$
+#RewriteCond %{REQUEST_URI} !\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|otf|json)$ [NC]
+#RewriteRule ^(.*)$ /en-construction.html [R=503,L]
+>>>>>>> main
 
 # Indiquer à Apache d'utiliser la page en-construction.html pour l'erreur 503
 # ErrorDocument 503 /en-construction.html
@@ -152,6 +158,7 @@ RewriteRule ^suivi-mentor/?$ suivi-mentor.html [L,QSA]
     ExpiresByType image/avif "access plus 1 year"
     ExpiresByType image/svg+xml "access plus 1 year"
     ExpiresByType image/x-icon "access plus 1 year"
+<<<<<<< HEAD
     ExpiresByType image/png "access plus 1 year"
     ExpiresByType image/jpg "access plus 1 year"
     ExpiresByType image/jpeg "access plus 1 year"
@@ -181,6 +188,14 @@ RewriteRule ^suivi-mentor/?$ suivi-mentor.html [L,QSA]
     <FilesMatch "\.(html|htm)$">
         Header set Cache-Control "no-cache, must-revalidate"
     </FilesMatch>
+=======
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+
+    # Documents PDF (no long cache)
+    ExpiresByType application/pdf "access plus 1 hour"
+>>>>>>> main
 </IfModule>
 
 # ----------------------------------------------------------------------

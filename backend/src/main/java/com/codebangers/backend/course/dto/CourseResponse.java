@@ -1,8 +1,11 @@
 package com.codebangers.backend.course.dto;
 
 import java.time.LocalDateTime;
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.List;
+=======
+>>>>>>> main
 import java.util.UUID;
 
 public class CourseResponse {
@@ -15,6 +18,7 @@ public class CourseResponse {
     private String createdByName;
     private String updatedByName;
     private int chaptersCount = 0;
+<<<<<<< HEAD
     private Long priceInCents;
     private String currency;
     private String slug;
@@ -23,6 +27,10 @@ public class CourseResponse {
     private boolean isPublished;
     private com.codebangers.backend.course.model.CourseTier requiredTier;
     private List<TeacherResponse> assignedTeachers = new ArrayList<>();
+=======
+
+    // Constructors
+>>>>>>> main
 
     public CourseResponse() {
     }
@@ -49,6 +57,7 @@ public class CourseResponse {
         this.chaptersCount = chaptersCount;
     }
 
+<<<<<<< HEAD
     public CourseResponse(UUID id, String title, String description,
                         LocalDateTime createdAt, LocalDateTime updatedAt,
                         String createdByName, String updatedByName, int chaptersCount,
@@ -69,6 +78,9 @@ public class CourseResponse {
         this.level = level;
         this.isPublished = isPublished;
     }
+=======
+    // Getters & Setters
+>>>>>>> main
 
     public UUID getId() {
         return id;
@@ -133,6 +145,7 @@ public class CourseResponse {
     public void setChaptersCount(int chaptersCount) {
         this.chaptersCount = chaptersCount;
     }
+<<<<<<< HEAD
 
     public Long getPriceInCents() {
         return priceInCents;
@@ -197,4 +210,6 @@ public class CourseResponse {
     public void setAssignedTeachers(List<TeacherResponse> assignedTeachers) {
         this.assignedTeachers = assignedTeachers;
     }
+=======
+>>>>>>> main
 }

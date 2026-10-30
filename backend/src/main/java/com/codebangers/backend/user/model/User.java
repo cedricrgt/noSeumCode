@@ -42,6 +42,7 @@ public class User {
     @Column(name = "avatar_url", length = 500)
     private String avatarUrl;
 
+<<<<<<< HEAD
     // Intégration Discord
     @Column(name = "discord_user_id", length = 50)
     private String discordUserId;
@@ -55,6 +56,8 @@ public class User {
     @Column(name = "discord_linked_at")
     private LocalDateTime discordLinkedAt;
 
+=======
+>>>>>>> main
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.USER;
@@ -253,6 +256,7 @@ public class User {
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
     }
+<<<<<<< HEAD
 
     public String getDiscordUserId() {
         return discordUserId;
@@ -301,4 +305,6 @@ public class User {
     public int hashCode() {
         return getClass().hashCode();
     }
+=======
+>>>>>>> main
 }

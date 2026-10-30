@@ -11,6 +11,7 @@ public class WorkshopRequest {
     @NotBlank(message = "Workshop title is required")
     @Size(max = 255, message = "Title must not exceed 255 characters")
     private String title;
+<<<<<<< HEAD
 
     @Size(max = 255, message = "Theme must not exceed 255 characters")
     private String theme;
@@ -19,6 +20,10 @@ public class WorkshopRequest {
 
     private Integer maxParticipants = 6;
 
+=======
+    private String description;
+
+>>>>>>> main
     @NotNull(message = "Start date is required")
     private LocalDateTime startDate;
 
@@ -34,6 +39,7 @@ public class WorkshopRequest {
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
+<<<<<<< HEAD
         this.maxParticipants = 6;
     }
 
@@ -45,6 +51,8 @@ public class WorkshopRequest {
         this.maxParticipants = maxParticipants != null ? maxParticipants : 6;
         this.startDate = startDate;
         this.endDate = endDate;
+=======
+>>>>>>> main
     }
 
     public String getTitle() {
@@ -55,6 +63,7 @@ public class WorkshopRequest {
         this.title = title;
     }
 
+<<<<<<< HEAD
     public String getTheme() {
         return theme;
     }
@@ -71,6 +80,8 @@ public class WorkshopRequest {
         this.maxParticipants = maxParticipants != null ? maxParticipants : 6;
     }
 
+=======
+>>>>>>> main
     public String getDescription() {
         return description;
     }

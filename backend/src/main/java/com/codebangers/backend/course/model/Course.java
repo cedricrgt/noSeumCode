@@ -9,9 +9,13 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+<<<<<<< HEAD
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+=======
+import java.util.List;
+>>>>>>> main
 import java.util.UUID;
 
 @Entity
@@ -28,6 +32,7 @@ public class Course {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
+<<<<<<< HEAD
     @Column(name = "price_in_cents", nullable = false)
     private Long priceInCents = 4900L;
 
@@ -50,6 +55,8 @@ public class Course {
     @Column(name = "is_published", nullable = false)
     private boolean isPublished = true;
 
+=======
+>>>>>>> main
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -87,6 +94,7 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Enrollment> enrollments = new ArrayList<>();
 
+<<<<<<< HEAD
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -95,6 +103,11 @@ public class Course {
         inverseJoinColumns = @JoinColumn(name = "teacher_id")
     )
     private Set<User> assignedTeachers = new HashSet<>();
+=======
+    // =========================
+    // Constructors
+    // =========================
+>>>>>>> main
 
     public Course() {
     }
@@ -104,6 +117,13 @@ public class Course {
         this.description = description;
     }
 
+<<<<<<< HEAD
+=======
+    // =========================
+    // Getters & Setters
+    // =========================
+
+>>>>>>> main
     public UUID getId() {
         return id;
     }
@@ -191,6 +211,7 @@ public class Course {
     public void setEnrollments(List<Enrollment> enrollments) {
         this.enrollments = enrollments;
     }
+<<<<<<< HEAD
 
     public Long getPriceInCents() {
         return priceInCents;
@@ -268,4 +289,6 @@ public class Course {
             this.assignedTeachers.remove(teacher);
         }
     }
+=======
+>>>>>>> main
 }

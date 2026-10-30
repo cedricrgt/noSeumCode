@@ -7,8 +7,11 @@ import com.codebangers.backend.course.model.Enrollment.PaymentStatus;
 import com.codebangers.backend.course.service.EnrollmentService;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.service.UserService;
+<<<<<<< HEAD
 import com.codebangers.backend.discord.service.DiscordService;
 import org.springframework.beans.factory.annotation.Autowired;
+=======
+>>>>>>> main
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +29,7 @@ public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
     private final UserService userService;
+<<<<<<< HEAD
     private final DiscordService discordService;
 
     @Autowired
@@ -37,6 +41,12 @@ public class EnrollmentController {
 
     public EnrollmentController(EnrollmentService enrollmentService, UserService userService) {
         this(enrollmentService, userService, null);
+=======
+
+    public EnrollmentController(EnrollmentService enrollmentService, UserService userService) {
+        this.enrollmentService = enrollmentService;
+        this.userService = userService;
+>>>>>>> main
     }
 
     private User getAuthenticatedUser(Jwt jwt) {
@@ -60,6 +70,7 @@ public class EnrollmentController {
     }
 
     @GetMapping("/{id}")
+<<<<<<< HEAD
     @PreAuthorize("hasRole('ADMIN') or @enrollmentSecurity.canAccessEnrollment(#id, authentication)")
     public ResponseEntity<EnrollmentResponse> getEnrollmentById(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
         Enrollment enrollment = enrollmentService.getEnrollmentById(id)
@@ -76,6 +87,12 @@ public class EnrollmentController {
             }
         }
         return ResponseEntity.ok(mapToResponse(enrollment));
+=======
+    public ResponseEntity<EnrollmentResponse> getEnrollmentById(@PathVariable UUID id) {
+        return enrollmentService.getEnrollmentById(id)
+            .map(enrollment -> ResponseEntity.ok(mapToResponse(enrollment)))
+            .orElse(ResponseEntity.notFound().build());
+>>>>>>> main
     }
 
     @GetMapping("/course/{courseId}")
@@ -99,6 +116,7 @@ public class EnrollmentController {
     }
 
     @PostMapping
+<<<<<<< HEAD
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> enrollUserInCourse(@RequestBody EnrollmentRequest request, @AuthenticationPrincipal Jwt jwt) {
         try {
@@ -123,6 +141,19 @@ public class EnrollmentController {
             return new ResponseEntity<>(mapToResponse(enrollment), HttpStatus.CREATED);
         } catch (org.springframework.security.access.AccessDeniedException e) {
             throw e;
+=======
+    public ResponseEntity<?> enrollUserInCourse(@RequestBody EnrollmentRequest request, @AuthenticationPrincipal Jwt jwt) {
+        try {
+            User user;
+            if (request.getUserId() != null) {
+                user = userService.getUserById(request.getUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            } else {
+                user = getAuthenticatedUser(jwt);
+            }
+            Enrollment enrollment = enrollmentService.enrollUserInCourse(user, request.getCourseId());
+            return new ResponseEntity<>(mapToResponse(enrollment), HttpStatus.CREATED);
+>>>>>>> main
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -179,6 +210,7 @@ public class EnrollmentController {
 
     @PutMapping("/{id}/progress")
     @PreAuthorize("isAuthenticated()")
+<<<<<<< HEAD
     public ResponseEntity<?> updateProgress(
             @PathVariable UUID id,
             @RequestParam Integer progress,
@@ -191,6 +223,12 @@ public class EnrollmentController {
             throw e;
         } catch (com.codebangers.backend.config.exception.ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
+=======
+    public ResponseEntity<?> updateProgress(@PathVariable UUID id, @RequestParam Integer progress) {
+        try {
+            Enrollment enrollment = enrollmentService.updateProgress(id, progress);
+            return ResponseEntity.ok(mapToResponse(enrollment));
+>>>>>>> main
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -221,6 +259,7 @@ public class EnrollmentController {
             response.setCourseTitle(enrollment.getCourse().getTitle());
             response.setCourseDescription(enrollment.getCourse().getDescription());
         }
+<<<<<<< HEAD
         if (enrollment.getTier() != null) {
             response.setTier(enrollment.getTier());
             response.setLifetimeAccess(true);
@@ -236,6 +275,8 @@ public class EnrollmentController {
                     : enrollment.getCourse().getTitle();
             response.setStageChannelUrl(discordService.resolveStageChannelUrlForCourse(slugOrTitle, enrollment.getTier()));
         }
+=======
+>>>>>>> main
         return response;
     }
 }

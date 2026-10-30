@@ -24,12 +24,16 @@
     return;
   }
 
+<<<<<<< HEAD
   const target = typeof localStorage !== "undefined" ? localStorage.getItem("noseum_api_target") : null;
   if (target === "local") {
     const host = window.location.hostname || "localhost";
     window.API_BASE_URL = `http://${host}:8080`;
     return;
   }
+=======
+  await updatePromoBanner();
+>>>>>>> main
 
   // Par défaut (local port 3000, 5500, develop ou prod) : Oracle Cloud VM API
   window.API_BASE_URL = "https://api.noseumcode.fr";
@@ -137,9 +141,15 @@ async function loadPartials() {
     }
 
     setActiveNavLink();
+<<<<<<< HEAD
     checkUserAuthHeader();
     initPromoPopup();
     updateHeaderHeightVar();
+=======
+
+    //initPromoPopup();
+
+>>>>>>> main
   } catch (error) {
     console.error("Error loading partials:", error);
   }

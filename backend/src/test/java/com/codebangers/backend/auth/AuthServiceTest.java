@@ -1,8 +1,14 @@
 package com.codebangers.backend.auth;
 
+<<<<<<< HEAD
 import com.codebangers.backend.auth.dto.*;
 import com.codebangers.backend.auth.service.PasswordResetService;
 import com.codebangers.backend.auth.service.RefreshTokenService;
+=======
+import com.codebangers.backend.auth.dto.AuthResponse;
+import com.codebangers.backend.auth.dto.LoginRequest;
+import com.codebangers.backend.auth.dto.RegisterRequest;
+>>>>>>> main
 import com.codebangers.backend.config.JwtService;
 import com.codebangers.backend.user.model.Role;
 import com.codebangers.backend.user.model.User;
@@ -16,7 +22,12 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+<<<<<<< HEAD
 import static org.mockito.Mockito.*;
+=======
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+>>>>>>> main
 
 class AuthServiceTest {
 
@@ -42,6 +53,7 @@ class AuthServiceTest {
     }
 
     @Test
+<<<<<<< HEAD
     void shouldLoginWithRefreshTokenServiceAndReturnBothTokens() {
         UserRepository userRepository = mock(UserRepository.class);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -67,6 +79,8 @@ class AuthServiceTest {
     }
 
     @Test
+=======
+>>>>>>> main
     void shouldRegisterNewUserAndReturnToken() {
         UserRepository userRepository = mock(UserRepository.class);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -92,6 +106,7 @@ class AuthServiceTest {
     }
 
     @Test
+<<<<<<< HEAD
     void shouldDelegateRefreshPasswordResetAndLogout() {
         UserRepository userRepository = mock(UserRepository.class);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -122,6 +137,8 @@ class AuthServiceTest {
     }
 
     @Test
+=======
+>>>>>>> main
     void shouldRejectBlockedUser() {
         UserRepository userRepository = mock(UserRepository.class);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();

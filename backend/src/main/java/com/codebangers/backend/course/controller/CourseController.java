@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+<<<<<<< HEAD
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,15 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping({"/api/courses", "/api/parcours"})
+=======
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/courses")
+>>>>>>> main
 public class CourseController {
 
     private final CourseService courseService;
@@ -55,6 +65,7 @@ public class CourseController {
             .orElse(ResponseEntity.notFound().build());
     }
 
+<<<<<<< HEAD
     @GetMapping("/slug/{slug}")
     public ResponseEntity<CourseResponse> getCourseBySlug(@PathVariable String slug) {
         return courseService.getCourseBySlug(slug)
@@ -105,10 +116,19 @@ public class CourseController {
             request.getIsPublished(),
             creator
         );
+=======
+    @PostMapping
+    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    public ResponseEntity<CourseResponse> createCourse(@Valid @RequestBody CourseRequest request,
+                                                       @AuthenticationPrincipal Jwt jwt) {
+        User creator = resolveUser(jwt);
+        Course course = courseService.createCourse(request.getTitle(), request.getDescription(), creator);
+>>>>>>> main
         return new ResponseEntity<>(mapToResponse(course), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
+<<<<<<< HEAD
     @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageCourse(#id, authentication)")
     public ResponseEntity<CourseResponse> updateCourse(@PathVariable UUID id,
                                                        @Valid @RequestBody CourseRequest request,
@@ -126,17 +146,32 @@ public class CourseController {
             request.getIsPublished(),
             updater
         );
+=======
+    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    public ResponseEntity<CourseResponse> updateCourse(@PathVariable UUID id,
+                                                       @Valid @RequestBody CourseRequest request,
+                                                       @AuthenticationPrincipal Jwt jwt) {
+        User updater = resolveUser(jwt);
+        Course course = courseService.updateCourse(id, request.getTitle(), request.getDescription(), updater);
+>>>>>>> main
         return ResponseEntity.ok(mapToResponse(course));
     }
 
     @DeleteMapping("/{id}")
+<<<<<<< HEAD
     @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageCourse(#id, authentication)")
     public ResponseEntity<Void> softDeleteCourse(@PathVariable UUID id, org.springframework.security.core.Authentication authentication) {
         User deleter = resolveUserFromAuth(authentication);
+=======
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> softDeleteCourse(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
+        User deleter = resolveUser(jwt);
+>>>>>>> main
         courseService.softDeleteCourse(id, deleter);
         return ResponseEntity.noContent().build();
     }
 
+<<<<<<< HEAD
     @PostMapping("/{id}/teachers/{teacherId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CourseResponse> assignTeacherToCourse(@PathVariable UUID id,
@@ -167,11 +202,15 @@ public class CourseController {
             } catch (Exception ignored) {
             }
         }
+=======
+    private User resolveUser(Jwt jwt) {
+>>>>>>> main
         String email = jwt.getSubject();
         return userService.getUserByEmail(email)
             .orElseThrow(() -> new ResourceNotFoundException("User", email));
     }
 
+<<<<<<< HEAD
     private User resolveUserFromAuth(org.springframework.security.core.Authentication authentication) {
         if (authentication == null) {
             authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
@@ -225,6 +264,22 @@ public class CourseController {
         }
 
         CourseResponse response = new CourseResponse(
+=======
+    private CourseResponse mapToResponse(Course course) {
+        String createdByName = "Admin";
+        if (course.getCreatedBy() != null) {
+            createdByName = (course.getCreatedBy().getFirstName() != null ? course.getCreatedBy().getFirstName() + " " + (course.getCreatedBy().getLastName() != null ? course.getCreatedBy().getLastName() : "") : course.getCreatedBy().getUserName()).trim();
+        }
+
+        String updatedByName = createdByName;
+        if (course.getUpdatedBy() != null) {
+            updatedByName = (course.getUpdatedBy().getFirstName() != null ? course.getUpdatedBy().getFirstName() + " " + (course.getUpdatedBy().getLastName() != null ? course.getUpdatedBy().getLastName() : "") : course.getUpdatedBy().getUserName()).trim();
+        }
+
+        int chaptersCount = (course.getChapters() != null) ? course.getChapters().size() : 0;
+
+        return new CourseResponse(
+>>>>>>> main
             course.getId(),
             course.getTitle(),
             course.getDescription(),
@@ -232,6 +287,7 @@ public class CourseController {
             course.getUpdatedAt(),
             createdByName,
             updatedByName,
+<<<<<<< HEAD
             chaptersCount,
             course.getPriceInCents(),
             course.getCurrency(),
@@ -258,5 +314,9 @@ public class CourseController {
         }
 
         return response;
+=======
+            chaptersCount
+        );
+>>>>>>> main
     }
 }

@@ -8,11 +8,14 @@ public class UserWorkshopResponse {
     private UUID id;
     private UUID userId;
     private UUID workshopId;
+<<<<<<< HEAD
     private String workshopTitle;
     private String workshopTheme;
     private String workshopDescription;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+=======
+>>>>>>> main
     private LocalDateTime registeredAt;
     private Boolean attended;
 
@@ -28,6 +31,7 @@ public class UserWorkshopResponse {
         this.attended = attended;
     }
 
+<<<<<<< HEAD
     public UserWorkshopResponse(UUID id, UUID userId, UUID workshopId,
                               String workshopTitle, String workshopTheme, String workshopDescription,
                               LocalDateTime startDate, LocalDateTime endDate,
@@ -44,6 +48,8 @@ public class UserWorkshopResponse {
         this.attended = attended;
     }
 
+=======
+>>>>>>> main
     public UUID getId() {
         return id;
     }
@@ -68,6 +74,7 @@ public class UserWorkshopResponse {
         this.workshopId = workshopId;
     }
 
+<<<<<<< HEAD
     public String getWorkshopTitle() {
         return workshopTitle;
     }
@@ -108,6 +115,8 @@ public class UserWorkshopResponse {
         this.endDate = endDate;
     }
 
+=======
+>>>>>>> main
     public LocalDateTime getRegisteredAt() {
         return registeredAt;
     }
