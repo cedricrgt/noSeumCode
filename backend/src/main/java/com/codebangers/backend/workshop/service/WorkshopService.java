@@ -45,17 +45,28 @@ public class WorkshopService {
 
     public Workshop createWorkshop(String title, String description,
                                  LocalDateTime startDate, LocalDateTime endDate, User createdBy) {
+        return createWorkshop(title, null, description, 6, startDate, endDate, createdBy);
+    }
+
+    public Workshop createWorkshop(String title, String theme, String description,
+                                 Integer maxParticipants, LocalDateTime startDate,
+                                 LocalDateTime endDate, User createdBy) {
         if (endDate.isBefore(startDate)) {
             throw new IllegalArgumentException("End date must be after start date");
         }
 
-        Workshop workshop = new Workshop(title, description, startDate, endDate);
+        Workshop workshop = new Workshop(title, theme, description, maxParticipants, startDate, endDate);
         workshop.setCreatedBy(createdBy);
         return workshopRepository.save(workshop);
     }
 
     public Workshop updateWorkshop(UUID workshopId, String title, String description,
                                  LocalDateTime startDate, LocalDateTime endDate) {
+        return updateWorkshop(workshopId, title, null, description, 6, startDate, endDate);
+    }
+
+    public Workshop updateWorkshop(UUID workshopId, String title, String theme, String description,
+                                 Integer maxParticipants, LocalDateTime startDate, LocalDateTime endDate) {
         if (endDate.isBefore(startDate)) {
             throw new IllegalArgumentException("End date must be after start date");
         }
@@ -64,7 +75,9 @@ public class WorkshopService {
             .orElseThrow(() -> new ResourceNotFoundException("Workshop", workshopId));
 
         workshop.setTitle(title);
+        workshop.setTheme(theme);
         workshop.setDescription(description);
+        workshop.setMaxParticipants(maxParticipants != null ? maxParticipants : 6);
         workshop.setStartDate(startDate);
         workshop.setEndDate(endDate);
         return workshopRepository.save(workshop);

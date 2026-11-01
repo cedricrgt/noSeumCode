@@ -5,8 +5,10 @@ import com.codebangers.backend.course.repository.EnrollmentRepository;
 import com.codebangers.backend.user.dto.RoleUpdateRequest;
 import com.codebangers.backend.user.dto.UserRequest;
 import com.codebangers.backend.user.dto.UserResponse;
+import com.codebangers.backend.user.model.Role;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,8 +33,13 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UserResponse>> getAllUsers() {
+    public ResponseEntity<List<UserResponse>> getAllUsers(@RequestParam(required = false) Role role) {
         List<User> users = userService.getAllUsersForAdmin();
+        if (role != null) {
+            users = users.stream()
+                .filter(u -> u.getRole() == role)
+                .toList();
+        }
         List<UserResponse> responses = users.stream()
             .map(this::mapToResponse)
             .collect(Collectors.toList());
@@ -49,7 +56,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or #id.toString() == authentication.token.claims['userId']")
-    public ResponseEntity<?> updateUser(@PathVariable UUID id, @RequestBody UserRequest request) {
+    public ResponseEntity<?> updateUser(@PathVariable UUID id, @Valid @RequestBody UserRequest request) {
         try {
             User user = userService.updateUser(id, request);
             return ResponseEntity.ok(mapToResponse(user));
@@ -150,7 +157,17 @@ public class UserController {
                 response.setPaymentStatus("GRATUIT");
             } else {
                 boolean hasPaid = enrollments.stream().anyMatch(e -> e.getPaymentStatus() == Enrollment.PaymentStatus.PAID);
-                response.setPaymentStatus(hasPaid ? "PAYÉ" : "EN ATTENTE");
+                boolean hasRefunded = enrollments.stream().anyMatch(e -> e.getPaymentStatus() == Enrollment.PaymentStatus.REFUNDED);
+                boolean hasFailed = enrollments.stream().anyMatch(e -> e.getPaymentStatus() == Enrollment.PaymentStatus.FAILED);
+                if (hasPaid) {
+                    response.setPaymentStatus("PAYÉ");
+                } else if (hasRefunded) {
+                    response.setPaymentStatus("REMBOURSÉ");
+                } else if (hasFailed) {
+                    response.setPaymentStatus("ÉCHOUÉ");
+                } else {
+                    response.setPaymentStatus("EN ATTENTE");
+                }
             }
         } catch (Exception e) {
             response.setEnrolledCoursesCount(0);

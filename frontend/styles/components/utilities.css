@@ -1,11 +1,57 @@
 
+/* Accessibility: Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Accessibility: Skip Link */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 20px;
+  background: var(--dark-navy);
+  color: var(--primary-green);
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--primary-green);
+  font-weight: 700;
+  font-size: 1rem;
+  z-index: 10000;
+  text-decoration: none;
+  transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+  top: 20px;
+  outline: 2px solid var(--gradient-end);
+  outline-offset: 2px;
+}
+
+/* Accessibility & Anchor Navigation: Offset scroll for sticky header */
+section[id], div[id] {
+  scroll-margin-top: calc(var(--header-height, 80px) + 20px);
+}
+
 .section-tag {
+  display: inline-block;
   font-size: 1.5rem;
-  color: #00a85a;
+  color: #047857; /* Contrast > 5:1 on light backgrounds (WCAG AA) */
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 2px;
   margin-bottom: var(--spacing-sm);
+}
+
+.section--dark .section-tag {
+  color: var(--primary-green); /* Contrast > 14:1 on dark backgrounds */
 }
 
 .section-title {
@@ -33,6 +79,12 @@
 .section-subtitle--muted {
   font-size: 1.25rem;
   color: rgba(255, 255, 255, 0.8);
+  margin-top: var(--spacing-xs);
+  margin-bottom: var(--spacing-xl);
+}
+
+p {
+  text-align: left;
 }
 
 .card-grid {
@@ -42,13 +94,43 @@
   display: grid;
   gap: var(--gap);
   justify-content: center;
-  grid-template-columns: repeat(auto-fit, minmax(var(--min-column-size), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--min-column-size)), 1fr));
+  text-align: left;
 }
 
 .section {
   padding: var(--spacing-3xl) var(--spacing-xl);
+  text-align: left;
+}
+
+.section-header,
+.courses__header,
+.mentor__header,
+.proof__header,
+.rassurance__header,
+.faq__title,
+.text-center {
   text-align: center;
 }
+
+@media (max-width: 768px) {
+  .section {
+    padding: var(--spacing-2xl) 1.25rem;
+  }
+
+  .card-grid {
+    --min-column-size: 100%;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding: var(--spacing-xl) 1rem;
+  }
+}
+
 
 .section--dark {
   background: linear-gradient(135deg, #0a1628 0%, #1a2332 100%);
@@ -74,6 +156,14 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
 

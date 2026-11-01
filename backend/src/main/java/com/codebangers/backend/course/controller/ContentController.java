@@ -1,10 +1,13 @@
 package com.codebangers.backend.course.controller;
 
+import com.codebangers.backend.chapter.model.Chapter;
 import com.codebangers.backend.config.exception.ResourceNotFoundException;
 import com.codebangers.backend.content.model.Content;
 import com.codebangers.backend.course.dto.ContentRequest;
 import com.codebangers.backend.course.dto.ContentResponse;
+import com.codebangers.backend.course.service.ChapterService;
 import com.codebangers.backend.course.service.ContentService;
+import com.codebangers.backend.course.service.EnrollmentService;
 import com.codebangers.backend.user.model.User;
 import com.codebangers.backend.user.service.UserService;
 import jakarta.validation.Valid;
@@ -16,6 +19,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -24,21 +29,59 @@ public class ContentController {
 
     private final ContentService contentService;
     private final UserService userService;
+    private final ChapterService chapterService;
+    private final EnrollmentService enrollmentService;
 
-    public ContentController(ContentService contentService, UserService userService) {
+    public ContentController(ContentService contentService,
+                             UserService userService,
+                             ChapterService chapterService,
+                             EnrollmentService enrollmentService) {
         this.contentService = contentService;
         this.userService = userService;
+        this.chapterService = chapterService;
+        this.enrollmentService = enrollmentService;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ContentResponse> getContentById(@PathVariable UUID id) {
-        return contentService.getContentById(id)
-            .map(content -> ResponseEntity.ok(mapToResponse(content)))
-            .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> getContentById(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
+        Optional<Content> opt = contentService.getContentWithChapterAndCourse(id);
+        if (opt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Content content = opt.get();
+        Chapter chapter = content.getChapter();
+        UUID courseId = (chapter != null && chapter.getCourse() != null) ? chapter.getCourse().getId() : null;
+        User user = resolveOptionalUser(jwt);
+        boolean hasPaid = enrollmentService.hasPaidAccess(user, courseId);
+        boolean isPreview = (chapter != null && chapter.isFreePreview());
+
+        if (!hasPaid && !isPreview) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "Accès refusé. Cette ressource nécessite une inscription payante validée."));
+        }
+
+        return ResponseEntity.ok(mapToResponse(content));
     }
 
     @GetMapping("/chapter/{chapterId}")
-    public ResponseEntity<List<ContentResponse>> getContentByChapter(@PathVariable UUID chapterId) {
+    public ResponseEntity<?> getContentByChapter(@PathVariable UUID chapterId, @AuthenticationPrincipal Jwt jwt) {
+        Optional<Chapter> chapOpt = chapterService.getChapterById(chapterId);
+        if (chapOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Chapter chapter = chapOpt.get();
+        UUID courseId = chapter.getCourse() != null ? chapter.getCourse().getId() : null;
+        User user = resolveOptionalUser(jwt);
+        boolean hasPaid = enrollmentService.hasPaidAccess(user, courseId);
+        boolean isPreview = chapter.isFreePreview();
+
+        if (!hasPaid && !isPreview) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "Accès refusé. Les contenus de cette section nécessitent une inscription payante validée."));
+        }
+
         List<ContentResponse> responses = contentService.getContentByChapter(chapterId).stream()
             .map(this::mapToResponse)
             .toList();
@@ -46,7 +89,23 @@ public class ContentController {
     }
 
     @GetMapping("/chapter/{chapterId}/active")
-    public ResponseEntity<List<ContentResponse>> getActiveContentByChapter(@PathVariable UUID chapterId) {
+    public ResponseEntity<?> getActiveContentByChapter(@PathVariable UUID chapterId, @AuthenticationPrincipal Jwt jwt) {
+        Optional<Chapter> chapOpt = chapterService.getChapterById(chapterId);
+        if (chapOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Chapter chapter = chapOpt.get();
+        UUID courseId = chapter.getCourse() != null ? chapter.getCourse().getId() : null;
+        User user = resolveOptionalUser(jwt);
+        boolean hasPaid = enrollmentService.hasPaidAccess(user, courseId);
+        boolean isPreview = chapter.isFreePreview();
+
+        if (!hasPaid && !isPreview) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "Accès refusé. Les contenus de cette section nécessitent une inscription payante validée."));
+        }
+
         List<ContentResponse> responses = contentService.getActiveContentByChapter(chapterId).stream()
             .map(this::mapToResponse)
             .toList();
@@ -54,7 +113,7 @@ public class ContentController {
     }
 
     @PostMapping("/chapter/{chapterId}")
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageChapter(#chapterId, authentication)")
     public ResponseEntity<ContentResponse> createContent(@PathVariable UUID chapterId,
                                                           @Valid @RequestBody ContentRequest request,
                                                           @AuthenticationPrincipal Jwt jwt) {
@@ -71,7 +130,7 @@ public class ContentController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageContent(#id, authentication)")
     public ResponseEntity<ContentResponse> updateContent(@PathVariable UUID id,
                                                           @Valid @RequestBody ContentRequest request) {
         Content content = contentService.updateContent(
@@ -85,14 +144,14 @@ public class ContentController {
     }
 
     @PutMapping("/{id}/toggle-published")
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageContent(#id, authentication)")
     public ResponseEntity<ContentResponse> togglePublished(@PathVariable UUID id) {
         Content content = contentService.togglePublished(id);
         return ResponseEntity.ok(mapToResponse(content));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @courseSecurity.canManageContent(#id, authentication)")
     public ResponseEntity<Void> softDeleteContent(@PathVariable UUID id) {
         contentService.softDeleteContent(id);
         return ResponseEntity.noContent().build();
@@ -102,6 +161,11 @@ public class ContentController {
         String email = jwt.getSubject();
         return userService.getUserByEmail(email)
             .orElseThrow(() -> new ResourceNotFoundException("User", email));
+    }
+
+    private User resolveOptionalUser(Jwt jwt) {
+        if (jwt == null) return null;
+        return userService.getUserByEmail(jwt.getSubject()).orElse(null);
     }
 
     private ContentResponse mapToResponse(Content content) {

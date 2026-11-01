@@ -1,0 +1,51 @@
+name: Deploy Develop to o2switch
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+jobs:
+  snyk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install Snyk
+        run: npm install -g snyk
+
+      - name: Test vulnerabilities
+        working-directory: frontend
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk test
+
+  web-deploy:
+    name: Deploy to Develop (develop.noseumcode.fr)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get latest code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Build CSS bundles
+        run: bash ./frontend/build.sh
+
+      - name: Sync files
+        uses: SamKirkland/FTP-Deploy-Action@110f9186c050f71550953127052e77650219c287 # v4.4.0
+        with:
+          server: ${{ secrets.FTP_SERVER_DEV != '' && secrets.FTP_SERVER_DEV || secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME_DEV != '' && secrets.FTP_USERNAME_DEV || secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD_DEV != '' && secrets.FTP_PASSWORD_DEV || secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_DIR_DEV || 'develop.noseumcode.fr/' }}
+          local-dir: ./frontend/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.env*
+            **/*.sh
+            **/*.ps1
+            **/build.js
+            **/package*.json
+            **/README.md

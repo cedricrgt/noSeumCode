@@ -9,7 +9,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -25,6 +27,28 @@ public class Course {
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
+
+    @Column(name = "price_in_cents", nullable = false)
+    private Long priceInCents = 4900L;
+
+    @Column(name = "currency", nullable = false, length = 10)
+    private String currency = "EUR";
+
+    @Column(name = "slug", unique = true)
+    private String slug;
+
+    @Column(name = "thumbnail_url", length = 500)
+    private String thumbnailUrl;
+
+    @Column(name = "level", nullable = false, length = 50)
+    private String level = "BEGINNER";
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "required_tier", nullable = false, length = 30)
+    private CourseTier requiredTier = CourseTier.STARTER;
+
+    @Column(name = "is_published", nullable = false)
+    private boolean isPublished = true;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -63,9 +87,14 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Enrollment> enrollments = new ArrayList<>();
 
-    // =========================
-    // Constructors
-    // =========================
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "course_teacher",
+        joinColumns = @JoinColumn(name = "course_id"),
+        inverseJoinColumns = @JoinColumn(name = "teacher_id")
+    )
+    private Set<User> assignedTeachers = new HashSet<>();
 
     public Course() {
     }
@@ -74,10 +103,6 @@ public class Course {
         this.title = title;
         this.description = description;
     }
-
-    // =========================
-    // Getters & Setters
-    // =========================
 
     public UUID getId() {
         return id;
@@ -165,5 +190,82 @@ public class Course {
 
     public void setEnrollments(List<Enrollment> enrollments) {
         this.enrollments = enrollments;
+    }
+
+    public Long getPriceInCents() {
+        return priceInCents;
+    }
+
+    public void setPriceInCents(Long priceInCents) {
+        this.priceInCents = priceInCents;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public boolean isPublished() {
+        return isPublished;
+    }
+
+    public void setPublished(boolean published) {
+        isPublished = published;
+    }
+
+    public CourseTier getRequiredTier() {
+        return requiredTier;
+    }
+
+    public void setRequiredTier(CourseTier requiredTier) {
+        this.requiredTier = requiredTier;
+    }
+
+    public Set<User> getAssignedTeachers() {
+        return assignedTeachers;
+    }
+
+    public void setAssignedTeachers(Set<User> assignedTeachers) {
+        this.assignedTeachers = assignedTeachers;
+    }
+
+    public void addTeacher(User teacher) {
+        if (this.assignedTeachers == null) {
+            this.assignedTeachers = new HashSet<>();
+        }
+        this.assignedTeachers.add(teacher);
+    }
+
+    public void removeTeacher(User teacher) {
+        if (this.assignedTeachers != null) {
+            this.assignedTeachers.remove(teacher);
+        }
     }
 }
