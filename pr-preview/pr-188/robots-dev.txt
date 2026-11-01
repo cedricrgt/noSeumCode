@@ -1,5 +1,0 @@
-# Robots.txt for Staging & Development Environment (develop.noseumcode.fr)
-# Strictly disallow all crawlers and search engine indexing on staging
-
-User-agent: *
-Disallow: /
