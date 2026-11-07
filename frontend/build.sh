@@ -154,3 +154,7 @@ fi
 
 echo "Building static HTML (SSG)..."
 node "$SCRIPT_DIR/build-static.js"
+
+echo "Applying automated cache busting..."
+node "$SCRIPT_DIR/build-cache-bust.js"
+

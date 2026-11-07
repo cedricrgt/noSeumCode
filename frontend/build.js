@@ -150,4 +150,7 @@ minifyJsFile(path.join(jsDir, 'header.js'), path.join(jsDir, 'header.min.js'));
 minifyJsFile(path.join(jsDir, 'script.js'), path.join(jsDir, 'script.min.js'));
 minifyJsFile(path.join(jsDir, 'popover-hubspot.js'), path.join(jsDir, 'popover-hubspot.min.js'));
 
+console.log('\n🔄 Application du cache-busting automatique…');
+require('./build-cache-bust.js');
+
 console.log('\n✅ Bundles CSS & JS générés avec succès !');

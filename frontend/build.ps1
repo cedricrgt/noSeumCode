@@ -87,4 +87,7 @@ Minify-Js (Join-Path $jsDir "header.js")
 Minify-Js (Join-Path $jsDir "script.js")
 Minify-Js (Join-Path $jsDir "popover-hubspot.js")
 
+Write-Host "`n🔄 Application du cache-busting automatique…"
+& node (Join-Path $scriptDir "build-cache-bust.js")
+
 Write-Host "`n✅ Bundles CSS & JS générés avec succès !" -ForegroundColor Green

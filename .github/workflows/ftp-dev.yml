@@ -46,6 +46,6 @@ jobs:
             **/.env*
             **/*.sh
             **/*.ps1
-            **/build.js
+            **/build*.js
             **/package*.json
             **/README.md

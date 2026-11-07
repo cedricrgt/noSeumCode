@@ -2263,3 +2263,28 @@ Le bandeau "Environnement de test" flottait en overlay fixe au bas de l'écran (
 4. **`frontend/styles/pages/homepage/footer.css`** : Ajout des styles `.dev-env-banner` alignés sur la charte sombre du footer.
 5. **`frontend/js/header.js`** : Suppression de l'injection dynamique en `position: fixed` au profit du contrôle de visibilité du bandeau dans le footer.
 6. **Rebuild des bundles** : Exécution de `build.js` et `build-static.js`.
+
+
+## 2026-11-07 | Conversation: 1c19e84a-94ef-447e-9547-b5eabaf1ba40
+
+**Type**: CI/CD & Build Infrastructure — Automated Asset Cache-Busting
+**Auteur**: Antigravity (Agent IA)
+**Branche**: `feat/ci-cd-auto-cache-busting`
+
+### Problème résolu :
+Les modifications CSS et JS en production n'étaient pas prises en compte par les navigateurs et Cloudflare en raison du cache agressif (`Cache-Control: max-age=31536000`), nécessitant soit des purges manuelles sur le tableau de bord Cloudflare, soit des bumps manuels de chaînes `?v=sprintXX` à travers 50 fichiers HTML. De plus, `frontend/styles/bundle.css` était un fichier obsolète non référencé par les pages HTML.
+
+### Réalisations :
+1. **Script de cache-busting automatique (`frontend/build-cache-bust.js`)** :
+   - Détection automatique de la version via `process.env.GITHUB_SHA` (en CI GitHub Actions), `git rev-parse --short HEAD` (en local), ou fallback timestamp.
+   - Remplacement automatique et idempotent des paramètres de requête `?v=<version>` sur tous les liens CSS (`<link href="...css">`) et scripts JS (`<script src="...js">`) relatifs dans l'ensemble des fichiers HTML (`frontend/*.html`, `formations/*.html`, `blog/*.html`, `dist/*.html`).
+   - Préservation stricte des ressources tierces externes (Google Fonts, Stripe, Plausible, Umami, HubSpot).
+2. **Intégration dans la chaîne de build** :
+   - `frontend/build.sh` : Exécution systématique de `node "$SCRIPT_DIR/build-cache-bust.js"` après l'étape SSG.
+   - `frontend/build.js` : Appel automatique en étape finale du build JS.
+   - `frontend/build.ps1` : Intégration pour les environnements de développement Windows.
+3. **Pipelines CI/CD (`ftp.yml`, `ftp-dev.yml`, `pr-preview.yml`)** :
+   - Transmission explicite de `GITHUB_SHA: ${{ github.sha }}` dans l'étape de compilation CSS et exclusion de `**/build*.js` des déploiements FTP vers o2switch.
+4. **Sécurité & Hygiène (`frontend/.htaccess`, `frontend/styles/bundle.css`)** :
+   - Mise à jour de la règle `<FilesMatch>` dans `.htaccess` pour bloquer tout accès HTTP direct à l'ensemble des scripts `build*`.
+   - Ajout d'un bandeau de dépréciation explicite dans `bundle.css` pour proscrire toute modification directe sur ce fichier orphelin.
