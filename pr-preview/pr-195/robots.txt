@@ -1,9 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /dashboard.html
-Disallow: /thanks.html
-Disallow: /success.html
-Disallow: /reset-password.html
-Disallow: /documents/
-Disallow: /data/
-Sitemap: https://noseumcode.fr/sitemap.xml
