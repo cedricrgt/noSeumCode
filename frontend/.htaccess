@@ -197,7 +197,7 @@ DirectoryIndex index.html
 </IfModule>
 
 # Block direct HTTP access to build scripts, package manifests, and markdown docs
-<FilesMatch "^(package(-lock)?\.json|build\.(sh|ps1|js)|README\.md|\.env.*)$">
+<FilesMatch "^(package(-lock)?\.json|build.*|README\.md|\.env.*)$">
     Require all denied
 </FilesMatch>
 
